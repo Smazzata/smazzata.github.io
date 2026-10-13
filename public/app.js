@@ -479,7 +479,12 @@
     const can = preview && preview.canAdd.has(m.id) ? 'can-add' : '';
     const hint = S.hint && S.hint.meldId === m.id ? 'hinted' : '';
     return `<div class="meld ${m.kind ? 'burraco ' + m.kind : ''} ${S.flashMeld === m.id ? 'flash' : ''} ${m.type === 'set' ? 'set' : ''} ${can} ${hint}" ${attrs} title="${esc(m.label || '')}">
-      ${m.cards.map((c, i) => cardHTML(c, `mini ${m.wild[i] ? 'wildmark' : ''}`)).join('')}
+      ${m.cards.map((c, i) => {
+        // in modalità compatta si vedono solo le prime 2 carte e l'ultima
+        const mid = m.cards.length >= 5 && i >= 2 && i < m.cards.length - 1;
+        const more = mid && i === 2 ? `<span class="more">+${m.cards.length - 3}</span>` : '';
+        return more + cardHTML(c, `mini ${m.wild[i] ? 'wildmark' : ''} ${mid ? 'mid' : ''}`);
+      }).join('')}
       ${m.kind ? `<span class="tag">${short}</span>` : `<span class="cnt">${m.length}</span>`}</div>`;
   }
 
@@ -489,12 +494,15 @@
     const cur = g.players[g.turn];
     if (g.turn !== me) return `Turno di <b>${esc(cur.name)}</b>${g.lastTurn ? ' · <b>ultimo giro</b>' : ''}`;
     if (g.phase === 'draw') {
-      if (g.mustDraw) return 'Tocca a te: <b>pesca dal tallone</b>';
-      if (g.cfg.pile === 'closed' && g.discardCount) return 'Tocca a te: pesca, o seleziona carte da combinare con la carta in cima e prendi lo scarto';
-      return 'Tocca a te: <b>pesca</b> o <b>raccogli</b> gli scarti';
+      if (g.mustDraw) return 'Tocca a te: tocca il <b>tallone</b> per pescare';
+      if (g.cfg.pile === 'closed' && g.discardCount) return 'Tocca il <b>tallone</b>, oppure seleziona carte da combinare con la cima e tocca gli <b>scarti</b>';
+      return 'Tocca a te: tocca il <b>tallone</b> o gli <b>scarti</b>';
     }
     const myTeam = g.teams.find((t) => t.members.includes(me));
-    let tip = 'Cala, attacca e <b>scarta</b>';
+    const sel = S.selected.size;
+    let tip = sel === 1 ? 'Tocca gli <b>scarti</b> per scartare, o un tuo gioco per attaccare'
+      : sel >= 2 ? 'Tocca <b>＋</b> per calare o un tuo gioco per attaccare'
+        : 'Seleziona le carte: cala, attacca e poi <b>scarta</b>';
     if (myTeam && myTeam.canClose) tip = 'Puoi <b>chiudere</b>: cala tutto e scarta l\'ultima carta';
     else if (g.hand.length <= 3 && myTeam && myTeam.pozzettoTaken) tip += ` · per chiudere serve ${g.cfg.closeNeeds === 'clean' ? `una ${g.cfg.burracoName} pulita` : `un ${g.cfg.burracoName}`}`;
     if (g.lastTurn) tip += ' · <b>ultimo turno!</b>';
@@ -589,20 +597,15 @@
     const others = g.teams.filter((t) => t !== myTeam).map(zone).join('');
     const mineZone = myTeam ? zone(myTeam) : '';
 
-    // azioni
+    // niente pulsanti grandi: si gioca toccando/trascinando sul tavolo; restano piccole icone
     const sel = S.selected.size;
     let actions = '';
-    if (g.phase === 'handEnd') actions = '<button class="btn primary" data-act="result">Vedi risultati</button>';
-    else if (canDraw) {
-      actions = `<button class="btn primary" data-act="draw" ${g.stockCount || g.pozzetti.length ? '' : 'disabled'}>Pesca</button>
-        <button class="btn" data-act="takePile" ${g.discardCount && !g.mustDraw ? '' : 'disabled'}>Raccogli${g.discardCount ? ` (${g.discardCount})` : ''}</button>`;
-    } else if (playing) {
-      actions = `<button class="btn primary" data-act="meld" ${nm && nm.ok ? '' : 'disabled'}>Cala${sel ? ` ${sel}` : ''}</button>
-        <button class="btn" data-act="discard" ${sel === 1 ? '' : 'disabled'}>Scarta</button>
-        ${g.canUndo ? '<button class="btn ghost" data-act="undo" title="Annulla le giocate del turno">↶<span class="wide"> Annulla</span></button>' : ''}`;
-    }
-    if (myTurn) actions += '<button class="btn ghost small" data-act="hint" title="Suggerimento">💡</button>';
+    if (g.phase === 'handEnd') actions = '<button class="btn primary small" data-act="result">Risultati</button>';
+    if (playing && g.canUndo) actions += '<button class="ico" data-act="undo" title="Annulla le giocate del turno">↶</button>';
+    if (myTurn) actions += '<button class="ico" data-act="hint" title="Suggerimento">💡</button>';
+    if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';
     const sortLbl = S.sortMode === 'rank' ? '⇅ Valore' : S.sortMode === 'suit' ? '⇅ Seme' : '⇅ Ordina';
+    actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;
 
     return `<div class="game ${myTurn ? 'myturn' : ''}">
       <div class="topbar">
@@ -619,7 +622,7 @@
       <div class="felt" id="felt">${others}${center}${mineZone}</div>
       <div class="statusbar ${myTurn ? 'on' : ''}">
         <span class="msg">${statusText(g)}</span>
-        <div class="btns">${actions}<button class="btn ghost small" data-act="sort">${sortLbl}</button>${sel ? '<button class="btn ghost small" data-act="clearSel">✕</button>' : ''}</div>
+        <div class="btns">${actions}</div>
       </div>
       <div class="handwrap" data-drop="hand"><div class="hand" id="hand">${handHTML(g)}</div></div>
     </div>`;
@@ -660,8 +663,35 @@
     hand.style.height = `${(rows === 2 ? cw * 1.05 : 0) + cw * 1.45 + 14}px`;
   }
 
+  /** Adatta il tavolo allo schermo: rimpicciolisce i giochi e, se serve, compatta le combinazioni lunghe */
+  function fitTable() {
+    const felt = $('#felt');
+    if (!felt) return;
+    felt.classList.remove('compact');
+    felt.style.removeProperty('--mw');
+    felt.style.removeProperty('--pw');
+    const fits = () => felt.scrollHeight <= felt.clientHeight + 1;
+    if (fits()) return;
+    const cs = getComputedStyle(felt);
+    let mw = parseFloat(cs.getPropertyValue('--mw')) || 30;
+    let pw = parseFloat(cs.getPropertyValue('--pw')) || 42;
+    const shrink = (min) => {
+      while (!fits() && mw > min) {
+        mw -= 2;
+        pw = Math.max(32, pw - 2);
+        felt.style.setProperty('--mw', `${mw}px`);
+        felt.style.setProperty('--pw', `${pw}px`);
+      }
+    };
+    shrink(24);
+    if (fits()) return;
+    felt.classList.add('compact');
+    shrink(17);
+  }
+
   function afterGameRender() {
     layoutHand();
+    fitTable();
     const felt = $('#felt');
     if (felt && S.feltScroll != null) felt.scrollTop = S.feltScroll;
     const pc = $('.pile .pcards');
@@ -1175,7 +1205,7 @@
   let resizeTimer = null;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => { if (S.screen === 'game') layoutHand(); }, 120);
+    resizeTimer = setTimeout(() => { if (S.screen === 'game') { layoutHand(); fitTable(); } }, 120);
   });
 
   render();

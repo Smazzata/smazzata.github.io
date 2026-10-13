@@ -337,3 +337,25 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 @media (min-width: 1000px) { :root { --mw: 44px; } body.bigcards { --mw: 52px; } }
 .wide { display: none; }
 @media (min-width: 430px) { .wide { display: inline; } }
+
+/* ---------- Tavolo compatto (tanti giochi su schermo piccolo) ---------- */
+.meld .more { display: none; }
+.felt.compact .meld .card.mid { display: none; }
+.felt.compact .meld .more {
+  display: inline-flex; align-items: center; justify-content: center; align-self: center; flex: 0 0 auto;
+  min-width: calc(var(--mw) * .9); height: calc(var(--mw) * .9); margin: 0 calc(var(--mw) * .1) 0 calc(var(--mw) * .55);
+  border-radius: 99px; background: rgba(0,0,0,.55); color: #fff; font-size: 10px; font-weight: 700; z-index: 1;
+}
+.felt.compact .teamzone { padding: 4px 6px 6px; margin-top: 5px; }
+.felt.compact .teamzone .hdr { margin-bottom: 3px; }
+.felt.compact .melds { gap: 9px 7px; }
+.felt.compact .center { padding: 5px 4px; }
+
+/* ---------- Barra di stato compatta: messaggio + piccole icone su una riga ---------- */
+.statusbar { flex-wrap: nowrap; justify-content: space-between; padding: 5px 8px; min-height: 38px; }
+.statusbar .msg { flex: 1 1 auto; text-align: left; font-size: 12.5px; line-height: 1.25; }
+.statusbar .btns { flex: 0 0 auto; flex-wrap: nowrap; gap: 4px; }
+.ico { border: 0; background: rgba(255,255,255,.14); color: #fff; border-radius: 9px; min-width: 32px; height: 30px; padding: 0 7px; font-size: 15px; touch-action: manipulation; }
+.ico:active { background: rgba(255,255,255,.3); }
+.ico.wideico { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.statusbar .btn.small { padding: 5px 9px; }
