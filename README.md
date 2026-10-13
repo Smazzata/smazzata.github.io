@@ -1,3 +1,13 @@
+---
+title: Burraco Online
+emoji: 🃏
+colorFrom: green
+colorTo: yellow
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Burraco Online
 
 Webapp per giocare a Burraco da browser e smartphone, in multiplayer o contro il computer.
@@ -37,5 +47,9 @@ Variabili d'ambiente: `PORT` (default 3000), `BOT_DELAY` in ms tra le mosse del 
 
 ## Pubblicarla online
 
-Serve un hosting Node.js con supporto WebSocket (es. Render, Railway, Fly.io): comando di avvio `npm start`.
+Il progetto è pronto per **Hugging Face Spaces** (gratis, senza carta): il blocco iniziale di questo README
+e il `Dockerfile` configurano lo Space. Il workflow `.github/workflows/hf-sync.yml` copia automaticamente
+ogni push su GitHub nello Space (richiede il secret `HF_TOKEN` nel repository GitHub).
+
+In alternativa va bene qualsiasi hosting Node.js con WebSocket (Render, Railway, Fly.io): comando di avvio `npm start`.
 Le partite sono tenute in memoria: un riavvio del server chiude i tavoli in corso.
