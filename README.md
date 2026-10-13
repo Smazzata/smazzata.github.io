@@ -1,13 +1,3 @@
----
-title: Burraco Online
-emoji: 🃏
-colorFrom: green
-colorTo: yellow
-sdk: docker
-app_port: 7860
-pinned: false
----
-
 # Burraco Online
 
 Webapp per giocare a Burraco da browser e smartphone, in multiplayer o contro il computer.
@@ -47,9 +37,14 @@ Variabili d'ambiente: `PORT` (default 3000), `BOT_DELAY` in ms tra le mosse del 
 
 ## Pubblicarla online
 
-Il progetto è pronto per **Hugging Face Spaces** (gratis, senza carta): il blocco iniziale di questo README
-e il `Dockerfile` configurano lo Space. Il workflow `.github/workflows/hf-sync.yml` copia automaticamente
-ogni push su GitHub nello Space (richiede il secret `HF_TOKEN` nel repository GitHub).
+Il gioco è pensato per girare su un **telefono Android con Termux** (gratis, sempre acceso):
+`scripts/android-server.sh` installa tutto, avvia il server, apre un tunnel Cloudflare gratuito
+e scarica da solo gli aggiornamenti pubblicati su GitHub ogni 5 minuti.
 
-In alternativa va bene qualsiasi hosting Node.js con WebSocket (Render, Railway, Fly.io): comando di avvio `npm start`.
+```bash
+pkg install -y git && git clone https://github.com/simonemuliello010500-web/BurracoByMSF.git ~/burraco && bash ~/burraco/scripts/android-server.sh
+```
+
+Con `--install-boot` (app Termux:Boot) il server riparte da solo quando il telefono si riaccende.
+In alternativa va bene qualsiasi hosting Node.js con WebSocket: comando di avvio `npm start`.
 Le partite sono tenute in memoria: un riavvio del server chiude i tavoli in corso.

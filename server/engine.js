@@ -184,6 +184,12 @@ function createGame({ rules, players }) {
   return g;
 }
 
+/** Ultimo evento di gioco, numerato perché il client possa animarlo una sola volta */
+function setEvent(g, ev) {
+  g.eventSeq = (g.eventSeq || 0) + 1;
+  g.lastEvent = { ...ev, n: g.eventSeq };
+}
+
 function addLog(g, text) {
   g.log.push(text);
   if (g.log.length > 60) g.log.splice(0, g.log.length - 60);
@@ -296,7 +302,7 @@ function draw(g, seat) {
   p.hand.push(c);
   g.pileTakeStreak = 0;
   addLog(g, `${p.name} pesca dal tallone`);
-  g.lastEvent = { type: 'draw', seat };
+  setEvent(g, { type: 'draw', seat });
   if (g.cfg.stockEnd === 'twoLeft' && g.stock.length <= 2) {
     g.lastTurn = true;
     addLog(g, 'Nel tallone restano 2 carte: ultimo turno!');
@@ -355,7 +361,7 @@ function takePile(g, seat, { cardIds = [], meldId = null } = {}) {
   p.hand.push(...pile);
   g.pileTakeStreak++;
   addLog(g, `${p.name} raccoglie gli scarti (${pile.length} ${pile.length === 1 ? 'carta' : 'carte'})`);
-  g.lastEvent = { type: 'pile', seat, count: pile.length };
+  setEvent(g, { type: 'pile', seat, count: pile.length });
   beginPlay(g, seat);
   if (pile.length === 1) g.turnInfo.singlePickId = top.id;
   takeSnapshot(g);
@@ -377,7 +383,7 @@ function meld(g, seat, cardIds) {
   team.melds.push(m);
   if (!g.turnInfo.startHadMelds) g.turnInfo.newMeldPts += cards.reduce((s, c) => s + cardValue(c, g.cfg.values), 0);
   addLog(g, `${p.name} cala ${cards.map(cardName).join(' ')}`);
-  g.lastEvent = { type: 'meld', seat, meldId: m.id };
+  setEvent(g, { type: 'meld', seat, meldId: m.id });
   postMeldCheck(g, seat);
 }
 
@@ -396,7 +402,7 @@ function addToMeld(g, seat, meldId, cardIds) {
   if (!g.turnInfo.startHadMelds) g.turnInfo.newMeldPts += cards.reduce((s, c) => s + cardValue(c, g.cfg.values), 0);
   addLog(g, `${p.name} attacca ${cards.map(cardName).join(' ')}`);
   if (!wasBurraco && m.length >= 7) addLog(g, `★ ${meldKind(m, g.cfg).label}!`);
-  g.lastEvent = { type: 'add', seat, meldId: m.id };
+  setEvent(g, { type: 'add', seat, meldId: m.id });
   postMeldCheck(g, seat);
 }
 
@@ -442,7 +448,7 @@ function takePozzetto(g, seat, mode) {
   p.hand = g.pozzetti.shift();
   team.pozzettoTaken = true;
   addLog(g, `${p.name} prende il ${g.cfg.pozzettoName} (${size} carte, ${mode === 'direct' ? 'presa diretta' : 'con lo scarto'})`);
-  g.lastEvent = { type: 'pozzetto', seat };
+  setEvent(g, { type: 'pozzetto', seat });
   if (g.n === 3 && !g.partnershipFormed) {
     const others = g.teams.filter((t) => t !== team);
     const [a, b] = others;
@@ -487,7 +493,7 @@ function discard(g, seat, cardId) {
   removeFromHand(p, [c]);
   g.discard.push(c);
   addLog(g, `${p.name} scarta ${cardName(c)}`);
-  g.lastEvent = { type: 'discard', seat, cardId };
+  setEvent(g, { type: 'discard', seat, cardId });
   if (g.lastTurn) return endHand(g, 'stock');
   nextTurn(g);
 }

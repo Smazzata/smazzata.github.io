@@ -1,24 +1,29 @@
-﻿(() => {
+(() => {
   'use strict';
   const R = window.BurracoRules;
   const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
   const store = {
     get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage non disponibile */ } },
   };
 
+  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false };
   const S = {
     token: store.get('bur_token', null),
     name: store.get('bur_name', ''),
     rules: R.normalize(store.get('bur_rules', R.PRESETS[0].rules)),
+    prefs: { ...DEFAULT_PREFS, ...store.get('bur_prefs', {}) },
     editRules: null,
     screen: 'home',
     room: null,
     game: null,
     selected: new Set(),
-    sortMode: store.get('bur_sort', 'suit'),
+    sortMode: store.get('bur_sort', 'suit'), // suit | rank | manual
+    handOrder: [],
     chat: [],
     unread: 0,
     connected: false,
@@ -28,9 +33,63 @@
     newIds: new Set(),
     flashMeld: null,
     lastTap: { id: null, t: 0 },
+    drag: null,
+    pendingRender: false,
+    justDragged: 0,
   };
 
-  /* ---------------- Connessione ---------------- */
+  /* ================= Suoni (sintetizzati, nessun file) ================= */
+  const Sound = {
+    ctx: null,
+    unlock() {
+      if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
+      try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { this.ctx = null; }
+    },
+    tone(freq, dur, type = 'sine', vol = 0.12, delay = 0) {
+      const c = this.ctx; if (!c) return;
+      const t = c.currentTime + delay;
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = type; o.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g).connect(c.destination);
+      o.start(t); o.stop(t + dur + 0.02);
+    },
+    noise(dur = 0.09, vol = 0.18, freq = 2400) {
+      const c = this.ctx; if (!c) return;
+      const len = Math.floor(c.sampleRate * dur);
+      const buf = c.createBuffer(1, len, c.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 2;
+      const src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+      f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 0.8;
+      g.gain.value = vol;
+      src.buffer = buf; src.connect(f).connect(g).connect(c.destination); src.start();
+    },
+    play(kind) {
+      if (!S.prefs.sound || !this.ctx) return;
+      switch (kind) {
+        case 'select': this.tone(1500, 0.04, 'triangle', 0.05); break;
+        case 'card': this.noise(0.08, 0.22, 2600); break;
+        case 'meld': this.noise(0.06, 0.18, 1800); this.noise(0.06, 0.15, 2200); break;
+        case 'turn': this.tone(660, 0.18, 'sine', 0.1); this.tone(880, 0.25, 'sine', 0.1, 0.12); break;
+        case 'burraco': [523, 659, 784, 1047].forEach((f, i) => this.tone(f, 0.25, 'triangle', 0.1, i * 0.09)); break;
+        case 'error': this.tone(180, 0.18, 'square', 0.05); break;
+        case 'win': [523, 659, 784, 659, 1047].forEach((f, i) => this.tone(f, 0.3, 'triangle', 0.1, i * 0.12)); break;
+      }
+    },
+  };
+
+  /* ================= Preferenze grafiche ================= */
+  function applyPrefs() {
+    document.body.dataset.felt = S.prefs.felt;
+    document.body.dataset.back = S.prefs.back;
+    document.body.classList.toggle('bigcards', !!S.prefs.big);
+    store.set('bur_prefs', S.prefs);
+  }
+  applyPrefs();
+
+  /* ================= Connessione ================= */
   const socket = io();
   socket.on('connect', () => {
     S.connected = true;
@@ -47,13 +106,13 @@
     S.chat.push(m);
     if (S.chat.length > 100) S.chat.shift();
     if (S.modalKind === 'log') renderLogModal();
-    else if (S.room && m.seat !== S.room.you) { S.unread++; toast(`${m.name}: ${m.text}`); render(); }
+    else if (S.room && m.seat !== S.room.you) { S.unread++; toast(`💬 ${m.name}: ${m.text}`); render(); }
   });
 
   function emit(ev, data) {
     return new Promise((res) => {
       socket.emit(ev, data, (r) => {
-        if (r && !r.ok) toast(r.error, true);
+        if (r && !r.ok) { toast(r.error, true); Sound.play('error'); }
         res(r || { ok: false });
       });
     });
@@ -74,14 +133,23 @@
     if (game) {
       const ids = new Set(game.hand.map((c) => c.id));
       for (const id of [...S.selected]) if (!ids.has(id)) S.selected.delete(id);
-      S.newIds = new Set(prev && prev.handNo === game.handNo ? game.hand.filter((c) => !prev.hand.some((p) => p.id === c.id)).map((c) => c.id) : []);
-      const ev = JSON.stringify(game.lastEvent);
-      S.flashMeld = prev && JSON.stringify(prev.lastEvent) !== ev && game.lastEvent && game.lastEvent.meldId ? game.lastEvent.meldId : null;
+      const sameHand = prev && prev.handNo === game.handNo;
+      S.newIds = new Set(sameHand ? game.hand.filter((c) => !prev.hand.some((p) => p.id === c.id)).map((c) => c.id) : []);
+      syncHandOrder(game, sameHand);
+      const ev = game.lastEvent;
+      const newEvent = ev && (!prev || !prev.lastEvent || prev.lastEvent.n !== ev.n);
+      S.flashMeld = newEvent && ev.meldId ? ev.meldId : null;
+      S.animEvent = newEvent ? ev : null;
+      if (newEvent) eventSound(prev, game, ev);
       if (prev && game.turn === game.you && game.phase === 'draw' && (prev.turn !== game.you || prev.phase === 'handEnd')) {
         if (navigator.vibrate) navigator.vibrate(60);
+        Sound.play('turn');
       }
       if (game.phase === 'handEnd' && (!prev || prev.phase !== 'handEnd' || prev.handNo !== game.handNo)) {
-        setTimeout(showResult, 600);
+        setTimeout(showResult, 900);
+        const mine = game.handResult && game.handResult.teams.find((t) => t.members.includes(game.you));
+        const best = game.handResult && Math.max(...game.handResult.teams.map((t) => t.total));
+        if (mine && mine.total === best) setTimeout(() => Sound.play('win'), 500);
       } else if (game.phase !== 'handEnd' && S.modalKind === 'result') closeModal();
       else if (S.modalKind === 'result') showResult();
       document.title = game.turn === game.you && game.phase !== 'handEnd' ? '● Tocca a te · Burraco' : 'Burraco Online';
@@ -92,31 +160,60 @@
     render();
   }
 
-  /* ---------------- Carte ---------------- */
+  function eventSound(prev, game, ev) {
+    if (ev.type === 'meld' || ev.type === 'add') {
+      const before = prev && prev.teams.flatMap((t) => t.melds).find((m) => m.id === ev.meldId);
+      const now = game.teams.flatMap((t) => t.melds).find((m) => m.id === ev.meldId);
+      if (now && now.kind && (!before || !before.kind)) Sound.play('burraco'); else Sound.play('meld');
+    } else Sound.play('card');
+  }
+
+  /* ================= Carte ================= */
   const SUIT = { S: '♠', H: '♥', D: '♦', C: '♣' };
   const rankName = (r) => ({ 1: 'A', 11: 'J', 12: 'Q', 13: 'K' }[r] || String(r));
   const isWild = (c) => c.r === 0 || c.r === 2;
 
-  function cardHTML(c, cls = '', wild = false) {
-    if (c.r === 0) return `<div class="card joker ${cls}" data-card="${c.id}"><span class="ix">★<i>JK</i></span><span class="big">★</span></div>`;
+  function cardHTML(c, cls = '', attrs = '') {
+    if (c.r === 0) {
+      return `<div class="card joker ${cls}" data-card="${c.id}" ${attrs}><span class="ix">J<br>O<br>L<br>L<br>Y</span><span class="jk">🃏</span></div>`;
+    }
     const red = c.s === 'H' || c.s === 'D';
-    return `<div class="card ${red ? 'red' : ''} ${wild ? 'wildmark' : ''} ${cls}" data-card="${c.id}"><span class="ix">${rankName(c.r)}<i>${SUIT[c.s]}</i></span><span class="big">${SUIT[c.s]}</span></div>`;
+    const face = c.r >= 11 ? `<span class="face">${rankName(c.r)}<i>${SUIT[c.s]}</i></span>` : `<span class="pip">${SUIT[c.s]}</span>`;
+    return `<div class="card ${red ? 'red' : 'black'} ${c.r === 2 ? 'two' : ''} ${cls}" data-card="${c.id}" ${attrs}>
+      <span class="ix">${rankName(c.r)}<i>${SUIT[c.s]}</i></span>${face}<span class="ix br">${rankName(c.r)}<i>${SUIT[c.s]}</i></span></div>`;
   }
-  const backHTML = (cls = '') => `<div class="card back ${cls}"></div>`;
+  const backHTML = (cls = '', attrs = '') => `<div class="card back ${cls}" ${attrs}></div>`;
 
-  function sortHand(hand) {
+  function sortCards(cards, mode) {
     const suitOrder = { S: 0, H: 1, C: 2, D: 3 };
     const rk = (c) => (c.r === 1 ? 14 : c.r);
-    return hand.slice().sort((a, b) => {
+    return cards.slice().sort((a, b) => {
       const wa = isWild(a), wb = isWild(b);
       if (wa !== wb) return wa ? 1 : -1;
       if (wa && wb) return a.r - b.r || (suitOrder[a.s] || 0) - (suitOrder[b.s] || 0);
-      if (S.sortMode === 'suit') return suitOrder[a.s] - suitOrder[b.s] || rk(a) - rk(b);
-      return rk(a) - rk(b) || suitOrder[a.s] - suitOrder[b.s];
+      if (mode === 'rank') return rk(a) - rk(b) || suitOrder[a.s] - suitOrder[b.s];
+      return suitOrder[a.s] - suitOrder[b.s] || rk(a) - rk(b);
     });
   }
 
-  /* ---------------- UI di base ---------------- */
+  function syncHandOrder(game, sameHand) {
+    const ids = game.hand.map((c) => c.id);
+    const kept = sameHand ? S.handOrder.filter((id) => ids.includes(id)) : [];
+    if (S.sortMode !== 'manual' || kept.length === 0) {
+      S.handOrder = sortCards(game.hand, S.sortMode === 'rank' ? 'rank' : 'suit').map((c) => c.id);
+      if (S.sortMode === 'manual' && !sameHand) S.sortMode = 'suit';
+      return;
+    }
+    S.handOrder = kept.concat(ids.filter((id) => !kept.includes(id)));
+  }
+
+  function orderedHand() {
+    const g = S.game;
+    const byId = new Map(g.hand.map((c) => [c.id, c]));
+    return S.handOrder.map((id) => byId.get(id)).filter(Boolean);
+  }
+
+  /* ================= UI di base ================= */
   let toastTimer = null;
   function toast(msg, error = false) {
     const t = $('#toast');
@@ -149,10 +246,22 @@
       <h2>${esc(title || (p ? p.name : 'Regole personalizzate'))}</h2>
       ${p ? p.intro : '<p>Regole personalizzate per questa partita. Ecco il riepilogo completo:</p>'}
       ${R.describe(rules)}
-      ${R.HOW_TO}
+      ${HOW_TO}
       ${R.OTHER_VARIANTS}
     </div>`);
   }
+
+  const HOW_TO = `
+<h3>Come si gioca nell'app</h3>
+<ul>
+<li><b>Pescare</b>: tocca il tallone, oppure trascinalo nella tua mano. Per raccogliere gli scarti tocca il monte o trascinalo nella mano.</li>
+<li><b>Selezionare</b>: tocca le carte della mano (si alzano).</li>
+<li><b>Calare</b>: trascina le carte selezionate nella zona <i>“＋ Nuova combinazione”</i> del tuo tavolo, oppure premi <i>Cala</i>.</li>
+<li><b>Attaccare</b>: trascina le carte su una tua combinazione, oppure selezionale e tocca la combinazione.</li>
+<li><b>Scartare</b>: trascina una carta sul monte degli scarti, oppure fai doppio tocco sulla carta.</li>
+<li><b>Riordinare la mano</b>: trascina una carta in un altro punto della mano. Il pulsante ⇅ riordina per seme o per valore.</li>
+<li><b>Annulla</b> riporta il turno a subito dopo la pesca. Da ⚙️ puoi cambiare colore del tavolo, dorso delle carte, dimensione e suoni.</li>
+</ul>`;
 
   function rulesFormHTML(rules) {
     let html = '<div class="rules-form">';
@@ -183,25 +292,45 @@
     return p ? `<span class="badge gold">${esc(p.name)}</span>` : '<span class="badge gold">Regole personalizzate</span>';
   }
 
-  /* ---------------- Schermate ---------------- */
+  function settingsModal() {
+    const opt = (key, val, label, extra = '') => `<button class="swatch ${S.prefs[key] === val ? 'on' : ''}" data-act="pref" data-key="${key}" data-val="${val}" ${extra}>${label}</button>`;
+    openModal('settings', `<h2>Aspetto e suoni</h2>
+      <h4>Colore del tavolo</h4>
+      <div class="row">${opt('felt', 'verde', '<i class="sw felt-verde"></i>Verde')}${opt('felt', 'blu', '<i class="sw felt-blu"></i>Blu')}${opt('felt', 'bordeaux', '<i class="sw felt-bordeaux"></i>Bordeaux')}${opt('felt', 'antracite', '<i class="sw felt-antracite"></i>Antracite')}</div>
+      <h4>Dorso delle carte</h4>
+      <div class="row">${opt('back', 'rosso', '<i class="sw back-rosso"></i>Rosso')}${opt('back', 'blu', '<i class="sw back-blu"></i>Blu')}${opt('back', 'verde', '<i class="sw back-verde"></i>Verde')}${opt('back', 'nero', '<i class="sw back-nero"></i>Nero')}</div>
+      <h4>Carte</h4>
+      <div class="row">${opt('big', false, 'Normali')}${opt('big', true, 'Grandi')}</div>
+      <h4>Suoni</h4>
+      <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>`);
+  }
+
+  /* ================= Schermate ================= */
   function render() {
+    if (S.drag && S.drag.started) { S.pendingRender = true; return; }
+    S.pendingRender = false;
     const app = $('#app');
     if (S.screen === 'home') app.innerHTML = homeHTML();
     else if (S.screen === 'setup') app.innerHTML = setupHTML();
     else if (S.screen === 'lobby') app.innerHTML = lobbyHTML();
-    else if (S.screen === 'game') app.innerHTML = gameHTML();
-    if (!S.connected) app.insertAdjacentHTML('afterbegin', '<div class="status">Connessione al server…</div>');
+    else if (S.screen === 'game') {
+      app.innerHTML = gameHTML();
+      afterGameRender();
+    }
+    if (!S.connected) app.insertAdjacentHTML('afterbegin', '<div class="offline">Connessione al server…</div>');
   }
 
   function homeHTML() {
+    const fan = [{ r: 1, s: 'S' }, { r: 13, s: 'H' }, { r: 0, s: 'J' }, { r: 2, s: 'D' }, { r: 7, s: 'C' }]
+      .map((c, i) => cardHTML({ ...c, id: -1 - i }, 'logo-card', `style="--i:${i - 2}"`)).join('');
     return `<div class="page">
-      <div class="logo"><h1>Burraco</h1><div class="suits">♠<span class="r">♥</span>♣<span class="r">♦</span></div>
+      <div class="logo"><div class="logo-fan">${fan}</div><h1>Burraco</h1>
         <div class="muted">Gioca con gli amici o contro il computer</div></div>
       <div class="panel">
         <label class="field"><span>Il tuo nome</span><input type="text" id="name" maxlength="18" placeholder="Es. Simone" value="${esc(S.name)}"></label>
-        <div class="row" style="margin-top:10px"><button class="btn primary grow" data-act="goSetup">Nuova partita</button></div>
+        <div class="row" style="margin-top:10px"><button class="btn primary grow big" data-act="goSetup">Nuova partita</button></div>
         <div class="row" style="margin-top:10px">
-          <input type="text" id="joinCode" class="grow" maxlength="4" placeholder="Codice tavolo" value="${esc(S.pendingJoin)}" style="padding:10px;border-radius:8px;border:0;text-transform:uppercase;min-width:0">
+          <input type="text" id="joinCode" class="grow codein" maxlength="4" placeholder="Codice tavolo" value="${esc(S.pendingJoin)}">
           <button class="btn" data-act="join">Entra</button>
         </div>
         ${S.pendingJoin ? '<p class="muted">Sei stato invitato al tavolo: scrivi il tuo nome e premi Entra.</p>' : ''}
@@ -210,7 +339,7 @@
         <h2>Regole e varianti</h2>
         <p class="muted">Ogni preset è un punto di partenza: quando crei una partita puoi modificare ogni singola regola.</p>
         <div class="presets">${R.PRESETS.map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>
-        <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si usa l'app</button></div>
+        <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si gioca nell'app</button><button class="btn ghost small" data-act="settings">⚙️ Aspetto e suoni</button></div>
       </div>
     </div>`;
   }
@@ -230,16 +359,17 @@
       </div>
       <div class="panel">
         <h2>3. Gioca</h2>
-        <div class="row"><button class="btn primary grow" data-act="create">Crea tavolo e invita amici</button></div>
+        <div class="row"><button class="btn primary grow big" data-act="create">Crea tavolo e invita amici</button></div>
         <div class="row" style="margin-top:8px"><button class="btn grow" data-act="createBots">Gioca subito contro il computer</button></div>
         <p class="muted">Nel tavolo online potrai riempire i posti vuoti con giocatori del computer.</p>
       </div>
     </div>`;
   }
 
-  function seatTeamLabel(n, i) {
-    if (n === 4) return `<span class="teamtag">Coppia ${i % 2 === 0 ? 'A' : 'B'}</span>`;
-    return '';
+  const SEAT_COLORS = ['#f2c14e', '#64b5f6', '#ef7d7d', '#81c784'];
+  function avatarHTML(name, seat, isBot) {
+    const initial = esc((name || '?').trim().charAt(0).toUpperCase());
+    return `<span class="avatar" style="--c:${SEAT_COLORS[seat % 4]}">${isBot ? '🤖' : initial}</span>`;
   }
 
   function lobbyHTML() {
@@ -252,8 +382,10 @@
         right = `<div class="row">${r.you >= 0 ? `<button class="btn small" data-act="sit" data-seat="${i}">Siedi qui</button>` : ''}
           ${isHost ? `<button class="btn small" data-act="addBot" data-seat="${i}">+ Computer</button>` : ''}</div>`;
       } else if (s.isBot && isHost) right = `<button class="btn small danger" data-act="removeSeat" data-seat="${i}">Togli</button>`;
-      return `<div class="seat"><div class="who">${seatTeamLabel(r.n, i)}
-        ${s ? `<span class="dot ${s.connected ? '' : 'off'}"></span><b>${esc(s.name)}</b>${s.isBot ? ' 🤖' : ''}${me ? ' <span class="badge">tu</span>' : ''}${i === r.host ? ' <span class="badge">host</span>' : ''}` : '<span class="muted">Posto libero</span>'}
+      const team = r.n === 4 ? `<span class="teamtag">Coppia ${i % 2 === 0 ? 'A' : 'B'}</span>` : '';
+      return `<div class="seat">
+        <div class="who">${s ? avatarHTML(s.name, i, s.isBot) : '<span class="avatar empty">?</span>'}
+        <div>${s ? `<b>${esc(s.name)}</b>${me ? ' <span class="badge">tu</span>' : ''}${i === r.host ? ' <span class="badge">host</span>' : ''}${s.connected ? '' : ' <span class="muted">(offline)</span>'}` : '<span class="muted">Posto libero</span>'}<br>${team}</div>
         </div>${right}</div>`;
     }).join('');
     const full = r.seats.every(Boolean);
@@ -282,34 +414,59 @@
     </div>`;
   }
 
-  /* ---------------- Tavolo di gioco ---------------- */
+  /* ================= Tavolo di gioco ================= */
   function teamName(g, t) {
-    const names = t.members.map((s) => (s === g.you ? 'Tu' : g.players[s].name));
-    return names.join(' & ');
+    return t.members.map((s) => (s === g.you ? 'Tu' : g.players[s].name)).join(' & ');
   }
 
-  function meldHTML(m, clickable) {
+  function meldHTML(m, mine) {
     const short = { clean: 'Pulito', dirty: 'Sporco', semi: 'Semi', real13: '+500', real14: '+1000' }[m.kind] || '';
-    return `<div class="meld ${m.kind ? 'burraco ' + m.kind : ''} ${S.flashMeld === m.id ? 'flash' : ''}" ${clickable ? `data-meld="${m.id}"` : ''} title="${esc(m.label || '')}">
-      ${m.cards.map((c, i) => cardHTML(c, 'mini', m.wild[i])).join('')}
-      ${m.kind ? `<span class="tag">${short}</span>` : ''}</div>`;
+    const attrs = mine ? `data-meld="${m.id}" data-drop="meld"` : '';
+    return `<div class="meld ${m.kind ? 'burraco ' + m.kind : ''} ${S.flashMeld === m.id ? 'flash' : ''} ${m.type === 'set' ? 'set' : ''}" ${attrs} title="${esc(m.label || '')}">
+      ${m.cards.map((c, i) => cardHTML(c, `mini ${m.wild[i] ? 'wildmark' : ''}`)).join('')}
+      ${m.kind ? `<span class="tag">${short}</span>` : `<span class="cnt">${m.length}</span>`}</div>`;
   }
 
   function statusText(g) {
     const me = g.you;
     if (g.phase === 'handEnd') return g.over ? 'Partita terminata' : 'Smazzata terminata';
     const cur = g.players[g.turn];
-    if (g.turn !== me) return `Turno di <b>${esc(cur.name)}</b>${cur.isBot ? ' 🤖' : ''} · ${g.phase === 'draw' ? 'pesca…' : 'gioca…'}${g.lastTurn ? ' · <b>ultimo giro</b>' : ''}`;
+    if (g.turn !== me) return `Turno di <b>${esc(cur.name)}</b>${g.lastTurn ? ' · <b>ultimo giro</b>' : ''}`;
     if (g.phase === 'draw') {
-      if (g.mustDraw) return 'Tocca a te: <b>devi pescare dal tallone</b>';
-      if (g.cfg.pile === 'closed' && g.discardCount) return 'Tocca a te: pesca, oppure seleziona le carte da combinare con la carta in cima e tocca gli scarti';
-      return 'Tocca a te: <b>pesca</b> dal tallone o <b>raccogli</b> gli scarti';
+      if (g.mustDraw) return 'Tocca a te: <b>pesca dal tallone</b>';
+      if (g.cfg.pile === 'closed' && g.discardCount) return 'Tocca a te: pesca, o seleziona carte da combinare con la carta in cima e prendi lo scarto';
+      return 'Tocca a te: <b>pesca</b> o <b>raccogli</b> gli scarti';
     }
     const myTeam = g.teams.find((t) => t.members.includes(me));
-    let tip = 'Cala, attacca o <b>scarta</b> per finire il turno';
-    if (g.hand.length <= 3 && myTeam && myTeam.pozzettoTaken && !myTeam.canClose) tip += ` · per chiudere ti serve ${g.cfg.closeNeeds === 'clean' ? `una ${g.cfg.burracoName} pulita` : `un ${g.cfg.burracoName}`}`;
+    let tip = 'Cala, attacca e <b>scarta</b>';
+    if (myTeam && myTeam.canClose) tip = 'Puoi <b>chiudere</b>: cala tutto e scarta l\'ultima carta';
+    else if (g.hand.length <= 3 && myTeam && myTeam.pozzettoTaken) tip += ` · per chiudere serve ${g.cfg.closeNeeds === 'clean' ? `una ${g.cfg.burracoName} pulita` : `un ${g.cfg.burracoName}`}`;
     if (g.lastTurn) tip += ' · <b>ultimo turno!</b>';
     return tip;
+  }
+
+  /** posizione al tavolo degli altri giocatori rispetto a me */
+  function seatPositions(g) {
+    const me = g.you < 0 ? 0 : g.you;
+    const rel = (k) => (me + k) % g.n;
+    if (g.n === 4) return [[rel(1), 'left'], [rel(2), 'top'], [rel(3), 'right']];
+    if (g.n === 3) return [[rel(1), 'left'], [rel(2), 'right']];
+    return [[rel(1), 'top']];
+  }
+
+  function seatHTML(g, seat, pos, myTeam) {
+    const p = g.players[seat];
+    const t = g.teams.find((x) => x.members.includes(seat));
+    const partner = myTeam && myTeam.members.includes(seat);
+    const turn = g.turn === seat && g.phase !== 'handEnd';
+    const fan = Array.from({ length: Math.min(p.handCount, 7) }, (_, i) => backHTML('tiny', `style="--i:${i}"`)).join('');
+    return `<div class="seatchip pos-${pos} ${turn ? 'turn' : ''} ${partner ? 'partner' : ''}" data-seat="${seat}">
+      ${avatarHTML(p.name, seat, p.isBot)}
+      <div class="sinfo"><b>${esc(p.name)}</b>
+        <span class="smeta">${partner ? 'compagno · ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` · ${g.cfg.pozzettoName} ✓` : ''}</span></div>
+      <div class="minifan">${fan}</div>
+      ${turn ? '<span class="thinking"><i></i><i></i><i></i></span>' : ''}
+    </div>`;
   }
 
   function gameHTML() {
@@ -319,83 +476,177 @@
     const myTurn = g.turn === me && g.phase !== 'handEnd';
     const myTeam = g.teams.find((t) => t.members.includes(me));
     const P = g.cfg.pozzettoName;
+    const canDraw = myTurn && g.phase === 'draw';
+    const playing = myTurn && g.phase === 'play';
 
     // punteggi
     let scores;
-    if (g.n === 3) scores = g.players.map((p) => `<span class="sc ${p.seat === me ? 'me' : ''}">${esc(p.seat === me ? 'Tu' : p.name)}: <b>${g.scores[p.seat]}</b></span>`).join('');
-    else scores = g.teams.map((t) => `<span class="sc ${t === myTeam ? 'me' : ''}">${esc(teamName(g, t))}: <b>${g.scores[t.members[0]]}</b></span>`).join('');
-    scores += `<span class="sc">obiettivo ${g.cfg.target}</span>`;
+    if (g.n === 3) scores = g.players.map((p) => `<span class="sc ${p.seat === me ? 'me' : ''}">${esc(p.seat === me ? 'Tu' : p.name)} <b>${g.scores[p.seat]}</b></span>`).join('');
+    else scores = g.teams.map((t) => `<span class="sc ${t === myTeam ? 'me' : ''}">${esc(teamName(g, t))} <b>${g.scores[t.members[0]]}</b></span>`).join('');
 
-    // avversari / compagni
-    const order = [];
-    for (let k = 1; k < g.n; k++) order.push((me + k) % g.n);
-    const opps = order.map((s) => {
-      const p = g.players[s];
-      const partner = myTeam && myTeam.members.includes(s);
-      return `<div class="opp ${g.turn === s && g.phase !== 'handEnd' ? 'turn' : ''}">${partner ? '🤝 ' : ''}${esc(p.name)}${p.isBot ? ' 🤖' : ''} <span class="cnt">${p.handCount}</span></div>`;
+    const seats = seatPositions(g).map(([s, pos]) => seatHTML(g, s, pos, myTeam)).join('');
+
+    // centro: tallone, pozzetti, scarti
+    const pileAll = g.cfg.pile === 'open' ? g.discard : g.discard.slice(-1);
+    const pileCards = pileAll.map((c, i) => {
+      const top = i === pileAll.length - 1;
+      return cardHTML(c, `${top ? 'top' : ''} ${top && S.animEvent && S.animEvent.type === 'discard' ? 'landed' : ''}`, top && canDraw && !g.mustDraw ? 'data-drag="pile"' : '');
     }).join('');
-
-    // centro
-    const canDraw = myTurn && g.phase === 'draw';
-    const pileCards = g.cfg.pile === 'open'
-      ? g.discard.map((c) => cardHTML(c)).join('')
-      : (g.discard.length ? `${g.discardCount > 1 ? backHTML() : ''}${cardHTML(g.discard[0])}<span class="muted" style="align-self:center;padding-left:8px">${g.discardCount} carte</span>` : '');
+    const stockLayers = Math.min(3, Math.ceil(g.stockCount / 15));
     const center = `<div class="center">
-      <div class="stack ${canDraw && g.stockCount ? 'clickable' : ''}" data-act="${canDraw ? 'draw' : ''}">${g.stockCount ? backHTML() : '<div class="card" style="opacity:.2"></div>'}<span>Tallone ${g.stockCount}</span></div>
-      ${g.pozzetti.length ? `<div class="stack"><div class="pozz">${g.pozzetti.map(() => backHTML()).join('')}</div><span>${g.pozzetti.length} ${g.pozzetti.length === 1 ? P : (P === 'morto' ? 'morti' : 'pozzetti')}</span></div>` : ''}
-      <div class="pile ${canDraw && g.discardCount && !g.mustDraw ? 'clickable' : ''}" data-act="${canDraw ? 'takePile' : ''}">
-        <div class="muted" style="font-size:11px">Scarti ${g.cfg.pile === 'closed' ? '(chiusi)' : ''}</div>
-        <div class="cards">${pileCards || '<span class="empty">vuoto</span>'}</div>
-      </div></div>`;
+      <div class="stock ${canDraw && (g.stockCount || g.pozzetti.length) ? 'active' : ''}" ${canDraw ? 'data-act="draw" data-drag="stock"' : ''}>
+        <div class="deck">${g.stockCount ? Array.from({ length: stockLayers }, (_, i) => backHTML('', `style="--l:${i}"`)).join('') : '<div class="card slot"></div>'}</div>
+        <span class="lbl">Tallone · ${g.stockCount}</span>
+      </div>
+      ${g.pozzetti.length ? `<div class="pozz"><div class="pz">${g.pozzetti.map((n, i) => backHTML('', `style="--l:${i}"`)).join('')}</div><span class="lbl">${g.pozzetti.length === 1 ? cap(P) : (P === 'morto' ? 'Morti' : 'Pozzetti')}</span></div>` : ''}
+      <div class="pile ${canDraw && g.discardCount && !g.mustDraw ? 'active' : ''} ${g.cfg.pile}" data-drop="discard" ${canDraw && !g.mustDraw ? 'data-act="takePile"' : ''}>
+        <div class="pcards">${pileCards || '<div class="card slot"><span>Scarti</span></div>'}</div>
+        <span class="lbl">Scarti${g.discardCount ? ' · ' + g.discardCount : ''}${g.cfg.pile === 'closed' ? ' (chiusi)' : ''}</span>
+      </div>
+    </div>`;
 
-    // zone squadre
-    const targetable = myTurn && ((g.phase === 'play' && S.selected.size > 0) || (g.phase === 'draw' && g.cfg.pile === 'closed' && g.discardCount));
-    const zones = g.teams.slice().sort((a, b) => (a === myTeam ? 1 : 0) - (b === myTeam ? 1 : 0)).map((t) => {
+    // giochi delle squadre
+    const zone = (t) => {
       const mine = t === myTeam;
-      const label = mine ? (t.members.length > 1 ? `Noi (${esc(teamName(g, t))})` : 'I tuoi giochi') : esc(teamName(g, t));
-      const flags = [t.pozzettoTaken ? `${P} preso ✓` : `${P} da prendere`];
+      const label = mine ? (t.members.length > 1 ? `Noi · ${esc(teamName(g, t))}` : 'I tuoi giochi') : esc(teamName(g, t));
+      const flags = [t.pozzettoTaken ? `${P} preso` : `${P} da prendere`];
       if (t.canClose) flags.push('può chiudere');
-      return `<div class="teamzone ${mine ? 'mine' : ''}">
-        <div class="hdr"><b>${label}</b><span class="muted">${flags.join(' · ')}</span></div>
-        <div class="melds ${mine && targetable ? 'targetable' : ''}">${t.melds.length ? t.melds.map((m) => meldHTML(m, mine)).join('') : '<span class="empty">Nessuna combinazione calata</span>'}</div>
+      const targetable = mine && (playing || (canDraw && g.cfg.pile === 'closed'));
+      const newSlot = mine && (playing || (canDraw && g.cfg.pile === 'closed'))
+        ? `<div class="meld newmeld" data-drop="newmeld" ${playing ? 'data-act="meld"' : ''}><span>＋ Nuova<br>combinazione</span></div>` : '';
+      return `<div class="teamzone ${mine ? 'mine' : 'theirs'}">
+        <div class="hdr"><b>${label}</b><span>${flags.join(' · ')}</span></div>
+        <div class="melds ${targetable ? 'targetable' : ''}">${t.melds.map((m) => meldHTML(m, mine)).join('')}${newSlot}${!t.melds.length && !newSlot ? '<span class="empty">Nessuna combinazione</span>' : ''}</div>
       </div>`;
-    }).join('');
+    };
+    const others = g.teams.filter((t) => t !== myTeam).map(zone).join('');
+    const mineZone = myTeam ? zone(myTeam) : '';
 
     // azioni
     const sel = S.selected.size;
     let actions = '';
     if (g.phase === 'handEnd') actions = '<button class="btn primary" data-act="result">Vedi risultati</button>';
-    else if (myTurn && g.phase === 'draw') {
+    else if (canDraw) {
       actions = `<button class="btn primary" data-act="draw" ${g.stockCount || g.pozzetti.length ? '' : 'disabled'}>Pesca</button>
-        <button class="btn" data-act="takePile" ${g.discardCount && !g.mustDraw ? '' : 'disabled'}>Raccogli scarti${g.discardCount ? ` (${g.discardCount})` : ''}</button>`;
-    } else if (myTurn && g.phase === 'play') {
-      actions = `<button class="btn primary" data-act="meld" ${sel >= 3 ? '' : 'disabled'}>Cala${sel ? ` (${sel})` : ''}</button>
+        <button class="btn" data-act="takePile" ${g.discardCount && !g.mustDraw ? '' : 'disabled'}>Raccogli${g.discardCount ? ` (${g.discardCount})` : ''}</button>`;
+    } else if (playing) {
+      actions = `<button class="btn primary" data-act="meld" ${sel >= 3 ? '' : 'disabled'}>Cala${sel ? ` ${sel}` : ''}</button>
         <button class="btn" data-act="discard" ${sel === 1 ? '' : 'disabled'}>Scarta</button>
-        <button class="btn ghost" data-act="undo" ${g.canUndo ? '' : 'disabled'}>Annulla</button>`;
+        ${g.canUndo ? '<button class="btn ghost" data-act="undo">↶</button>' : ''}`;
     }
-    actions += `<button class="btn ghost small" data-act="sort">${S.sortMode === 'suit' ? '⇅ Seme' : '⇅ Valore'}</button>`;
-    if (sel) actions += '<button class="btn ghost small" data-act="clearSel">✕</button>';
+    const sortLbl = S.sortMode === 'rank' ? '⇅ Valore' : S.sortMode === 'suit' ? '⇅ Seme' : '⇅ Ordina';
 
-    const hand = sortHand(g.hand).map((c) => cardHTML(c, `${S.selected.has(c.id) ? 'sel' : ''} ${S.newIds.has(c.id) ? 'newc' : ''}`)).join('');
-
-    return `<div class="game">
+    return `<div class="game ${myTurn ? 'myturn' : ''}">
       <div class="topbar">
-        <span class="title">Tavolo <b>${esc(r.code)}</b> · Smazzata ${g.handNo}</span>
+        <span class="title">Tavolo <b>${esc(r.code)}</b> · Smazzata ${g.handNo} · a ${g.cfg.target}</span>
         <button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
-        <button class="iconbtn" data-act="log" title="Chat e cronaca">💬${S.unread ? ` ${S.unread}` : ''}</button>
+        <button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>
         <button class="iconbtn" data-act="scores" title="Punteggi">🏆</button>
+        <button class="iconbtn" data-act="settings" title="Aspetto e suoni">⚙️</button>
         <button class="iconbtn" data-act="leave" title="Esci">⏏</button>
       </div>
       <div class="scorebar">${scores}</div>
-      <div class="opps">${opps}</div>
-      <div class="table">${center}${zones}</div>
-      <div class="status ${myTurn ? 'myturn' : ''}">${statusText(g)}</div>
-      <div class="actions">${actions}</div>
-      <div class="handwrap"><div class="hand">${hand || '<span class="empty">Nessuna carta</span>'}</div></div>
+      <div class="seats-row n${g.n}">${seats}</div>
+      <div class="felt" id="felt">${others}${center}${mineZone}</div>
+      <div class="statusbar ${myTurn ? 'on' : ''}">
+        <span class="msg">${statusText(g)}</span>
+        <div class="btns">${actions}<button class="btn ghost small" data-act="sort">${sortLbl}</button>${sel ? '<button class="btn ghost small" data-act="clearSel">✕</button>' : ''}</div>
+      </div>
+      <div class="handwrap" data-drop="hand"><div class="hand" id="hand">${handHTML(g)}</div></div>
     </div>`;
   }
 
-  /* ---------------- Modali di gioco ---------------- */
+  function handHTML(g) {
+    const cards = orderedHand();
+    if (!cards.length) return '<span class="empty">Nessuna carta</span>';
+    return cards.map((c) => cardHTML(c, `${S.selected.has(c.id) ? 'sel' : ''} ${S.newIds.has(c.id) ? 'newc' : ''}`)).join('');
+  }
+
+  /** dispone la mano a ventaglio su una o due file, in base alla larghezza */
+  function layoutHand() {
+    const hand = $('#hand');
+    if (!hand) return;
+    const cards = $$('.card', hand);
+    if (!cards.length) return;
+    const W = hand.clientWidth - 8;
+    const cw = cards[0].offsetWidth;
+    const rows = cards.length * cw * 0.42 + cw > W && cards.length > 8 ? 2 : 1;
+    const perRow = Math.ceil(cards.length / rows);
+    const step = Math.min(cw * 0.78, (W - cw) / Math.max(1, perRow - 1));
+    hand.style.setProperty('--step', `${step}px`);
+    hand.classList.toggle('two-rows', rows === 2);
+    cards.forEach((c, i) => {
+      const row = rows === 2 && i >= perRow ? 1 : 0;
+      const idx = row ? i - perRow : i;
+      const n = row ? cards.length - perRow : perRow;
+      const offset = (W - (cw + step * (n - 1))) / 2;
+      const mid = (n - 1) / 2;
+      const rot = n > 1 ? ((idx - mid) / mid) * Math.min(6, n * 0.6) : 0;
+      const lift = n > 1 ? Math.abs((idx - mid) / mid) ** 2 * 6 : 0;
+      c.style.left = `${offset + idx * step + 4}px`;
+      c.style.top = `${row * (cw * 1.05) + lift}px`;
+      c.style.setProperty('--rot', `${rot}deg`);
+      c.style.zIndex = String(i + 1);
+    });
+    hand.style.height = `${(rows === 2 ? cw * 1.05 : 0) + cw * 1.45 + 14}px`;
+  }
+
+  function afterGameRender() {
+    layoutHand();
+    const felt = $('#felt');
+    if (felt && S.feltScroll != null) felt.scrollTop = S.feltScroll;
+    const pc = $('.pile .pcards');
+    if (pc) pc.scrollLeft = pc.scrollWidth;
+    if (S.animEvent) { animateEvent(S.animEvent); S.animEvent = null; }
+  }
+
+  /* ================= Animazioni ================= */
+  function rectOf(el) { return el && el.getBoundingClientRect(); }
+
+  function fly(fromEl, toEl, html, { delay = 0, dur = 420 } = {}) {
+    const a = rectOf(fromEl), b = rectOf(toEl);
+    if (!a || !b || !a.width || !b.width) return;
+    const el = document.createElement('div');
+    el.className = 'flyer';
+    el.innerHTML = html;
+    document.body.appendChild(el);
+    const card = el.firstElementChild;
+    const w = card.offsetWidth || 50;
+    const sx = a.left + a.width / 2 - w / 2, sy = a.top + a.height / 2 - w * 0.7;
+    const ex = b.left + b.width / 2 - w / 2, ey = b.top + b.height / 2 - w * 0.7;
+    el.style.transform = `translate(${sx}px, ${sy}px) scale(.8)`;
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.style.transition = `transform ${dur}ms cubic-bezier(.2,.8,.2,1), opacity 150ms`;
+      el.style.opacity = '1';
+      el.style.transform = `translate(${ex}px, ${ey}px) scale(1) rotate(${(Math.random() - 0.5) * 16}deg)`;
+    }, 20 + delay);
+    setTimeout(() => el.remove(), dur + delay + 120);
+  }
+
+  function animateEvent(ev) {
+    const g = S.game;
+    if (!g) return;
+    const mine = ev.seat === g.you;
+    const seatEl = mine ? $('#hand') : $(`.seatchip[data-seat="${ev.seat}"]`);
+    const stock = $('.stock .deck');
+    const pile = $('.pile .pcards');
+    if (ev.type === 'draw' && !mine) fly(stock, seatEl, backHTML());
+    else if (ev.type === 'draw' && mine) fly(stock, $(`#hand .card.newc`) || seatEl, backHTML());
+    else if (ev.type === 'discard' && !mine) {
+      const top = $('.pile .card.top');
+      const c = g.discard[g.discard.length - 1];
+      if (top) top.style.visibility = 'hidden';
+      fly(seatEl, top || pile, c ? cardHTML(c) : backHTML(), { dur: 380 });
+      setTimeout(() => { if (top) top.style.visibility = ''; }, 420);
+    } else if (ev.type === 'pile') {
+      for (let i = 0; i < Math.min(ev.count || 1, 5); i++) fly(pile, seatEl, backHTML(), { delay: i * 60 });
+    } else if (ev.type === 'pozzetto') {
+      for (let i = 0; i < 4; i++) fly($('.pozz .pz') || stock, seatEl, backHTML(), { delay: i * 70 });
+    }
+  }
+
+  /* ================= Modali di gioco ================= */
   function showResult() {
     const g = S.game;
     if (!g || !g.handResult) return;
@@ -410,16 +661,16 @@
     let footer;
     if (g.over) {
       footer = `<div class="winner">🏆 Vince ${esc(g.winners.map((s) => (s === g.you ? 'Tu' : g.players[s].name)).join(' & '))}!</div>
-        ${S.room.isHost ? '<button class="btn primary" data-act="ready" style="width:100%">Nuova partita con le stesse regole</button>' : '<p class="muted">L\'host può avviare una nuova partita.</p>'}`;
+        ${S.room.isHost ? '<button class="btn primary big" data-act="ready" style="width:100%">Nuova partita con le stesse regole</button>' : '<p class="muted">L\'host può avviare una nuova partita.</p>'}`;
     } else {
-      footer = `<button class="btn primary" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Pronto ✓' : 'Prossima smazzata'}</button>
+      footer = `<button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Pronto ✓' : 'Prossima smazzata'}</button>
         ${waiting.length && imReady ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : ''}`;
     }
     openModal('result', `<div class="result">
       <h2>Fine smazzata ${g.handNo}</h2><p>${reason}</p>
       <table><tr><th></th>${cols}</tr>
       ${row('Carte calate', (t) => t.meldPts)}
-      ${row(`Bonus ${g.cfg.burracoName}`, (t) => `${t.bonusPts}${t.burraco.length ? `<br><span class="muted" style="font-size:11px">${t.burraco.map((b) => esc(b.label)).join(', ')}</span>` : ''}`)}
+      ${row(`Bonus ${g.cfg.burracoName}`, (t) => `${t.bonusPts}${t.burraco.length ? `<br><span class="muted small">${t.burraco.map((b) => esc(b.label)).join(', ')}</span>` : ''}`)}
       ${row('Chiusura', (t) => t.closePts)}
       ${row(cap(P), (t) => t.pozPts)}
       ${row('Carte in mano', (t) => t.handPts)}
@@ -443,7 +694,8 @@
     const chat = S.chat.map((m) => `<div class="chat"><b>${esc(m.name)}:</b> ${esc(m.text)}</div>`).join('');
     openModal('log', `<h2>Chat</h2>
       <div class="log" id="chatlog">${chat || '<div class="muted">Nessun messaggio</div>'}</div>
-      <form id="chatform" class="row" style="margin:8px 0"><input id="chatin" class="grow" maxlength="140" placeholder="Scrivi un messaggio" style="padding:9px;border-radius:8px;border:1px solid #ccc;min-width:0"><button class="btn primary">Invia</button></form>
+      <form id="chatform" class="row" style="margin:8px 0"><input id="chatin" class="grow" maxlength="140" placeholder="Scrivi un messaggio" autocomplete="off"><button class="btn primary">Invia</button></form>
+      <div class="row quick">${['Bella!', 'Tocca a te 😉', 'Che fortuna!', 'Ops…', 'Ben giocato 👏'].map((t) => `<button class="btn small" data-act="quickChat" data-text="${esc(t)}">${esc(t)}</button>`).join('')}</div>
       <h2>Cronaca</h2><div class="log">${g ? g.log.slice().reverse().map((l) => `<div>${esc(l)}</div>`).join('') : ''}</div>`);
     const cl = $('#chatlog');
     cl.scrollTop = cl.scrollHeight;
@@ -456,13 +708,11 @@
       ${presetsHTML(r)}
       <p>${rulesStatus(r)}</p>
       ${rulesFormHTML(r)}
-      <div class="row" style="margin-top:12px"><button class="btn ghost" style="color:#333;border-color:#999" data-act="previewEdit">📜 Anteprima regole</button>
+      <div class="row" style="margin-top:12px"><button class="btn ghost dark" data-act="previewEdit">📜 Anteprima regole</button>
       <button class="btn primary grow" data-act="applyRules">Applica</button></div>`);
   }
 
-  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-
-  /* ---------------- Azioni ---------------- */
+  /* ================= Azioni ================= */
   function requireName() {
     const el = $('#name');
     if (el) S.name = el.value.trim();
@@ -498,6 +748,10 @@
     else { S.rules = n; store.set('bur_rules', n); render(); }
   }
 
+  function selectedIds() {
+    return S.handOrder.filter((id) => S.selected.has(id));
+  }
+
   const handlers = {
     goSetup() { if (!requireName()) return; S.screen = 'setup'; render(); },
     goHome() { S.screen = 'home'; render(); },
@@ -508,7 +762,18 @@
       joinRoom(code);
     },
     presetRules(el) { const p = presetById(el.dataset.id); rulesModal(p.rules, p.name); },
-    howto() { openModal('rules', `<div class="rules-text">${R.HOW_TO}${R.OTHER_VARIANTS}</div>`); },
+    howto() { openModal('rules', `<div class="rules-text">${HOW_TO}${R.OTHER_VARIANTS}</div>`); },
+    settings: settingsModal,
+    pref(el) {
+      const key = el.dataset.key;
+      let val = el.dataset.val;
+      if (val === 'true') val = true; else if (val === 'false') val = false;
+      S.prefs[key] = val;
+      applyPrefs();
+      settingsModal();
+      if (S.screen === 'game') render();
+      if (key === 'sound' && val) { Sound.unlock(); Sound.play('turn'); }
+    },
     preset(el) {
       const p = presetById(el.dataset.id);
       if (S.modalKind === 'editRules') { S.editRules = R.normalize({ ...p.rules, players: S.editRules.players }); editRulesModal(); return; }
@@ -541,6 +806,7 @@
     async applyRules() { const r = await emit('configure', { rules: S.editRules }); if (r.ok) { closeModal(); toast('Regole aggiornate'); } },
     gameRules() { rulesModal(S.game.cfg.rules); },
     log() { renderLogModal(); render(); },
+    quickChat(el) { emit('chat', { text: el.dataset.text }); },
     scores: showScores,
     result: showResult,
     ready() { emit('ready'); },
@@ -549,17 +815,183 @@
       const g = S.game;
       if (g.cfg.pile === 'closed') {
         if (!S.selected.size) return toast('Seleziona le carte della mano da combinare con la carta in cima (oppure tocca una tua combinazione)', true);
-        act('takePile', { cardIds: [...S.selected] });
+        act('takePile', { cardIds: selectedIds() });
       } else act('takePile');
     },
-    meld() { act('meld', { cardIds: [...S.selected] }); },
+    meld() {
+      if (S.selected.size < 3) return toast('Seleziona almeno 3 carte da calare');
+      act('meld', { cardIds: selectedIds() });
+    },
     discard() { if (S.selected.size === 1) act('discard', { cardId: [...S.selected][0] }); },
     undo() { act('undo'); },
-    sort() { S.sortMode = S.sortMode === 'suit' ? 'rank' : 'suit'; store.set('bur_sort', S.sortMode); render(); },
+    sort() {
+      S.sortMode = S.sortMode === 'suit' ? 'rank' : 'suit';
+      store.set('bur_sort', S.sortMode);
+      S.handOrder = sortCards(S.game.hand, S.sortMode).map((c) => c.id);
+      render();
+    },
     clearSel() { S.selected.clear(); render(); },
   };
 
+  /* ================= Trascinamento (mouse e touch) ================= */
+  function dropTargetAt(x, y) {
+    const el = document.elementFromPoint(x, y);
+    return el && el.closest('[data-drop]');
+  }
+
+  function dropAllowed(d, target) {
+    if (!target) return false;
+    const g = S.game;
+    const kind = target.dataset.drop;
+    const myTurn = g.turn === g.you;
+    if (d.src === 'hand') {
+      if (kind === 'hand') return true;
+      if (!myTurn || g.phase !== 'play') return false;
+      if (kind === 'discard') return d.ids.length === 1;
+      return kind === 'meld' || kind === 'newmeld';
+    }
+    // tallone o scarti verso la mano / i giochi
+    if (!myTurn || g.phase !== 'draw') return false;
+    if (kind === 'hand') return true;
+    return d.src === 'pile' && g.cfg.pile === 'closed' && (kind === 'meld' || kind === 'newmeld');
+  }
+
+  function startDrag(d) {
+    const g = S.game;
+    d.started = true;
+    let html;
+    if (d.src === 'hand') {
+      const id = Number(d.el.dataset.card);
+      d.ids = S.selected.has(id) ? selectedIds() : [id];
+      const byId = new Map(g.hand.map((c) => [c.id, c]));
+      html = d.ids.map((cid, i) => cardHTML(byId.get(cid), '', `style="--i:${i}"`)).join('');
+      d.ids.forEach((cid) => { const el = $(`#hand [data-card="${cid}"]`); if (el) el.classList.add('ghosted'); });
+    } else if (d.src === 'stock') html = backHTML();
+    else {
+      const top = g.discard[g.discard.length - 1];
+      html = cardHTML(top) + (g.discardCount > 1 ? backHTML('', 'style="--i:1"') : '');
+    }
+    const ghost = document.createElement('div');
+    ghost.className = 'drag-ghost';
+    ghost.innerHTML = html;
+    document.body.appendChild(ghost);
+    d.ghost = ghost;
+    document.body.classList.add('dragging', `drag-${d.src}`);
+    Sound.play('select');
+  }
+
+  function moveDrag(d, x, y) {
+    d.x = x; d.y = y;
+    const w = d.ghost.firstElementChild.offsetWidth;
+    d.ghost.style.transform = `translate(${x - w / 2}px, ${y - w * 1.1}px) rotate(-4deg)`;
+    const t = dropTargetAt(x, y);
+    const ok = dropAllowed(d, t) ? t : null;
+    if (ok !== d.hover) {
+      if (d.hover) d.hover.classList.remove('drop-hover');
+      if (ok) ok.classList.add('drop-hover');
+      d.hover = ok;
+    }
+    if (d.src === 'hand' && ok && ok.dataset.drop === 'hand') showInsertMarker(d, x, y);
+    else hideInsertMarker();
+  }
+
+  function insertIndex(d, x, y) {
+    const cards = $$('#hand .card').filter((c) => !d.ids.includes(Number(c.dataset.card)));
+    let best = null, bestDist = Infinity;
+    for (const c of cards) {
+      const r = c.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      const dist = Math.abs(cx - x) + Math.abs(cy - y) * 2;
+      if (dist < bestDist) { bestDist = dist; best = { c, after: x > cx }; }
+    }
+    if (!best) return { id: null, after: true };
+    return { id: Number(best.c.dataset.card), after: best.after, el: best.c };
+  }
+
+  function showInsertMarker(d, x, y) {
+    const ins = insertIndex(d, x, y);
+    let m = $('#insmark');
+    if (!m) { m = document.createElement('div'); m.id = 'insmark'; document.body.appendChild(m); }
+    if (!ins.el) { m.style.display = 'none'; return; }
+    const r = ins.el.getBoundingClientRect();
+    m.style.display = 'block';
+    m.style.left = `${(ins.after ? r.right : r.left) - 2}px`;
+    m.style.top = `${r.top}px`;
+    m.style.height = `${r.height}px`;
+  }
+  function hideInsertMarker() { const m = $('#insmark'); if (m) m.style.display = 'none'; }
+
+  function endDrag(d) {
+    hideInsertMarker();
+    if (d.ghost) d.ghost.remove();
+    document.body.classList.remove('dragging', 'drag-hand', 'drag-stock', 'drag-pile');
+    $$('.ghosted').forEach((e) => e.classList.remove('ghosted'));
+    const target = d.hover;
+    if (target) target.classList.remove('drop-hover');
+    S.justDragged = Date.now();
+    S.drag = null;
+    if (!target) { if (S.pendingRender) render(); return; }
+    const kind = target.dataset.drop;
+    if (d.src === 'hand') {
+      if (kind === 'hand') {
+        const ins = insertIndex(d, d.x, d.y);
+        const rest = S.handOrder.filter((id) => !d.ids.includes(id));
+        let at = ins.id == null ? rest.length : rest.indexOf(ins.id) + (ins.after ? 1 : 0);
+        rest.splice(at, 0, ...d.ids);
+        S.handOrder = rest;
+        S.sortMode = 'manual';
+        Sound.play('select');
+        render();
+        return;
+      }
+      if (S.pendingRender) render();
+      if (kind === 'discard') act('discard', { cardId: d.ids[0] });
+      else if (kind === 'meld') act('add', { meldId: Number(target.dataset.meld), cardIds: d.ids });
+      else if (kind === 'newmeld') {
+        if (d.ids.length < 3) { toast('Per calare servono almeno 3 carte: selezionale e trascinale insieme'); return; }
+        act('meld', { cardIds: d.ids });
+      }
+      return;
+    }
+    if (S.pendingRender) render();
+    if (d.src === 'stock') act('draw');
+    else if (kind === 'hand') handlers.takePile();
+    else if (kind === 'meld') act('takePile', { meldId: Number(target.dataset.meld), cardIds: selectedIds() });
+    else if (kind === 'newmeld') act('takePile', { cardIds: selectedIds() });
+  }
+
+  document.addEventListener('pointerdown', (e) => {
+    Sound.unlock();
+    if (e.button !== 0 || S.screen !== 'game' || !S.game) return;
+    const card = e.target.closest('#hand .card');
+    const dragEl = card || e.target.closest('[data-drag]');
+    if (!dragEl) return;
+    S.drag = { src: card ? 'hand' : dragEl.dataset.drag, el: dragEl, sx: e.clientX, sy: e.clientY, started: false, ids: [], hover: null };
+  });
+  document.addEventListener('pointermove', (e) => {
+    const d = S.drag;
+    if (!d) return;
+    if (!d.started) {
+      if (Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < 9) return;
+      startDrag(d);
+    }
+    e.preventDefault();
+    moveDrag(d, e.clientX, e.clientY);
+  }, { passive: false });
+  const finish = () => {
+    const d = S.drag;
+    if (!d) return;
+    if (d.started) endDrag(d); else S.drag = null;
+  };
+  document.addEventListener('pointerup', finish);
+  document.addEventListener('pointercancel', () => {
+    const d = S.drag;
+    if (d && d.started) { d.hover = null; endDrag(d); } else S.drag = null;
+  });
+
+  /* ================= Click / tap ================= */
   document.addEventListener('click', (e) => {
+    if (Date.now() - S.justDragged < 350) return;
     const a = e.target.closest('[data-act]');
     if (a && a.dataset.act && handlers[a.dataset.act]) {
       if (a.disabled) return;
@@ -567,11 +999,10 @@
       return;
     }
     const g = S.game;
-    const card = e.target.closest('.hand [data-card]');
+    const card = e.target.closest('#hand [data-card]');
     if (card && g) {
       const id = Number(card.dataset.card);
       const now = Date.now();
-      // doppio tocco = scarta
       if (S.lastTap.id === id && now - S.lastTap.t < 350 && g.turn === g.you && g.phase === 'play') {
         S.lastTap = { id: null, t: 0 };
         act('discard', { cardId: id });
@@ -579,6 +1010,7 @@
       }
       S.lastTap = { id, t: now };
       if (S.selected.has(id)) S.selected.delete(id); else S.selected.add(id);
+      Sound.play('select');
       render();
       return;
     }
@@ -587,12 +1019,16 @@
       const meldId = Number(meld.dataset.meld);
       if (g.phase === 'play') {
         if (!S.selected.size) return toast('Seleziona prima le carte da attaccare');
-        act('add', { meldId, cardIds: [...S.selected] });
+        act('add', { meldId, cardIds: selectedIds() });
       } else if (g.phase === 'draw' && g.cfg.pile === 'closed') {
-        act('takePile', { meldId, cardIds: [...S.selected] });
+        act('takePile', { meldId, cardIds: selectedIds() });
       }
     }
   });
+
+  document.addEventListener('scroll', (e) => {
+    if (e.target && e.target.id === 'felt') S.feltScroll = e.target.scrollTop;
+  }, true);
 
   document.addEventListener('change', (e) => {
     const el = e.target;
@@ -624,6 +1060,12 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && S.modalKind) closeModal();
     if (e.key === 'Enter' && e.target.id === 'joinCode') handlers.join();
+  });
+
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { if (S.screen === 'game') layoutHand(); }, 120);
   });
 
   render();
