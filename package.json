@@ -1,0 +1,18 @@
+{
+  "name": "burraco-online",
+  "version": "1.0.0",
+  "description": "Burraco multiplayer webapp con varianti (Classico FIBUR, a 3, Reale, Buraco Brasiliano Aberto/Fechado)",
+  "author": "Muliello S.F.",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node server/selftest.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  }
+}
