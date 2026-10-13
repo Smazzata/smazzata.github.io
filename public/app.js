@@ -258,7 +258,7 @@
 <li><b>Selezionare</b>: tocca le carte della mano (si alzano).</li>
 <li><b>Calare</b>: trascina le carte selezionate nella zona <i>“＋ Nuova combinazione”</i> del tuo tavolo, oppure premi <i>Cala</i>.</li>
 <li><b>Attaccare</b>: trascina le carte su una tua combinazione, oppure selezionale e tocca la combinazione.</li>
-<li><b>Scartare</b>: trascina una carta sul monte degli scarti, oppure fai doppio tocco sulla carta.</li>
+<li><b>Scartare</b>: seleziona una carta e tocca il monte degli scarti, oppure trascinala sul monte, oppure fai doppio tocco sulla carta.</li>
 <li><b>Riordinare la mano</b>: trascina una carta in un altro punto della mano. Il pulsante ⇅ riordina per seme o per valore.</li>
 <li><b>Annulla</b> riporta il turno a subito dopo la pesca. Da ⚙️ puoi cambiare colore del tavolo, dorso delle carte, dimensione e suoni.</li>
 </ul>`;
@@ -499,7 +499,7 @@
         <span class="lbl">Tallone · ${g.stockCount}</span>
       </div>
       ${g.pozzetti.length ? `<div class="pozz"><div class="pz">${g.pozzetti.map((n, i) => backHTML('', `style="--l:${i}"`)).join('')}</div><span class="lbl">${g.pozzetti.length === 1 ? cap(P) : (P === 'morto' ? 'Morti' : 'Pozzetti')}</span></div>` : ''}
-      <div class="pile ${canDraw && g.discardCount && !g.mustDraw ? 'active' : ''} ${g.cfg.pile}" data-drop="discard" ${canDraw && !g.mustDraw ? 'data-act="takePile"' : ''}>
+      <div class="pile ${(canDraw && g.discardCount && !g.mustDraw) || (playing && S.selected.size === 1) ? 'active' : ''} ${g.cfg.pile}" data-drop="discard" ${canDraw && !g.mustDraw ? 'data-act="takePile"' : playing ? 'data-act="discardSel"' : ''}>
         <div class="pcards">${pileCards || '<div class="card slot"><span>Scarti</span></div>'}</div>
         <span class="lbl">Scarti${g.discardCount ? ' · ' + g.discardCount : ''}${g.cfg.pile === 'closed' ? ' (chiusi)' : ''}</span>
       </div>
@@ -823,6 +823,10 @@
       act('meld', { cardIds: selectedIds() });
     },
     discard() { if (S.selected.size === 1) act('discard', { cardId: [...S.selected][0] }); },
+    discardSel() {
+      if (S.selected.size !== 1) return toast(S.selected.size ? 'Per scartare seleziona una sola carta' : 'Seleziona la carta da scartare, poi tocca gli scarti');
+      act('discard', { cardId: [...S.selected][0] });
+    },
     undo() { act('undo'); },
     sort() {
       S.sortMode = S.sortMode === 'suit' ? 'rank' : 'suit';
