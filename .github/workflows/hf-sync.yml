@@ -7,7 +7,7 @@ on:
 
 env:
   # Space di destinazione nel formato "utente-huggingface/nome-space"
-  HF_SPACE: ""
+  HF_SPACE: "MSF1500/burraco"
 
 jobs:
   sync:
