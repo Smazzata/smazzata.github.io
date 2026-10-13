@@ -312,3 +312,28 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .result td:first-child, .result th:first-child { text-align: left; }
 .result .tot td { font-weight: 800; border-top: 2px solid #333; }
 .winner { font-size: 24px; text-align: center; margin: 12px 0; color: #155d3a; font-weight: 800; animation: rise .4s; }
+
+/* ---------- Anteprima mosse, suggerimenti, ultima mossa ---------- */
+.meld.can-add { border: 2px solid #7ddc6f !important; background: rgba(125,220,111,.18); box-shadow: 0 0 12px rgba(125,220,111,.45); }
+.meld.newmeld.ok { border: 2px solid #7ddc6f; color: #d9ffd2; background: rgba(125,220,111,.18); font-weight: 700; }
+.meld.newmeld.bad { border-color: rgba(255,120,120,.7); color: #ffc9c9; }
+.hinted { animation: hintpulse 1.2s ease-in-out 4; }
+@keyframes hintpulse { 0%,100% { box-shadow: 0 0 0 0 rgba(120,200,255,0); } 50% { box-shadow: 0 0 0 5px rgba(120,200,255,.9), 0 0 22px rgba(120,200,255,.7); } }
+.ticker {
+  margin: 4px 8px 0; padding: 4px 10px; border-radius: 99px; background: rgba(0,0,0,.28); font-size: 12px; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; animation: fade .4s;
+}
+.leftover { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.leftover b { min-width: 70px; font-size: 13px; }
+.leftover .lcards { display: flex; flex-wrap: wrap; }
+.leftover .lcards .card { margin-right: calc(var(--mw) * -0.45); }
+.result h3 { margin: 14px 0 4px; font-size: 15px; }
+
+/* jolly: stella grande, leggibile anche in piccolo */
+.card.joker .jk { color: #c4202b; font-family: system-ui, sans-serif; font-size: calc(var(--cw) * .7); text-shadow: 0 1px 0 #fff; }
+.card.mini.joker .jk { font-size: calc(var(--cw) * .75); top: 0; }
+
+/* su schermi grandi le carte dei giochi sono più leggibili */
+@media (min-width: 1000px) { :root { --mw: 44px; } body.bigcards { --mw: 52px; } }
+.wide { display: none; }
+@media (min-width: 430px) { .wide { display: inline; } }

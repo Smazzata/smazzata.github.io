@@ -29,6 +29,7 @@ Variabili d'ambiente: `PORT` (default 3000), `BOT_DELAY` in ms tra le mosse del 
 ## Struttura
 
 - `shared/rules.js` — schema delle regole, preset, generatore della spiegazione (usato da server e browser)
+- `shared/melds.js` — analisi di scale e tris, usata dal server per validare e dal browser per l'anteprima delle mosse
 - `server/engine.js` — motore di gioco autoritativo (validazione mosse, pozzetti, chiusura, punteggio)
 - `server/bot.js` — giocatore del computer
 - `server/index.js` — server Express + Socket.IO (tavoli, posti, riconnessione, chat)
@@ -47,4 +48,4 @@ pkg install -y git && git clone https://github.com/simonemuliello010500-web/Burr
 
 Con `--install-boot` (app Termux:Boot) il server riparte da solo quando il telefono si riaccende.
 In alternativa va bene qualsiasi hosting Node.js con WebSocket: comando di avvio `npm start`.
-Le partite sono tenute in memoria: un riavvio del server chiude i tavoli in corso.
+Le partite vengono salvate in `data/stato.json` (cartella configurabile con `DATA_DIR`): dopo un riavvio o un aggiornamento i tavoli riprendono da dove erano.

@@ -1,4 +1,5 @@
 ﻿'use strict';
+const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const crypto = require('crypto');
@@ -10,6 +11,9 @@ const Rules = require('../shared/rules');
 
 const PORT = process.env.PORT || 3000;
 const BOT_DELAY = Number(process.env.BOT_DELAY || 700);
+const BOT_SPEEDS = { lenta: BOT_DELAY * 1.9, normale: BOT_DELAY, veloce: BOT_DELAY * 0.45 };
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
+const DATA_FILE = path.join(DATA_DIR, 'stato.json');
 
 const app = express();
 app.use(express.static(path.join(__dirname, '..', 'public')));
@@ -38,7 +42,7 @@ function roomInfo(room) {
     code: room.code, host: room.seats.findIndex((s) => s && s.token === room.hostToken),
     rules: room.rules, n: room.n, preset: Rules.matchPreset(room.rules),
     seats: room.seats.map((s) => (s ? { name: s.name, isBot: !!s.isBot, connected: s.isBot || isConnected(s.token) } : null)),
-    started: !!room.game, ready: [...room.ready],
+    started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
   };
 }
 
@@ -57,6 +61,7 @@ function broadcast(room) {
     });
   }
   scheduleBot(room);
+  scheduleSave();
 }
 
 function scheduleBot(room) {
@@ -91,7 +96,7 @@ function scheduleBot(room) {
       } catch (e2) { console.error('Bot bloccato:', e2.message); }
     }
     afterAction(room);
-  }, BOT_DELAY);
+  }, BOT_SPEEDS[room.botSpeed] || BOT_DELAY);
 }
 
 function afterAction(room) {
@@ -131,6 +136,7 @@ function leaveRoom(socket) {
   if (!room.seats.some((s) => s && !s.isBot)) {
     clearTimeout(room.botTimer);
     rooms.delete(code);
+    scheduleSave();
     return;
   }
   broadcast(room);
@@ -169,7 +175,7 @@ function cleanName(n) {
 
 io.on('connection', (socket) => {
   const handler = (fn) => (data, cb) => {
-    try { fn(data || {}); if (typeof cb === 'function') cb({ ok: true }); }
+    try { const res = fn(data || {}); if (typeof cb === 'function') cb({ ok: true, ...(res || {}) }); }
     catch (e) {
       if (!(e instanceof E.GameError)) console.error(e);
       if (typeof cb === 'function') cb({ ok: false, error: e.message });
@@ -300,6 +306,23 @@ io.on('connection', (socket) => {
     afterAction(room);
   }));
 
+  socket.on('hint', handler(() => {
+    const room = getRoom(socket);
+    const g = room.game;
+    const seat = seatOfToken(room, socket.data.token);
+    if (!g || g.turn !== seat || g.phase === 'handEnd') throw new Error('Il suggerimento è disponibile solo nel tuo turno');
+    const hint = Bot.nextAction(JSON.parse(JSON.stringify(g)), seat, {});
+    return { hint };
+  }));
+
+  socket.on('setBotSpeed', handler(({ speed }) => {
+    const room = getRoom(socket);
+    requireHost(socket, room);
+    if (!BOT_SPEEDS[speed]) throw new Error('Velocità non valida');
+    room.botSpeed = speed;
+    broadcast(room);
+  }));
+
   socket.on('ready', handler(() => {
     const room = getRoom(socket);
     const g = room.game;
@@ -369,9 +392,56 @@ setInterval(() => {
     else if (Date.now() - room.idleSince > 60 * 60 * 1000) {
       clearTimeout(room.botTimer);
       rooms.delete(room.code);
+      scheduleSave();
     }
   }
 }, 60 * 1000);
+
+/* ---------- Salvataggio su file: le partite sopravvivono ai riavvii ---------- */
+let saveTimer = null;
+function scheduleSave() {
+  if (saveTimer) return;
+  saveTimer = setTimeout(() => { saveTimer = null; saveNow(); }, 1000);
+}
+
+function saveNow() {
+  try {
+    const data = {
+      savedAt: Date.now(),
+      sessions: [...sessions],
+      rooms: [...rooms.values()].map((r) => ({
+        code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed,
+      })),
+    };
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+    fs.writeFileSync(DATA_FILE + '.tmp', JSON.stringify(data));
+    fs.renameSync(DATA_FILE + '.tmp', DATA_FILE);
+  } catch (e) {
+    console.error('Salvataggio non riuscito:', e.message);
+  }
+}
+
+function loadSaved() {
+  try {
+    if (!fs.existsSync(DATA_FILE)) return;
+    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    for (const [token, sess] of data.sessions || []) sessions.set(token, sess);
+    for (const r of data.rooms || []) {
+      rooms.set(r.code, { ...r, ready: new Set(r.ready || []), botTimer: null, botMemo: {}, botMemoTurn: -1 });
+    }
+    for (const room of rooms.values()) scheduleBot(room);
+    console.log(`Ripristinati ${rooms.size} tavoli salvati`);
+  } catch (e) {
+    console.error('Impossibile leggere il salvataggio:', e.message);
+  }
+}
+
+for (const sig of ['SIGTERM', 'SIGINT']) {
+  process.on(sig, () => { clearTimeout(saveTimer); saveNow(); process.exit(0); });
+}
+
+loadSaved();
 
 server.listen(PORT, () => {
   const nets = require('os').networkInterfaces();

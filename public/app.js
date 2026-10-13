@@ -140,6 +140,9 @@
       const newEvent = ev && (!prev || !prev.lastEvent || prev.lastEvent.n !== ev.n);
       S.flashMeld = newEvent && ev.meldId ? ev.meldId : null;
       S.animEvent = newEvent ? ev : null;
+      if (newEvent || game.turn !== game.you) S.hint = null;
+      if (game.phase === 'handEnd') S.selected.clear();
+      keepScreenOn(game.phase !== 'handEnd' || !game.over);
       if (newEvent) eventSound(prev, game, ev);
       if (prev && game.turn === game.you && game.phase === 'draw' && (prev.turn !== game.you || prev.phase === 'handEnd')) {
         if (navigator.vibrate) navigator.vibrate(60);
@@ -155,10 +158,25 @@
       document.title = game.turn === game.you && game.phase !== 'handEnd' ? '● Tocca a te · Burraco' : 'Burraco Online';
     } else {
       document.title = 'Burraco Online';
+      keepScreenOn(false);
       if (S.modalKind === 'result') closeModal();
     }
     render();
   }
+
+  /* ---------- Schermo sempre acceso durante la partita ---------- */
+  let wakeLock = null;
+  let wantWake = false;
+  async function keepScreenOn(on) {
+    wantWake = on;
+    try {
+      if (on && !wakeLock && 'wakeLock' in navigator && document.visibilityState === 'visible') {
+        wakeLock = await navigator.wakeLock.request('screen');
+        wakeLock.addEventListener('release', () => { wakeLock = null; });
+      } else if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
+    } catch (e) { wakeLock = null; }
+  }
+  document.addEventListener('visibilitychange', () => { if (wantWake) keepScreenOn(true); });
 
   function eventSound(prev, game, ev) {
     if (ev.type === 'meld' || ev.type === 'add') {
@@ -175,7 +193,7 @@
 
   function cardHTML(c, cls = '', attrs = '') {
     if (c.r === 0) {
-      return `<div class="card joker ${cls}" data-card="${c.id}" ${attrs}><span class="ix">J<br>O<br>L<br>L<br>Y</span><span class="jk">🃏</span></div>`;
+      return `<div class="card joker ${cls}" data-card="${c.id}" ${attrs}><span class="ix">J<br>O<br>L<br>L<br>Y</span><span class="jk">★</span></div>`;
     }
     const red = c.s === 'H' || c.s === 'D';
     const face = c.r >= 11 ? `<span class="face">${rankName(c.r)}<i>${SUIT[c.s]}</i></span>` : `<span class="pip">${SUIT[c.s]}</span>`;
@@ -302,7 +320,13 @@
       <h4>Carte</h4>
       <div class="row">${opt('big', false, 'Normali')}${opt('big', true, 'Grandi')}</div>
       <h4>Suoni</h4>
-      <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>`);
+      <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
+      ${S.room && S.room.isHost ? `<h4>Velocità del computer</h4>${botSpeedHTML(S.room.botSpeed)}` : ''}`);
+  }
+
+  function botSpeedHTML(cur) {
+    return `<div class="row">${[['lenta', '🐢 Lenta'], ['normale', 'Normale'], ['veloce', '⚡ Veloce']]
+      .map(([v, l]) => `<button class="swatch ${cur === v ? 'on' : ''}" data-act="botSpeed" data-val="${v}">${l}</button>`).join('')}</div>`;
   }
 
   /* ================= Schermate ================= */
@@ -410,6 +434,7 @@
         <p>${rulesStatus(r.rules)} <span class="muted">· ${r.n} giocatori · si vince a ${r.rules.target}</span></p>
         <div class="row"><button class="btn small" data-act="roomRules">📜 Leggi le regole</button>
         ${isHost ? '<button class="btn small" data-act="editRules">✏️ Modifica regole</button>' : ''}</div>
+        ${isHost ? `<h2 style="margin-top:14px">Velocità del computer</h2>${botSpeedHTML(r.botSpeed)}` : ''}
       </div>
     </div>`;
   }
@@ -419,10 +444,41 @@
     return t.members.map((s) => (s === g.you ? 'Tu' : g.players[s].name)).join(' & ');
   }
 
-  function meldHTML(m, mine) {
+  /* ---------- Anteprima delle mosse (stessa logica del server) ---------- */
+  const M = window.BurracoMelds;
+  function meldCfg(g) {
+    const r = g.cfg.rules;
+    return { allowSets: r.allowSets, maxWild: r.maxWild, aceBothEnds: r.aceBothEnds };
+  }
+
+  /** Cosa si può fare con le carte selezionate: giochi a cui attaccarle e validità di una nuova calata */
+  function selectionPreview(g, myTeam) {
+    const out = { canAdd: new Set(), newMeld: null };
+    if (!myTeam || g.turn !== g.you) return out;
+    const sel = orderedHand().filter((c) => S.selected.has(c.id));
+    const closedDraw = g.phase === 'draw' && g.cfg.pile === 'closed' && g.discard.length;
+    if (g.phase !== 'play' && !closedDraw) return out;
+    const cards = closedDraw ? [g.discard[g.discard.length - 1], ...sel] : sel;
+    if (!sel.length) return out;
+    const cfg = meldCfg(g);
+    for (const m of myTeam.melds) if (M.analyzeMeld(m.cards.concat(cards), cfg, m.type)) out.canAdd.add(m.id);
+    if (cards.length >= 3) {
+      const an = M.analyzeMeld(cards, cfg);
+      let ok = !!an;
+      if (an && an.type === 'set' && g.cfg.rules.noDuplicateSets) {
+        ok = !myTeam.melds.some((m) => m.type === 'set' && m.cards.find((c) => !M.isWild(c)).r === an.rank);
+      }
+      out.newMeld = { ok, label: an ? (an.type === 'seq' ? 'scala' : 'tris') : '' };
+    }
+    return out;
+  }
+
+  function meldHTML(m, mine, preview) {
     const short = { clean: 'Pulito', dirty: 'Sporco', semi: 'Semi', real13: '+500', real14: '+1000' }[m.kind] || '';
     const attrs = mine ? `data-meld="${m.id}" data-drop="meld"` : '';
-    return `<div class="meld ${m.kind ? 'burraco ' + m.kind : ''} ${S.flashMeld === m.id ? 'flash' : ''} ${m.type === 'set' ? 'set' : ''}" ${attrs} title="${esc(m.label || '')}">
+    const can = preview && preview.canAdd.has(m.id) ? 'can-add' : '';
+    const hint = S.hint && S.hint.meldId === m.id ? 'hinted' : '';
+    return `<div class="meld ${m.kind ? 'burraco ' + m.kind : ''} ${S.flashMeld === m.id ? 'flash' : ''} ${m.type === 'set' ? 'set' : ''} ${can} ${hint}" ${attrs} title="${esc(m.label || '')}">
       ${m.cards.map((c, i) => cardHTML(c, `mini ${m.wild[i] ? 'wildmark' : ''}`)).join('')}
       ${m.kind ? `<span class="tag">${short}</span>` : `<span class="cnt">${m.length}</span>`}</div>`;
   }
@@ -443,6 +499,14 @@
     else if (g.hand.length <= 3 && myTeam && myTeam.pozzettoTaken) tip += ` · per chiudere serve ${g.cfg.closeNeeds === 'clean' ? `una ${g.cfg.burracoName} pulita` : `un ${g.cfg.burracoName}`}`;
     if (g.lastTurn) tip += ' · <b>ultimo turno!</b>';
     return tip;
+  }
+
+  /** ultima riga significativa della cronaca */
+  function lastMove(g) {
+    for (let i = g.log.length - 1; i >= 0; i--) {
+      if (!g.log[i].startsWith('—')) return g.log[i];
+    }
+    return 'La smazzata è iniziata: buon divertimento!';
   }
 
   /** posizione al tavolo degli altri giocatori rispetto a me */
@@ -494,18 +558,21 @@
     }).join('');
     const stockLayers = Math.min(3, Math.ceil(g.stockCount / 15));
     const center = `<div class="center">
-      <div class="stock ${canDraw && (g.stockCount || g.pozzetti.length) ? 'active' : ''}" ${canDraw ? 'data-act="draw" data-drag="stock"' : ''}>
+      <div class="stock ${canDraw && (g.stockCount || g.pozzetti.length) ? 'active' : ''} ${S.hint && S.hint.type === 'draw' ? 'hinted' : ''}" ${canDraw ? 'data-act="draw" data-drag="stock"' : ''}>
         <div class="deck">${g.stockCount ? Array.from({ length: stockLayers }, (_, i) => backHTML('', `style="--l:${i}"`)).join('') : '<div class="card slot"></div>'}</div>
         <span class="lbl">Tallone · ${g.stockCount}</span>
       </div>
       ${g.pozzetti.length ? `<div class="pozz"><div class="pz">${g.pozzetti.map((n, i) => backHTML('', `style="--l:${i}"`)).join('')}</div><span class="lbl">${g.pozzetti.length === 1 ? cap(P) : (P === 'morto' ? 'Morti' : 'Pozzetti')}</span></div>` : ''}
-      <div class="pile ${(canDraw && g.discardCount && !g.mustDraw) || (playing && S.selected.size === 1) ? 'active' : ''} ${g.cfg.pile}" data-drop="discard" ${canDraw && !g.mustDraw ? 'data-act="takePile"' : playing ? 'data-act="discardSel"' : ''}>
+      <div class="pile ${(canDraw && g.discardCount && !g.mustDraw) || (playing && S.selected.size === 1) ? 'active' : ''} ${g.cfg.pile} ${S.hint && (S.hint.type === 'takePile' || S.hint.type === 'discard') ? 'hinted' : ''}" data-drop="discard" ${canDraw && !g.mustDraw ? 'data-act="takePile"' : playing ? 'data-act="discardSel"' : ''}>
         <div class="pcards">${pileCards || '<div class="card slot"><span>Scarti</span></div>'}</div>
         <span class="lbl">Scarti${g.discardCount ? ' · ' + g.discardCount : ''}${g.cfg.pile === 'closed' ? ' (chiusi)' : ''}</span>
       </div>
     </div>`;
 
     // giochi delle squadre
+    const preview = selectionPreview(g, myTeam);
+    const nm = preview.newMeld;
+    const newSlotText = nm ? (nm.ok ? `✓ Cala<br>${nm.label}` : '✗ Non<br>valida') : '＋ Nuova<br>combinazione';
     const zone = (t) => {
       const mine = t === myTeam;
       const label = mine ? (t.members.length > 1 ? `Noi · ${esc(teamName(g, t))}` : 'I tuoi giochi') : esc(teamName(g, t));
@@ -513,10 +580,10 @@
       if (t.canClose) flags.push('può chiudere');
       const targetable = mine && (playing || (canDraw && g.cfg.pile === 'closed'));
       const newSlot = mine && (playing || (canDraw && g.cfg.pile === 'closed'))
-        ? `<div class="meld newmeld" data-drop="newmeld" ${playing ? 'data-act="meld"' : ''}><span>＋ Nuova<br>combinazione</span></div>` : '';
+        ? `<div class="meld newmeld ${nm ? (nm.ok ? 'ok' : 'bad') : ''} ${S.hint && S.hint.type === 'meld' ? 'hinted' : ''}" data-drop="newmeld" ${playing ? 'data-act="meld"' : ''}><span>${newSlotText}</span></div>` : '';
       return `<div class="teamzone ${mine ? 'mine' : 'theirs'}">
         <div class="hdr"><b>${label}</b><span>${flags.join(' · ')}</span></div>
-        <div class="melds ${targetable ? 'targetable' : ''}">${t.melds.map((m) => meldHTML(m, mine)).join('')}${newSlot}${!t.melds.length && !newSlot ? '<span class="empty">Nessuna combinazione</span>' : ''}</div>
+        <div class="melds ${targetable ? 'targetable' : ''}">${t.melds.map((m) => meldHTML(m, mine, mine ? preview : null)).join('')}${newSlot}${!t.melds.length && !newSlot ? '<span class="empty">Nessuna combinazione</span>' : ''}</div>
       </div>`;
     };
     const others = g.teams.filter((t) => t !== myTeam).map(zone).join('');
@@ -530,10 +597,11 @@
       actions = `<button class="btn primary" data-act="draw" ${g.stockCount || g.pozzetti.length ? '' : 'disabled'}>Pesca</button>
         <button class="btn" data-act="takePile" ${g.discardCount && !g.mustDraw ? '' : 'disabled'}>Raccogli${g.discardCount ? ` (${g.discardCount})` : ''}</button>`;
     } else if (playing) {
-      actions = `<button class="btn primary" data-act="meld" ${sel >= 3 ? '' : 'disabled'}>Cala${sel ? ` ${sel}` : ''}</button>
+      actions = `<button class="btn primary" data-act="meld" ${nm && nm.ok ? '' : 'disabled'}>Cala${sel ? ` ${sel}` : ''}</button>
         <button class="btn" data-act="discard" ${sel === 1 ? '' : 'disabled'}>Scarta</button>
-        ${g.canUndo ? '<button class="btn ghost" data-act="undo">↶</button>' : ''}`;
+        ${g.canUndo ? '<button class="btn ghost" data-act="undo" title="Annulla le giocate del turno">↶<span class="wide"> Annulla</span></button>' : ''}`;
     }
+    if (myTurn) actions += '<button class="btn ghost small" data-act="hint" title="Suggerimento">💡</button>';
     const sortLbl = S.sortMode === 'rank' ? '⇅ Valore' : S.sortMode === 'suit' ? '⇅ Seme' : '⇅ Ordina';
 
     return `<div class="game ${myTurn ? 'myturn' : ''}">
@@ -547,6 +615,7 @@
       </div>
       <div class="scorebar">${scores}</div>
       <div class="seats-row n${g.n}">${seats}</div>
+      <div class="ticker" title="Ultima mossa">${esc(lastMove(g))}</div>
       <div class="felt" id="felt">${others}${center}${mineZone}</div>
       <div class="statusbar ${myTurn ? 'on' : ''}">
         <span class="msg">${statusText(g)}</span>
@@ -678,7 +747,14 @@
       ${row('<b>Totale partita</b>', (t) => `<b>${hr.scores[t.members[0]]}</b>`)}
       </table>
       <p class="muted">Si vince a ${g.cfg.target} punti.</p>
+      ${leftoverHTML(g, hr)}
       ${footer}</div>`);
+  }
+
+  function leftoverHTML(g, hr) {
+    if (!hr.hands) return '';
+    const rows = hr.hands.map((h, seat) => (h.length ? `<div class="leftover"><b>${esc(seat === g.you ? 'Tu' : g.players[seat].name)}</b><div class="lcards">${h.map((c) => cardHTML(c, 'mini')).join('')}</div></div>` : '')).join('');
+    return rows ? `<h3>Carte rimaste in mano</h3>${rows}` : '';
   }
 
   function showScores() {
@@ -834,8 +910,36 @@
       S.handOrder = sortCards(S.game.hand, S.sortMode).map((c) => c.id);
       render();
     },
-    clearSel() { S.selected.clear(); render(); },
+    clearSel() { S.selected.clear(); S.hint = null; render(); },
+    async hint() {
+      const r = await emit('hint');
+      if (!r.ok || !r.hint) return;
+      const h = r.hint;
+      const g = S.game;
+      const byId = new Map(g.hand.map((c) => [c.id, c]));
+      const names = (ids) => (ids || []).map((id) => byId.get(id)).filter(Boolean).map(cardLabel).join(' ');
+      S.hint = { type: h.type, meldId: h.meldId };
+      let text;
+      switch (h.type) {
+        case 'draw': text = 'Pesca dal tallone'; break;
+        case 'takePile':
+          text = h.cardIds && h.cardIds.length ? `Raccogli gli scarti e combina la carta in cima con ${names(h.cardIds)}` : 'Raccogli gli scarti: ti servono';
+          if (h.cardIds) S.selected = new Set(h.cardIds);
+          break;
+        case 'meld': S.selected = new Set(h.cardIds); text = `Cala ${names(h.cardIds)}`; break;
+        case 'add': S.selected = new Set(h.cardIds); text = `Attacca ${names(h.cardIds)} al gioco evidenziato`; break;
+        case 'discard': S.selected = new Set([h.cardId]); text = `Scarta ${names([h.cardId])}`; break;
+        default: text = 'Annulla le calate di questo turno e scarta';
+      }
+      toast(`💡 ${text}`);
+      render();
+    },
+    botSpeed(el) { emit('setBotSpeed', { speed: el.dataset.val }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
   };
+
+  function cardLabel(c) {
+    return c.r === 0 ? 'Jolly' : rankName(c.r) + SUIT[c.s];
+  }
 
   /* ================= Trascinamento (mouse e touch) ================= */
   function dropTargetAt(x, y) {
@@ -1014,7 +1118,9 @@
       }
       S.lastTap = { id, t: now };
       if (S.selected.has(id)) S.selected.delete(id); else S.selected.add(id);
+      S.hint = null;
       Sound.play('select');
+      if (navigator.vibrate) navigator.vibrate(8);
       render();
       return;
     }
