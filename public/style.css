@@ -948,3 +948,20 @@ body.contrast .game .muted { color: #fff !important; }
 body.contrast .btn.primary { background: #ffeb3b !important; color: #000 !important; }
 /* niente animazioni */
 body.noanim *, body.noanim *::before, body.noanim *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+
+/* Briscola in 5: asta e chiamata */
+.presa.b5 { text-align: center; }
+.b5who { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 8px 0; font-size: 12px; }
+.b5who span { padding: 3px 8px; border-radius: 99px; background: rgba(0,0,0,.25); }
+.b5who span.turn { box-shadow: 0 0 0 2px var(--gold); }
+.b5who span.out { opacity: .5; }
+.b5bids { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 8px 0; }
+.b5bids .swatch { display: inline-flex; align-items: center; gap: 4px; }
+.b5bids .card { --cw: 26px; }
+/* cinque giocatori: quattro posti più stretti su una riga */
+.seats-row.n5 { gap: 4px; }
+.seats-row.n5 .seatchip { padding: 3px 6px 3px 3px; gap: 4px; }
+.seats-row.n5 .seatchip .avatar { width: 26px; height: 26px; font-size: 14px; }
+.seats-row.n5 .seatchip .sinfo b { max-width: 56px; font-size: 12px; }
+.seats-row.n5 .seatchip .minifan { display: none; }
+.presa .ptrump .card.mini { --cw: 26px; display: inline-flex; vertical-align: middle; }

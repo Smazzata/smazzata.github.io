@@ -21,6 +21,7 @@
   function presaPlay(cardId) {
     const g = S.game;
     if (g.game === 'settemezzo') return; // si gioca toccando il mazzo o ✋
+    if (g.game === 'briscola5' && g.phase !== 'play') return; // prima l'asta e la scelta della briscola
     if (g.game === 'scopa') {
       const card = g.hand.find((c) => c.id === cardId);
       const opts = window.BurracoScopa.captures(card, g.table, g.cfg.rules);
@@ -258,6 +259,9 @@
     async applyRules() { const r = await emit('configure', { rules: S.editRules }); if (r.ok) { closeModal(); toast('Regole aggiornate'); } },
     gameRules() { rulesModal(S.game.cfg.rules); },
     log() { renderLogModal(); render(); },
+    b5Bid(el) { act('bid', { level: Number(el.dataset.l) }); },
+    b5Pass() { act('pass'); },
+    b5Call(el) { act('call', { suit: el.dataset.s }); },
     smDraw() { Sound.play('card'); act('draw'); },
     smStand() { act('stand'); },
     zoomTeam(el) { S.zoomTeam = Number(el.dataset.team); zoomModal(); },
@@ -415,7 +419,7 @@
       const friends = !!S.lbFriends, game = S.lbGame || 'burraco';
       const r = await emit('leaderboard', { friends, game });
       if (!r.ok) return;
-      const tabs = `<div class="row tabs"><button class="swatch ${game === 'burraco' ? 'on' : ''}" data-act="leaders" data-game="burraco">🃏 Burraco</button><button class="swatch ${game === 'scala40' ? 'on' : ''}" data-act="leaders" data-game="scala40">🂡 Scala 40</button><button class="swatch ${game === 'canasta' ? 'on' : ''}" data-act="leaders" data-game="canasta">🎴 Canasta</button><button class="swatch ${game === 'scopa' ? 'on' : ''}" data-act="leaders" data-game="scopa">🧹 Scopa</button><button class="swatch ${game === 'briscola' ? 'on' : ''}" data-act="leaders" data-game="briscola">🍷 Briscola</button><button class="swatch ${game === 'tressette' ? 'on' : ''}" data-act="leaders" data-game="tressette">🂱 Tressette</button><button class="swatch ${game === 'rubamazzetto' ? 'on' : ''}" data-act="leaders" data-game="rubamazzetto">🃁 Rubamazzetto</button><button class="swatch ${game === 'settemezzo' ? 'on' : ''}" data-act="leaders" data-game="settemezzo">🎲 Sette e mezzo</button></div>
+      const tabs = `<div class="row tabs"><button class="swatch ${game === 'burraco' ? 'on' : ''}" data-act="leaders" data-game="burraco">🃏 Burraco</button><button class="swatch ${game === 'scala40' ? 'on' : ''}" data-act="leaders" data-game="scala40">🂡 Scala 40</button><button class="swatch ${game === 'canasta' ? 'on' : ''}" data-act="leaders" data-game="canasta">🎴 Canasta</button><button class="swatch ${game === 'scopa' ? 'on' : ''}" data-act="leaders" data-game="scopa">🧹 Scopa</button><button class="swatch ${game === 'briscola' ? 'on' : ''}" data-act="leaders" data-game="briscola">🍷 Briscola</button><button class="swatch ${game === 'briscola5' ? 'on' : ''}" data-act="leaders" data-game="briscola5">🍷 Briscola in 5</button><button class="swatch ${game === 'tressette' ? 'on' : ''}" data-act="leaders" data-game="tressette">🂱 Tressette</button><button class="swatch ${game === 'rubamazzetto' ? 'on' : ''}" data-act="leaders" data-game="rubamazzetto">🃁 Rubamazzetto</button><button class="swatch ${game === 'settemezzo' ? 'on' : ''}" data-act="leaders" data-game="settemezzo">🎲 Sette e mezzo</button></div>
         <div class="row tabs"><button class="swatch ${friends ? '' : 'on'}" data-act="leaders" data-friends="0">Tutti</button><button class="swatch ${friends ? 'on' : ''}" data-act="leaders" data-friends="1">Solo amici</button></div>`;
       const rows = r.list.map((e, i) => `<tr class="${e.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][i] || i + 1}</td><td style="text-align:left">${esc(e.name)} ${lvlHTML(e.level)}${e.me ? ' (tu)' : ''}</td><td><b>${e.elo}</b></td><td>${e.wins}/${e.games}</td><td>${Math.round((e.wins / e.games) * 100)}%</td></tr>`).join('');
       openModal('leaders', `<div class="result"><h2>🏆 Classifica</h2>${tabs}

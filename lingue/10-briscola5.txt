@@ -1,0 +1,58 @@
+# Briscola in 5 (chiamata)
+# italiano ‖ English ‖ Español ‖ Português
+Briscola in 5 ‖ Five-player Briscola ‖ Brisca de 5 ‖ Bisca a 5
+🍷 Briscola in 5 ‖ 🍷 Five-player Briscola ‖ 🍷 Brisca de 5 ‖ 🍷 Bisca a 5
+La chiamata del Sud: asta, carta chiamata e socio segreto ‖ The southern "chiamata": auction, called card and secret partner ‖ La "llamada" del sur: subasta, carta llamada y socio secreto ‖ A "chamada" do Sul: leilão, carta chamada e parceiro secreto
+La Briscola chiamata del Sud: asta, carta chiamata e socio segreto. In cinque. ‖ The southern Briscola "chiamata": auction, called card and secret partner. For five players. ‖ La Brisca llamada del sur: subasta, carta llamada y socio secreto. De a cinco. ‖ A Bisca chamada do Sul: leilão, carta chamada e parceiro secreto. Em cinco.
+Asta · ultima chiamata: ‖ Auction · last call: ‖ Subasta · última llamada: ‖ Leilão · última chamada:
+Asta · nessuna chiamata ‖ Auction · no call yet ‖ Subasta · sin llamadas ‖ Leilão · nenhuma chamada
+di {0} ‖ by {0} ‖ de {0} ‖ de {0}
+Passo ‖ Pass ‖ Paso ‖ Passo
+{0} · passa ‖ {0} · passes ‖ {0} · pasa ‖ {0} · passa
+Più bassa è la carta chiamata, più è difficile: chiami se pensi di fare almeno 61 punti con il tuo socio. ‖ The lower the called card, the harder it is: call if you think you will make at least 61 points with your partner. ‖ Cuanto más baja es la carta llamada, más difícil es: llama si crees que harás al menos 61 puntos con tu socio. ‖ Quanto mais baixa a carta chamada, mais difícil: chame se acha que vai fazer pelo menos 61 pontos com seu parceiro.
+{0} ha vinto l'asta ({1}) ‖ {0} won the auction ({1}) ‖ {0} ganó la subasta ({1}) ‖ {0} venceu o leilão ({1})
+Scegli la briscola: chiami il ‖ Choose the trump suit: you call the ‖ Elige el triunfo: llamas el ‖ Escolha o trunfo: você chama o
+di quel seme. ‖ of that suit. ‖ de ese palo. ‖ desse naipe.
+Sta scegliendo la briscola… ‖ Choosing the trump suit… ‖ Está eligiendo el triunfo… ‖ Está escolhendo o trunfo…
+Briscola {0} · chiamato ‖ Trump {0} · called ‖ Triunfo {0} · llamada ‖ Trunfo {0} · chamada
+· socio segreto ‖ · secret partner ‖ · socio secreto ‖ · parceiro secreto
+· socio: ‖ · partner: ‖ · socio: ‖ · parceiro:
+{0} gioca da solo ‖ {0} plays alone ‖ {0} juega solo ‖ {0} joga sozinho
+(sei tu, in segreto!) ‖ (it is you, secretly!) ‖ (¡eres tú, en secreto!) ‖ (é você, em segredo!)
+📣 {0} deve fare ‖ 📣 {0} must make ‖ 📣 {0} debe hacer ‖ 📣 {0} precisa fazer
+Tocca a te: chiama una carta o passa ‖ Your turn: call a card or pass ‖ Te toca: llama una carta o pasa ‖ Sua vez: chame uma carta ou passe
+Tocca a te: scegli il seme di briscola ‖ Your turn: choose the trump suit ‖ Te toca: elige el palo de triunfo ‖ Sua vez: escolha o naipe de trunfo
+Due ‖ Two ‖ Dos ‖ Dois
+Tre ‖ Three ‖ Tres ‖ Três
+{0} a {1} ‖ {0} at {1} ‖ {0} a {1} ‖ {0} a {1}
+— Smazzata {0}: distribuisce {1}. Si apre l'asta. ‖ — Hand {0}: {1} deals. The auction opens. ‖ — Mano {0}: reparte {1}. Se abre la subasta. ‖ — Mão {0}: {1} dá as cartas. Abre-se o leilão.
+{0} chiama {1} ‖ {0} calls {1} ‖ {0} llama {1} ‖ {0} chama {1}
+{0} passa ‖ {0} passes ‖ {0} pasa ‖ {0} passa
+{0} vince l'asta: {1}. Sceglie la briscola. ‖ {0} wins the auction: {1}. Choosing the trump suit. ‖ {0} gana la subasta: {1}. Elige el triunfo. ‖ {0} vence o leilão: {1}. Escolhe o trunfo.
+Briscola {0}: si chiama il {1} ‖ Trump {0}: the {1} is called ‖ Triunfo {0}: se llama el {1} ‖ Trunfo {0}: chama-se o {1}
+Briscola {0}: si chiama il {1} (bisogna fare {2}) ‖ Trump {0}: the {1} is called (target {2}) ‖ Triunfo {0}: se llama el {1} (hay que hacer {2}) ‖ Trunfo {0}: chama-se o {1} (é preciso fazer {2})
+{0} ha la carta chiamata: gioca da solo contro tutti! ‖ {0} holds the called card: plays alone against everyone! ‖ ¡{0} tiene la carta llamada: juega solo contra todos! ‖ {0} tem a carta chamada: joga sozinho contra todos!
+🤝 {0} è il socio di {1}! ‖ 🤝 {0} is {1}'s partner! ‖ 🤝 ¡{0} es el socio de {1}! ‖ 🤝 {0} é o parceiro de {1}!
+{0} vincono con {1} punti (ne servivano {2}). ‖ {0} win with {1} points ({2} were needed). ‖ {0} ganan con {1} puntos (hacían falta {2}). ‖ {0} vencem com {1} pontos (eram precisos {2}).
+{0} perdono con {1} punti (ne servivano {2}). ‖ {0} lose with {1} points ({2} were needed). ‖ {0} pierden con {1} puntos (hacían falta {2}). ‖ {0} perdem com {1} pontos (eram precisos {2}).
+{0} vince con {1} punti (ne servivano {2}). ‖ {0} wins with {1} points ({2} were needed). ‖ {0} gana con {1} puntos (hacían falta {2}). ‖ {0} vence com {1} pontos (eram precisos {2}).
+{0} perde con {1} punti (ne servivano {2}). ‖ {0} loses with {1} points ({2} were needed). ‖ {0} pierde con {1} puntos (hacían falta {2}). ‖ {0} perde com {1} pontos (eram precisos {2}).
+Punti della smazzata ‖ Hand points ‖ Puntos de la mano ‖ Pontos da mão
+chiamante ‖ caller ‖ llamador ‖ chamador
+chiamante (da solo) ‖ caller (alone) ‖ llamador (solo) ‖ chamador (sozinho)
+socio ‖ partner ‖ socio ‖ parceiro
+punti · smazzata {0} di {1} ‖ points · hand {0} of {1} ‖ puntos · mano {0} de {1} ‖ pontos · mão {0} de {1}
+La Briscola in 5 si gioca in cinque ‖ Five-player Briscola needs five players ‖ La Brisca de 5 se juega de a cinco ‖ A Bisca a 5 se joga em cinco
+L'asta è chiusa ‖ The auction is closed ‖ La subasta está cerrada ‖ O leilão está fechado
+Devi chiamare più in basso (o più punti) ‖ You must call lower (or more points) ‖ Debes llamar más bajo (o más puntos) ‖ Você precisa chamar mais baixo (ou mais pontos)
+Non è il momento di scegliere la briscola ‖ It is not time to choose the trump ‖ No es momento de elegir el triunfo ‖ Não é hora de escolher o trunfo
+Seme non valido ‖ Invalid suit ‖ Palo no válido ‖ Naipe inválido
+Non si gioca ancora ‖ Play has not started yet ‖ Todavía no se juega ‖ Ainda não se joga
+Prima Briscola in 5 ‖ First five-player Briscola ‖ Primera Brisca de 5 ‖ Primeira Bisca a 5
+Vinci una partita di Briscola in 5 ‖ Win a game of five-player Briscola ‖ Gana una partida de Brisca de 5 ‖ Vença uma partida de Bisca a 5
+Lupo solitario ‖ Lone wolf ‖ Lobo solitario ‖ Lobo solitário
+Briscola in 5: vinci una smazzata giocando da solo contro tutti ‖ Five-player Briscola: win a hand playing alone against everyone ‖ Brisca de 5: gana una mano jugando solo contra todos ‖ Bisca a 5: vença uma mão jogando sozinho contra todos
+🎓 Allenamento a Briscola in 5 ‖ 🎓 Five-player Briscola practice ‖ 🎓 Práctica de Brisca de 5 ‖ 🎓 Treino de Bisca a 5
+2. L'asta ‖ 2. The auction ‖ 2. La subasta ‖ 2. O leilão
+3. Il socio ‖ 3. The partner ‖ 3. El socio ‖ 3. O parceiro
+Smazzate ‖ Hands ‖ Manos ‖ Mãos

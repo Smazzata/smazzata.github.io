@@ -113,6 +113,35 @@
         <div class="pinfo">${g.cfg.rules.deal && g.cfg.rules.deal !== 3 ? '' : `<span>Mazzo <b>${g.stockCount}</b></span>`}${g.teams.map((t) => `<span>${teamLbl(t)}: <b>${t.taken}</b> carte${t.scope ? ` · <b>${t.scope}</b> ${t.scope === 1 ? 'scopa' : 'scope'} 🧹` : ''}</span>`).join('')}</div>
       </div>`;
     }
+    if (g.game === 'briscola5') {
+      const B = window.BurracoBriscola5;
+      const b = g.b5;
+      const SUITN = { d: 'denari', c: 'coppe', s: 'spade', b: 'bastoni' };
+      const mine = g.turn === g.you;
+      if (g.phase === 'bid') {
+        const cur = b.auction.level;
+        const opts = [];
+        for (let l = cur + 1; l <= Math.min(B.MAX_LEVEL, cur + 4); l++) opts.push(l);
+        return `<div class="presa b5">
+          <div class="ptrump">Asta · ${cur >= 0 ? `ultima chiamata: <b>${esc(B.bidLabel(cur))}</b> di ${esc(name(b.auction.bidder))}` : 'nessuna chiamata'}</div>
+          <div class="b5who">${g.players.map((p) => `<span class="${b.auction.passed[p.seat] ? 'out' : ''} ${p.seat === g.turn ? 'turn' : ''}">${esc(name(p.seat))}${b.auction.passed[p.seat] ? ' · passa' : p.seat === b.auction.bidder ? ' · ' + esc(B.bidLabel(cur)) : ''}</span>`).join('')}</div>
+          ${mine ? `<div class="b5bids">${opts.map((l) => `<button class="swatch" data-act="b5Bid" data-l="${l}">${esc(B.bidLabel(l))}</button>`).join('')}<button class="swatch" data-act="b5Pass">Passo</button></div>
+            <p class="muted small">Più bassa è la carta chiamata, più è difficile: chiami se pensi di fare almeno 61 punti con il tuo socio.</p>` : ''}
+        </div>`;
+      }
+      if (g.phase === 'call') {
+        const rank = B.rankName(B.bidOf(b.auction.level).rank);
+        return `<div class="presa b5"><div class="ptrump">${esc(name(b.caller))} ha vinto l'asta (${esc(B.bidLabel(b.auction.level))})</div>
+          ${mine ? `<p>Scegli la briscola: chiami il <b>${esc(rank)}</b> di quel seme.</p><div class="b5bids">${['d', 'c', 's', 'b'].map((s) => `<button class="swatch" data-act="b5Call" data-s="${s}">${cardHTML({ id: -500 - 'dcsb'.indexOf(s), r: B.bidOf(b.auction.level).rank, s }, 'mini')} ${SUITN[s]}</button>`).join('')}</div>` : '<p class="muted">Sta scegliendo la briscola…</p>'}</div>`;
+      }
+      const trick5 = g.trick.length ? g.trick : (g.lastTrick ? g.lastTrick.cards : []);
+      const win5 = !g.trick.length && g.lastTrick ? g.lastTrick.winner : null;
+      return `<div class="presa">
+        <div class="ptrump">Briscola ${SUITN[b.trump] || ''} · chiamato ${b.called ? cardHTML({ id: -510, ...b.called }, 'mini') : ''} · ${b.partner != null ? (b.partner === b.caller ? `${esc(name(b.caller))} gioca da solo` : `socio: <b>${esc(name(b.partner))}</b>`) : 'socio segreto'}${b.iAmPartner && !b.partnerKnown ? ' (sei tu, in segreto!)' : ''}</div>
+        <div class="ptrick">${trick5.length ? trick5.map((x) => `<span class="tc ${x.seat === win5 ? 'win' : ''}">${cardHTML(x.card)}<span>${esc(name(x.seat))}</span></span>`).join('') : '<span class="empty">Tocca a chi apre il giro</span>'}</div>
+        <div class="pinfo"><span>📣 ${esc(name(b.caller))} deve fare <b>${b.target}</b></span></div>
+      </div>`;
+    }
     if (g.game === 'rubamazzetto') {
       const fresh = new Set(g.lastTake && g.lastTake.cardIds ? g.lastTake.cardIds : []);
       return `<div class="presa">
@@ -186,6 +215,8 @@
     if (g.phase === 'handEnd') return g.over ? 'Partita terminata' : 'Smazzata terminata';
     const cur = g.players[g.turn];
     if (g.turn !== me) return `Turno di <b>${esc(cur.name)}</b>${g.lastTurn ? ' · <b>ultimo giro</b>' : ''}`;
+    if (g.game === 'briscola5' && g.phase === 'bid') return 'Tocca a te: chiama una carta o passa';
+    if (g.game === 'briscola5' && g.phase === 'call') return 'Tocca a te: scegli il seme di briscola';
     if (g.game === 'settemezzo') return g.you === g.banker ? 'Tocca a te (banco): tocca il <b>mazzo</b> per una carta, ✋ per stare' : 'Tocca a te: tocca il <b>mazzo</b> per una carta, ✋ per stare';
     if (g.presa) return 'Tocca a te: tocca una carta per giocarla';
     if (g.phase === 'draw') {
@@ -210,6 +241,7 @@
     if (g.phase === 'handEnd' || isS40Game()) return null; // nella Scala 40 il tallone si rimescola
     if (g.game === 'scopa' && g.cfg.rules.deal && g.cfg.rules.deal !== 3) return null; // Scopone: niente mazzo da cui pescare
     if (g.game === 'tressette' && !g.stockCount) return null; // Tressette in quattro: niente mazzo
+    if (g.game === 'briscola5') return null; // in cinque non c'è mazzo
     if (g.lastTurn) return { level: 3, text: '🔔 Ultimo turno della smazzata!' };
     const r = g.cfg.rules;
     if (r.stockEnd === 'mortoToStock' && g.pozzetti.length) return null; // un pozzetto ricaricherà il tallone
@@ -276,6 +308,7 @@
     const rel = (k) => (me + k) % g.n;
     if (g.n === 4) return [[rel(1), 'left'], [rel(2), 'top'], [rel(3), 'right']];
     if (g.n === 3) return [[rel(1), 'left'], [rel(2), 'right']];
+    if (g.n === 5) return [[rel(1), 'left'], [rel(2), 'top'], [rel(3), 'top'], [rel(4), 'right']];
     return [[rel(1), 'top']];
   }
 

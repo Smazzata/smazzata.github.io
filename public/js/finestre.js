@@ -57,7 +57,7 @@
         <div class="rhand ${t.total < 0 ? 'neg' : 'pos'}">${t.total === best ? '★ ' : ''}smazzata <b data-count="${t.total}" data-sign="1">${signed(t.total)}</b></div>
         ${s40
           ? `<div class="rbar pen"><i style="--from:${pct(t.total - tot)}%;--to:${pct(-tot)}%"></i></div><div class="rtot">eliminato a ${g.cfg.target}</div>`
-          : `<div class="rbar"><i style="--from:${pct(tot - t.total)}%;--to:${pct(tot)}%"></i></div><div class="rtot">${g.game === 'briscola' || g.game === 'rubamazzetto' ? `vince chi arriva a ${g.cfg.target} ${g.cfg.target === 1 ? 'smazzata' : 'smazzate'}` : g.game === 'settemezzo' ? `fiches · smazzata ${g.handNo} di ${g.cfg.target}` : `si vince a ${g.cfg.target}`}</div>`}</div>`;
+          : `<div class="rbar"><i style="--from:${pct(tot - t.total)}%;--to:${pct(tot)}%"></i></div><div class="rtot">${g.game === 'briscola' || g.game === 'rubamazzetto' ? `vince chi arriva a ${g.cfg.target} ${g.cfg.target === 1 ? 'smazzata' : 'smazzate'}` : g.game === 'settemezzo' || g.game === 'briscola5' ? `${g.game === 'settemezzo' ? 'fiches' : 'punti'} · smazzata ${g.handNo} di ${g.cfg.target}` : `si vince a ${g.cfg.target}`}</div>`}</div>`;
     }).join('');
     // righe del dettaglio: quelle tutte a zero non servono
     const detail = (label, key, extra) => (hr.teams.some((t) => t[key]) || (key === 'meldPts' && !isS40Game())

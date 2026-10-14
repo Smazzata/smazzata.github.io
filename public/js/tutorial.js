@@ -70,6 +70,13 @@
       { t: 'I punti', h: `<p>L'<b>Asso</b> vale 1 punto, <b>Tre, Due e figure</b> 1/3 di punto, l'<b>ultima presa</b> 1 punto: 11 punti a smazzata.</p>
          <p>Con gli <b>accusi</b>: napoletana (Asso, Due, Tre dello stesso seme) o tre/quattro Assi, Due o Tre danno punti in più.</p>` },
     ] },
+    briscola5: { name: '🍷 Briscola in 5', slides: [
+      { t: 'Lo scopo', h: `<p>In cinque, 8 carte a testa, punti e forza come nella Briscola. Chi vince l'<b>asta</b> chiama una carta e sceglie la briscola: chi ha quella carta è il suo <b>socio segreto</b>.</p>
+         <div class="tutcards">${it(1, 'd')}${it(3, 'd')}${it(10, 'd')}</div>` },
+      { t: "L'asta", h: `<p>A turno si chiama una carta sempre più bassa (Asso, Tre, Re… Due) o si passa. Più bassa è la carta, più si rischia. Sul Due si rilancia il punteggio: 62, 63…</p>
+         <p class="muted small">Chiamante e socio devono fare almeno 61 punti (o quelli dell'asta). Gli altri tre giocano insieme contro di loro.</p>` },
+      { t: 'Il socio', h: `<p>Nessuno sa chi è il socio finché non gioca la carta chiamata. Se sei tu, aiuta il chiamante senza farti scoprire troppo presto!</p>` },
+    ] },
     rubamazzetto: { name: '🃁 Rubamazzetto', slides: [
       { t: 'Lo scopo', h: `<p>Carte italiane da 40, ognuno per sé: 3 carte a testa e 4 in tavola. Vince chi alla fine ha il <b>mazzetto più alto</b>.</p>
          <div class="tutcards">${it(5, 'c')}<span style="align-self:center">➜</span>${it(5, 'b')}</div><p class="muted small">Con un 5 prendi il 5 in tavola.</p>` },

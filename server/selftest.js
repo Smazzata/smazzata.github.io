@@ -140,6 +140,24 @@ function presaTests() {
   assert.strictEqual(BR.winner([c(1, 'd', 1), c(2, 'c', 2)], 'c'), 1);
   assert.strictEqual(BR.winner([c(1, 'd', 1), c(10, 's', 2)], 'c'), 0, 'seme diverso senza briscola: vince chi esce');
   let hands = 0;
+  // Briscola in 5: asta, chiamata, socio; i punti della smazzata sommano sempre a zero
+  {
+    const E5 = require('./briscola5'), B5b = require('./briscola5-bot');
+    const g = E5.createGame({ rules: {}, players: [0, 1, 2, 3, 4].map((i) => ({ name: 'C' + i, isBot: true })) });
+    assert.throws(() => E5.apply(g, g.turn, { type: 'play', cardId: g.players[g.turn].hand[0].id }), /ancora/, "prima l'asta");
+    let guard = 0;
+    while (!g.over && guard++ < 9000) {
+      if (g.phase === 'handEnd') {
+        assert.strictEqual(g.scores.reduce((a, b) => a + b, 0), 0, 'briscola in 5: punti a somma zero');
+        E5.nextHand(g); continue;
+      }
+      E5.apply(g, g.turn, B5b.nextAction(g, g.turn, { level: ['facile', 'normale', 'difficile'][guard % 3] }));
+      const tot = g.players.reduce((a, p) => a + p.hand.length, 0) + g.trick.length + g.teams.reduce((a, t) => a + t.taken.length, 0);
+      assert.strictEqual(tot, 40, 'briscola in 5: carte conservate');
+      if (g.phase === 'play' && !g.partnerKnown) assert.strictEqual(E5.viewFor(g, (g.partner + 1) % 5 === g.caller ? (g.partner + 2) % 5 : (g.partner + 1) % 5).b5.partner, null, 'il socio resta segreto');
+    }
+    assert(g.over, 'briscola in 5: la partita finisce');
+  }
   // Rubamazzetto: con una carta uguale alla cima di un mazzetto lo si ruba
   const RMB = require('../shared/rubamazzetto');
   const mv = RMB.moves(c(5, 'd', 1), [c(5, 'c', 2)], [[], [c(9, 'b', 3), c(5, 's', 4)]], 0);
