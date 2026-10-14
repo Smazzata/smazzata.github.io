@@ -601,6 +601,7 @@
     const friend = (f) => `<div class="friend">${avatarHTML(f.nick, 0, false, f.avatar || { e: f.nick.charAt(0).toUpperCase(), c: '#9e9e9e' })}<span class="dot ${f.online ? '' : 'off'}"></span>
       <span class="grow" data-act="playerCard" data-nick="${esc(f.nick)}" style="cursor:pointer"><b>${esc(f.nick)}</b> <span class="muted small">›</span><br><span class="muted small">${f.online ? (f.room ? (f.room === inRoom ? 'al tuo tavolo' : f.playing ? 'sta giocando' : 'in un tavolo') : 'online') : 'offline'}</span></span>
       ${inRoom && f.online && f.room !== inRoom ? `<button class="btn small primary" data-act="invite" data-nick="${esc(f.nick)}">Invita</button>` : ''}
+      ${f.playing && f.room && f.room !== inRoom ? `<button class="btn small" data-act="watch" data-code="${esc(f.room)}">👁 Guarda</button>` : ''}
       <button class="btn small ghost dark" data-act="unfriend" data-nick="${esc(f.nick)}" title="Rimuovi">✕</button></div>`;
     openModal('friends', `<h2>👥 Amici</h2>
       <form id="friendform" class="row"><input id="friendin" class="grow" maxlength="16" autocomplete="off" placeholder="Nickname dell'amico"><button class="btn primary">Aggiungi</button></form>
@@ -851,7 +852,8 @@
 
   /** posizione al tavolo degli altri giocatori rispetto a me */
   function seatPositions(g) {
-    const me = g.you < 0 ? 0 : g.you;
+    if (g.you < 0) return g.players.map((p) => [p.seat, 'top']);
+    const me = g.you;
     const rel = (k) => (me + k) % g.n;
     if (g.n === 4) return [[rel(1), 'left'], [rel(2), 'top'], [rel(3), 'right']];
     if (g.n === 3) return [[rel(1), 'left'], [rel(2), 'right']];
@@ -939,11 +941,11 @@
     if (g.you >= 0) actions = '<button class="ico" data-act="reactPicker" title="Reazioni">😊</button>' + actions;
     if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';
     const sortLbl = { rank: '⇅ Valore', suit: '⇅ Seme', smart: '⇅ Giochi' }[S.sortMode] || '⇅ Ordina';
-    actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;
+    if (g.you >= 0) actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;
 
     return `<div class="game ${myTurn ? 'myturn' : ''}">
       <div class="topbar">
-        <span class="title">Tavolo <b>${esc(r.code)}</b> · Smazzata ${g.handNo} · a ${g.cfg.target}</span>
+        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}Tavolo <b>${esc(r.code)}</b> · Smazzata ${g.handNo} · a ${g.cfg.target}</span>
         <button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
         <button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>
         <button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>
@@ -952,7 +954,7 @@
         <button class="iconbtn" data-act="leave" title="Esci">⏏</button>
       </div>
       <div class="scorebar">${scores}</div>
-      <div class="seats-row n${g.n}">${seats}</div>
+      <div class="seats-row n${g.n} ${g.you < 0 ? 'spect' : ''}">${seats}</div>
       ${(() => { const w = stockWarning(g); return w ? `<div class="ticker warn w${w.level}">${w.text}</div>` : `<div class="ticker" title="Ultima mossa">${esc(lastMove(g))}</div>`; })()}
       <div class="felt" id="felt">${others}${center}${mineZone}</div>
       <div class="statusbar ${myTurn ? 'on' : ''}">
@@ -960,7 +962,8 @@
         <div class="btns">${actions}</div>
       </div>
       ${S.reactOpen ? `<div class="reactbar">${['👏', '😂', '😱', '🔥', '👍', '😡', '🙏', '😍'].map((e) => `<button data-act="react" data-e="${e}">${e}</button>`).join('')}</div>` : ''}
-      <div class="handwrap" data-drop="hand"><div class="hand" id="hand">${handHTML(g)}</div></div>
+      ${g.you < 0 ? `<div class="watching">👁 Stai guardando la partita · le carte in mano non sono visibili <button class="btn small" data-act="leave">Esci</button></div>`
+        : `<div class="handwrap" data-drop="hand"><div class="hand" id="hand">${handHTML(g)}</div></div>`}
     </div>`;
   }
 
@@ -1210,7 +1213,9 @@
     const waiting = humans.filter((i) => !S.room.ready.includes(i)).map((i) => S.room.seats[i].name);
     const imReady = S.room.ready.includes(g.you);
     let footer;
-    if (g.over) {
+    if (g.you < 0) {
+      footer = g.over ? `<div class="winner">🏆 Vince ${esc(g.winners.map((s) => g.players[s].name).join(' & '))}!</div>` : '<p class="muted">Stai guardando: la prossima smazzata parte quando i giocatori sono pronti.</p>';
+    } else if (g.over) {
       footer = `<div class="winner">🏆 Vince ${esc(g.winners.map((s) => (s === g.you ? 'Tu' : g.players[s].name)).join(' & '))}!</div>
         <button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Rivincita: hai votato ✓' : '🔁 Rivincita'}</button>
         ${imReady && waiting.length ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : '<p class="muted">Stessi posti, stesse regole: si riparte quando tutti premono Rivincita.</p>'}`;
@@ -1477,6 +1482,7 @@
       if (r.ok) { toast(`${el.dataset.nick} bloccato`); friendsModal(); }
     },
     unblock(el) { emit('unblockPlayer', { nick: el.dataset.nick }); },
+    watch(el) { closeModal(); joinRoom(el.dataset.code); },
     friendYes(el) { emit('friendRespond', { nick: el.dataset.nick, accept: true }); },
     friendNo(el) { emit('friendRespond', { nick: el.dataset.nick, accept: false }); },
     unfriend(el) { if (confirm(`Rimuovere ${el.dataset.nick}?`)) emit('friendRemove', { nick: el.dataset.nick }); },

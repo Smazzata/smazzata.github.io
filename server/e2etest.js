@@ -152,6 +152,22 @@ const step = (t) => console.log('✓ ' + t);
     await A.until((s) => s.game && s.game.log.some((l) => l.includes('Tempo scaduto')), 'turno automatico per tempo scaduto', 30000);
     step('timer del turno: allo scadere pesca e scarta in automatico');
 
+    // spettatore: entra a partita iniziata, vede il tavolo ma non le carte, non può giocare
+    const W = player('Walter');
+    await W.hello();
+    assert((await W.call('setNick', { nick: 'Walter' })).ok);
+    assert((await W.call('joinRoom', { code })).ok, 'ingresso come spettatore');
+    const ws = await W.until((s) => s.game, 'vista dello spettatore');
+    assert.strictEqual(ws.room.you, -1, 'senza posto');
+    assert.strictEqual(ws.game.hand.length, 0, 'nessuna carta in mano visibile');
+    assert(ws.game.players.length === 4 && ws.game.teams.length === 2, 'tavolo visibile');
+    assert(!(await W.call('action', { type: 'draw' })).ok, 'lo spettatore non gioca');
+    await A.until((s) => s.room.spectators.includes('Walter'), 'spettatore visibile ai giocatori');
+    assert((await W.call('leaveRoom')).ok);
+    await A.until((s) => !s.room.spectators.includes('Walter'), 'spettatore uscito');
+    W.sock.close();
+    step('spettatore: vede il tavolo senza le carte in mano e non può giocare');
+
     // riconnessione: Bruno cade e rientra con lo stesso token, ritrovando posto e carte
     const bSeat = B.state.game.you;
     B.sock.close();

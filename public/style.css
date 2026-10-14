@@ -492,3 +492,7 @@ body[data-theme="notte"] .avopt.on { background: #4a3f1e; }
 .cardhead .avatar { width: 48px; height: 48px; font-size: 26px; }
 .tabs { margin-bottom: 8px; }
 body[data-theme="notte"] .hist { border-color: #3a413e; }
+
+/* ---------- Spettatore ---------- */
+.watching { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 14px 10px calc(14px + env(safe-area-inset-bottom)); background: rgba(0,0,0,.3); font-size: 14px; text-align: center; }
+.seats-row.spect { flex-wrap: wrap; justify-content: center; }

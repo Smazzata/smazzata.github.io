@@ -151,6 +151,7 @@ function roomInfo(room) {
     started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
     hints: !!room.hints && humanCount(room) <= 1, humans: humanCount(room),
     music: room.music || null,
+    spectators: (room.spectators || []).filter((t) => isConnected(t)).map((t) => (sessions.get(t) || {}).name || 'Ospite'),
     botLevel: room.botLevel || 'normale',
     turnTime: room.turnTime || 0,
     turnLeft: room.turnDeadline ? Math.max(0, room.turnDeadline - Date.now()) : null,
@@ -321,6 +322,7 @@ function leaveRoom(socket) {
   const sess = sessions.get(socket.data.token);
   if (sess) sess.room = null;
   if (!room) return;
+  room.spectators = (room.spectators || []).filter((t) => t !== socket.data.token);
   const seat = seatOfToken(room, socket.data.token);
   if (seat >= 0 && !room.game) room.seats[seat] = null;
   if (seat >= 0 && room.game) {
@@ -349,11 +351,17 @@ function joinRoom(socket, room) {
   const token = socket.data.token;
   const sess = sessions.get(token);
   let seat = seatOfToken(room, token);
+  room.spectators = room.spectators || [];
   if (seat < 0) {
-    if (room.game) throw new E.GameError('La partita è già iniziata');
-    seat = room.seats.findIndex((s) => !s);
-    if (seat < 0) throw new E.GameError('Il tavolo è pieno');
-    room.seats[seat] = { token, name: sess.name, avatar: sess.avatar || null };
+    const free = room.game ? -1 : room.seats.findIndex((s) => !s);
+    if (free >= 0) {
+      room.seats[free] = { token, name: sess.name, avatar: sess.avatar || null };
+      room.spectators = room.spectators.filter((t) => t !== token);
+    } else if (!room.spectators.includes(token)) {
+      // partita iniziata o tavolo pieno: si entra a guardare (senza vedere le carte in mano)
+      if (room.spectators.length >= 20) throw new E.GameError('Troppi spettatori a questo tavolo');
+      room.spectators.push(token);
+    }
   }
   if (socket.data.room && socket.data.room !== room.code) leaveRoom(socket);
   socket.join(room.code);
@@ -404,7 +412,7 @@ io.on('connection', (socket) => {
     social.pushFriends(token);
     if (sess.room && rooms.has(sess.room)) {
       const room = rooms.get(sess.room);
-      if (seatOfToken(room, token) >= 0) {
+      if (seatOfToken(room, token) >= 0 || (room.spectators || []).includes(token)) {
         socket.join(room.code);
         socket.data.room = room.code;
         broadcast(room);
@@ -633,6 +641,7 @@ io.on('connection', (socket) => {
     const g = room.game;
     if (!g || g.phase !== 'handEnd') throw new E.GameError('Nessuna smazzata da chiudere');
     const seat = seatOfToken(room, socket.data.token);
+    if (seat < 0) throw new E.GameError('Gli spettatori non partecipano');
     room.ready.add(seat);
     const humans = room.seats.map((s, i) => (s && !s.isBot ? i : -1)).filter((i) => i >= 0);
     // a fine partita "pronto" vale come voto per la rivincita: si riparte quando tutti hanno votato
@@ -736,7 +745,7 @@ function saveNow() {
       leaderboard: [...leaderboard],
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
-        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [],
       })),
     };
     fs.mkdirSync(DATA_DIR, { recursive: true });
