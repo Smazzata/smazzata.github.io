@@ -1406,20 +1406,56 @@
       footer = `<button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Pronto ✓' : 'Prossima smazzata'}</button>
         ${waiting.length && imReady ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : ''}`;
     }
-    openModal('result', `<div class="result">
+    // riepilogo in alto: punti della smazzata in grande e barra verso la vittoria
+    const best = Math.max(...hr.teams.map((t) => t.total));
+    const pct = (v) => Math.max(0, Math.min(100, (v / g.cfg.target) * 100));
+    const summary = hr.teams.map((t) => {
+      const tot = hr.scores[t.members[0]];
+      const names = t.members.map((x) => (x === g.you ? 'Tu' : g.players[x].name)).join(' & ');
+      return `<div class="rteam ${t.total === best ? 'win' : ''} ${t.members.includes(g.you) ? 'mine' : ''}">
+        <div class="rname">${t.total === best ? '★ ' : ''}${esc(names)}</div>
+        <div class="rpts ${t.total < 0 ? 'neg' : ''}" data-count="${t.total}" data-sign="1">${signed(t.total)}</div>
+        <div class="rbar"><i style="--from:${pct(tot - t.total)}%;--to:${pct(tot)}%"></i></div>
+        <div class="rtot"><b data-count="${tot}">${tot}</b> / ${g.cfg.target}</div></div>`;
+    }).join('');
+    // righe del dettaglio: quelle tutte a zero non servono
+    const detail = (label, key, extra) => (hr.teams.some((t) => t[key]) || key === 'meldPts'
+      ? `<tr><td>${label}</td>${hr.teams.map((t) => `<td class="${t[key] < 0 ? 'neg' : t[key] > 0 ? 'pos' : ''}">${signed(t[key])}${extra ? extra(t) : ''}</td>`).join('')}</tr>` : '');
+    const kindCls = (b) => ({ clean: 'clean', semi: 'semi', dirty: 'dirty' }[b.kind] || 'real');
+    // l'animazione si vede solo la prima volta (la finestra si ridisegna a ogni voto "pronto")
+    const key = `${g.handNo}:${hr.teams.map((t) => t.total).join(',')}`;
+    const firstShow = S.resultShown !== key;
+    S.resultShown = key;
+    openModal('result', `<div class="result ${firstShow ? 'anim' : ''}">
       <h2>Fine smazzata ${g.handNo}</h2><p>${reason}</p>
+      <div class="rsum">${summary}</div>
       <table><tr><th></th>${cols}</tr>
-      ${row('Carte calate', (t) => t.meldPts)}
-      ${row(`Bonus ${g.cfg.burracoName}`, (t) => `${t.bonusPts}${t.burraco.length ? `<br><span class="muted small">${t.burraco.map((b) => esc(b.label)).join(', ')}</span>` : ''}`)}
-      ${row('Chiusura', (t) => t.closePts)}
-      ${row(cap(P), (t) => t.pozPts)}
-      ${row('Carte in mano', (t) => t.handPts)}
-      <tr class="tot"><td>Smazzata</td>${hr.teams.map((t) => `<td>${t.total}</td>`).join('')}</tr>
-      ${row('<b>Totale partita</b>', (t) => `<b>${hr.scores[t.members[0]]}</b>`)}
+      ${detail('Carte calate', 'meldPts')}
+      ${detail(`Bonus ${g.cfg.burracoName}`, 'bonusPts', (t) => (t.burraco.length ? `<div class="bchips">${t.burraco.map((b) => `<span class="bchip ${kindCls(b)}">${esc(cap(b.label.replace(/^(burraco|canastra) /i, '')))} +${b.bonus}</span>`).join('')}</div>` : ''))}
+      ${detail('Chiusura', 'closePts')}
+      ${detail(cap(P), 'pozPts')}
+      ${detail('Carte in mano', 'handPts')}
+      <tr class="tot"><td>Smazzata</td>${hr.teams.map((t) => `<td>${signed(t.total)}</td>`).join('')}</tr>
       </table>
-      <p class="muted">Si vince a ${g.cfg.target} punti.</p>
       ${leftoverHTML(g, hr)}
       ${footer}</div>`);
+    if (firstShow) countUp($$('#modal [data-count]'));
+  }
+
+  const signed = (v) => (v > 0 ? `+${v}` : String(v));
+
+  /** I numeri salgono da 0 al valore finale (una volta sola per smazzata) */
+  function countUp(els) {
+    if (reducedMotion) return;
+    const t0 = performance.now(), dur = 900;
+    const targets = els.map((el) => ({ el, v: Number(el.dataset.count), sign: !!el.dataset.sign }));
+    for (const x of targets) x.el.textContent = '0';
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      for (const x of targets) { const v = Math.round(x.v * e); x.el.textContent = x.sign ? signed(v) : String(v); }
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   }
 
   function leftoverHTML(g, hr) {

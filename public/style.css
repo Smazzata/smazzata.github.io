@@ -529,3 +529,31 @@ body[data-theme="notte"] #reportin { background: #2a312e; color: #eee; border-co
 .recap div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .recap .rs { color: #ff9b9b; font-weight: 700; }
 .ticker[data-act] { cursor: pointer; }
+
+/* fine smazzata: riepilogo per squadra */
+.rsum { display: flex; gap: 8px; margin: 10px 0 12px; }
+.rteam { flex: 1 1 0; min-width: 0; border: 1px solid #e3ddcc; border-radius: 12px; padding: 8px 10px; text-align: center; background: rgba(0,0,0,.02); }
+.rteam.win { border-color: #e2b23c; background: #fff6d6; box-shadow: 0 2px 10px rgba(226,178,60,.3); }
+.rteam .rname { font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rteam .rpts { font-size: 30px; font-weight: 800; color: #155d3a; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.rteam .rpts.neg { color: #b3261e; }
+.rteam .rbar { height: 7px; border-radius: 99px; background: rgba(0,0,0,.1); overflow: hidden; margin: 4px 0; }
+.rteam .rbar i { display: block; height: 100%; width: var(--to); background: linear-gradient(90deg, #2e9d5c, #e2b23c); border-radius: 99px; }
+.result.anim .rteam .rbar i { animation: rbar 1s ease-out; }
+@keyframes rbar { from { width: var(--from); } }
+.rteam .rtot { font-size: 12px; color: #666; font-variant-numeric: tabular-nums; }
+.result td.pos { color: #155d3a; }
+.result td.neg { color: #b3261e; }
+.bchips { display: flex; flex-wrap: wrap; gap: 3px; justify-content: flex-end; margin-top: 3px; }
+.bchip { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 99px; background: #eee; color: #333; white-space: nowrap; }
+.bchip.clean { background: #d6f2df; color: #155d3a; }
+.bchip.semi { background: #e3ecff; color: #22408f; }
+.bchip.dirty { background: #fde9c8; color: #8a4b00; }
+.bchip.real { background: #f3defc; color: #6b2a8a; }
+body[data-theme="notte"] .rteam { border-color: #3a413e; background: rgba(255,255,255,.03); }
+body[data-theme="notte"] .rteam.win { border-color: #b98f2a; background: #3a321a; }
+body[data-theme="notte"] .rteam .rpts, body[data-theme="notte"] .result td.pos { color: #8fd3a8; }
+body[data-theme="notte"] .rteam .rpts.neg, body[data-theme="notte"] .result td.neg { color: #ff9b9b; }
+body[data-theme="notte"] .rteam .rtot { color: #a5aca8; }
+body[data-theme="notte"] .rteam .rbar { background: rgba(255,255,255,.12); }
+@media (prefers-reduced-motion: reduce) { .result.anim .rteam .rbar i { animation: none; } }

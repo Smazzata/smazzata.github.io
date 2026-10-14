@@ -484,7 +484,7 @@ function endHand(g, reason, closerSeat = null) {
     const total = meldPts + bonusPts - handPts + closePts + pozPts;
     return {
       members: t.members.slice(), names: t.members.map((s) => g.players[s].name),
-      meldPts, burraco: burraco.map((k) => ({ label: k.label, bonus: k.bonus })), bonusPts,
+      meldPts, burraco: burraco.map((k) => ({ label: k.label, bonus: k.bonus, kind: k.kind })), bonusPts,
       handPts: -handPts, closePts, pozPts, total,
     };
   });
