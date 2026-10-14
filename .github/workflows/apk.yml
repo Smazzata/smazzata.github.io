@@ -55,14 +55,27 @@ jobs:
           cp "$apk" Burraco.apk
           ls -la Burraco.apk
 
+      - name: Pacchetto per il Play Store (AAB)
+        working-directory: android-app
+        run: |
+          # Google Play vuole il "bundle" (.aab), firmato con la stessa chiave (chiave di caricamento)
+          npx cap build android --androidreleasetype AAB --signing-type jarsigner             --keystorepath "$PWD/burraco.p12" --keystorepass burraco-amici             --keystorealias burraco --keystorealiaspass burraco-amici
+          aab=$(find android/app/build/outputs/bundle/release -name '*.aab' | head -1)
+          echo "AAB: $aab"
+          cp "$aab" Smazzata.aab
+          ls -la Smazzata.aab
+
       - name: Pubblica nelle Releases
         uses: softprops/action-gh-release@v2
         with:
           tag_name: apk-${{ github.run_number }}
-          name: Burraco per Android (versione 1.${{ github.run_number }})
+          name: Smazzata per Android (versione 1.${{ github.run_number }})
           make_latest: true
-          files: android-app/Burraco.apk
+          files: |
+            android-app/Burraco.apk
+            android-app/Smazzata.aab
           body: |
-            Scarica **Burraco.apk** qui sotto e aprilo dal telefono Android.
+            Scarica **Burraco.apk** qui sotto e aprilo dal telefono Android (il file ha ancora il vecchio nome, così gli aggiornamenti continuano a funzionare).
+            **Smazzata.aab** serve solo per caricare l'app sul Play Store.
             Se Android lo chiede, consenti l'installazione di app da questa fonte (browser o file).
             L'app apre il gioco dalla pagina fissa https://simonemuliello010500-web.github.io/BurracoByMSF/

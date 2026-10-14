@@ -16,7 +16,10 @@ const { spawn } = require('child_process');
 const PORT = 3996;
 const DEBUG_PORT = 9333;
 const URL = `http://localhost:${PORT}`;
-const OUT = path.join(__dirname, '..', 'test-output');
+// STORE=1: schermate per il Play Store (1080×1920, formato 9:16) salvate in store/schermate
+const STORE = !!process.env.STORE;
+const OUT = STORE ? path.join(__dirname, '..', 'store', 'schermate') : path.join(__dirname, '..', 'test-output');
+const VW = STORE ? 405 : 375, VH = STORE ? 720 : 812, DPR = STORE ? 1080 / 405 : 2;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const step = (t) => console.log('✓ ' + t);
 
@@ -91,7 +94,7 @@ const HELPERS = `
   await new Promise((res) => server.stdout.on('data', (d) => { if (String(d).includes('ascolto')) res(); }));
   const browser = spawn(findBrowser(), [
     '--headless=new', `--remote-debugging-port=${DEBUG_PORT}`, ...(process.env.CI ? ['--no-sandbox'] : []), `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check',
-    '--window-size=375,812', '--force-device-scale-factor=2', '--lang=it-IT', '--autoplay-policy=no-user-gesture-required', 'about:blank',
+    `--window-size=${VW},${VH}`, `--force-device-scale-factor=${DPR}`, '--lang=it-IT', '--autoplay-policy=no-user-gesture-required', 'about:blank',
   ], { stdio: 'ignore', env: { ...process.env, LANGUAGE: 'it', LANG: 'it_IT.UTF-8' } });
   let cdp;
   const errors = [];
@@ -105,7 +108,7 @@ const HELPERS = `
     cdp = await connect(target.webSocketDebuggerUrl);
     await cdp.send('Runtime.enable');
     await cdp.send('Page.enable');
-    await cdp.send('Emulation.setDeviceMetricsOverride', { width: 375, height: 812, deviceScaleFactor: 2, mobile: true });
+    await cdp.send('Emulation.setDeviceMetricsOverride', { width: VW, height: VH, deviceScaleFactor: DPR, mobile: true });
     cdp.on((m) => {
       if (m.method === 'Runtime.exceptionThrown') errors.push(m.params.exceptionDetails.exception ? m.params.exceptionDetails.exception.description : m.params.exceptionDetails.text);
       if (m.method === 'Runtime.consoleAPICalled' && m.params.type === 'error') errors.push(m.params.args.map((a) => a.value || a.description).join(' '));

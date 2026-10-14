@@ -1,0 +1,31 @@
+# Smazzata sul Play Store — cosa c'è qui e come pubblicare
+
+## Materiale pronto in questa cartella
+- `icona-512.png` — icona per la scheda del Play Store (512×512).
+- `immagine-in-evidenza.png` — immagine in evidenza (1024×500).
+- `schermate/` — schermate del telefono (1080×1920). Si rigenerano con `STORE=1 node server/uitest.js`.
+- `testi.md` — nome, descrizione breve e descrizione completa in italiano, inglese, spagnolo e portoghese.
+- Il pacchetto da caricare (**Smazzata.aab**) viene creato da GitHub a ogni nuova versione dell'app,
+  nella pagina *Releases* del progetto, accanto a `Burraco.apk`.
+
+## Cosa devi fare tu (una volta sola)
+1. **Account sviluppatore Google Play**: https://play.google.com/console — costo unico di 25 dollari.
+   Serve un documento d'identità; Google può chiedere di verificare un numero di telefono.
+2. **Crea l'app** nella Console: nome «Smazzata», lingua predefinita italiano, *Gioco*, *Gratuita*.
+3. **Firma dell'app**: lascia attiva la «Firma dell'app da parte di Google Play». Il file `Smazzata.aab` è già firmato
+   con la nostra chiave (`android-app/burraco.p12`), che diventa la *chiave di caricamento*. Non perderla e non cambiarla.
+4. **Scheda dello Store**: copia i testi da `testi.md` e carica icona, immagine in evidenza e almeno 2 schermate.
+5. **Norme sulla privacy**: indirizzo https://simonemuliello010500-web.github.io/BurracoByMSF/gioca/privacy.html
+6. **Sicurezza dei dati**: l'app salva nickname, statistiche e (se scelta) una password cifrata; nessuna pubblicità,
+   nessun dato venduto, eliminazione del profilo dall'app.
+7. **Classificazione dei contenuti** (questionario): niente violenza né acquisti. Attenzione al **Sette e mezzo**:
+   è un gioco d'azzardo *simulato* (fiches finte, nessun premio). Va dichiarato: di solito porta la classificazione
+   a PEGI 12 / «Adolescenti». Se preferisci restare «Per tutti», si può nascondere il Sette e mezzo nella versione Play.
+8. **Pubblico di destinazione**: 13 anni in su (per via della chat e del gioco d'azzardo simulato).
+9. **Test chiuso**: per i nuovi account personali Google chiede un test chiuso con almeno 12 tester per 14 giorni
+   prima della pubblicazione. Bastano amici e parenti: li inviti con la loro email Google.
+10. **Produzione**: dopo il test, «Crea nuova release» → carica `Smazzata.aab` → invia per la revisione (qualche giorno).
+
+## Da sapere
+- Ogni nuova versione: GitHub crea un nuovo `Smazzata.aab` (numero di versione già crescente): lo carichi come nuova release.
+- L'APK scaricato dal sito continua a funzionare come prima; chi installa dal Play Store riceve gli aggiornamenti da lì.
