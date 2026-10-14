@@ -197,8 +197,15 @@ const step = (t) => console.log('✓ ' + t);
     assert(!(await D2.call('playerCard', { nick: 'Anna' })).ok, 'scheda visibile solo agli amici');
     const lf = await A.call('leaderboard', { friends: true });
     assert(lf.ok && lf.list.length === 2, 'classifica tra amici');
+    // blocco: l'estraneo bloccato non può più chiedere l'amicizia
+    assert((await D2.call('friendRequest', { nick: 'Anna' })).ok);
+    assert((await A.call('blockPlayer', { nick: 'Estraneo' })).ok);
+    assert.deepStrictEqual((await A.call('social')).social.reqIn, [], 'richiesta tolta dal blocco');
+    assert(!(await D2.call('friendRequest', { nick: 'Anna' })).ok, 'bloccato: niente richieste');
+    assert((await A.call('unblockPlayer', { nick: 'Estraneo' })).ok);
+    assert((await D2.call('friendRequest', { nick: 'Anna' })).ok, 'sbloccato: richieste di nuovo possibili');
     D2.sock.close();
-    step('statistiche sul server, storico partite, scheda amico e classifica tra amici');
+    step('statistiche sul server, storico partite, scheda amico e classifica tra amici; blocco giocatore');
 
     // rivincita: serve il voto di tutti gli umani
     const seatsBefore = A.state.game.players.map((p) => p.name);

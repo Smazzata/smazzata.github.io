@@ -33,7 +33,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
   const fail = (m) => { throw new GameError(m); };
   /** profilo con le liste sempre presenti (anche per sessioni appena create) */
   const withLists = (s) => {
-    if (s) { s.friends = s.friends || []; s.reqIn = s.reqIn || []; s.reqOut = s.reqOut || []; }
+    if (s) { s.friends = s.friends || []; s.reqIn = s.reqIn || []; s.reqOut = s.reqOut || []; s.blocked = s.blocked || []; }
     return s;
   };
   const sess = (token) => withLists(sessions.get(token)) || fail('Sessione non valida');
@@ -90,6 +90,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       friends: s.friends.filter((t) => nickOf(t)).map(entry).sort((a, b) => b.online - a.online || a.nick.localeCompare(b.nick)),
       reqIn: s.reqIn.map(nickOf).filter(Boolean),
       reqOut: s.reqOut.map(nickOf).filter(Boolean),
+      blocked: s.blocked.map(nickOf).filter(Boolean),
     };
   }
 
@@ -220,6 +221,8 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       const other = tokenByNick(nick);
       if (other === token) fail('Non puoi aggiungere te stesso');
       const o = sess(other);
+      if (s.blocked.includes(other)) fail('Hai bloccato questo giocatore: sbloccalo prima');
+      if (o.blocked.includes(token)) fail('Non è possibile inviare la richiesta');
       if (s.friends.includes(other)) fail('Siete già amici');
       if (s.reqIn.includes(other)) {
         // aveva già chiesto lui: diventate amici subito
@@ -253,6 +256,30 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       s.friends = s.friends.filter((t) => t !== other); o.friends = o.friends.filter((t) => t !== token);
       s.reqOut = s.reqOut.filter((t) => t !== other); o.reqIn = o.reqIn.filter((t) => t !== token);
       push(token); push(other);
+      return {};
+    }));
+
+    // Blocca: niente più richieste né inviti da quel giocatore, e l'amicizia viene tolta
+    socket.on('blockPlayer', handler(({ nick }) => {
+      const token = me();
+      const s = sess(token);
+      const other = tokenByNick(nick);
+      if (other === token) fail('Non puoi bloccare te stesso');
+      const o = sess(other);
+      s.friends = s.friends.filter((t) => t !== other); o.friends = o.friends.filter((t) => t !== token);
+      s.reqIn = s.reqIn.filter((t) => t !== other); s.reqOut = s.reqOut.filter((t) => t !== other);
+      o.reqIn = o.reqIn.filter((t) => t !== token); o.reqOut = o.reqOut.filter((t) => t !== token);
+      if (!s.blocked.includes(other)) s.blocked.push(other);
+      push(token); push(other);
+      return {};
+    }));
+
+    socket.on('unblockPlayer', handler(({ nick }) => {
+      const token = me();
+      const s = sess(token);
+      const other = tokenByNick(nick);
+      s.blocked = s.blocked.filter((t) => t !== other);
+      push(token);
       return {};
     }));
 
