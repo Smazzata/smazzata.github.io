@@ -35,11 +35,12 @@ function setEvent(g, ev) {
 }
 const teamOf = (g, seat) => g.teams.find((t) => t.members.includes(seat));
 
-function buildCfg(rules) { const r = SC.normalize(rules); return { game: 'scopa', rules: r, target: r.target, aceTakesAll: r.aceTakesAll }; }
+function buildCfg(rules) { const r = SC.normalize(rules); return { game: 'scopa', rules: r, target: r.target, aceTakesAll: r.aceTakesAll, deal: r.deal, napola: r.napola }; }
 
 function createGame({ rules, players, seed }) {
   const n = players.length;
   if (n !== 2 && n !== 4) fail('La Scopa si gioca in 2 o in 4');
+  if (n !== 4 && SC.normalize(rules).deal !== 3) fail('Lo Scopone si gioca in 4');
   const g = {
     game: 'scopa', cfg: buildCfg({ ...rules, players: n }), n,
     players: players.map((p, i) => ({ seat: i, name: p.name, isBot: !!p.isBot, hand: [], team: 0 })),
@@ -53,7 +54,7 @@ function createGame({ rules, players, seed }) {
 
 function replayStart(g) { const { replay, lastReplay, history, log, events, handResult, ...rest } = g; return JSON.parse(JSON.stringify(rest)); }
 
-function deal(g) { for (let k = 0; k < g.n; k++) { const p = g.players[(g.dealer + 1 + k) % g.n]; p.hand.push(...g.stock.splice(-3)); } }
+function deal(g, count = 3) { for (let k = 0; k < g.n; k++) { const p = g.players[(g.dealer + 1 + k) % g.n]; p.hand.push(...g.stock.splice(-count)); } }
 
 function startHand(g) {
   g.handNo++;
@@ -64,8 +65,10 @@ function startHand(g) {
   for (const t of g.teams) for (const s of t.members) g.players[s].team = t.id;
   for (const p of g.players) p.hand = [];
   g.stock = deck;
-  g.table = g.stock.splice(-4);
-  deal(g);
+  // Scopa: 4 in tavola e 3 a testa; Scopone scientifico: tavola vuota e 10 a testa; Scopone: 4 in tavola e 9 a testa
+  const per = g.cfg.deal || 3;
+  g.table = per === 10 ? [] : g.stock.splice(-4);
+  deal(g, per);
   g.discard = [];
   g.pozzetti = [];
   g.lastTaker = null;
@@ -129,7 +132,7 @@ function endHand(g) {
     g.table = [];
   }
   g.phase = 'handEnd';
-  const pts = SC.handPoints(g.teams.map((t) => t.taken), g.teams.map((t) => t.scope));
+  const pts = SC.handPoints(g.teams.map((t) => t.taken), g.teams.map((t) => t.scope), g.cfg);
   const results = g.teams.map((t, i) => ({
     members: t.members.slice(), names: t.members.map((x) => g.players[x].name),
     meldPts: 0, burraco: [], bonusPts: 0, handPts: 0, closePts: 0, pozPts: 0, total: pts[i].total, detail: pts[i],
@@ -143,6 +146,7 @@ function endHand(g) {
     ['Settebello', (r) => r.detail.settebello, () => ''],
     ['Primiera', (r) => r.detail.primiera, (r) => (r.prim ? `${r.prim}` : '—')],
     ['Scope', (r) => r.detail.scope, () => ''],
+    ...(g.cfg.napola ? [['Napola', (r) => r.detail.napola, () => '']] : []),
   ].map(([label, v, sub]) => ({ label, values: results.map(v), notes: results.map(sub) }));
   g.handResult = { reason: 'end', closer: null, rows, teams: results, scores: g.scores.slice(), hands: null };
   g.history.push({ handNo: g.handNo, teams: results.map((r) => ({ members: r.members, total: r.total })) });

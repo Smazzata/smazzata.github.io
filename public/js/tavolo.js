@@ -110,7 +110,7 @@
       const fresh = new Set(g.lastTake ? g.lastTake.cardIds : []);
       return `<div class="presa">
         <div class="ptable">${g.table.length ? g.table.map((c) => cardHTML(c, fresh.has(c.id) ? 'fresh' : '')).join('') : '<span class="empty">Tavolo vuoto</span>'}</div>
-        <div class="pinfo"><span>Mazzo <b>${g.stockCount}</b></span>${g.teams.map((t) => `<span>${teamLbl(t)}: <b>${t.taken}</b> carte${t.scope ? ` · <b>${t.scope}</b> ${t.scope === 1 ? 'scopa' : 'scope'} 🧹` : ''}</span>`).join('')}</div>
+        <div class="pinfo">${g.cfg.rules.deal && g.cfg.rules.deal !== 3 ? '' : `<span>Mazzo <b>${g.stockCount}</b></span>`}${g.teams.map((t) => `<span>${teamLbl(t)}: <b>${t.taken}</b> carte${t.scope ? ` · <b>${t.scope}</b> ${t.scope === 1 ? 'scopa' : 'scope'} 🧹` : ''}</span>`).join('')}</div>
       </div>`;
     }
     // briscola
@@ -175,6 +175,7 @@
   /** Avviso di fine tallone: quanti giri restano prima che la smazzata finisca */
   function stockWarning(g) {
     if (g.phase === 'handEnd' || isS40Game()) return null; // nella Scala 40 il tallone si rimescola
+    if (g.game === 'scopa' && g.cfg.rules.deal && g.cfg.rules.deal !== 3) return null; // Scopone: niente mazzo da cui pescare
     if (g.lastTurn) return { level: 3, text: '🔔 Ultimo turno della smazzata!' };
     const r = g.cfg.rules;
     if (r.stockEnd === 'mortoToStock' && g.pozzetti.length) return null; // un pozzetto ricaricherà il tallone

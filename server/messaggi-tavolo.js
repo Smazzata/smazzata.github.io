@@ -92,8 +92,8 @@ module.exports.register = function register(socket, handler) {
     board[socket.data.token] = { name: sess.nick, score: null, at: Date.now() };
     daily.set(c.date, board);
     const room = {
-      code: newCode(), rules: c.rules, n: 2, hostToken: socket.data.token, daily: c.date, seed: c.seed,
-      seats: [null, null], game: null, ready: new Set(), botTimer: null, botMemo: {}, botLevel: 'difficile',
+      code: newCode(), rules: c.rules, n: c.rules.players, hostToken: socket.data.token, daily: c.date, seed: c.seed,
+      seats: Array(c.rules.players).fill(null), game: null, ready: new Set(), botTimer: null, botMemo: {}, botLevel: 'difficile',
     };
     rooms.set(room.code, room);
     joinRoom(socket, room);

@@ -33,11 +33,11 @@
     isOther: (r) => !!otherOf(r),
     normalize: (r) => (otherOf(r) ? otherOf(r).normalize(r) : R.normalize(r)),
     schema: (r) => (otherOf(r) ? otherOf(r).SCHEMA : R.SCHEMA),
-    presets: (r) => (otherOf(r) ? [otherOf(r).PRESET] : R.PRESETS),
-    matchPreset: (r) => (otherOf(r) ? r.game : R.matchPreset(r)),
+    presets: (r) => (otherOf(r) ? otherOf(r).PRESETS || [otherOf(r).PRESET] : R.PRESETS),
+    matchPreset: (r) => (otherOf(r) ? (otherOf(r).presetOf ? otherOf(r).presetOf(r) : r.game) : R.matchPreset(r)),
     describe: (r) => (otherOf(r) ? otherOf(r).describe(r) : R.describe(r)),
-    presetById: (id) => (OTHER[id] ? OTHER[id].PRESET : R.PRESETS.find((p) => p.id === id)),
-    gameName: (r) => ({ scala40: 'Scala 40', canasta: 'Canasta', scopa: 'Scopa', briscola: 'Briscola' }[r && r.game] || 'Burraco'),
+    presetById: (id) => (OTHER[id] ? OTHER[id].PRESET : id === 'scopone' ? OTHER.scopa.PRESETS[1] : R.PRESETS.find((p) => p.id === id)),
+    gameName: (r) => (r && r.game === 'scopa' && r.deal && r.deal !== 3 ? 'Scopone' : { scala40: 'Scala 40', canasta: 'Canasta', scopa: 'Scopa', briscola: 'Briscola' }[r && r.game] || 'Burraco'),
   };
   /** la partita in corso è di Scala 40? di Canasta? */
   const isS40Game = () => !!(S.game && S.game.game === 'scala40');

@@ -34,7 +34,7 @@ const GAMES = {
     id: 'scopa', name: 'Scopa',
     E: require('./scopa'), Bot: require('./scopa-bot'),
     normalize: (r) => SCO.normalize(r),
-    presetOf: () => 'scopa',
+    presetOf: (r) => SCO.presetOf(r),
   },
   briscola: {
     id: 'briscola', name: 'Briscola',

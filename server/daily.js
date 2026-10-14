@@ -21,6 +21,7 @@ const VARIANTS = [
   { title: 'Scopa', game: 'scopa' },
   { title: 'Briscola', game: 'briscola' },
   { title: 'Scopa, Asso piglia tutto', game: 'scopa', tweak: { aceTakesAll: true } },
+  { title: 'Scopone scientifico', game: 'scopa', tweak: { deal: 10, napola: true, target: 21 }, players: 4 },
 ];
 
 /** Data di oggi in Italia, es. "2026-10-14" */
@@ -38,7 +39,7 @@ function hash(str) {
 function challenge(date = todayKey()) {
   const day = Math.floor(Date.parse(date + 'T12:00:00Z') / 86400000);
   const v = VARIANTS[((day % VARIANTS.length) + VARIANTS.length) % VARIANTS.length];
-  const rules = v.game ? Games.of({ game: v.game }).normalize({ ...(v.tweak || {}), game: v.game, players: 2 })
+  const rules = v.game ? Games.of({ game: v.game }).normalize({ ...(v.tweak || {}), game: v.game, players: v.players || 2 })
     : Rules.normalize({ ...Rules.PRESETS.find((p) => p.id === v.preset).rules, ...(v.tweak || {}), players: 2 });
   return { date, title: v.title, rules, seed: hash('burraco-' + date) };
 }

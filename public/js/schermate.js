@@ -102,6 +102,9 @@
     </div>`;
   }
 
+  /** gioco scelto nella schermata "Nuova partita" (lo Scopone è una Scopa con un'altra distribuzione) */
+  const pickedGame = (r) => (r.game === 'scopa' && r.deal && r.deal !== 3 ? 'scopone' : r.game || 'burraco');
+
   function setupHTML() {
     return `<div class="page">
       <div class="row"><button class="btn ghost small" data-act="goHome">← Indietro</button></div>
@@ -112,8 +115,9 @@
           ['scala40', '🂡 Scala 40', 'Ognuno per sé: apri con 40 punti, chi arriva a 101 è fuori'],
           ['canasta', '🎴 Canasta', 'La classica: carte uguali, canaste, tre rossi e monte congelato'],
           ['scopa', '🧹 Scopa', 'Carte italiane: prendi, fai scopa, conta denari e primiera'],
+          ['scopone', '🧹 Scopone', 'In quattro a coppie: 10 carte a testa, tavola vuota, napola'],
           ['briscola', '🍷 Briscola', 'Carte italiane: prese, carichi e briscole, vince chi fa 61']]
-          .map(([id, name, sub]) => `<button class="preset ${(S.rules.game || 'burraco') === id ? 'active' : ''}" data-act="pickGame" data-game="${id}"><b>${name}</b><span>${sub}</span></button>`).join('')}</div>
+          .map(([id, name, sub]) => `<button class="preset ${pickedGame(S.rules) === id ? 'active' : ''}" data-act="pickGame" data-game="${id}"><b>${name}</b><span>${sub}</span></button>`).join('')}</div>
         ${RX.isOther(S.rules) ? '' : `<h2 style="margin-top:12px">Variante</h2>${presetsHTML(S.rules)}`}
         <details class="custom" ${S.customOpen ? 'open' : ''}>
           <summary>2. Personalizza le regole ${rulesStatus(S.rules)}</summary>

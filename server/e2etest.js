@@ -356,7 +356,7 @@ const step = (t) => console.log('✓ ' + t);
     // sfida del giorno: un tentativo, stesse carte per tutti, punteggio in classifica, niente rivincita
     const Dd = player('Dora'); await Dd.hello(); assert((await Dd.call('setNick', { nick: 'Dora' })).ok);
     const info = await Dd.call('daily');
-    assert(info.ok && info.title && info.rules.players === 2 && info.mine === null, 'informazioni sulla sfida');
+    assert(info.ok && info.title && [2, 4].includes(info.rules.players) && info.mine === null, 'informazioni sulla sfida');
     assert((await Dd.call('startDaily')).ok);
     assert(!(await Dd.call('startDaily')).ok, 'un solo tentativo al giorno');
     const ds = await Dd.until((st) => st.game, 'partita della sfida');

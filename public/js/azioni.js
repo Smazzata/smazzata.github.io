@@ -247,7 +247,9 @@
     editRules() { S.editRules = RX.normalize(S.room.rules); editRulesModal(); },
     pickGame(el) {
       const players = S.rules.players;
-      S.rules = OTHER[el.dataset.game] ? OTHER[el.dataset.game].normalize({ players }) : R.normalize({ ...R.PRESETS[0].rules, players });
+      const g = el.dataset.game;
+      S.rules = g === 'scopone' ? OTHER.scopa.normalize(OTHER.scopa.PRESETS[1].rules)
+        : OTHER[g] ? OTHER[g].normalize({ players: g === 'scopa' ? Math.min(players, 4) : players }) : R.normalize({ ...R.PRESETS[0].rules, players });
       store.set('bur_rules', S.rules);
       render();
     },

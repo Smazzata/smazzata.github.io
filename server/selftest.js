@@ -140,10 +140,13 @@ function presaTests() {
   assert.strictEqual(BR.winner([c(1, 'd', 1), c(2, 'c', 2)], 'c'), 1);
   assert.strictEqual(BR.winner([c(1, 'd', 1), c(10, 's', 2)], 'c'), 0, 'seme diverso senza briscola: vince chi esce');
   let hands = 0;
-  for (const [gid, ns] of [['scopa', [2, 4]], ['briscola', [2, 4]]]) {
+  // napola: Asso, 2, 3 di denari = 3 punti, con il 4 e il 5 in fila = 5
+  assert.strictEqual(SC.napola([c(1, 'd', 1), c(2, 'd', 2), c(3, 'd', 3), c(4, 'd', 4), c(5, 'd', 5), c(7, 'd', 6)]), 5);
+  assert.strictEqual(SC.napola([c(1, 'd', 1), c(3, 'd', 3)]), 0);
+  for (const [gid, ns, extra] of [['scopa', [2, 4], {}], ['scopa', [4], { deal: 10, napola: true }], ['scopa', [4], { deal: 9 }], ['briscola', [2, 4], {}]]) {
     const EG = require('./' + gid), BG = require('./' + gid + '-bot');
     for (const n of ns) {
-      const g = EG.createGame({ rules: { players: n }, players: Array.from({ length: n }, (_, i) => ({ name: 'B' + i, isBot: true })) });
+      const g = EG.createGame({ rules: { players: n, ...extra }, players: Array.from({ length: n }, (_, i) => ({ name: 'B' + i, isBot: true })) });
       let guard = 0;
       while (!g.over && guard++ < 5000) {
         if (g.phase === 'handEnd') {
@@ -269,7 +272,7 @@ function dailyTests() {
     const c = Daily.challenge(date);
     seen.add(c.title);
     const G = Games.of(c.rules);
-    const mk = () => G.E.createGame({ rules: c.rules, seed: c.seed, players: [{ name: 'Tu' }, { name: 'PC', isBot: true }] });
+    const mk = () => G.E.createGame({ rules: c.rules, seed: c.seed, players: Array.from({ length: c.rules.players }, (_, i) => ({ name: i ? 'PC' + i : 'Tu', isBot: !!i })) });
     const g = mk();
     assert.deepStrictEqual(mk().players[0].hand.map((x) => x.id), g.players[0].hand.map((x) => x.id), 'stesse carte per tutti: ' + c.title);
     let guard = 0;
