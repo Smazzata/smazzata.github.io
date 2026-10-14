@@ -9,6 +9,8 @@ const Rules = require('../shared/rules');
 const Daily = require('./daily');
 const { BOT_SPEEDS } = require('./config');
 const ctx = require('./contesto');
+/** dimensione massima di un messaggio vocale (15 secondi di voce compressa stanno in ~60 KB) */
+const VOICE_MAX = 300 * 1024;
 const { io, sessions, rooms, daily } = ctx;
 /** motore e computer del gioco di questo tavolo */
 const GE = (room) => Games.of(room).E;
@@ -392,5 +394,25 @@ module.exports.register = function register(socket, handler) {
     // ultimi messaggi solo in memoria (mai salvati): servono se qualcuno segnala un giocatore
     room.chatLog = [...(room.chatLog || []), { at: Date.now(), name, text: t }].slice(-30);
     io.to(room.code).emit('chat', { name, text: t, seat });
+  }));
+
+  // Messaggi vocali: si tiene premuto 🎤, il registrato (max 15 s) arriva agli altri al tavolo.
+  // Il server lo inoltra soltanto: non viene mai salvato.
+  socket.on('voice', handler(({ audio, mime, ms } = {}) => {
+    const room = getRoom(socket);
+    const seat = seatOfToken(room, socket.data.token);
+    if (seat < 0) throw new E.GameError('Solo chi è seduto al tavolo può mandare messaggi vocali');
+    const buf = Buffer.isBuffer(audio) ? audio : audio instanceof ArrayBuffer ? Buffer.from(audio) : null;
+    if (!buf || buf.length < 200) throw new E.GameError('Messaggio vocale vuoto');
+    if (buf.length > VOICE_MAX) throw new E.GameError('Messaggio vocale troppo lungo');
+    const type = String(mime || '');
+    if (!/^audio\/(webm|ogg|mp4|mpeg|aac)(;[\w=.,\s-]*)?$/.test(type)) throw new E.GameError('Formato audio non supportato');
+    const now = Date.now();
+    if (socket.data.lastVoice && now - socket.data.lastVoice < 2000) throw new E.GameError('Aspetta un attimo prima del prossimo messaggio');
+    socket.data.lastVoice = now;
+    const name = room.seats[seat].name;
+    const dur = Math.max(0, Math.min(15000, Number(ms) || 0));
+    room.chatLog = [...(room.chatLog || []), { at: now, name, text: '🎤 messaggio vocale' }].slice(-30);
+    socket.to(room.code).emit('voice', { seat, name, audio: buf, mime: type, ms: dur });
   }));
 };

@@ -80,7 +80,9 @@
       <div class="row" style="justify-content:center"><button class="btn primary big" data-act="acceptInvite" data-code="${esc(code)}">Entra</button><button class="btn" data-act="closeModal">No grazie</button></div></div>`);
   });
   socket.on('state', ({ room, game }) => onState(room, game));
-  socket.on('reaction', ({ seat, emoji }) => {
+  socket.on('reaction', ({ seat, emoji }) => showSeatBubble(seat, emoji));
+  /** Una nuvoletta (reazione o 🎤) sopra il posto di un giocatore */
+  function showSeatBubble(seat, emoji) {
     const g = S.game;
     if (!g) return;
     const target = seat === g.you ? $('.handwrap') : $(`.seatchip[data-seat="${seat}"]`);
@@ -94,7 +96,7 @@
     document.body.appendChild(b);
     setTimeout(() => b.remove(), 2400);
     if (seat !== g.you) Sound.play('select');
-  });
+  }
   // livello del giocatore: si aggiorna a fine smazzata; quando sale, festa
   socket.on('progress', (p) => {
     S.progress = p;

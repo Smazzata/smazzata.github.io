@@ -97,6 +97,23 @@ const step = (t) => console.log('✓ ' + t);
     assert(rp3.kind === 'player' && rp3.target === 'Anna' && rp3.chat.some((m) => m.includes('messaggio di prova')), 'segnalazione del giocatore con la chat');
     step('segnala un giocatore: motivo e chat del tavolo nella pagina di stato');
 
+    // messaggi vocali: arrivano agli altri al tavolo (non a chi parla), con controlli su formato, dimensione e frequenza
+    const voices = [];
+    B.sock.on('voice', (v) => voices.push(v));
+    A.sock.on('voice', () => voices.push('eco'));
+    const audio = Buffer.alloc(4000, 7);
+    assert((await A.call('voice', { audio, mime: 'audio/webm;codecs=opus', ms: 2300 })).ok, 'vocale inviato');
+    const vEnd = Date.now() + 3000;
+    while (!voices.length && Date.now() < vEnd) await wait(20);
+    await wait(100);
+    assert(voices.length === 1 && voices[0].seat === 0 && voices[0].audio.length === 4000 && voices[0].ms === 2300, 'vocale ricevuto dagli altri');
+    assert(!(await A.call('voice', { audio, mime: 'audio/webm', ms: 1000 })).ok, 'uno ogni 2 secondi');
+    await wait(2100);
+    assert(!(await A.call('voice', { audio, mime: 'text/html', ms: 1000 })).ok, 'solo audio');
+    await wait(2100);
+    assert(!(await A.call('voice', { audio: Buffer.alloc(400 * 1024), mime: 'audio/webm', ms: 1000 })).ok, 'troppo lungo');
+    step('messaggi vocali: inoltrati al tavolo, con limiti di formato, dimensione e frequenza');
+
     // --- avatar e reazioni ---
     assert(!(await A.call('setAvatar', { e: '💩', c: '#000' })).ok, 'avatar non previsto rifiutato');
     assert((await A.call('setAvatar', { e: '🦊', c: '#64b5f6' })).ok);

@@ -255,6 +255,7 @@
     gameRules() { rulesModal(S.game.cfg.rules); },
     log() { renderLogModal(); render(); },
     quickChat(el) { emit('chat', { text: el.dataset.text }); },
+    playVoice(el) { const m = S.chat[Number(el.dataset.i)]; if (m && m.voice) playVoice(m.voice); },
     scores: showScores,
     result: showResult,
     ready() { emit('ready'); },

@@ -333,6 +333,8 @@
     if (g.phase === 'handEnd') actions = '<button class="btn primary small" data-act="result">Risultati</button>';
     if (myTurn && r.hints) actions += '<button class="ico" data-act="hint" title="Suggerimento">💡</button>';
     if (g.you >= 0) actions = '<button class="ico" data-act="reactPicker" title="Reazioni">😊</button>' + actions;
+    // messaggio vocale: solo se al tavolo c'è almeno un'altra persona
+    if (g.you >= 0 && S.room.humans > 1) actions = '<button class="ico voicebtn" data-voice title="Tieni premuto per parlare">🎤</button>' + actions;
     if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';
     const sortLbl = { rank: '⇅ Valore', suit: '⇅ Seme', smart: '⇅ Giochi' }[S.sortMode] || '⇅ Ordina';
     if (g.you >= 0) actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;
