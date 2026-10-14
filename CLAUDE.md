@@ -3,7 +3,7 @@
 Nome dell'app: **Smazzata** (giochi di carte: Burraco, Scala 40, Canasta, Scopa, Briscola). Il nome del progetto su GitHub resta
 `BurracoByMSF`: da lui dipendono l'indirizzo fisso della pagina d'ingresso e il link degli aggiornamenti dell'APK, non cambiarlo.
 
-Giochi: **Burraco**, **Scala 40**, **Canasta** e i giochi a prese con carte italiane **Scopa** e **Briscola**
+Giochi: **Burraco**, **Scala 40**, **Canasta** e con le carte italiane **Scopa** (anche Scopone), **Briscola**, **Briscola in 5** (chiamata, asta e socio segreto), **Tressette**, **Rubamazzetto**, **Sette e mezzo** (fiches finte)
 (`shared/<gioco>.js` regole condivise, `server/<gioco>.js` motore, `server/<gioco>-bot.js` computer). Le carte italiane
 hanno i semi in minuscolo (d, c, s, b); i motori a prese espongono `presa: true` e il client usa `presaCenterHTML`. `server/games.js` è il registro dei giochi (motore, computer, regole):
 il server sceglie il gioco da `rules.game` (senza = Burraco). Un nuovo gioco = motore con la stessa interfaccia
@@ -38,6 +38,8 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 - `scripts/android-server.sh` — avvio sul telefono-server (Termux): dipendenze, aggiornamento da GitHub ogni 5 min, tunnel Cloudflare, pubblicazione dell'indirizzo (`--set-token`, `--install-boot`).
 
 ## Funzioni principali (oltre al gioco)
+Punteggio Elo per gioco (`server/elo.js`), premi da sbloccare (titoli, cornici, dorsi: `shared/premi.js`), accessibilità (testo grande,
+alto contrasto, senza animazioni, mosse lette ad alta voce), messaggi vocali (`public/js/voce.js`), materiale Play Store in `store/`.
 Profili (nickname univoco, codice/QR, password facoltativa, avatar, eliminazione), amici (richieste, blocco, inviti, scheda con partite insieme),
 statistiche e storico sul server, classifica (tutti / amici), spettatori, Gioca subito (tavoli veloci), mini-torneo (al meglio di 3/5),
 tutorial "Impara a giocare" con partita di allenamento e allenatore, musica Spotify, timer del turno, rivincita, reazioni rapide,
