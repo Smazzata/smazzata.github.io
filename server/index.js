@@ -28,6 +28,18 @@ console.error = (...args) => {
 };
 const startedAt = Date.now();
 
+/* ritardo del server (event loop) e uso del processore, per la pagina di stato */
+const { monitorEventLoopDelay } = require('perf_hooks');
+const loopDelay = monitorEventLoopDelay({ resolution: 20 });
+loopDelay.enable();
+let cpuMark = { t: Date.now(), u: process.cpuUsage() };
+let cpuPct = 0;
+setInterval(() => {
+  const now = Date.now(), u = process.cpuUsage();
+  cpuPct = Math.round(((u.user - cpuMark.u.user + u.system - cpuMark.u.system) / 1000 / (now - cpuMark.t)) * 100);
+  cpuMark = { t: now, u };
+}, 5000).unref();
+
 /* chiave della pagina di stato: generata al primo avvio e salvata accanto ai dati */
 function adminKey() {
   const f = path.join(DATA_DIR, 'admin-key.txt');
@@ -61,6 +73,8 @@ function statusData() {
     acceso_da_min: Math.round((Date.now() - startedAt) / 60000),
     versione: gitVersion(),
     memoria_mb: Math.round(process.memoryUsage().rss / 1048576),
+    cpu_percento: cpuPct,
+    ritardo_ms: { medio: Math.round(loopDelay.mean / 1e5) / 10, p99: Math.round(loopDelay.percentile(99) / 1e5) / 10, massimo: Math.round(loopDelay.max / 1e5) / 10 },
     connessi: online.size,
     profili: [...sessions.values()].filter((x) => x.nick).length,
     tavoli: [...rooms.values()].map((r) => ({
@@ -92,7 +106,8 @@ pre{white-space:pre-wrap;font-size:12px;margin:4px 0;color:#ffd7d7}.m{color:#bcd
 <h1>🃏 Stato del server</h1>
 <div class="box"><span class="k">Acceso da<b>${d.acceso_da_min} min</b></span><span class="k">Connessi<b>${d.connessi}</b></span>
 <span class="k">Profili<b>${d.profili}</b></span><span class="k">Tavoli<b>${d.tavoli.length}</b></span><span class="k">Memoria<b>${d.memoria_mb} MB</b></span>
-<span class="k">Versione<b>${esc(d.versione)}</b></span></div>
+<span class="k">Versione<b>${esc(d.versione)}</b></span>
+<span class="k">CPU<b>${d.cpu_percento}%</b></span><span class="k">Ritardo (99%)<b>${d.ritardo_ms.p99} ms</b></span></div>
 <div class="box"><b>Tavoli</b>${d.tavoli.length ? `<table><tr><th>Codice</th><th>Fase</th><th>Giocatori</th><th>Regole</th></tr>${d.tavoli.map((t) => `<tr><td>${esc(t.codice)}</td><td>${esc(t.fase)}</td><td>${t.giocatori.map(esc).join(', ')}</td><td>${esc(t.regole)}</td></tr>`).join('')}</table>` : '<p class="m">Nessun tavolo aperto.</p>'}</div>
 <div class="box"><b>Ultimi errori</b>${d.errori.length ? d.errori.map((e) => `<pre>${esc(e.quando)} — ${esc(e.testo)}</pre>`).join('') : '<p class="m">Nessun errore 🎉</p>'}</div>
 <p class="m">La pagina si aggiorna ogni 10 secondi. 🟢 online · ⚪ offline · 🤖 computer</p></body></html>`);

@@ -9,7 +9,8 @@
     "test": "node server/selftest.js",
     "e2e": "node server/e2etest.js",
     "bench": "node server/botbench.js",
-    "playtest": "node server/playtest.js"
+    "playtest": "node server/playtest.js",
+    "load": "node server/loadtest.js"
   },
   "engines": {
     "node": ">=18"
