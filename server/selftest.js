@@ -47,8 +47,9 @@ function scala40Tests() {
   assert(S40.analyzeMeld([c(2, 'S', 1), c(3, 'S', 2), c(4, 'S', 3)], cfg).wildCount === 0, 'il 2 non è una matta');
   let hands = 0;
   for (const n of [2, 3, 4]) {
-    for (let k = 0; k < 2; k++) {
-      const g = E4.createGame({ rules: { players: n }, players: Array.from({ length: n }, (_, i) => ({ name: 'B' + i, isBot: true })) });
+    for (let k = 0; k < (process.env.TEST_RAPIDO ? 1 : 2); k++) {
+      // la seconda partita con le varianti: jolly da usare subito, chiusura in mano a penalità doppie
+      const g = E4.createGame({ rules: { players: n, ...(k === 1 ? { jokerUseNow: true, closeInHandDouble: true } : {}) }, players: Array.from({ length: n }, (_, i) => ({ name: 'B' + i, isBot: true })) });
       let guard = 0;
       while (!g.over && guard++ < 50000) {
         if (g.phase === 'handEnd') {
@@ -259,9 +260,12 @@ leagueTests();
 storeTests();
 scala40Tests();
 filesTests();
-for (const p of Rules.PRESETS) for (const n of [4, 2, 3]) simulate(p.id, p.rules, n);
+// TEST_RAPIDO=1 (npm run test:rapido): meno partite simulate, per le verifiche durante il lavoro.
+// Le prove su GitHub usano sempre la versione completa.
+const QUICK = !!process.env.TEST_RAPIDO;
+for (const p of Rules.PRESETS) for (const n of QUICK ? [4, 2] : [4, 2, 3]) simulate(p.id, p.rules, n, QUICK ? 1 : 3);
 // configurazioni casuali
-for (let i = 0; i < 12; i++) {
+for (let i = 0; i < (QUICK ? 3 : 12); i++) {
   const r = {};
   for (const f of Rules.SCHEMA) {
     if (f.type === 'bool') r[f.key] = Math.random() < 0.5;

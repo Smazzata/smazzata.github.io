@@ -13,7 +13,7 @@
     const row = (label, fn) => `<tr><td>${label}</td>${hr.teams.map((t) => `<td>${fn(t)}</td>`).join('')}</tr>`;
     const reason = hr.reason === 'surrender'
       ? `🏳️ <b>${esc(hr.surrendered.map((x) => (x === g.you ? 'Tu' : g.players[x].name)).join(' e '))}</b> ${hr.surrendered.length > 1 ? 'si sono arresi' : (hr.surrendered[0] === g.you ? 'ti sei arreso' : 'si è arreso')}.`
-      : hr.reason === 'close' ? `<b>${esc(g.players[hr.closer].name)}</b> ha chiuso la smazzata.` : 'Il tallone è finito.';
+      : hr.reason === 'close' ? `<b>${esc(g.players[hr.closer].name)}</b> ha chiuso la smazzata${hr.inHand ? ' <b>in mano</b> 🎩' : ''}.` : 'Il tallone è finito.';
     const humans = S.room.seats.map((s, i) => (s && !s.isBot ? i : -1)).filter((i) => i >= 0);
     const waiting = humans.filter((i) => !S.room.ready.includes(i)).map((i) => S.room.seats[i].name);
     const imReady = S.room.ready.includes(g.you);

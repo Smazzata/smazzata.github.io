@@ -17,8 +17,10 @@
     { group: 'Combinazioni', key: 'maxJokers', label: 'Jolly per combinazione', type: 'select', choices: [[1, 'al massimo 1'], [2, 'al massimo 2']] },
     { group: 'Combinazioni', key: 'swapJoker', label: 'Si può prendere un jolly dal tavolo sostituendolo', type: 'bool' },
     { group: 'Combinazioni', key: 'pileNeedsOpen', label: 'Lo scarto si prende solo se si è aperto (o si apre subito con esso)', type: 'bool' },
+    { group: 'Combinazioni', key: 'jokerUseNow', label: 'Il jolly preso dal tavolo va usato nello stesso turno', type: 'bool' },
+    { group: 'Punteggio', key: 'closeInHandDouble', label: 'Chiusura in mano (apri e chiudi nello stesso turno): penalità doppie agli altri', type: 'bool' },
   ];
-  const DEFAULTS = { game: 'scala40', players: 4, target: 101, opening: 40, maxJokers: 1, swapJoker: true, pileNeedsOpen: true };
+  const DEFAULTS = { game: 'scala40', players: 4, target: 101, opening: 40, maxJokers: 1, swapJoker: true, pileNeedsOpen: true, jokerUseNow: false, closeInHandDouble: false };
 
   function normalize(r) {
     const out = { ...DEFAULTS };
@@ -131,8 +133,9 @@
 <ul>
 <li><b>Combinazioni</b>: scale dello stesso seme (l'Asso va prima del 2 o dopo il K) e tris o poker di semi tutti diversi. Le matte sono solo i jolly (${r.maxJokers === 1 ? 'al massimo 1' : 'al massimo 2'} per combinazione).</li>
 <li><b>Apertura</b>: la prima calata deve valere almeno <b>${r.opening} punti</b> (Asso 11, o 1 in A-2-3; figure 10; le altre il loro numero; il jolly vale la carta che sostituisce). Prima di aprire non si può attaccare${r.pileNeedsOpen ? ' e lo scarto si prende solo per aprire subito con esso' : ''}.</li>
-<li>Dopo l'apertura si attacca a <b>tutti</b> i giochi sul tavolo${r.swapJoker ? ' e si può prendere un jolly dal tavolo mettendo al suo posto la carta che rappresenta' : ''}.</li>
-<li>Chiude chi scarta l'ultima carta. Gli altri si segnano i punti delle carte rimaste in mano (jolly 25, Asso 11, figure 10).</li>
+<li>Dopo l'apertura si attacca a <b>tutti</b> i giochi sul tavolo${r.swapJoker ? ` e si può prendere un jolly dal tavolo mettendo al suo posto la carta che rappresenta${r.jokerUseNow ? ' (il jolly va usato nello stesso turno)' : ''}` : ''}.</li>
+<li>Chiude chi scarta l'ultima carta. Gli altri si segnano i punti delle carte rimaste in mano (jolly 25, Asso 11, figure 10)${r.closeInHandDouble ? '; se chi chiude ha aperto nello stesso turno (<b>chiusura in mano</b>) le penalità raddoppiano' : ''}.</li>
+<li>Se il tallone finisce si rimescolano gli scarti; alla terza volta la smazzata finisce senza chiusura e ognuno paga le carte che ha in mano.</li>
 <li>Chi arriva a <b>${r.target}</b> punti è eliminato: vince l'ultimo rimasto.</li>
 </ul>`;
   }

@@ -130,6 +130,16 @@ function nextAction(g, seat, memo = {}) {
       if (E.isLegal(g, seat, a)) return a;
     }
   } else {
+    // 0) jolly appena preso dal tavolo che va usato subito: prima di tutto lo si cala o attacca
+    const fresh = cfg.jokerUseNow && g.turnInfo ? p.hand.filter((c) => (g.turnInfo.swapped || []).includes(c.id)) : [];
+    if (fresh.length) {
+      const j = fresh[0];
+      const uses = allMelds(g).map((m) => ({ type: 'add', meldId: m.id, cardIds: [j.id] }));
+      const nat = p.hand.filter((c) => !isJ(c));
+      for (let a = 0; a < nat.length; a++) for (let b = a + 1; b < nat.length; b++) uses.push({ type: 'meld', cardIds: [nat[a].id, nat[b].id, j.id] });
+      const u = tryActions(g, seat, uses);
+      if (u) return u;
+    }
     // 1) nuovi giochi naturali, poi con il jolly se la mano è corta
     let a = tryActions(g, seat, naturalCandidates(p.hand).map((cs) => ({ type: 'meld', cardIds: cs.map((c) => c.id) })));
     if (a) return a;

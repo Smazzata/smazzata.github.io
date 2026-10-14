@@ -44,6 +44,7 @@ Computer: 3 livelli + apertura da vulnerabile con più combinazioni + pianificat
 - Render, Hugging Face e Koyeb sono stati scartati (carta richiesta / quota zero / iscrizioni bloccate).
 
 ## Verifiche prima di pubblicare
+- `npm run test:rapido` — versione veloce di `npm test` (meno partite simulate, ~1 minuto): usala durante il lavoro.
 - `npm test` — test del motore e partite simulate tra bot con tutti i preset e regole casuali.
 - `npm run e2e` — prova multigiocatore end-to-end su un server di prova (porta 3999).
 - `npm run bench` — forza relativa dei livelli del computer.

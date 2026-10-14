@@ -51,7 +51,7 @@ const alive = (g) => g.players.filter((p) => !p.out).map((p) => p.seat);
 
 function buildCfg(rules) {
   const r = S40.normalize(rules);
-  return { game: 'scala40', rules: r, maxJokers: r.maxJokers, opening: r.opening, target: r.target, swapJoker: r.swapJoker, pileNeedsOpen: r.pileNeedsOpen };
+  return { game: 'scala40', rules: r, maxJokers: r.maxJokers, opening: r.opening, target: r.target, swapJoker: r.swapJoker, pileNeedsOpen: r.pileNeedsOpen, jokerUseNow: r.jokerUseNow, closeInHandDouble: r.closeInHandDouble };
 }
 
 function createGame({ rules, players, seed }) {
@@ -92,6 +92,8 @@ function startHand(g) {
   g.handResult = null;
   g.meldSeq = 0;
   g.lastEvent = null;
+  g.closedInHand = false;
+  g.reshuffles = 0;
   addLog(g, `— Smazzata ${g.handNo}: distribuisce ${g.players[g.dealer].name} (${live.length} in gioco)`);
   g.replay = { start: replayStart(g), actions: [] };
 }
@@ -112,13 +114,15 @@ function storeAnalysis(m, an) { Object.assign(m, { type: an.type, cards: an.card
 
 function beginPlay(g, seat, tookId = null) {
   g.phase = 'play';
-  g.turnInfo = { tookId, openedNow: false };
+  g.turnInfo = { tookId, openedNow: false, swapped: [] };
 }
 
 function draw(g, seat) {
   assertTurn(g, seat, 'draw');
   if (!g.stock.length) {
-    // tallone finito: si rimescolano gli scarti (tranne quello in cima)
+    // tallone finito: si rimescolano gli scarti (tranne quello in cima); dopo 3 volte la smazzata finisce
+    if ((g.reshuffles || 0) >= 3) return endHand(g, 'stock', null);
+    g.reshuffles = (g.reshuffles || 0) + 1;
     const top = g.discard.pop();
     g.stock = shuffle(g.discard, g);
     g.discard = top ? [top] : [];
@@ -222,8 +226,16 @@ function swapJoker(g, seat, meldId, cardId) {
   const joker = m.cards[jIdx];
   const an = S40.analyzeMeld(m.cards.map((c, i) => (i === jIdx ? card : c)), g.cfg, m.type);
   if (!an) fail('Sostituzione non valida');
+  if (g.cfg.jokerUseNow) {
+    const handAfter = p.hand.filter((c) => c.id !== card.id);
+    const melds = g.teams.flatMap((t) => t.melds).map((x) => (x === m ? { ...x, cards: an.cards, type: an.type } : x));
+    const usable = melds.some((x) => S40.analyzeMeld(x.cards.concat([joker]), g.cfg, x.type))
+      || handAfter.some((a, i) => handAfter.some((b, k) => k > i && S40.analyzeMeld([a, b, joker], g.cfg)));
+    if (!usable || handAfter.length < 3) fail('Il jolly preso dal tavolo va usato subito, ma ora non avresti dove metterlo');
+  }
   removeFromHand(p, [card]);
   p.hand.push(joker);
+  if (g.turnInfo) g.turnInfo.swapped.push(joker.id);
   storeAnalysis(m, an);
   addLog(g, `${p.name} mette ${cardName(card)} al posto del jolly e lo prende`);
   setEvent(g, { type: 'add', seat, meldId, cardIds: [card.id] });
@@ -234,11 +246,15 @@ function discard(g, seat, cardId) {
   const p = g.players[seat];
   const [c] = takeFromHand(p, [cardId]);
   if (g.turnInfo.tookId === cardId && p.hand.length > 1) fail('Non puoi riscartare la carta appena presa dagli scarti');
+  if (g.cfg.jokerUseNow && (g.turnInfo.swapped || []).some((id) => p.hand.some((c) => c.id === id))) fail('Prima usa il jolly che hai preso dal tavolo (calalo o attaccalo)');
   removeFromHand(p, [c]);
   g.discard.push(c);
   addLog(g, `${p.name} scarta ${cardName(c)}${p.hand.length ? '' : ' e CHIUDE!'}`);
   setEvent(g, { type: 'discard', seat, cardId, card: { r: c.r, s: c.s } });
-  if (!p.hand.length) return endHand(g, 'close', seat);
+  if (!p.hand.length) {
+    g.closedInHand = !!g.turnInfo.openedNow;
+    return endHand(g, 'close', seat);
+  }
   do { g.turn = (g.turn + 1) % g.n; } while (g.players[g.turn].out);
   g.phase = 'draw';
   g.turnInfo = null;
@@ -248,14 +264,17 @@ function endHand(g, reason, closer) {
   g.phase = 'handEnd';
   const results = g.teams.map((t) => {
     const seat = t.members[0];
-    const pen = g.players[seat].out ? 0 : g.players[seat].hand.reduce((s, c) => s + S40.handValue(c), 0);
+    const base = g.players[seat].out ? 0 : g.players[seat].hand.reduce((s, c) => s + S40.handValue(c), 0);
+    // chiusura in mano: penalità doppie (se la regola è attiva)
+    const pen = reason === 'close' && g.closedInHand && g.cfg.closeInHandDouble ? base * 2 : base;
     return {
       members: t.members.slice(), names: [g.players[seat].name], meldPts: 0, burraco: [], bonusPts: 0,
       handPts: -pen, closePts: 0, pozPts: 0, total: -pen, out: g.players[seat].out,
     };
   });
   for (const r of results) g.scores[r.members[0]] += r.total;
-  g.handResult = { reason, closer, teams: results.filter((r) => !r.out), scores: g.scores.slice(), hands: g.players.map((p) => p.hand) };
+  g.handResult = { reason, closer, inHand: reason === 'close' && !!g.closedInHand, teams: results.filter((r) => !r.out), scores: g.scores.slice(), hands: g.players.map((p) => p.hand) };
+  if (g.handResult.inHand) addLog(g, `Chiusura in mano!${g.cfg.closeInHandDouble ? ' Penalità doppie.' : ''}`);
   g.history.push({ handNo: g.handNo, teams: results.filter((r) => !r.out).map((r) => ({ members: r.members, total: r.total })) });
   g.lastReplay = g.replay ? { handNo: g.handNo, ...g.replay } : null;
   g.replay = null;
