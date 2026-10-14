@@ -208,7 +208,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if (s.nick) nickIndex.delete(s.nick.toLowerCase());
       if (s.code) codeIndex.delete(s.code);
       delete s.nick; delete s.code; delete s.pw; delete s.avatar;
-      s.friends = []; s.reqIn = []; s.reqOut = []; s.name = 'Giocatore';
+      s.friends = []; s.reqIn = []; s.reqOut = []; s.blocked = []; s.name = 'Giocatore';
       if (onDelete) onDelete(token);
       push(token);
       return {};

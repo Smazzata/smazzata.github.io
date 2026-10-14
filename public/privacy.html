@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f5132">
+  <title>Privacy · Burraco Online</title>
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <style>
+    body { margin: 0; background: #0f5132; color: #1b1b1b; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.55; }
+    main { max-width: 720px; margin: 0 auto; padding: 18px 16px 40px; background: #fffdf6; min-height: 100vh; }
+    h1 { font-family: Georgia, serif; margin: 6px 0 4px; }
+    h2 { color: #155d3a; font-size: 18px; margin: 22px 0 6px; }
+    .muted { color: #666; font-size: 14px; }
+    table { border-collapse: collapse; width: 100%; font-size: 14px; }
+    td, th { border-bottom: 1px solid #e3ddcc; padding: 6px 4px; text-align: left; vertical-align: top; }
+    a.back { display: inline-block; margin-bottom: 8px; color: #155d3a; font-weight: 600; text-decoration: none; }
+    @media (prefers-color-scheme: dark) {
+      main { background: #1e2422; color: #e6e6e1; } h2 { color: #8fd3a8; } .muted { color: #a5aca8; } td, th { border-color: #3a413e; } a.back { color: #8fd3a8; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <a class="back" href="/">← Torna al gioco</a>
+  <h1>Privacy</h1>
+  <p class="muted">Burraco Online è un gioco tra amici, gratuito e senza pubblicità, gestito da Muliello S.F. Questa pagina spiega in modo semplice quali dati usiamo e come cancellarli.</p>
+
+  <h2>In breve</h2>
+  <ul>
+    <li>Non chiediamo nome vero, email, numero di telefono o posizione.</li>
+    <li>Niente pubblicità, niente tracciamento, niente cookie di terze parti, niente vendita di dati.</li>
+    <li>Puoi cancellare il tuo profilo in qualsiasi momento: <b>Profilo → Elimina il mio profilo</b>.</li>
+  </ul>
+
+  <h2>Cosa salviamo sul server</h2>
+  <table>
+    <tr><th>Dato</th><th>Perché</th></tr>
+    <tr><td>Nickname e avatar (emoji e colore)</td><td>Per farti riconoscere al tavolo e dai tuoi amici.</td></tr>
+    <tr><td>Codice personale e un codice segreto del dispositivo</td><td>Per riconoscere il tuo profilo e spostarlo su un altro dispositivo.</td></tr>
+    <tr><td>Password (solo se la imposti)</td><td>Per recuperare il profilo. Non è mai salvata in chiaro: ne teniamo solo un'impronta irreversibile (scrypt).</td></tr>
+    <tr><td>Amici, richieste di amicizia, giocatori bloccati</td><td>Per le funzioni Amici e Inviti.</td></tr>
+    <tr><td>Statistiche, storico delle ultime 20 partite, classifica</td><td>Per mostrarti come vai e per la classifica.</td></tr>
+    <tr><td>Tavoli e partite in corso</td><td>Per far riprendere le partite dopo un riavvio del server.</td></tr>
+    <tr><td>Segnalazioni che invii con 🐞</td><td>Per correggere i problemi. Contengono il tuo testo, la situazione del tavolo (senza le carte degli altri), il tipo di dispositivo e browser e la dimensione dello schermo.</td></tr>
+  </table>
+  <p><b>Non salviamo</b>: i messaggi della chat (passano solo agli altri giocatori del tavolo), il tuo indirizzo IP (lo usiamo per pochi minuti solo per limitare i tentativi di accesso sbagliati), contatti o altri dati del telefono.</p>
+
+  <h2>Cosa resta solo sul tuo dispositivo</h2>
+  <p>Nella memoria del browser o dell'app restano: il codice segreto che ti riconosce, le preferenze (tema, colori, suoni, carte grandi), l'ordine delle carte, le regole che hai scelto e le statistiche "locali". Si cancellano cancellando i dati del sito o disinstallando l'app.</p>
+
+  <h2>Chi vede cosa</h2>
+  <ul>
+    <li><b>Tutti i giocatori del server</b>: nickname e avatar (per esempio al tavolo e in classifica) e le partite in classifica.</li>
+    <li><b>I tuoi amici</b>: se sei online o stai giocando e la tua scheda con statistiche e partite giocate insieme.</li>
+    <li><b>Il gestore del server</b>: i dati della tabella sopra (mai le password, che non sono leggibili) e le segnalazioni.</li>
+    <li><b>Gli spettatori</b> vedono il tavolo, ma mai le carte in mano ai giocatori.</li>
+  </ul>
+
+  <h2>Dove sono i dati</h2>
+  <ul>
+    <li>Il server gira su un dispositivo del gestore. Il collegamento passa attraverso <b>Cloudflare</b>, che rende raggiungibile il server da internet.</li>
+    <li>La pagina d'ingresso e l'app Android sono ospitate su <b>GitHub</b>.</li>
+    <li>Ogni 6 ore viene fatto un <b>backup cifrato</b> dei dati del server su GitHub (restano quelli degli ultimi 7 giorni): senza la frase segreta del gestore è illeggibile.</li>
+    <li>La <b>musica</b> si ascolta su Spotify, con il tuo account: vale la privacy di Spotify.</li>
+  </ul>
+
+  <h2>Per quanto tempo</h2>
+  <p>Il profilo resta finché non lo elimini. I tavoli abbandonati vengono cancellati dopo un'ora senza giocatori collegati. Le segnalazioni conservate sono al massimo le ultime 100.</p>
+
+  <h2>Cancellare i dati</h2>
+  <ul>
+    <li><b>Profilo → Elimina il mio profilo</b> libera il nickname e cancella codice, password, avatar, amicizie, blocchi, statistiche e posto in classifica.</li>
+    <li>Le copie nei backup scompaiono da sole entro 7 giorni.</li>
+    <li>Per qualsiasi richiesta (per esempio cancellare una segnalazione) scrivi al gestore con <b>🐞 Segnala un problema</b>.</li>
+  </ul>
+
+  <p class="muted">Ultimo aggiornamento: ottobre 2026.</p>
+</main>
+</body>
+</html>
