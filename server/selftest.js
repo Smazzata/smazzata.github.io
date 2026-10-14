@@ -76,6 +76,50 @@ function scala40Tests() {
   console.log(`Scala 40: combinazioni e ${hands} smazzate simulate OK`);
 }
 
+/** Canasta: combinazioni, tre rossi, partite simulate (carte conservate, moviola, fine partita) */
+function canastaTests() {
+  const CN = require('../shared/canasta');
+  const EC = require('./canasta');
+  const BC = require('./canasta-bot');
+  const cfg = CN.normalize({});
+  const c = (r, s, id) => ({ id, r, s });
+  assert(CN.analyzeMeld([c(7, 'H', 1), c(7, 'S', 2), c(2, 'C', 3)], cfg), 'due naturali e una matta');
+  assert(!CN.analyzeMeld([c(7, 'H', 1), c(2, 'S', 2), c(0, 'J', 3)], cfg), 'servono almeno due naturali');
+  assert(!CN.analyzeMeld([c(7, 'H', 1), c(8, 'S', 2), c(9, 'C', 3)], cfg), 'niente scale nella Canasta');
+  assert(!CN.analyzeMeld([c(3, 'S', 1), c(3, 'C', 2), c(3, 'S', 3)], cfg), 'i tre non si calano');
+  assert.strictEqual(CN.minimum(-10), 15); assert.strictEqual(CN.minimum(1600), 90); assert.strictEqual(CN.minimum(3200), 120);
+  let hands = 0;
+  for (const n of [4, 2, 3]) {
+    for (let k = 0; k < (process.env.TEST_RAPIDO ? 1 : 2); k++) {
+      const g = EC.createGame({ rules: { players: n, target: 3000 }, players: Array.from({ length: n }, (_, i) => ({ name: 'B' + i, isBot: true })) });
+      assert(g.players.every((p) => !p.hand.some(CN.isRed3)), 'i tre rossi vanno subito in tavola');
+      let guard = 0;
+      while (!g.over && guard++ < 20000) {
+        if (g.phase === 'handEnd') {
+          hands++;
+          const h = JSON.parse(JSON.stringify(g.lastReplay.start));
+          Object.assign(h, { log: [], events: [], history: [] });
+          for (const x of g.lastReplay.actions) EC.apply(h, x.s, x.a);
+          assert.deepStrictEqual(h.handResult.teams.map((t) => t.total), g.handResult.teams.map((t) => t.total), 'moviola della Canasta');
+          EC.nextHand(g);
+          continue;
+        }
+        const seat = g.turn;
+        let steps = 0;
+        while (g.turn === seat && g.phase !== 'handEnd' && steps++ < 200) {
+          EC.apply(g, seat, BC.nextAction(g, seat, {}));
+          const total = g.stock.length + g.discard.length + g.players.reduce((a, p) => a + p.hand.length, 0)
+            + g.teams.reduce((a, t) => a + t.red3.length + t.melds.reduce((b, m) => b + m.cards.length, 0), 0);
+          assert.strictEqual(total, 108, 'Canasta: carte non conservate');
+        }
+        assert(steps < 200, 'Canasta: computer bloccato');
+      }
+      assert(g.over, 'Canasta: partita finita');
+    }
+  }
+  console.log(`Canasta: combinazioni e ${hands} smazzate simulate OK`);
+}
+
 function storeTests() {
   const fs = require('fs');
   const os = require('os');
@@ -259,6 +303,7 @@ trophyTests();
 leagueTests();
 storeTests();
 scala40Tests();
+canastaTests();
 filesTests();
 // TEST_RAPIDO=1 (npm run test:rapido): meno partite simulate, per le verifiche durante il lavoro.
 // Le prove su GitHub usano sempre la versione completa.

@@ -541,6 +541,28 @@ const step = (t) => console.log('✓ ' + t);
     Q.sock.close();
     step(`Scala 40: smazzata giocata, penalità ${hrQ.teams.map((t) => -t.total).join(' e ')}`);
 
+    // Canasta: tavolo a coppie contro il computer, una smazzata intera
+    const K = player('Canastaro'); await K.hello(); { const rk = await K.call('setNick', { nick: 'Canastaro' }); assert(rk.ok, 'nickname: ' + rk.error); }
+    assert((await K.call('createRoom', { rules: { game: 'canasta', players: 4, target: 2000 }, vsBots: true })).ok);
+    const ks = await K.until((st) => st.game, 'partita di Canasta');
+    assert(ks.room.game === 'canasta' && ks.game.game === 'canasta' && ks.game.hand.length >= 11, 'Canasta con 11 carte (più i tre rossi pescati)');
+    const endK = Date.now() + 90000;
+    while (!(K.state.game && K.state.game.phase === 'handEnd')) {
+      if (Date.now() > endK) throw new Error('la smazzata di Canasta non finisce');
+      const g = K.state.game;
+      if (g.turn === g.you && g.phase === 'draw') await K.call('action', { type: 'draw' });
+      else if (g.turn === g.you && g.phase === 'play') {
+        let done = false;
+        for (const c of g.hand.slice().reverse()) if ((await K.call('action', { type: 'discard', cardId: c.id })).ok) { done = true; break; }
+        if (!done) throw new Error('nessuno scarto possibile');
+      }
+      await wait(20);
+    }
+    assert(K.state.game.handResult.teams.length === 2, 'Canasta a coppie: due squadre');
+    assert((await K.call('replay')).ok, 'moviola della Canasta');
+    K.sock.close();
+    step('Canasta: smazzata a coppie giocata contro il computer');
+
     A.sock.close(); B.sock.close();
     console.log('\nProva multigiocatore: tutto OK');
   } finally {

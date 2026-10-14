@@ -758,3 +758,6 @@ label.radio { display: block; padding: 6px 2px; font-size: 14px; }
 /* avviso di aggiornamento dell'app */
 .apkbanner.update { border-color: var(--gold); background: rgba(242,193,78,.16); flex-wrap: wrap; }
 .apkbanner.update .updbtns { display: flex; gap: 6px; margin-left: auto; }
+
+.gamepick { grid-template-columns: 1fr 1fr 1fr; }
+@media (max-width: 420px) { .gamepick { grid-template-columns: 1fr; } }

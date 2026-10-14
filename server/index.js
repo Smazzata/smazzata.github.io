@@ -976,7 +976,7 @@ io.on('connection', (socket) => {
   }));
 
   socket.on('leaderboard', handler(({ friends, game } = {}) => {
-    const gid = game === 'scala40' ? 'scala40' : 'burraco';
+    const gid = Games.GAMES[game] ? game : 'burraco';
     const me = socket.data.token;
     const mine = sessions.get(me) || {};
     const allowed = friends ? new Set([me, ...(mine.friends || [])]) : null;

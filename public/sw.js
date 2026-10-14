@@ -1,11 +1,11 @@
 // Service worker: notifiche e copia del gioco per giocare anche senza internet.
 // "Prima la rete": da collegati si usa sempre la versione più recente (e se ne salva una copia);
 // senza rete si usa l'ultima copia salvata. La connessione di gioco (socket.io) non passa mai dalla copia.
-const CACHE = 'burraco-gioco-v5';
+const CACHE = 'burraco-gioco-v6';
 const SHELL = [
   './', 'index.html', 'style.css',
   'js/base.js', 'js/connessione.js', 'js/carte.js', 'js/ui.js', 'js/profilo.js', 'js/tutorial.js', 'js/schermate.js', 'js/tavolo.js', 'js/animazioni.js', 'js/finestre.js', 'js/moviola.js', 'js/azioni.js', 'js/comandi.js', 'local-server.js', 'engine.js',
-  'shared/rules.js', 'shared/melds.js', 'shared/scala40.js', 'icon.svg', 'manifest.webmanifest', 'privacy.html', 'icons/icon-192.png',
+  'shared/rules.js', 'shared/melds.js', 'shared/scala40.js', 'shared/canasta.js', 'icon.svg', 'manifest.webmanifest', 'privacy.html', 'icons/icon-192.png',
 ];
 
 self.addEventListener('install', (e) => {

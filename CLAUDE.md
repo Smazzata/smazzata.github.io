@@ -1,6 +1,6 @@
 # Burraco Online — guida per Claude Code
 
-Giochi: **Burraco** e **Scala 40**. `server/games.js` è il registro dei giochi (motore, computer, regole):
+Giochi: **Burraco**, **Scala 40** e **Canasta** (`shared/canasta.js`, `server/canasta.js`, `server/canasta-bot.js`). `server/games.js` è il registro dei giochi (motore, computer, regole):
 il server sceglie il gioco da `rules.game` (senza = Burraco). Un nuovo gioco = motore con la stessa interfaccia
 (createGame, apply, isLegal, viewFor, nextHand, surrender, teamOf, note) + computer (nextAction, thinkMs) + regole condivise.
 Scala 40: `shared/scala40.js` (regole e analisi), `server/scala40.js`, `server/scala40-bot.js`; nel browser `RX` (in public/js/base.js)

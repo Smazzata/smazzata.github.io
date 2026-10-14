@@ -9,7 +9,7 @@
     const r = await emit('replay');
     if (!r.ok) return;
     try { await LocalServer.loadEngine('engine.js'); } catch (e) { toast('Moviola non disponibile in questo momento', true); return; }
-    const E = self.BurracoGames[r.replay.start.game === 'scala40' ? 'scala40' : 'burraco'].E;
+    const E = (self.BurracoGames[r.replay.start.game] || self.BurracoGames.burraco).E;
     const g = JSON.parse(JSON.stringify(r.replay.start));
     Object.assign(g, { log: [], events: [], history: [] });
     const frames = [replayFrame(E, g, null, 0)];

@@ -21,6 +21,7 @@
     if (!myTeam || g.turn !== g.you) return out;
     if (S.room && S.room.aids === false) return out; // aiuti visivi disattivati dall'host
     if (isS40Game()) return selectionPreviewS40(g, myTeam, out);
+    if (isCanastaGame()) return selectionPreviewCanasta(g, myTeam, out);
     const sel = orderedHand().filter((c) => S.selected.has(c.id));
     const closedDraw = g.phase === 'draw' && g.cfg.pile === 'closed' && g.discard.length;
     if (g.phase !== 'play' && !closedDraw) return out;
@@ -77,6 +78,30 @@
     return out;
   }
 
+  /** Canasta: carte dello stesso valore; per prendere il monte la carta in cima va usata; apertura minima */
+  function selectionPreviewCanasta(g, myTeam, out) {
+    const cfg = g.cfg.rules;
+    const sel = orderedHand().filter((c) => S.selected.has(c.id));
+    const top = g.discard[g.discard.length - 1];
+    const pileDraw = g.phase === 'draw' && top && !g.pileBlocked;
+    if (g.phase !== 'play' && !pileDraw) return out;
+    if (!sel.length) return out;
+    const cards = pileDraw ? [top, ...sel] : sel;
+    for (const m of myTeam.melds) if (CANR.analyzeMeld(m.cards.concat(cards), cfg)) out.canAdd.add(m.id);
+    if (cards.length >= 3) {
+      const groups = CANR.partitionMelds(cards, cfg);
+      let ok = !!groups;
+      let label = groups ? (groups.length > 1 ? `${groups.length} giochi` : `gioco di ${rankName(groups[0].rank)}`) : '';
+      if (ok && !myTeam.melds.length) {
+        const pts = groups.reduce((s, an) => s + an.points, 0);
+        if (pts < myTeam.minimum) { ok = false; label = `${pts}/${myTeam.minimum} punti`; } else label += ` (${pts} punti)`;
+      }
+      if (ok && groups.some((an) => myTeam.melds.some((m) => m.rank === an.rank))) { ok = false; label = 'attacca al gioco che hai'; }
+      out.newMeld = { ok, label };
+    }
+    return out;
+  }
+
   function meldHTML(m, mine, preview) {
     const short = { clean: 'Pulito', dirty: 'Sporco', semi: 'Semi', real13: '+500', real14: '+1000' }[m.kind] || '';
     const attrs = `data-mid="${m.id}"` + (mine ? ` data-meld="${m.id}" data-drop="meld"` : '');
@@ -101,6 +126,7 @@
     if (g.turn !== me) return `Turno di <b>${esc(cur.name)}</b>${g.lastTurn ? ' · <b>ultimo giro</b>' : ''}`;
     if (g.phase === 'draw') {
       if (g.mustDraw) return 'Tocca a te: tocca il <b>tallone</b> per pescare';
+      if (isCanastaGame() && g.discardCount) return g.pileBlocked ? 'Tocca il <b>tallone</b> (il monte è bloccato)' : `Tocca il <b>tallone</b>, oppure seleziona ${g.pileFrozen ? 'due carte uguali' : 'le carte da usare'} con quella in cima e tocca il <b>monte</b>`;
       if (g.cfg.pile === 'closed' && g.discardCount) return 'Tocca il <b>tallone</b>, oppure seleziona carte da combinare con la cima e tocca gli <b>scarti</b>';
       return 'Tocca a te: tocca il <b>tallone</b> o gli <b>scarti</b>';
     }
@@ -240,7 +266,7 @@
       ${g.pozzetti.length ? `<div class="pozz"><div class="pz">${g.pozzetti.map((n, i) => backHTML('', `style="--l:${i}"`)).join('')}</div><span class="lbl">${g.pozzetti.length === 1 ? cap(P) : (P === 'morto' ? 'Morti' : 'Pozzetti')}</span></div>` : ''}
       <div class="pile ${(canDraw && g.discardCount && !g.mustDraw) || (playing && S.selected.size === 1) ? 'active' : ''} ${g.cfg.pile} ${S.hint && (S.hint.type === 'takePile' || S.hint.type === 'discard') ? 'hinted' : ''}" data-drop="discard" ${canDraw && !g.mustDraw ? 'data-act="takePile"' : playing ? 'data-act="discardSel"' : ''}>
         <div class="pcards">${pileCards || '<div class="card slot"></div>'}</div>
-        <span class="lbl">Scarti${g.discardCount ? ' · ' + g.discardCount : ''}${g.cfg.pile === 'closed' ? ' (chiusi)' : ''}</span>
+        <span class="lbl">${isCanastaGame() ? `Monte${g.discardCount ? ' · ' + g.discardCount : ''}${g.pileBlocked ? ' 🔒' : g.pileFrozen ? ' ❄️' : ''}` : `Scarti${g.discardCount ? ' · ' + g.discardCount : ''}${g.cfg.pile === 'closed' ? ' (chiusi)' : ''}`}</span>
       </div>
     </div>`;
 
@@ -253,7 +279,9 @@
       const label = mine ? (t.members.length > 1 ? `Noi · ${esc(teamName(g, t))}` : 'I tuoi giochi') : esc(teamName(g, t));
       const flags = isS40Game()
         ? [g.players[t.members[0]].out ? 'eliminato' : t.opened ? 'ha aperto' : `deve aprire (${g.cfg.opening})`]
-        : [t.pozzettoTaken ? `${P} preso` : `${P} da prendere`];
+        : isCanastaGame()
+          ? [t.opened ? 'ha aperto' : `apertura: ${t.minimum} punti`, ...(t.red3 ? [`🔴3 ×${t.red3}`] : [])]
+          : [t.pozzettoTaken ? `${P} preso` : `${P} da prendere`];
       if (t.canClose) flags.push('può chiudere');
       // nella Scala 40, dopo l'apertura, si attacca anche ai giochi degli altri
       const s40open = isS40Game() && myTeam && myTeam.opened && playing;
@@ -280,7 +308,7 @@
 
     return `<div class="game ${myTurn ? 'myturn' : ''}">
       <div class="topbar">
-        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : `<b>${r.slow ? '🐢 ' : ''}${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, ${isS40Game() ? `eliminato a ${g.cfg.target}` : `si vince a ${g.cfg.target}`}">${isS40Game() ? 'Scala 40 · ' : ''}smazzata ${g.handNo}</span></span>
+        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : `<b>${r.slow ? '🐢 ' : ''}${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, ${isS40Game() ? `eliminato a ${g.cfg.target}` : `si vince a ${g.cfg.target}`}">${isS40Game() ? 'Scala 40 · ' : isCanastaGame() ? 'Canasta · ' : ''}smazzata ${g.handNo}</span></span>
         <button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
         ${OFFLINE ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}
         <button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>

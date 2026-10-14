@@ -94,7 +94,7 @@
       <div class="panel">
         <h2>Regole e varianti</h2>
         <p class="muted">Ogni preset è un punto di partenza: quando crei una partita puoi modificare ogni singola regola.</p>
-        <div class="presets">${R.PRESETS.concat([S40R.PRESET]).map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>
+        <div class="presets">${R.PRESETS.concat([S40R.PRESET, CANR.PRESET]).map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>
         <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si gioca nell'app</button><button class="btn ghost small" data-act="settings">⚙️ Aspetto e suoni</button><button class="btn ghost small" data-act="toggleTheme">${S.prefs.theme === 'scuro' ? '☀️ Tema chiaro' : '🌙 Tema scuro'}</button><button class="btn ghost small" data-act="stats">📊 Statistiche</button>${OFFLINE ? '' : '<button class="btn ghost small" data-act="leaders">🏆 Classifica</button><button class="btn ghost small" data-act="report">🐞 Segnala un problema</button>'}</div>
         <p class="muted small" style="margin:10px 0 0;text-align:center"><a href="privacy.html" style="color:inherit">🔒 Privacy: quali dati usiamo e come cancellarli</a></p>
       </div>
@@ -107,9 +107,11 @@
       <h2>Nuova partita</h2>
       <div class="panel">
         <h2>1. Scegli il gioco</h2>
-        <div class="gamepick"><button class="preset ${RX.isS40(S.rules) ? '' : 'active'}" data-act="pickGame" data-game="burraco"><b>🃏 Burraco</b><span>A coppie o da soli: burraco, pozzetti e tante varianti</span></button>
-        <button class="preset ${RX.isS40(S.rules) ? 'active' : ''}" data-act="pickGame" data-game="scala40"><b>🂡 Scala 40</b><span>Ognuno per sé: apri con 40 punti, chi arriva a 101 è fuori</span></button></div>
-        ${RX.isS40(S.rules) ? '' : `<h2 style="margin-top:12px">Variante</h2>${presetsHTML(S.rules)}`}
+        <div class="gamepick">${[['burraco', '🃏 Burraco', 'A coppie o da soli: burraco, pozzetti e tante varianti'],
+          ['scala40', '🂡 Scala 40', 'Ognuno per sé: apri con 40 punti, chi arriva a 101 è fuori'],
+          ['canasta', '🎴 Canasta', 'La classica: carte uguali, canaste, tre rossi e monte congelato']]
+          .map(([id, name, sub]) => `<button class="preset ${(S.rules.game || 'burraco') === id ? 'active' : ''}" data-act="pickGame" data-game="${id}"><b>${name}</b><span>${sub}</span></button>`).join('')}</div>
+        ${RX.isOther(S.rules) ? '' : `<h2 style="margin-top:12px">Variante</h2>${presetsHTML(S.rules)}`}
         <details class="custom" ${S.customOpen ? 'open' : ''}>
           <summary>2. Personalizza le regole ${rulesStatus(S.rules)}</summary>
           ${rulesFormHTML(S.rules)}

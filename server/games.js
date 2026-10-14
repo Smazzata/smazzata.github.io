@@ -7,6 +7,7 @@
  */
 const Rules = require('../shared/rules');
 const S40 = require('../shared/scala40');
+const CAN = require('../shared/canasta');
 
 const GAMES = {
   burraco: {
@@ -21,9 +22,15 @@ const GAMES = {
     normalize: (r) => S40.normalize(r),
     presetOf: () => 'scala40',
   },
+  canasta: {
+    id: 'canasta', name: 'Canasta',
+    E: require('./canasta'), Bot: require('./canasta-bot'),
+    normalize: (r) => CAN.normalize(r),
+    presetOf: () => 'canasta',
+  },
 };
 
-const idOf = (rules) => (rules && rules.game === 'scala40' ? 'scala40' : 'burraco');
+const idOf = (rules) => (rules && GAMES[rules.game] ? rules.game : 'burraco');
 const of = (rulesOrRoom) => GAMES[idOf(rulesOrRoom && rulesOrRoom.rules ? rulesOrRoom.rules : rulesOrRoom)];
 
 module.exports = { GAMES, of, idOf };

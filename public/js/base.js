@@ -24,18 +24,24 @@
 
   /* Regole del gioco scelto: Burraco (shared/rules.js) o Scala 40 (shared/scala40.js) */
   const S40R = window.BurracoScala40;
+  const CANR = window.BurracoCanasta;
+  // regole degli altri giochi (oltre al Burraco): stesso "contratto" (normalize, SCHEMA, PRESET, describe)
+  const OTHER = { scala40: S40R, canasta: CANR };
+  const otherOf = (r) => (r && OTHER[r.game]) || null;
   const RX = {
     isS40: (r) => !!r && r.game === 'scala40',
-    normalize: (r) => (r && r.game === 'scala40' ? S40R.normalize(r) : R.normalize(r)),
-    schema: (r) => (r && r.game === 'scala40' ? S40R.SCHEMA : R.SCHEMA),
-    presets: (r) => (r && r.game === 'scala40' ? [S40R.PRESET] : R.PRESETS),
-    matchPreset: (r) => (r && r.game === 'scala40' ? 'scala40' : R.matchPreset(r)),
-    describe: (r) => (r && r.game === 'scala40' ? S40R.describe(r) : R.describe(r)),
-    presetById: (id) => (id === 'scala40' ? S40R.PRESET : R.PRESETS.find((p) => p.id === id)),
-    gameName: (r) => (r && r.game === 'scala40' ? 'Scala 40' : 'Burraco'),
+    isOther: (r) => !!otherOf(r),
+    normalize: (r) => (otherOf(r) ? otherOf(r).normalize(r) : R.normalize(r)),
+    schema: (r) => (otherOf(r) ? otherOf(r).SCHEMA : R.SCHEMA),
+    presets: (r) => (otherOf(r) ? [otherOf(r).PRESET] : R.PRESETS),
+    matchPreset: (r) => (otherOf(r) ? r.game : R.matchPreset(r)),
+    describe: (r) => (otherOf(r) ? otherOf(r).describe(r) : R.describe(r)),
+    presetById: (id) => (OTHER[id] ? OTHER[id].PRESET : R.PRESETS.find((p) => p.id === id)),
+    gameName: (r) => (r && r.game === 'scala40' ? 'Scala 40' : r && r.game === 'canasta' ? 'Canasta' : 'Burraco'),
   };
-  /** la partita in corso è di Scala 40? */
+  /** la partita in corso è di Scala 40? di Canasta? */
   const isS40Game = () => !!(S.game && S.game.game === 'scala40');
+  const isCanastaGame = () => !!(S.game && S.game.game === 'canasta');
 
   const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche' };
   const S = {

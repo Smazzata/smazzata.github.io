@@ -143,7 +143,7 @@
     return `<table>
       ${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
       ${row('Smazzate giocate', st.hands)}${row('Smazzate vinte', `${st.handsWon} (${pct(st.handsWon, st.hands)})`)}
-      ${row('Burraco fatti', st.burraco)}${row('Chiusure', st.closures)}
+      ${row(gid === 'canasta' ? 'Canaste fatte' : 'Burraco fatti', st.burraco)}${row('Chiusure', st.closures)}
       ${row('Miglior smazzata', st.bestHand == null ? '—' : st.bestHand)}${row('Media punti a smazzata', st.avgHand == null ? '—' : st.avgHand)}
     </table>`;
   }
@@ -152,7 +152,7 @@
     if (!list.length) return '<p class="muted">Nessuna partita completata.</p>';
     return list.map((h) => `<div class="hist ${h.won ? 'won' : 'lost'}">
       <span class="hres">${h.won ? '🏆' : '—'}</span>
-      <span class="grow"><b>${h.won ? 'Vinta' : 'Persa'}</b> · ${fmtDate(h.at)} · ${h.game === 'scala40' ? 'Scala 40' : PRESET_NAMES[h.preset] || h.preset}${h.hands ? ` · ${h.hands} smazzate` : ''}<br>
+      <span class="grow"><b>${h.won ? 'Vinta' : 'Persa'}</b> · ${fmtDate(h.at)} · ${h.game === 'scala40' ? 'Scala 40' : h.game === 'canasta' ? 'Canasta' : PRESET_NAMES[h.preset] || h.preset}${h.hands ? ` · ${h.hands} smazzate` : ''}<br>
       <span class="muted small">${h.teams.map((t) => `${t.mine ? '<b>' : ''}${t.names.map(esc).join(' & ')} ${t.score}${t.mine ? '</b>' : ''}`).join(' · ')}</span></span></div>`).join('');
   }
 
@@ -160,7 +160,8 @@
   function byGameHTML(byGame, total) {
     const games = Object.entries(byGame || {});
     if (!games.length) return total ? statsTable(total) : '<p class="muted">Gioca la tua prima smazzata per vedere le statistiche.</p>';
-    return games.map(([gid, st]) => `<h3>${gid === 'scala40' ? '🂡 Scala 40' : '🃏 Burraco'}</h3>${statsTable(st, gid)}`).join('');
+    const names = { burraco: '🃏 Burraco', scala40: '🂡 Scala 40', canasta: '🎴 Canasta' };
+    return games.map(([gid, st]) => `<h3>${names[gid] || gid}</h3>${statsTable(st, gid)}`).join('');
   }
 
   async function statsModal() {

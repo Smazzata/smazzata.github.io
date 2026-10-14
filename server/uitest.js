@@ -175,6 +175,20 @@ const HELPERS = `
     if (twos) throw new Error('nella Scala 40 i 2 non devono sembrare pinelle');
     step(`Scala 40: smazzata giocata toccando (${s40.turns} turni)`);
 
+    // 5b. Canasta
+    const can = await cdp.run(`
+      __tap('[data-act="leave"]'); await __W(400);
+      if (document.querySelector('[data-act="leaveNow"]')) { __tap('[data-act="leaveNow"]'); await __W(800); }
+      if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); __tap('[data-act="leave"]'); await __W(800); }
+      __tap(__btn('Nuova partita')); await __W(400);
+      __tap('[data-act="pickGame"][data-game="canasta"]'); await __W(400);
+      __tap(__btn('Gioca subito contro')); await __W(1500);
+      const t = document.querySelector('.topbar .title').textContent;
+      if (!document.querySelectorAll('#hand .card').length) throw new Error('Canasta non partita: ' + t);
+      return __playHand(240000);`, 260000);
+    await shot('04b-canasta-fine-smazzata');
+    step(`Canasta: smazzata giocata toccando (${can.turns} turni)`);
+
     // 6. gioco senza internet
     const off = await cdp.run(`
       location.href = '/?offline=1'; return true;`).catch(() => true);

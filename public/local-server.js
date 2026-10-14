@@ -47,14 +47,14 @@
       },
     };
 
-    const GX = () => self.BurracoGames[room && room.rules && room.rules.game === 'scala40' ? 'scala40' : 'burraco'];
+    const GX = () => self.BurracoGames[room && room.rules && self.BurracoGames[room.rules.game] ? room.rules.game : 'burraco'];
     const E = () => GX().E;
     const Bot = () => GX().Bot;
     const Rules = () => self.BurracoRules;
 
     function roomInfo() {
       return {
-        code: 'OFFLINE', host: 0, rules: room.rules, n: room.n, preset: room.rules.game === 'scala40' ? 'scala40' : Rules().matchPreset(room.rules), game: room.rules.game === 'scala40' ? 'scala40' : 'burraco',
+        code: 'OFFLINE', host: 0, rules: room.rules, n: room.n, preset: ['scala40', 'canasta'].includes(room.rules.game) ? room.rules.game : Rules().matchPreset(room.rules), game: ['scala40', 'canasta'].includes(room.rules.game) ? room.rules.game : 'burraco',
         seats: room.seats.map((s) => ({ name: s.name, isBot: !!s.isBot, connected: true, avatar: null })),
         started: !!room.game, ready: room.ready.slice(), botSpeed: room.botSpeed || 'normale',
         hints: !!room.hints, humans: 1, aids: room.aids !== false, music: null, spectators: [],
@@ -129,7 +129,7 @@
           const R = Rules();
           const s40 = d.rules && d.rules.game === 'scala40';
           const rules = d.tutorial ? (s40 ? self.BurracoScala40.normalize({ players: 2 }) : R.normalize({ ...R.PRESETS[0].rules, players: 2, target: 505 }))
-            : s40 ? self.BurracoScala40.normalize(d.rules) : R.normalize(d.rules);
+            : s40 ? self.BurracoScala40.normalize(d.rules) : d.rules && d.rules.game === 'canasta' ? self.BurracoCanasta.normalize(d.rules) : R.normalize(d.rules);
           const free = BOT_NAMES.slice().sort(() => Math.random() - 0.5);
           room = {
             rules, n: rules.players, ready: [], botSpeed: 'normale', botLevel: 'normale', aids: true, hints: false,

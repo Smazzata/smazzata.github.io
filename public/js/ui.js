@@ -37,7 +37,7 @@
       ${p ? p.intro : '<p>Regole personalizzate per questa partita. Ecco il riepilogo completo:</p>'}
       ${RX.describe(rules)}
       ${HOW_TO}
-      ${RX.isS40(rules) ? '' : R.OTHER_VARIANTS}
+      ${RX.isOther(rules) ? '' : R.OTHER_VARIANTS}
     </div>`);
   }
 
