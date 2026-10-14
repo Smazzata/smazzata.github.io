@@ -74,7 +74,7 @@
       o.connect(g).connect(c.destination);
       o.start(t); o.stop(t + dur + 0.02);
     },
-    noise(dur = 0.09, vol = 0.18, freq = 2400) {
+    noise(dur = 0.09, vol = 0.18, freq = 2400, delay = 0) {
       const c = this.ctx; if (!c) return;
       const len = Math.floor(c.sampleRate * dur);
       const buf = c.createBuffer(1, len, c.sampleRate);
@@ -83,7 +83,7 @@
       const src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
       f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 0.8;
       g.gain.value = vol;
-      src.buffer = buf; src.connect(f).connect(g).connect(c.destination); src.start();
+      src.buffer = buf; src.connect(f).connect(g).connect(c.destination); src.start(c.currentTime + delay);
     },
     play(kind) {
       if (!S.prefs.sound || !this.ctx) return;
@@ -94,6 +94,10 @@
         case 'turn': this.tone(660, 0.18, 'sine', 0.1); this.tone(880, 0.25, 'sine', 0.1, 0.12); break;
         case 'burraco': [523, 659, 784, 1047].forEach((f, i) => this.tone(f, 0.25, 'triangle', 0.1, i * 0.09)); break;
         case 'error': this.tone(180, 0.18, 'square', 0.05); break;
+        // mescolata: una raffica di fruscii (come le carte che si intrecciano)
+        case 'shuffle': for (let i = 0; i < 16; i++) this.noise(0.035, 0.1 + Math.random() * 0.06, 3200 + Math.random() * 1500, i * 0.035 + Math.random() * 0.01); break;
+        case 'deal': this.noise(0.05, 0.14, 2900); break;
+        case 'pile': this.noise(0.14, 0.26, 1500); this.noise(0.1, 0.18, 2400, 0.06); break;
         case 'win': [523, 659, 784, 659, 1047].forEach((f, i) => this.tone(f, 0.3, 'triangle', 0.1, i * 0.12)); break;
       }
     },

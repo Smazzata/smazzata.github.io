@@ -354,6 +354,7 @@
 
   function afterGameRender() {
     layoutHand();
+    if (S.dealAnim) { S.dealAnim = false; dealAnimation(); }
     const hand = $('#hand');
     if (hand) {
       void hand.offsetWidth; // applica le posizioni senza animazioni

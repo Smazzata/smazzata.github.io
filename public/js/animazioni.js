@@ -27,6 +27,28 @@
     setTimeout(() => el.remove(), dur + delay + 120);
   }
 
+  /** Distribuzione: qualche carta vola dal tallone a ogni giocatore, la mia mano entra carta per carta */
+  function dealAnimation() {
+    const g = S.game;
+    if (!g || reducedMotion) return;
+    const stock = $('.stock');
+    if (!stock) return;
+    Sound.play('shuffle');
+    const seats = [...$$('.seatchip'), $('.handwrap')].filter(Boolean);
+    let k = 0;
+    for (let round = 0; round < 3; round++) {
+      for (const el of seats) {
+        const d = 450 + k * 70;
+        fly(stock, el, backHTML(), { delay: d, dur: 340 });
+        setTimeout(() => Sound.play('deal'), d + 300);
+        k++;
+      }
+    }
+    const cards = $$('#hand .card');
+    cards.forEach((c, i) => { c.style.animationDelay = `${450 + i * 55}ms`; c.classList.add('dealin'); });
+    setTimeout(() => cards.forEach((c) => { c.classList.remove('dealin'); c.style.animationDelay = ''; }), 450 + cards.length * 55 + 500);
+  }
+
   function animateEvent(ev) {
     const g = S.game;
     if (!g) return;

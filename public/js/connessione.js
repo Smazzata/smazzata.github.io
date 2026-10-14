@@ -161,6 +161,8 @@
       const ids = new Set(game.hand.map((c) => c.id));
       for (const id of [...S.selected]) if (!ids.has(id)) S.selected.delete(id);
       const sameHand = prev && prev.handNo === game.handNo;
+      // nuova smazzata appena distribuita: animazione della distribuzione
+      S.dealAnim = game.phase === 'draw' && (!game.events || game.events.length === 0) && (!prev || !sameHand || prev.over);
       S.newIds = new Set(sameHand ? game.hand.filter((c) => !prev.hand.some((p) => p.id === c.id)).map((c) => c.id) : []);
       syncHandOrder(game, sameHand);
       const ev = game.lastEvent;
@@ -262,5 +264,6 @@
         const mine = game.teams.find((t) => t.members.includes(game.you));
         S.burracoFx = { meldId: now.id, label: now.label, bonus: now.bonus, mine: !!(mine && mine.melds.some((m) => m.id === now.id)) };
       } else Sound.play('meld');
-    } else Sound.play('card');
+    } else if (ev.type === 'pile') Sound.play('pile');
+    else Sound.play('card');
   }
