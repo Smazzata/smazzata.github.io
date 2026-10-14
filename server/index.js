@@ -32,6 +32,8 @@ const io = new Server(server);
 /* sessions: token -> { name, room } ; rooms: code -> room */
 const sessions = new Map();
 const rooms = new Map();
+/* classifica: token -> { name, games, wins, points, burraco } (solo giocatori umani) */
+const leaderboard = new Map();
 const BOT_NAMES = ['Nonna Pina', 'Zio Gino', 'Carmela', 'Totò', 'Rosetta', 'Peppino', 'Ninetta', 'Gegè'];
 
 function newCode() {
@@ -149,8 +151,27 @@ function scheduleBot(room) {
   }, BOT_SPEEDS[room.botSpeed] || BOT_DELAY);
 }
 
+/** A fine partita aggiorna la classifica una sola volta per partita */
+function recordLeaderboard(room) {
+  const g = room.game;
+  if (!g || !g.over || room.recordedGame === room.gameSeq) return;
+  room.recordedGame = room.gameSeq;
+  room.seats.forEach((s, seat) => {
+    if (!s || s.isBot || !s.token) return;
+    const e = leaderboard.get(s.token) || { name: s.name, games: 0, wins: 0, points: 0, burraco: 0 };
+    e.name = s.name;
+    e.games++;
+    if (g.winners.includes(seat)) e.wins++;
+    e.points += g.scores[seat];
+    const team = g.teams.find((t) => t.members.includes(seat));
+    if (team) e.burraco += team.melds.filter((m) => m.length >= 7).length;
+    leaderboard.set(s.token, e);
+  });
+}
+
 function afterAction(room) {
   const g = room.game;
+  recordLeaderboard(room);
   if (g && g.turn !== room.lastTurnSeat) {
     room.lastTurnSeat = g.turn;
     room.turnCounter = (room.turnCounter || 0) + 1;
@@ -382,6 +403,16 @@ io.on('connection', (socket) => {
     broadcast(room);
   }));
 
+  socket.on('leaderboard', handler(() => {
+    const me = socket.data.token;
+    const list = [...leaderboard.entries()]
+      .map(([token, e]) => ({ name: e.name, games: e.games, wins: e.wins, points: e.points, burraco: e.burraco, me: token === me }))
+      .filter((e) => e.games > 0)
+      .sort((a, b) => b.wins - a.wins || (b.wins / b.games) - (a.wins / a.games) || b.points - a.points)
+      .slice(0, 30);
+    return { list };
+  }));
+
   socket.on('setBotLevel', handler(({ level }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
@@ -471,6 +502,7 @@ function startGame(room) {
   });
   room.ready = new Set();
   room.botMemo = {};
+  room.gameSeq = (room.gameSeq || 0) + 1;
   room.turnCounter = 0;
   room.botMemoTurn = -1;
   room.lastTurnSeat = room.game.turn;
@@ -503,9 +535,10 @@ function saveNow() {
     const data = {
       savedAt: Date.now(),
       sessions: [...sessions],
+      leaderboard: [...leaderboard],
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
-        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame,
       })),
     };
     fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -521,6 +554,7 @@ function loadSaved() {
     if (!fs.existsSync(DATA_FILE)) return;
     const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
     for (const [token, sess] of data.sessions || []) sessions.set(token, sess);
+    for (const [token, e] of data.leaderboard || []) leaderboard.set(token, e);
     for (const r of data.rooms || []) {
       rooms.set(r.code, { ...r, ready: new Set(r.ready || []), botTimer: null, botMemo: {}, botMemoTurn: -1 });
     }

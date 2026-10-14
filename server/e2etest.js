@@ -94,6 +94,13 @@ const step = (t) => console.log('✓ ' + t);
     }
     step(`partita finita dopo ${A.state.game.handNo} smazzate`);
 
+    // classifica: entrambi gli umani hanno una partita giocata
+    const lb = await A.call('leaderboard');
+    assert(lb.ok && lb.list.length === 2 && lb.list.every((e) => e.games === 1), 'classifica aggiornata');
+    assert.strictEqual(lb.list.filter((e) => e.me).length, 1);
+    assert.strictEqual(lb.list.reduce((n, e) => n + e.wins, 0) >= 1, true);
+    step('classifica aggiornata a fine partita');
+
     // rivincita: serve il voto di tutti gli umani
     const seatsBefore = A.state.game.players.map((p) => p.name);
     assert((await A.call('ready')).ok);

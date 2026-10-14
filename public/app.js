@@ -152,15 +152,19 @@
       if (game.phase === 'handEnd') S.selected.clear();
       keepScreenOn(game.phase !== 'handEnd' || !game.over);
       if (newEvent) eventSound(prev, game, ev);
+      const w = stockWarning(game), pw = prev && prev.handNo === game.handNo ? stockWarning(prev) : null;
+      if (w && w.level >= 2 && (!pw || pw.level < w.level)) { toast(w.text); Sound.play('turn'); }
       if (prev && game.turn === game.you && game.phase === 'draw' && (prev.turn !== game.you || prev.phase === 'handEnd')) {
         if (navigator.vibrate) navigator.vibrate(60);
         Sound.play('turn');
       }
+      if (game.phase === 'handEnd') recordStats(room, game);
       if (game.phase === 'handEnd' && (!prev || prev.phase !== 'handEnd' || prev.handNo !== game.handNo)) {
         setTimeout(showResult, 900);
         const mine = game.handResult && game.handResult.teams.find((t) => t.members.includes(game.you));
         const best = game.handResult && Math.max(...game.handResult.teams.map((t) => t.total));
         if (mine && mine.total === best) setTimeout(() => Sound.play('win'), 500);
+        if (game.over && game.winners && game.winners.includes(game.you)) setTimeout(() => confetti(), 700);
       } else if (game.phase !== 'handEnd' && S.modalKind === 'result') closeModal();
       else if (S.modalKind === 'result') showResult();
       document.title = game.turn === game.you && game.phase !== 'handEnd' ? '● Tocca a te · Burraco' : 'Burraco Online';
@@ -190,7 +194,11 @@
     if (ev.type === 'meld' || ev.type === 'add') {
       const before = prev && prev.teams.flatMap((t) => t.melds).find((m) => m.id === ev.meldId);
       const now = game.teams.flatMap((t) => t.melds).find((m) => m.id === ev.meldId);
-      if (now && now.kind && (!before || !before.kind)) Sound.play('burraco'); else Sound.play('meld');
+      if (now && now.kind && (!before || !before.kind)) {
+        Sound.play('burraco');
+        const mine = game.teams.find((t) => t.members.includes(game.you));
+        S.burracoFx = { meldId: now.id, label: now.label, bonus: now.bonus, mine: !!(mine && mine.melds.some((m) => m.id === now.id)) };
+      } else Sound.play('meld');
     } else Sound.play('card');
   }
 
@@ -460,7 +468,7 @@
         <h2>Regole e varianti</h2>
         <p class="muted">Ogni preset è un punto di partenza: quando crei una partita puoi modificare ogni singola regola.</p>
         <div class="presets">${R.PRESETS.map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>
-        <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si gioca nell'app</button><button class="btn ghost small" data-act="settings">⚙️ Aspetto e suoni</button></div>
+        <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si gioca nell'app</button><button class="btn ghost small" data-act="settings">⚙️ Aspetto e suoni</button><button class="btn ghost small" data-act="stats">📊 Statistiche</button><button class="btn ghost small" data-act="leaders">🏆 Classifica</button></div>
       </div>
     </div>`;
   }
@@ -620,6 +628,19 @@
     return tip;
   }
 
+  /** Avviso di fine tallone: quanti giri restano prima che la smazzata finisca */
+  function stockWarning(g) {
+    if (g.phase === 'handEnd') return null;
+    if (g.lastTurn) return { level: 3, text: '🔔 Ultimo turno della smazzata!' };
+    const r = g.cfg.rules;
+    if (r.stockEnd === 'mortoToStock' && g.pozzetti.length) return null; // un pozzetto ricaricherà il tallone
+    const draws = r.stockEnd === 'twoLeft' ? g.stockCount - 2 : g.stockCount;
+    const rounds = Math.ceil(draws / g.n);
+    if (rounds <= 1) return { level: 2, text: `⚠️ Ultimo giro: ${draws === 1 ? 'resta 1 pescata' : `restano ${draws} pescate`}` };
+    if (rounds <= 2) return { level: 1, text: `⚠️ Tallone quasi finito: ~${rounds} giri` };
+    return null;
+  }
+
   /** ultima riga significativa della cronaca */
   function lastMove(g) {
     for (let i = g.log.length - 1; i >= 0; i--) {
@@ -679,7 +700,7 @@
     const center = `<div class="center">
       <div class="stock ${canDraw && (g.stockCount || g.pozzetti.length) ? 'active' : ''} ${S.hint && S.hint.type === 'draw' ? 'hinted' : ''}" ${canDraw ? 'data-act="draw" data-drag="stock"' : ''}>
         <div class="deck">${g.stockCount ? Array.from({ length: stockLayers }, (_, i) => backHTML('', `style="--l:${i}"`)).join('') : '<div class="card slot"></div>'}</div>
-        <span class="lbl">Tallone · ${g.stockCount}</span>
+        <span class="lbl ${stockWarning(g) ? 'lowstock' : ''}">Tallone · ${g.stockCount}</span>
       </div>
       ${g.pozzetti.length ? `<div class="pozz"><div class="pz">${g.pozzetti.map((n, i) => backHTML('', `style="--l:${i}"`)).join('')}</div><span class="lbl">${g.pozzetti.length === 1 ? cap(P) : (P === 'morto' ? 'Morti' : 'Pozzetti')}</span></div>` : ''}
       <div class="pile ${(canDraw && g.discardCount && !g.mustDraw) || (playing && S.selected.size === 1) ? 'active' : ''} ${g.cfg.pile} ${S.hint && (S.hint.type === 'takePile' || S.hint.type === 'discard') ? 'hinted' : ''}" data-drop="discard" ${canDraw && !g.mustDraw ? 'data-act="takePile"' : playing ? 'data-act="discardSel"' : ''}>
@@ -729,7 +750,7 @@
       </div>
       <div class="scorebar">${scores}</div>
       <div class="seats-row n${g.n}">${seats}</div>
-      <div class="ticker" title="Ultima mossa">${esc(lastMove(g))}</div>
+      ${(() => { const w = stockWarning(g); return w ? `<div class="ticker warn w${w.level}">${w.text}</div>` : `<div class="ticker" title="Ultima mossa">${esc(lastMove(g))}</div>`; })()}
       <div class="felt" id="felt">${others}${center}${mineZone}</div>
       <div class="statusbar ${myTurn ? 'on' : ''}">
         <span class="msg">${S.turnEnd && g.phase !== 'handEnd' && myTurn ? '<b class="cd" data-cd></b> ' : ''}${statusText(g)}</span>
@@ -808,6 +829,7 @@
     const pc = $('.pile .pcards');
     if (pc) pc.scrollLeft = pc.scrollWidth;
     if (S.animEvent) { animateEvent(S.animEvent); S.animEvent = null; }
+    if (S.burracoFx) { burracoFx(S.burracoFx); S.burracoFx = null; }
   }
 
   /* ================= Animazioni ================= */
@@ -854,6 +876,89 @@
     } else if (ev.type === 'pozzetto') {
       for (let i = 0; i < 4; i++) fly($('.pozz .pz') || stock, seatEl, backHTML(), { delay: i * 70 });
     }
+  }
+
+  /* ---------- Statistiche personali (salvate sul dispositivo) ---------- */
+  const STATS0 = { games: 0, wins: 0, hands: 0, handsWon: 0, burraco: 0, closures: 0, bestHand: null, points: 0 };
+  function loadStats() { return { ...STATS0, ...store.get('bur_stats', {}) }; }
+
+  /** Conta ogni fine smazzata / fine partita una sola volta, anche ricaricando la pagina */
+  function recordStats(room, game) {
+    const hr = game.handResult;
+    if (!hr || game.you < 0) return;
+    const seen = store.get('bur_stats_seen', []);
+    const key = `${room.code}:${game.history.length}:${hr.scores.join(',')}`;
+    if (seen.includes(key)) return;
+    const st = loadStats();
+    const mine = hr.teams.find((t) => t.members.includes(game.you));
+    if (mine) {
+      st.hands++;
+      if (mine.total === Math.max(...hr.teams.map((t) => t.total))) st.handsWon++;
+      st.burraco += mine.burraco.length;
+      st.points += mine.total;
+      st.bestHand = st.bestHand == null ? mine.total : Math.max(st.bestHand, mine.total);
+    }
+    if (hr.reason === 'close' && hr.closer === game.you) st.closures++;
+    if (game.over) { st.games++; if (game.winners.includes(game.you)) st.wins++; }
+    store.set('bur_stats', st);
+    store.set('bur_stats_seen', seen.concat(key).slice(-100));
+  }
+
+  function statsModal() {
+    const st = loadStats();
+    const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
+    const row = (l, v) => `<tr><td>${l}</td><td><b>${v}</b></td></tr>`;
+    openModal('stats', `<div class="result"><h2>📊 Le tue statistiche</h2>
+      ${st.hands ? `<table>
+        ${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
+        ${row('Smazzate giocate', st.hands)}${row('Smazzate vinte', `${st.handsWon} (${pct(st.handsWon, st.hands)})`)}
+        ${row('Burraco fatti', st.burraco)}${row('Chiusure', st.closures)}
+        ${row('Miglior smazzata', st.bestHand)}${row('Media punti a smazzata', Math.round(st.points / st.hands))}
+      </table>` : '<p class="muted">Gioca la tua prima smazzata per vedere le statistiche.</p>'}
+      <p class="muted small">Le statistiche sono salvate solo su questo dispositivo.</p>
+      ${st.hands ? '<button class="btn small danger" data-act="resetStats">Azzera statistiche</button>' : ''}</div>`);
+  }
+
+  /* ---------- Effetti: burraco e coriandoli ---------- */
+  const reducedMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function burracoFx(fx) {
+    const el = $(`.meld[data-mid="${fx.meldId}"]`);
+    if (el) { el.classList.add('shine'); setTimeout(() => el.classList.remove('shine'), 2600); }
+    const b = document.createElement('div');
+    b.className = 'bigtoast' + (fx.mine ? ' mine' : '');
+    b.innerHTML = `<b>${esc(fx.label.toUpperCase())}!</b><span>+${fx.bonus}</span>`;
+    document.body.appendChild(b);
+    setTimeout(() => b.remove(), 2300);
+    if (fx.mine) confetti(60, 1600);
+  }
+
+  function confetti(count = 160, duration = 3200) {
+    if (reducedMotion) return;
+    const cv = document.createElement('canvas');
+    cv.className = 'confetti';
+    document.body.appendChild(cv);
+    const ctx = cv.getContext('2d');
+    const W = (cv.width = innerWidth), H = (cv.height = innerHeight);
+    const colors = ['#f2c14e', '#e53935', '#43a047', '#1e88e5', '#ffffff', '#8e63d6'];
+    const ps = Array.from({ length: count }, () => ({
+      x: W / 2 + (Math.random() - 0.5) * W * 0.3, y: H * 0.35,
+      vx: (Math.random() - 0.5) * 9, vy: -Math.random() * 11 - 4,
+      r: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.3,
+      w: 6 + Math.random() * 6, h: 8 + Math.random() * 8, c: colors[Math.floor(Math.random() * colors.length)],
+    }));
+    const t0 = performance.now();
+    (function frame(t) {
+      const k = (t - t0) / duration;
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalAlpha = Math.max(0, 1 - Math.max(0, k - 0.7) / 0.3);
+      for (const p of ps) {
+        p.vy += 0.25; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.r * 2))); ctx.restore();
+      }
+      if (k < 1) requestAnimationFrame(frame); else cv.remove();
+    })(t0);
   }
 
   /* ================= Modali di gioco ================= */
@@ -1082,6 +1187,16 @@
       render();
     },
     music() { musicModal(); render(); },
+    stats: statsModal,
+    async leaders() {
+      const r = await emit('leaderboard');
+      if (!r.ok) return;
+      const rows = r.list.map((e, i) => `<tr class="${e.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][i] || i + 1}</td><td style="text-align:left">${esc(e.name)}${e.me ? ' (tu)' : ''}</td><td>${e.wins}/${e.games}</td><td>${Math.round((e.wins / e.games) * 100)}%</td><td>${e.burraco}</td></tr>`).join('');
+      openModal('leaders', `<div class="result"><h2>🏆 Classifica</h2>
+        ${rows ? `<table><tr><th></th><th style="text-align:left">Giocatore</th><th>Vinte</th><th>%</th><th>Burraco</th></tr>${rows}</table>` : '<p class="muted">Ancora nessuna partita completata. La classifica conta le partite finite tra giocatori umani (anche contro il computer).</p>'}
+        <p class="muted small">Classifica di tutti i giocatori di questo server.</p></div>`);
+    },
+    resetStats() { if (confirm('Azzerare le statistiche?')) { store.set('bur_stats', {}); statsModal(); } },
     musicStop() { emit('setMusic', { url: '' }).then(() => musicModal()); },
     botLevel(el) { emit('setBotLevel', { level: el.dataset.val }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     turnTime(el) { emit('setTurnTime', { seconds: Number(el.dataset.val) }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
