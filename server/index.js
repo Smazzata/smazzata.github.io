@@ -50,6 +50,7 @@ function roomInfo(room) {
     seats: room.seats.map((s) => (s ? { name: s.name, isBot: !!s.isBot, connected: s.isBot || isConnected(s.token) } : null)),
     started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
     hints: !!room.hints && humanCount(room) <= 1, humans: humanCount(room),
+    music: room.music || null,
   };
 }
 
@@ -327,6 +328,22 @@ io.on('connection', (socket) => {
     return { hint };
   }));
 
+  // Musica del tavolo: l'host condivide un link Spotify (Jam, playlist, album o brano)
+  socket.on('setMusic', handler(({ url }) => {
+    const room = getRoom(socket);
+    requireHost(socket, room);
+    if (!url) { room.music = null; broadcast(room); return; }
+    const u = String(url).trim().slice(0, 300);
+    let parsed;
+    try { parsed = new URL(u); } catch (e) { throw new Error('Link non valido'); }
+    if (parsed.protocol !== 'https:' || !/(^|\.)(spotify\.com|spotify\.link)$/.test(parsed.hostname)) {
+      throw new Error('Incolla un link di Spotify (Jam, playlist, album o brano)');
+    }
+    const seat = seatOfToken(room, socket.data.token);
+    room.music = { url: parsed.href, by: seat >= 0 ? room.seats[seat].name : 'Host', at: Date.now() };
+    broadcast(room);
+  }));
+
   socket.on('setHints', handler(({ on }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
@@ -431,7 +448,7 @@ function saveNow() {
       sessions: [...sessions],
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
-        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, music: r.music,
       })),
     };
     fs.mkdirSync(DATA_DIR, { recursive: true });

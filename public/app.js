@@ -120,6 +120,11 @@
 
   function onState(room, game) {
     const prev = S.game;
+    const prevMusic = S.room && S.room.music;
+    if (room && room.music && (!prevMusic || prevMusic.at !== room.music.at)) {
+      if (prevMusic !== undefined && !room.isHost) { S.musicUnseen = true; toast(`🎵 ${room.music.by} ha avviato la musica: tocca 🎵 per ascoltarla`); }
+    }
+    if (room && !room.music) S.musicUnseen = false;
     S.room = room;
     S.game = game;
     if (!room) {
@@ -332,6 +337,30 @@
       .map(([v, l]) => `<button class="swatch ${cur === v ? 'on' : ''}" data-act="botSpeed" data-val="${v}">${l}</button>`).join('')}</div>`;
   }
 
+  /** Link di Spotify → indirizzo del lettore integrato (solo per contenuti pubblici, non per le Jam) */
+  function spotifyEmbed(url) {
+    const m = /open\.spotify\.com\/(?:intl-[a-z-]+\/)?(playlist|album|track|artist|show|episode)\/([A-Za-z0-9]+)/.exec(url || '');
+    return m ? `https://open.spotify.com/embed/${m[1]}/${m[2]}` : null;
+  }
+
+  function musicModal() {
+    const r = S.room;
+    const mu = r.music;
+    S.musicUnseen = false;
+    const embed = mu && spotifyEmbed(mu.url);
+    const isJam = mu && !embed;
+    openModal('music', `<h2>🎵 Musica del tavolo</h2>
+      ${mu ? `<p>${esc(mu.by)} ha condiviso ${isJam ? 'una <b>Jam</b> di Spotify: entrando ascoltate tutti la stessa musica, sincronizzata.' : 'questa musica:'}</p>
+        ${embed ? `<iframe class="spotify" src="${embed}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>` : ''}
+        <a class="btn primary big" style="display:block;text-align:center;text-decoration:none;margin-top:10px" href="${esc(mu.url)}" target="_blank" rel="noopener">${isJam ? '▶ Unisciti alla Jam su Spotify' : '▶ Apri in Spotify'}</a>`
+        : '<p class="muted">Nessuna musica condivisa per ora.</p>'}
+      ${r.isHost ? `<h4>${mu ? 'Cambia musica' : 'Condividi la musica con il tavolo'}</h4>
+        <p class="muted small">Su Spotify avvia una <b>Jam</b> (dal brano in riproduzione: icona dei dispositivi → <i>Avvia una Jam</i>) e copia il link d'invito, oppure copia il link di una playlist. Poi incollalo qui.</p>
+        <form id="musicform" class="row"><input id="musicin" class="grow" placeholder="https://open.spotify.com/…" autocomplete="off"><button class="btn primary">Condividi</button></form>
+        ${mu ? '<button class="btn small danger" style="margin-top:8px" data-act="musicStop">Smetti di condividere</button>' : ''}` : ''}
+      <p class="muted small" style="margin-top:12px">Ognuno ascolta dal proprio Spotify: per le Jam di solito serve Spotify Premium a chi la avvia.</p>`);
+  }
+
   /* ================= Schermate ================= */
   function render() {
     if (S.drag && S.drag.started) { S.pendingRender = true; return; }
@@ -441,7 +470,8 @@
       <div class="panel">
         <h2>Regole</h2>
         <p>${rulesStatus(r.rules)} <span class="muted">· ${r.n} giocatori · si vince a ${r.rules.target}</span></p>
-        <div class="row"><button class="btn small" data-act="roomRules">📜 Leggi le regole</button>
+        <div class="row"><button class="btn small" data-act="music">🎵 Musica del tavolo${r.music ? ' (attiva)' : ''}</button></div>
+        <div class="row" style="margin-top:8px"><button class="btn small" data-act="roomRules">📜 Leggi le regole</button>
         ${isHost ? '<button class="btn small" data-act="editRules">✏️ Modifica regole</button>' : ''}</div>
         ${isHost ? `<h2 style="margin-top:14px">Velocità del computer</h2>${botSpeedHTML(r.botSpeed)}` : ''}
       </div>
@@ -629,6 +659,7 @@
       <div class="topbar">
         <span class="title">Tavolo <b>${esc(r.code)}</b> · Smazzata ${g.handNo} · a ${g.cfg.target}</span>
         <button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
+        <button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>
         <button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>
         <button class="iconbtn" data-act="scores" title="Punteggi">🏆</button>
         <button class="iconbtn" data-act="settings" title="Aspetto e suoni">⚙️</button>
@@ -987,6 +1018,8 @@
       toast(`💡 ${text}`);
       render();
     },
+    music() { musicModal(); render(); },
+    musicStop() { emit('setMusic', { url: '' }).then(() => musicModal()); },
     setHints(el) { emit('setHints', { on: el.dataset.val === '1' }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     botSpeed(el) { emit('setBotSpeed', { speed: el.dataset.val }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
   };
@@ -1231,6 +1264,12 @@
   }, true);
 
   document.addEventListener('submit', (e) => {
+    if (e.target.id === 'musicform') {
+      e.preventDefault();
+      const url = $('#musicin').value.trim();
+      if (url) emit('setMusic', { url }).then((r) => { if (r.ok) { toast('🎵 Musica condivisa con il tavolo'); musicModal(); } });
+      return;
+    }
     if (e.target.id === 'chatform') {
       e.preventDefault();
       const inp = $('#chatin');

@@ -375,3 +375,8 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 }
 .apkbanner img { width: 44px; height: 44px; border-radius: 10px; }
 .apkbanner b { font-size: 16px; }
+
+/* ---------- Musica del tavolo ---------- */
+iframe.spotify { width: 100%; height: 152px; border: 0; border-radius: 12px; margin-top: 6px; }
+.iconbtn.musicon { background: rgba(30,215,96,.35); }
+.modal-box form#musicform input { padding: 9px; border-radius: 8px; border: 1px solid #ccc; min-width: 0; }
