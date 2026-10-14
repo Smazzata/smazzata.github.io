@@ -15,6 +15,13 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 - `android-app/` — guscio Capacitor dell'APK (apre la pagina d'ingresso); `burraco.p12` è la chiave di firma fissa (non cambiarla: gli aggiornamenti non si installerebbero più).
 - `scripts/android-server.sh` — avvio sul telefono-server (Termux): dipendenze, aggiornamento da GitHub ogni 5 min, tunnel Cloudflare, pubblicazione dell'indirizzo (`--set-token`, `--install-boot`).
 
+## Funzioni principali (oltre al gioco)
+Profili (nickname univoco, codice/QR, password facoltativa, avatar, eliminazione), amici (richieste, blocco, inviti, scheda con partite insieme),
+statistiche e storico sul server, classifica (tutti / amici), spettatori, Gioca subito (tavoli veloci), mini-torneo (al meglio di 3/5),
+tutorial "Impara a giocare" con partita di allenamento e allenatore, musica Spotify, timer del turno, rivincita, reazioni rapide,
+pagina di stato `/stato?k=CHIAVE` (chiave in `data/admin-key.txt`), backup cifrato nel ramo `backup` (`scripts/backup.js`).
+Computer: 3 livelli + apertura da vulnerabile con più combinazioni + pianificatore di chiusura (decisione media ~2 ms).
+
 ## Hosting e pubblicazione
 - Il server gira su un telefono Android con Termux e un tunnel Cloudflare gratuito (indirizzo che cambia). Un `git push` su `main` aggiorna il gioco sul telefono entro ~5 minuti; le partite in corso riprendono dopo il riavvio.
 - Link fisso: https://simonemuliello010500-web.github.io/BurracoByMSF/ — APK: https://github.com/simonemuliello010500-web/BurracoByMSF/releases/latest/download/Burraco.apk
@@ -25,6 +32,7 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 - `npm test` — test del motore e partite simulate tra bot con tutti i preset e regole casuali.
 - `npm run e2e` — prova multigiocatore end-to-end su un server di prova (porta 3999).
 - `npm run bench` — forza relativa dei livelli del computer.
+- `npm run playtest [partite] [varianti]` — statistiche su partite simulate in massa (durata, finali, punteggi, dati inviati).
 - Controlla le modifiche visive nel browser a misura di telefono (375×812).
 
 ## Preferenze dell'utente
