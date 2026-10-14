@@ -511,3 +511,6 @@ body[data-theme="notte"] .hist { border-color: #3a413e; }
 /* ---------- Segnala un problema ---------- */
 #reportin { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; font: inherit; font-size: 16px; resize: vertical; }
 body[data-theme="notte"] #reportin { background: #2a312e; color: #eee; border-color: #444; }
+
+/* posizionamento della mano senza animazioni (solo la carta toccata si anima) */
+.hand.placing .card { transition: none !important; }

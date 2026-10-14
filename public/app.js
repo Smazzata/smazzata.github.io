@@ -1039,7 +1039,11 @@
   function handHTML(g) {
     const cards = orderedHand();
     if (!cards.length) return '<span class="empty">Nessuna carta</span>';
-    return cards.map((c) => cardHTML(c, `${S.selected.has(c.id) ? 'sel' : ''} ${S.newIds.has(c.id) ? 'newc' : ''}`)).join('');
+    const toggled = S.toggledCard;
+    return cards.map((c) => {
+      const sel = S.selected.has(c.id) !== (c.id === toggled); // la carta appena toccata cambia stato dopo
+      return cardHTML(c, `${sel ? 'sel' : ''} ${S.newIds.has(c.id) ? 'newc' : ''}`);
+    }).join('');
   }
 
   /** dispone la mano a ventaglio su una o due file, in base alla larghezza */
@@ -1048,6 +1052,7 @@
     if (!hand) return;
     const cards = $$('.card', hand);
     if (!cards.length) return;
+    hand.classList.add('placing');
     const W = hand.clientWidth - 8;
     const cw = cards[0].offsetWidth;
     const rows = cards.length * cw * 0.42 + cw > W && cards.length > 8 ? 2 : 1;
@@ -1099,6 +1104,20 @@
 
   function afterGameRender() {
     layoutHand();
+    const hand = $('#hand');
+    if (hand) {
+      void hand.offsetWidth; // applica le posizioni senza animazioni
+      hand.classList.remove('placing');
+      // solo la carta appena toccata si alza o si abbassa con l'animazione
+      const id = S.toggledCard;
+      S.toggledCard = null;
+      if (id != null) {
+        const el = $(`#hand .card[data-card="${id}"]`);
+        if (el) { void el.offsetWidth; el.classList.toggle('sel', S.selected.has(id)); }
+      }
+    }
+    // l'animazione d'arrivo delle carte nuove si vede una volta sola
+    S.newIds = new Set();
     fitTable();
     const felt = $('#felt');
     if (felt && S.feltScroll != null) felt.scrollTop = S.feltScroll;
@@ -1791,6 +1810,7 @@
       }
       S.lastTap = { id, t: now };
       if (S.selected.has(id)) S.selected.delete(id); else S.selected.add(id);
+      S.toggledCard = id;
       S.hint = null;
       Sound.play('select');
       if (navigator.vibrate) navigator.vibrate(8);
