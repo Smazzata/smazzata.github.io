@@ -5,6 +5,7 @@
  * Un solo tentativo al giorno; i punti della smazzata vanno nella classifica del giorno.
  */
 const Rules = require('../shared/rules');
+const S40 = require('../shared/scala40');
 
 const VARIANTS = [
   { title: 'Burraco Classico', preset: 'classico' },
@@ -14,6 +15,7 @@ const VARIANTS = [
   { title: 'Classico con scarti chiusi', preset: 'classico', tweak: { pile: 'closed' } },
   { title: 'Buraco Brasiliano Fechado', preset: 'fechado' },
   { title: 'Classico, Asso alto e basso', preset: 'classico', tweak: { aceBothEnds: true } },
+  { title: 'Scala 40', game: 'scala40' },
 ];
 
 /** Data di oggi in Italia, es. "2026-10-14" */
@@ -31,8 +33,8 @@ function hash(str) {
 function challenge(date = todayKey()) {
   const day = Math.floor(Date.parse(date + 'T12:00:00Z') / 86400000);
   const v = VARIANTS[((day % VARIANTS.length) + VARIANTS.length) % VARIANTS.length];
-  const preset = Rules.PRESETS.find((p) => p.id === v.preset);
-  const rules = Rules.normalize({ ...preset.rules, ...(v.tweak || {}), players: 2 });
+  const rules = v.game === 'scala40' ? S40.normalize({ players: 2 })
+    : Rules.normalize({ ...Rules.PRESETS.find((p) => p.id === v.preset).rules, ...(v.tweak || {}), players: 2 });
   return { date, title: v.title, rules, seed: hash('burraco-' + date) };
 }
 

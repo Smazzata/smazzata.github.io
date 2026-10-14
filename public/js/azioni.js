@@ -303,7 +303,7 @@
       if (!r.ok) render();
     },
     tutStep(el) { tutorialModal(Number(el.dataset.i)); },
-    practice() { if (!requireName()) return; closeModal(); emit('createRoom', { tutorial: true }); },
+    practice(el) { if (!requireName()) return; closeModal(); emit('createRoom', { tutorial: true, rules: el && el.dataset.game === 'scala40' ? { game: 'scala40' } : undefined }); },
     coachOff() { S.coachOff = true; render(); },
     quickMenu() {
       if (!requireName()) return;

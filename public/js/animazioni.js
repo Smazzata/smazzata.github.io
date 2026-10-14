@@ -114,7 +114,7 @@
     const rows = r.top.map((x) => `<tr class="${x.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][x.pos - 1] || x.pos}</td><td style="text-align:left">${esc(x.name)}${x.me ? ' (tu)' : ''}</td><td><b>${signed(x.score)}</b></td></tr>`).join('');
     openModal('daily', `<div class="result"><h2>📅 Sfida del giorno</h2><p class="muted">${esc(day)}</p>
       <div class="dailycard"><b class="dtitle">${esc(r.title)}</b>
-        <p>Una sola smazzata contro il computer <b>difficile</b>, con <b>le stesse carte per tutti</b>. Vince chi fa più punti. Hai un solo tentativo.</p>
+        <p>Una sola smazzata contro il computer <b>difficile</b>, con <b>le stesse carte per tutti</b>. ${r.game === 'scala40' ? 'Vince chi resta con meno penalità in mano.' : 'Vince chi fa più punti.'} Hai un solo tentativo.</p>
         <button class="btn small" data-act="dailyRules">📜 Regole della sfida</button></div>
       ${mine}
       <h3>Classifica di oggi${r.players ? ` · ${r.players} ${r.players === 1 ? 'giocatore' : 'giocatori'}` : ''}</h3>

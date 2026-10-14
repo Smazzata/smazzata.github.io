@@ -33,12 +33,14 @@
       <div class="row" style="margin-top:14px">
         ${i ? `<button class="btn" data-act="tutStep" data-i="${i - 1}">← Indietro</button>` : ''}
         ${i < TUTORIAL.length - 1 ? `<button class="btn primary grow" data-act="tutStep" data-i="${i + 1}">Avanti →</button>`
-          : '<button class="btn primary grow big" data-act="practice">🎓 Partita di allenamento</button>'}
-      </div></div>`);
+          : '<button class="btn primary grow big" data-act="practice">🎓 Allenamento a Burraco</button>'}
+      </div>${i === TUTORIAL.length - 1 ? `<div class="row" style="margin-top:8px"><button class="btn grow" data-act="practice" data-game="scala40">🂡 Allenamento a Scala 40</button></div>
+        <p class="muted small">La Scala 40: ognuno per sé, apri con almeno 40 punti, poi attacca ai giochi di tutti; chi resta senza carte chiude.</p>` : ''}</div>`);
   }
 
   /** Consiglio dell'allenatore durante la partita di allenamento */
   function coachTip(g) {
+    if (isS40Game()) return coachTipS40(g);
     if (g.phase === 'handEnd') return 'Guarda il riepilogo: le carte calate e i burraco danno punti, quelle in mano li tolgono.';
     if (g.turn !== g.you) return 'Ora gioca il computer: osserva cosa cala e cosa scarta.';
     const myTeam = g.teams.find((t) => t.members.includes(g.you));
@@ -48,6 +50,21 @@
     if (sel >= 3) return 'Se la casella ＋ dice "✓ Cala", toccala per calare queste carte.';
     if (sel === 1) return 'Tocca gli scarti per scartare questa carta, oppure un tuo gioco per attaccarla.';
     return 'Cerca 3 carte in scala dello stesso seme o 3 uguali e selezionale. Non sai cosa fare? Tocca 💡.';
+  }
+
+  /** Allenatore della Scala 40 */
+  function coachTipS40(g) {
+    if (g.phase === 'handEnd') return 'Le carte rimaste in mano sono penalità (jolly 25, Asso 11, figure 10): chi arriva a 101 è fuori.';
+    if (g.turn !== g.you) return 'Ora gioca il computer: guarda come apre e cosa scarta.';
+    const me = g.teams.find((t) => t.members.includes(g.you));
+    if (g.phase === 'draw') return me.opened ? 'Pesca dal tallone, oppure prendi lo scarto in cima se ti serve.' : 'Tocca il tallone per pescare. Lo scarto si può prendere solo per aprire subito con esso.';
+    const sel = S.selected.size;
+    if (!me.opened) {
+      if (sel >= 3) return `La casella ＋ ti dice quanti punti fai: ne servono almeno ${g.cfg.opening} per aprire (anche con più giochi insieme).`;
+      return `Per aprire servono ${g.cfg.opening} punti: cerca scale dello stesso seme e tris di semi diversi (Asso 11, figure 10). Non sai cosa fare? Tocca 💡.`;
+    }
+    if (sel === 1) return 'Tocca un gioco (anche degli altri) per attaccare la carta, o gli scarti per scartarla. Se un gioco ha un jolly, la carta giusta lo sostituisce e il jolly è tuo!';
+    return 'Hai aperto: ora puoi attaccare ai giochi di tutti. Liberati delle carte che valgono di più!';
   }
 
   function seriesHTML(r, g) {

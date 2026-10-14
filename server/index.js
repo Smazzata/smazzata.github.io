@@ -489,7 +489,7 @@ function recordLeaderboard(room) {
     if (room.recordedHand !== handKey) {
       const mine = hr.teams.find((t) => t.members.includes(seat));
       if (mine && hr.reason !== 'surrender') {
-        won.push(...Trophies.fromHand(mine));
+        won.push(...(gid === 'scala40' ? Trophies.fromScala40(g.lastReplay, hr, seat) : Trophies.fromHand(mine)));
         const handWon = mine.total === Math.max(...hr.teams.map((t) => t.total));
         for (const x of [e, gs]) {
           x.hands++;
@@ -510,6 +510,7 @@ function recordLeaderboard(room) {
         allBotsDifficile: ['difficile', 'esperto'].includes(room.botLevel) && room.seats.every((o, i) => myTeam.members.includes(i) || (o && o.isBot)),
       }));
       if (room.series && room.series.champion && room.series.champion.includes(seat)) won.push('campione');
+      if (gid === 'scala40' && g.winners.includes(seat)) won.push('s40_vittoria');
       for (const x of [e, gs]) {
         x.games++;
         if (g.winners.includes(seat)) x.wins++;
@@ -810,7 +811,10 @@ io.on('connection', (socket) => {
 
   socket.on('createRoom', handler(({ rules, vsBots, tutorial }) => {
     // allenamento: Classico in 2 contro un computer facile e lento, con i suggerimenti
-    const r = tutorial ? Rules.normalize({ ...Rules.PRESETS[0].rules, players: 2, target: 505 }) : Games.of(rules).normalize(rules);
+    // allenamento: Classico in 2 (a 505) oppure Scala 40 in 2, contro un computer facile e lento
+    const r = tutorial
+      ? (rules && rules.game === 'scala40' ? Games.of(rules).normalize({ game: 'scala40', players: 2 }) : Rules.normalize({ ...Rules.PRESETS[0].rules, players: 2, target: 505 }))
+      : Games.of(rules).normalize(rules);
     const code = newCode();
     const room = {
       code, rules: r, n: r.players, hostToken: socket.data.token,
@@ -830,7 +834,7 @@ io.on('connection', (socket) => {
   socket.on('daily', handler(() => {
     const c = Daily.challenge();
     const b = dailyBoard(c.date, socket.data.token);
-    return { date: c.date, title: c.title, preset: Rules.matchPreset(c.rules), rules: c.rules, top: b.list.slice(0, 10), players: b.list.length, mine: b.mine, myPos: b.myPos };
+    return { date: c.date, title: c.title, game: Games.idOf(c.rules), preset: Games.of(c.rules).presetOf(c.rules), rules: c.rules, top: b.list.slice(0, 10), players: b.list.length, mine: b.mine, myPos: b.myPos };
   }));
 
   socket.on('startDaily', handler(() => {

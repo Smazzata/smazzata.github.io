@@ -26,6 +26,10 @@ const LIST = [
   { id: 'sfida', e: '📅', name: 'Sfidante', desc: 'Completa una sfida del giorno' },
   { id: 'sfida_primo', e: '🌟', name: 'Re del giorno', desc: 'Primo nella sfida del giorno (almeno 3 partecipanti)' },
   { id: 'campione_lega', e: '🏟️', name: 'Campione del campionato', desc: 'Vinci una stagione di un campionato tra amici' },
+  { id: 's40_vittoria', e: '🂡', name: 'Prima Scala 40', desc: 'Vinci una partita di Scala 40' },
+  { id: 's40_apertura', e: '⚡', name: 'Apertura lampo', desc: 'Scala 40: apri al tuo primo turno' },
+  { id: 's40_mano', e: '🎩', name: 'Chiusura in mano', desc: 'Scala 40: apri e chiudi nello stesso turno' },
+  { id: 's40_jolly', e: '🃏', name: 'Ladro di jolly', desc: 'Scala 40: prendi un jolly dal tavolo' },
   { id: 'diplomato', e: '🎓', name: 'Diplomato', desc: 'Finisci la partita di allenamento' },
 ];
 const BY_ID = new Map(LIST.map((t) => [t.id, t]));
@@ -75,6 +79,22 @@ function fromGame(g, seat, ctx) {
   return out;
 }
 
+/** Trofei di una smazzata di Scala 40, ricavati dalla moviola (le mosse registrate sono tutte valide) */
+function fromScala40(replay, hr, seat) {
+  const out = [];
+  if (!replay) return out;
+  let turn = 0, openTurn = 0;
+  for (const x of replay.actions) {
+    if (x.s !== seat) continue;
+    if (x.a.type === 'draw' || x.a.type === 'takePile') turn++;
+    if (!openTurn && (x.a.type === 'meld' || (x.a.type === 'takePile' && x.a.cardIds && x.a.cardIds.length))) openTurn = turn;
+    if (x.a.type === 'swap') out.push('s40_jolly');
+  }
+  if (openTurn === 1) out.push('s40_apertura');
+  if (hr && hr.reason === 'close' && hr.closer === seat && openTurn && openTurn === turn) out.push('s40_mano');
+  return out;
+}
+
 /** Elenco per l'interfaccia: sbloccati (con data) e da sbloccare (con avanzamento) */
 function view(e) {
   const got = (e && e.trophies) || {};
@@ -84,4 +104,4 @@ function view(e) {
   }));
 }
 
-module.exports = { LIST, BY_ID, fromStats, fromHand, fromGame, view };
+module.exports = { LIST, BY_ID, fromStats, fromHand, fromGame, fromScala40, view };

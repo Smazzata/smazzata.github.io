@@ -127,8 +127,9 @@
           return {};
         case 'createRoom': {
           const R = Rules();
-          const rules = d.tutorial ? R.normalize({ ...R.PRESETS[0].rules, players: 2, target: 505 })
-            : d.rules && d.rules.game === 'scala40' ? self.BurracoScala40.normalize(d.rules) : R.normalize(d.rules);
+          const s40 = d.rules && d.rules.game === 'scala40';
+          const rules = d.tutorial ? (s40 ? self.BurracoScala40.normalize({ players: 2 }) : R.normalize({ ...R.PRESETS[0].rules, players: 2, target: 505 }))
+            : s40 ? self.BurracoScala40.normalize(d.rules) : R.normalize(d.rules);
           const free = BOT_NAMES.slice().sort(() => Math.random() - 0.5);
           room = {
             rules, n: rules.players, ready: [], botSpeed: 'normale', botLevel: 'normale', aids: true, hints: false,

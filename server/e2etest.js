@@ -321,7 +321,12 @@ const step = (t) => console.log('✓ ' + t);
     const ts = await T.until((s) => s.game, 'partita di allenamento');
     assert(ts.room.tutorial && ts.room.hints && ts.room.botLevel === 'facile' && ts.room.n === 2, 'impostazioni dell\'allenamento');
     T.sock.close();
-    step('allenamento: 2 giocatori, computer facile, suggerimenti attivi');
+    const T4 = player('Tilde'); await T4.hello(); assert((await T4.call('setNick', { nick: 'Tilde' })).ok);
+    assert((await T4.call('createRoom', { tutorial: true, rules: { game: 'scala40' } })).ok);
+    const t4 = await T4.until((st) => st.game, 'allenamento di Scala 40');
+    assert(t4.room.tutorial && t4.room.game === 'scala40' && t4.room.n === 2 && t4.room.hints, 'allenamento di Scala 40');
+    T4.sock.close();
+    step('allenamento (Burraco e Scala 40): 2 giocatori, computer facile, suggerimenti attivi');
 
     // sfida del giorno: un tentativo, stesse carte per tutti, punteggio in classifica, niente rivincita
     const Dd = player('Dora'); await Dd.hello(); assert((await Dd.call('setNick', { nick: 'Dora' })).ok);

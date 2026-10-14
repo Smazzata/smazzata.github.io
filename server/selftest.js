@@ -153,6 +153,15 @@ function trophyTests() {
   assert(got.includes('rimonta') && got.includes('schiacciante') && got.includes('difficile') && got.includes('amici'), 'trofei di fine partita');
   assert.deepStrictEqual(T.fromGame(g, 1, { withFriend: false }), [], 'chi perde non prende trofei di vittoria');
   assert.deepStrictEqual(T.fromStats({ wins: 10, burraco: 0, closures: 1, games: 12 }).sort(), ['chiusura', 'prima_vittoria', 'vittorie_10']);
+  // Scala 40: apertura al primo turno, chiusura in mano, jolly rubato (dalla moviola)
+  const rp = { actions: [
+    { s: 0, a: { type: 'draw' } }, { s: 0, a: { type: 'meld', cardIds: [1, 2, 3] } }, { s: 0, a: { type: 'discard', cardId: 4 } },
+    { s: 1, a: { type: 'draw' } }, { s: 1, a: { type: 'discard', cardId: 9 } },
+    { s: 0, a: { type: 'draw' } }, { s: 0, a: { type: 'swap', meldId: 1, cardId: 5 } }, { s: 0, a: { type: 'discard', cardId: 6 } },
+  ] };
+  assert.deepStrictEqual(T.fromScala40(rp, { reason: 'close', closer: 1 }, 0).sort(), ['s40_apertura', 's40_jolly']);
+  const inHand = { actions: [{ s: 1, a: { type: 'draw' } }, { s: 1, a: { type: 'discard', cardId: 9 } }, { s: 1, a: { type: 'draw' } }, { s: 1, a: { type: 'meld', cardIds: [1, 2, 3] } }, { s: 1, a: { type: 'discard', cardId: 4 } }] };
+  assert.deepStrictEqual(T.fromScala40(inHand, { reason: 'close', closer: 1 }, 1), ['s40_mano'], 'chiusura in mano');
   const v = T.view({ wins: 3, trophies: { prima_vittoria: 1 } });
   assert(v.find((t) => t.id === 'vittorie_10').progress.now === 3 && v.find((t) => t.id === 'prima_vittoria').at === 1, 'avanzamento trofei');
   console.log(`trofei: ${T.LIST.length} definiti, controlli OK`);
