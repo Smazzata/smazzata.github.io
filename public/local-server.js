@@ -35,7 +35,7 @@
     const sock = {
       id: 'offline', connected: false,
       on(ev, fn) { (handlers[ev] = handlers[ev] || []).push(fn); return sock; },
-      connect() { return sock; },
+      connect() { start(); return sock; },
       disconnect() { return sock; },
       emit(ev, data, cb) {
         // risposta asincrona, come in rete
@@ -201,12 +201,18 @@
 
     room = store.get();
     if (room && room.game) room.memoTurn = -1;
-    loadEngine(engineUrl).then(() => {
-      sock.connected = true;
-      fire('connect');
-    }).catch(() => {
-      fire('connect_error', new Error('Motore non disponibile'));
-    });
+    // il "collegamento" parte quando l'interfaccia è pronta (connect), come per socket.io con autoConnect: false
+    let started = false;
+    function start() {
+      if (started) return;
+      started = true;
+      loadEngine(engineUrl).then(() => {
+        sock.connected = true;
+        fire('connect');
+      }).catch(() => {
+        fire('connect_error', new Error('Motore non disponibile'));
+      });
+    }
     return sock;
   }
 

@@ -7,7 +7,8 @@
   // tentativi di ricollegamento ravvicinati (0,3 s → massimo 2 s)
   const socket = OFFLINE
     ? LocalServer.createSocket({ engineUrl: 'engine.js', name: store.get('bur_name', '') })
-    : io({ reconnectionDelay: 300, reconnectionDelayMax: 2000, randomizationFactor: 0.3 });
+    // autoConnect: false — ci si collega solo quando tutti i file dell'interfaccia sono caricati (vedi comandi.js)
+    : io({ reconnectionDelay: 300, reconnectionDelayMax: 2000, randomizationFactor: 0.3, autoConnect: false });
   if (OFFLINE) document.body.classList.add('offline');
   socket.on('connect', () => {
     if (S.lostConnection) toast('✓ Riconnesso');

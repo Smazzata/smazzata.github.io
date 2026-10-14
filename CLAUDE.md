@@ -48,6 +48,7 @@ Computer: 3 livelli + apertura da vulnerabile con più combinazioni + pianificat
 - `npm run e2e` — prova multigiocatore end-to-end su un server di prova (porta 3999).
 - `npm run bench` — forza relativa dei livelli del computer.
 - `npm run load [tavoli] [secondi]` — prova di carico (tavoli simulati insieme: tempi di risposta, ritardo, CPU, memoria).
+- `npm run ui` — prova dell'interfaccia in un vero browser senza finestra (Chrome/Edge, 375×812): gioca toccando Burraco e Scala 40, moviola, impostazioni, offline; schermate in `test-output/`.
 - `npm run playtest [partite] [varianti]` — statistiche su partite simulate in massa (durata, finali, punteggi, dati inviati).
 - Controlla le modifiche visive nel browser a misura di telefono (375×812).
 - Server di prova per le verifiche a mano: `node scripts/qa-server.js` (porta 3100, dati in una cartella temporanea, computer veloci): non toccare il server vero.

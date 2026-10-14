@@ -51,7 +51,7 @@
         extra = 'hasfig';
       }
     }
-    return `<div class="card ${red ? 'red' : 'black'} s-${c.s} r${c.r} ${c.r === 2 ? 'two' : ''} ${extra} ${cls}" data-card="${c.id}" aria-label="${rankName(c.r)} di ${SUIT_NAME[c.s]}" ${attrs}>
+    return `<div class="card ${red ? 'red' : 'black'} s-${c.s} r${c.r} ${c.r === 2 && !isS40Game() ? 'two' : ''} ${extra} ${cls}" data-card="${c.id}" aria-label="${rankName(c.r)} di ${SUIT_NAME[c.s]}" ${attrs}>
       <span class="ix">${ixName(c.r)}<i>${SUIT[c.s]}</i></span>${face}<span class="ix br">${ixName(c.r)}<i>${SUIT[c.s]}</i></span></div>`;
   }
   const backHTML = (cls = '', attrs = '') => `<div class="card back ${cls}" ${attrs}></div>`;

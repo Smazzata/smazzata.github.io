@@ -10,7 +10,8 @@
     "e2e": "node server/e2etest.js",
     "bench": "node server/botbench.js",
     "playtest": "node server/playtest.js",
-    "load": "node server/loadtest.js"
+    "load": "node server/loadtest.js",
+    "ui": "node server/uitest.js"
   },
   "engines": {
     "node": ">=18"

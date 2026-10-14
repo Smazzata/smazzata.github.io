@@ -304,3 +304,5 @@
   });
 
   render();
+  // tutto è caricato: adesso ci si collega al server (prima i messaggi arriverebbero a un'interfaccia incompleta)
+  socket.connect();
