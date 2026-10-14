@@ -117,6 +117,8 @@
         ${S.room.isHost && !S.room.daily ? '<button class="btn small" data-act="endGame">⛔ Termina la partita</button>' : ''}
         ${S.room.isHost ? '<button class="btn small" data-act="closeTable">🚪 Chiudi il tavolo</button>' : ''}</div>
         <p class="muted small">Arrendersi fa vincere gli avversari. «Termina» chiude la partita senza vincitori e riporta tutti in sala d'attesa; «Chiudi il tavolo» manda tutti alla schermata iniziale.</p>` : ''}
+      ${IN_APP ? `<h4>App</h4><p class="muted small">Versione ${APP_VERSION || 'vecchia'}${S.appUpdate ? ` · <b>disponibile la ${S.appUpdate.n}</b>` : ' · aggiornata'}</p>
+        ${S.appUpdate ? `<a class="btn small primary" href="${APK_URL}">📲 Scarica l'aggiornamento</a>` : ''}` : ''}
       <h4>Qualcosa non va?</h4><button class="btn small" data-act="report">🐞 Segnala un problema</button>
       ${S.room && S.room.isHost && (!S.game || S.game.over) ? `<h4>Torneo (si imposta tra una partita e l'altra)</h4>${seriesPickHTML(S.room.series && S.room.series.bestOf)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Aiuto: dove attaccare le carte</h4>${aidsHTML(S.room.aids !== false)}` : ''}

@@ -26,6 +26,9 @@ jobs:
         working-directory: android-app
         run: |
           npm install --no-audit --no-fund
+          # numero di versione nel "nome" dell'app (BurracoApp/N): il gioco lo confronta con l'ultima Release
+          sed -i 's/"appendUserAgent": "BurracoApp"/"appendUserAgent": "BurracoApp\/${{ github.run_number }}"/' capacitor.config.json
+          grep appendUserAgent capacitor.config.json
           npx cap add android
           # icone dell'app (sostituiscono quelle predefinite di Capacitor)
           rm -rf android/app/src/main/res/mipmap-anydpi-v26

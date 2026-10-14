@@ -190,6 +190,20 @@ const HELPERS = `
     if (o.hand !== 11 || !o.title.includes('📴')) throw new Error('offline: ' + JSON.stringify(o));
     step('gioco senza internet: partita contro il computer');
 
+    // 7. app Android vecchia (versione 1): compare l'avviso di aggiornamento con il link all'APK
+    await cdp.send('Emulation.setUserAgentOverride', { userAgent: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130 Mobile Safari/537.36 BurracoApp/1' });
+    await cdp.run(`sessionStorage.clear(); localStorage.clear(); return true;`); // nuova sessione: si parte dalla schermata iniziale
+    await open(URL);
+    const upd = await cdp.run(`
+      for (let i = 0; i < 40 && !document.querySelector('.apkbanner.update'); i++) await __W(250);
+      const b = document.querySelector('.apkbanner.update');
+      return b ? { text: b.innerText, href: b.querySelector('a').href } : null;`);
+    await shot('06-aggiornamento-app');
+    if (!upd || !/Burraco\.apk$/.test(upd.href)) throw new Error("niente avviso di aggiornamento dell'app");
+    const later = await cdp.run(`__tap('[data-act="appUpdateLater"]'); await __W(300); return !!document.querySelector('.apkbanner.update');`);
+    if (later) throw new Error("«Più tardi» non nasconde l'avviso");
+    step("app vecchia: avviso di aggiornamento con il link all'APK, «Più tardi» lo nasconde");
+
     const real = errors.filter((e) => !/vibrate|Failed to load resource|favicon/.test(e));
     if (real.length) throw new Error('errori nella pagina:\n' + real.slice(0, 5).join('\n'));
     step('nessun errore nella pagina');

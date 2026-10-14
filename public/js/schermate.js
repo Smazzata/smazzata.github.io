@@ -25,6 +25,32 @@
   const APK_URL = 'https://github.com/simonemuliello010500-web/BurracoByMSF/releases/latest/download/Burraco.apk';
   const IS_ANDROID = /android/i.test(navigator.userAgent);
   const IN_APP = /BurracoApp/.test(navigator.userAgent);
+  // versione dell'app installata (0 = APK vecchio, senza numero)
+  const APP_VERSION = IN_APP ? Number((navigator.userAgent.match(/BurracoApp\/(\d+)/) || [])[1] || 0) : null;
+
+  /**
+   * Aggiornamento dell'app: si chiede a GitHub qual è l'ultimo APK pubblicato (tag apk-N).
+   * Se è più nuovo di quello installato compare un avviso con il link per scaricarlo.
+   * Il controllo si fa al massimo ogni 6 ore; «Più tardi» nasconde l'avviso per quella versione.
+   */
+  async function checkAppUpdate() {
+    if (!IN_APP || OFFLINE) return;
+    let latest = null;
+    const cached = store.get('bur_apk_latest', null);
+    if (cached && Date.now() - cached.at < 6 * 3600 * 1000) latest = cached.n;
+    else {
+      try {
+        const r = await fetch('https://api.github.com/repos/simonemuliello010500-web/BurracoByMSF/releases/latest', { cache: 'no-store' });
+        const tag = r.ok ? (await r.json()).tag_name : '';
+        latest = Number((String(tag).match(/apk-(\d+)/) || [])[1] || 0) || null;
+        if (latest) store.set('bur_apk_latest', { n: latest, at: Date.now() });
+      } catch (e) { return; }
+    }
+    if (!latest || latest <= APP_VERSION) { S.appUpdate = null; return; }
+    S.appUpdate = { n: latest, dismissed: store.get('bur_apk_later', 0) === latest };
+    if (!S.appUpdate.dismissed) toast('📲 È disponibile un aggiornamento dell\'app');
+    if (S.screen === 'home') render();
+  }
 
   function homeHTML() {
     const fan = [{ r: 1, s: 'S' }, { r: 13, s: 'H' }, { r: 0, s: 'J' }, { r: 2, s: 'D' }, { r: 7, s: 'C' }]
@@ -32,6 +58,9 @@
     return `<div class="page">
       <div class="logo"><div class="logo-fan">${fan}</div><h1>Burraco</h1>
         <div class="muted">Gioca con gli amici o contro il computer</div></div>
+      ${S.appUpdate && !S.appUpdate.dismissed ? `<div class="apkbanner update">
+        <img src="icons/icon-192.png" alt=""><span><b>📲 Nuova versione dell'app</b><br>Scaricala e installala sopra quella che hai: profilo e partite restano.</span>
+        <span class="updbtns"><a class="btn primary small" href="${APK_URL}">Scarica</a><button class="btn small" data-act="appUpdateLater">Più tardi</button></span></div>` : ''}
       <div class="panel">
         ${OFFLINE ? `<div class="offbanner">📴 <b>Senza internet</b><br>Puoi giocare contro il computer e fare l'allenamento.
             Amici, classifica e partite online tornano quando sei collegato.

@@ -311,3 +311,5 @@
   render();
   // tutto è caricato: adesso ci si collega al server (prima i messaggi arriverebbero a un'interfaccia incompleta)
   socket.connect();
+  // c'è un APK più nuovo di quello installato?
+  setTimeout(checkAppUpdate, 1500);

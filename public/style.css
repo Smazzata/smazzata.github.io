@@ -754,3 +754,7 @@ body[data-theme="notte"] .result tr.grand td { background: #4a3f1e; }
 /* segnalazione di un giocatore */
 label.radio { display: block; padding: 6px 2px; font-size: 14px; }
 #reportPlayerForm textarea { width: 100%; margin-top: 6px; }
+
+/* avviso di aggiornamento dell'app */
+.apkbanner.update { border-color: var(--gold); background: rgba(242,193,78,.16); flex-wrap: wrap; }
+.apkbanner.update .updbtns { display: flex; gap: 6px; margin-left: auto; }

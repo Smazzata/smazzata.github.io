@@ -144,6 +144,7 @@
     roomRules() { rulesModal(S.room.rules); },
     daily() { if (!requireName()) return; dailyModal(); },
     replay() { openReplay(); },
+    appUpdateLater() { store.set('bur_apk_later', S.appUpdate.n); S.appUpdate.dismissed = true; render(); },
     playerMenu(el) { playerMenu(el.dataset.nick); },
     async addFriendNick(el) {
       const r = await emit('friendRequest', { nick: el.dataset.nick });
