@@ -24,3 +24,5 @@ const n = Number(process.argv[2] || 40);
 duel('normale', 'facile', n);
 duel('difficile', 'normale', n);
 duel('difficile', 'facile', n);
+duel('esperto', 'difficile', n);
+duel('esperto', 'difficile', n, 'aberto');

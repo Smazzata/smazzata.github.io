@@ -4,7 +4,7 @@
  * La cifratura usa una frase segreta scelta dall'utente (scrypt + AES-256-GCM),
  * così il backup si può ripristinare anche se il server va perso.
  *
- *   node scripts/backup.js crea  <file-dati> <file-backup>     (frase in BACKUP_PASSPHRASE o ~/.burraco-backup-pass)
+ *   node scripts/backup.js crea  <data/stato.json> <file-backup>  (legge data/burraco.db se c'è; frase in BACKUP_PASSPHRASE o ~/.burraco-backup-pass)
  *   node scripts/backup.js ripristina <file-backup> <file-dati>
  */
 const fs = require('fs');
@@ -55,8 +55,8 @@ if (require.main === module) {
   const [cmd, from, to] = process.argv.slice(2);
   try {
     if (cmd === 'crea') {
-      const plain = fs.readFileSync(from);
-      JSON.parse(plain); // non si salva un file rovinato
+      // dati dal database (se c'è) o da stato.json, nello stesso formato
+      const plain = Buffer.from(JSON.stringify(require('../server/store').exportData(path.dirname(from))));
       fs.writeFileSync(to, encrypt(plain, passphrase()));
       console.log(`Backup cifrato creato: ${to} (${plain.length} byte di dati)`);
     } else if (cmd === 'ripristina') {

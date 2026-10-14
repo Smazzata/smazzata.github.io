@@ -97,6 +97,36 @@
       <div class="row" style="justify-content:center"><button class="btn primary" data-act="importCode" data-code="${esc(code)}">Sì, usalo qui</button><button class="btn" data-act="closeModal">Annulla</button></div></div>`);
   }
 
+  /** Campionati tra amici: classifiche della stagione, albo d'oro, membri */
+  async function leaguesModal(openId) {
+    const r = await emit('leagues');
+    if (!r.ok) return;
+    S.leagueOpen = openId !== undefined ? openId : S.leagueOpen;
+    const so = S.social || { friends: [] };
+    const left = (t) => { const d = Math.max(0, Math.ceil((t - Date.now()) / 86400000)); return d <= 1 ? 'finisce entro domani' : `finisce tra ${d} giorni`; };
+    const card = (lg) => {
+      const open = S.leagueOpen === lg.id;
+      const me = lg.standings.find((x) => x.me);
+      const addable = so.friends.filter((f) => !lg.members.includes(f.nick));
+      return `<div class="league ${open ? 'open' : ''}">
+        <button class="lghead" data-act="leagueToggle" data-id="${lg.id}"><b>${esc(lg.name)}</b>
+          <span class="muted small">${lg.period === 'mese' ? 'mensile' : 'settimanale'} · ${left(lg.ends)}${me ? ` · sei ${me.pos}°` : ''}</span></button>
+        ${open ? `<table>${lg.standings.map((x) => `<tr class="${x.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][x.pos - 1] || x.pos}</td><td style="text-align:left">${esc(x.name)}</td><td><b>${x.pts}</b> pt</td><td class="muted small">${x.wins}/${x.games}</td></tr>`).join('')}</table>
+          <p class="muted small">3 punti a vittoria, 1 a partecipazione. Contano le partite finite con almeno due membri al tavolo.</p>
+          ${lg.past.length ? `<h4>Albo d'oro</h4>${lg.past.slice(0, 5).map((p) => `<div class="small">🏆 ${esc(p.winners.join(', '))} <span class="muted">(${p.pts} pt · ${new Date(p.to - 1).toLocaleDateString('it-IT')})</span></div>`).join('')}` : ''}
+          ${lg.mineOwner && addable.length ? `<div class="row" style="margin-top:8px"><select id="lgadd-${lg.id}" class="grow">${addable.map((f) => `<option>${esc(f.nick)}</option>`).join('')}</select>
+            <button class="btn small primary" data-act="leagueAdd" data-id="${lg.id}">Aggiungi</button></div>` : ''}
+          ${lg.mineOwner ? `<div class="small" style="margin-top:6px">Membri: ${lg.members.map((n) => `${esc(n)}${n !== lg.owner ? ` <a href="#" data-act="leagueKick" data-id="${lg.id}" data-nick="${esc(n)}" title="Togli">✕</a>` : ''}`).join(' · ')}</div>` : ''}
+          <div class="row" style="margin-top:8px"><button class="btn small danger" data-act="leagueLeave" data-id="${lg.id}">Esci dal campionato</button></div>` : ''}</div>`;
+    };
+    openModal('leagues', `<div class="result"><button class="btn small" data-act="friends">← Amici</button><h2>🏟️ Campionati tra amici</h2>
+      ${r.list.length ? r.list.map(card).join('') : '<p class="muted">Non fai ancora parte di un campionato. Creane uno e aggiungi i tuoi amici!</p>'}
+      <h3>Nuovo campionato</h3>
+      <form id="leagueform"><div class="row"><input id="lgname" class="grow" maxlength="30" placeholder="Es. Burraco del giovedì"></div>
+        <div class="row" style="margin-top:6px"><label class="small"><input type="radio" name="lgperiod" value="settimana" checked> Settimanale</label>
+        <label class="small"><input type="radio" name="lgperiod" value="mese"> Mensile</label><button class="btn small primary grow">Crea</button></div></form></div>`);
+  }
+
   function friendsModal() {
     const so = S.social || { friends: [], reqIn: [], reqOut: [] };
     const inRoom = S.room && S.room.code;
@@ -106,6 +136,7 @@
       ${f.playing && f.room && f.room !== inRoom ? `<button class="btn small" data-act="watch" data-code="${esc(f.room)}">👁 Guarda</button>` : ''}
       <button class="btn small ghost dark" data-act="unfriend" data-nick="${esc(f.nick)}" title="Rimuovi">✕</button></div>`;
     openModal('friends', `<h2>👥 Amici</h2>
+      <div class="row" style="margin-bottom:8px"><button class="btn small" data-act="leagues">🏟️ Campionati tra amici</button></div>
       <form id="friendform" class="row"><input id="friendin" class="grow" maxlength="16" autocomplete="off" placeholder="Nickname dell'amico"><button class="btn primary">Aggiungi</button></form>
       ${so.reqIn.length ? `<h4>Richieste ricevute</h4>${so.reqIn.map((n) => `<div class="friend"><span class="grow"><b>${esc(n)}</b> vuole essere tuo amico</span>
         <button class="btn small primary" data-act="friendYes" data-nick="${esc(n)}">Accetta</button><button class="btn small" data-act="friendNo" data-nick="${esc(n)}">Rifiuta</button><button class="btn small danger" data-act="block" data-nick="${esc(n)}" title="Blocca">🚫</button></div>`).join('')}` : ''}

@@ -30,6 +30,69 @@ function filesTests() {
   console.log(`file dell'interfaccia: ${js.length}, tutti caricati e salvati per l'uso offline`);
 }
 
+/** Archivio: salvataggio e rilettura, scritture solo delle voci cambiate, importazione da stato.json */
+function storeTests() {
+  const fs = require('fs');
+  const os = require('os');
+  const path = require('path');
+  const { openStore, exportData } = require('./store');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'burraco-store-'));
+  try {
+    const data = {
+      savedAt: 1, sessions: [['t1', { nick: 'Anna' }], ['t2', { nick: 'Bruno' }]], leaderboard: [['t1', { games: 3 }]],
+      rooms: [{ code: 'ABCD', seats: [] }], leagues: [{ id: 'L1', name: 'Giovedì' }], daily: [['2026-10-14', { t1: { score: 5 } }]], reports: [{ text: 'ciao' }],
+    };
+    const st = openStore(dir);
+    assert(st.save(data).written > 5, 'primo salvataggio completo');
+    if (st.kind === 'sqlite') {
+      data.sessions[1][1].nick = 'Bruno2';
+      assert.strictEqual(st.save(data).written, 1, 'si riscrive solo la voce cambiata');
+      data.rooms = [];
+      assert.strictEqual(st.save(data).written, 1, 'tavolo eliminato');
+      assert.strictEqual(st.save(data).written, 0, 'niente da scrivere');
+    }
+    const back = openStore(dir).load();
+    assert.deepStrictEqual(back.sessions.find((x) => x[0] === 't2')[1], { nick: st.kind === 'sqlite' ? 'Bruno2' : 'Bruno' });
+    assert(back.leagues[0].name === 'Giovedì' && back.reports[0].text === 'ciao' && back.daily[0][0] === '2026-10-14', 'tutto ritrovato');
+    assert(exportData(dir).leaderboard[0][1].games === 3, 'esportazione per il backup');
+    if (st.kind === 'sqlite') {
+      // ripristino da backup: stato.json più recente viene importato nel database
+      fs.writeFileSync(path.join(dir, 'stato.json'), JSON.stringify({ ...data, sessions: [['t9', { nick: 'Ripristinato' }]], savedAt: Date.now() + 1000 }));
+      const again = openStore(dir).load();
+      assert(again.sessions.some((x) => x[1].nick === 'Ripristinato'), 'importazione da stato.json');
+      assert(fs.existsSync(path.join(dir, 'stato.json.importato')), 'stato.json messo da parte');
+    }
+    console.log(`archivio (${st.kind}): salvataggio, rilettura, importazione OK`);
+  } finally {
+    try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) { /* il database può essere ancora aperto su Windows */ }
+  }
+}
+
+function leagueTests() {
+  const leagues = new Map();
+  const L = require('./leagues')({ leagues, nickOf: (t) => ({ a: 'Anna', b: 'Bruno', c: 'Ciro' }[t]) });
+  const id = L.create('a', 'Giovedì', 'settimana');
+  const lg = leagues.get(id);
+  L.addMember(lg, 'a', 'b');
+  assert.throws(() => L.addMember(lg, 'b', 'c'), /creato/, 'solo il creatore aggiunge');
+  L.recordGame([{ token: 'a', name: 'Anna', won: true }, { token: 'b', name: 'Bruno', won: false }, { token: 'x', name: 'Ospite', won: true }]);
+  L.recordGame([{ token: 'a', name: 'Anna', won: true }]); // da sola: non conta
+  const v = L.view(lg, 'b');
+  assert(v.standings[0].name === 'Anna' && v.standings[0].pts === 3 && v.standings[1].pts === 1 && v.standings[1].me, 'classifica del campionato');
+  // fine stagione: albo d'oro, campione premiato, classifica azzerata
+  const champs = L.rollover(lg, L.seasonEnd(lg.seasonStart, lg.period) + 1000);
+  assert.deepStrictEqual(champs, ['a']);
+  assert(lg.past[0].winners[0] === 'Anna' && Object.keys(lg.standings).length === 0, 'nuova stagione');
+  // settimana: finisce il lunedì; mese: il primo del mese dopo
+  assert.strictEqual(new Date(L.seasonEnd(Date.UTC(2026, 9, 14), 'settimana')).getUTCDay(), 1);
+  assert.strictEqual(new Date(L.seasonEnd(Date.UTC(2026, 9, 14), 'mese')).toISOString().slice(0, 10), '2026-11-01');
+  L.removeMember(lg, 'a', 'a');
+  assert(lg.owner === 'b', 'se esce il creatore il campionato passa a un altro');
+  L.forget('b');
+  assert(!leagues.has(id), 'campionato vuoto eliminato');
+  console.log('campionati: classifica, stagioni e albo d\'oro OK');
+}
+
 function trophyTests() {
   const T = require('./trophies');
   const hand = (kinds, total) => ({ burraco: kinds.map((kind) => ({ kind })), total });
@@ -139,6 +202,8 @@ function simulate(label, rules, n, games = 3) {
 
 unitTests();
 trophyTests();
+leagueTests();
+storeTests();
 filesTests();
 for (const p of Rules.PRESETS) for (const n of [4, 2, 3]) simulate(p.id, p.rules, n);
 // configurazioni casuali

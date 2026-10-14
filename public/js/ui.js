@@ -140,7 +140,7 @@
   }
 
   function botLevelHTML(cur) {
-    return `<div class="row">${[['facile', '🙂 Facile'], ['normale', 'Normale'], ['difficile', '🧠 Difficile']]
+    return `<div class="row">${[['facile', '🙂 Facile'], ['normale', 'Normale'], ['difficile', '🧠 Difficile'], ['esperto', '🎓 Esperto']]
       .map(([v, l]) => `<button class="swatch ${(cur || 'normale') === v ? 'on' : ''}" data-act="botLevel" data-val="${v}">${l}</button>`).join('')}</div>`;
   }
 

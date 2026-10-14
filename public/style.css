@@ -728,3 +728,13 @@ body[data-theme="notte"] .coachbox { background: #1b2733; border-color: #2d4257;
 .leaveopts { display: flex; flex-direction: column; gap: 8px; }
 .leaveopts .btn { text-align: left; line-height: 1.3; }
 .leaveopts small { font-weight: 400; opacity: .8; }
+
+/* campionati tra amici */
+.league { border: 1px solid #e3ddcc; border-radius: 12px; margin: 8px 0; overflow: hidden; }
+.league .lghead { display: flex; flex-direction: column; align-items: flex-start; width: 100%; border: 0; background: rgba(0,0,0,.03); padding: 9px 12px; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.league.open .lghead { background: #fff6d6; }
+.league > *:not(.lghead) { margin-left: 10px; margin-right: 10px; }
+.league table { margin-top: 6px; width: calc(100% - 20px); }
+.league .row:last-child { margin-bottom: 10px; }
+body[data-theme="notte"] .league { border-color: #3a413e; }
+body[data-theme="notte"] .league.open .lghead { background: #3a321a; }

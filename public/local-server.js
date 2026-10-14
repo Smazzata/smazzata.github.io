@@ -185,7 +185,7 @@
           broadcast();
           return {};
         case 'setBotSpeed': requireRoom().botSpeed = BOT_SPEEDS[d.speed] ? d.speed : 'normale'; broadcast(); return {};
-        case 'setBotLevel': requireRoom().botLevel = ['facile', 'normale', 'difficile'].includes(d.level) ? d.level : 'normale'; broadcast(); return {};
+        case 'setBotLevel': requireRoom().botLevel = ['facile', 'normale', 'difficile', 'esperto'].includes(d.level) ? d.level : 'normale'; broadcast(); return {};
         case 'setHints': requireRoom().hints = !!d.on; broadcast(); return {};
         case 'setAids': requireRoom().aids = !!d.on; broadcast(); return {};
         case 'setTurnTime': return {};

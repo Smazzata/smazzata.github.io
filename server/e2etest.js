@@ -229,6 +229,12 @@ const step = (t) => console.log('✓ ' + t);
     assert.strictEqual(lb.list.reduce((n, e) => n + e.wins, 0) >= 1, true);
     step('classifica aggiornata a fine partita');
 
+    // campionato tra amici: Anna lo crea e aggiunge Bruno (amico); conterà la prossima partita insieme
+    const lc = await A.call('leagueCreate', { name: 'Burraco del giovedì', period: 'settimana' });
+    assert(lc.ok && lc.id, 'campionato creato');
+    assert((await A.call('leagueAdd', { id: lc.id, nick: 'Bruno' })).ok);
+    assert(!(await B.call('leagueAdd', { id: lc.id, nick: 'Anna' })).ok, 'solo il creatore aggiunge');
+
     // statistiche sul server, storico, scheda dell'amico, classifica solo amici
     const ms = await A.call('myStats');
     assert(ms.ok && ms.stats.games === 1 && ms.stats.hands >= 1 && ms.history.length === 1, 'statistiche e storico di Anna');
@@ -293,6 +299,10 @@ const step = (t) => console.log('✓ ' + t);
     const sr = (await A.until((s) => s.room.series && s.room.series.games === 1, 'torneo aggiornato')).room.series;
     assert.strictEqual(sr.wins.reduce((a, b) => a + b, 0) >= 1, true, 'vittorie contate');
     assert.strictEqual(sr.champion, null, 'dopo una partita su tre nessun campione');
+    const lgs = (await B.call('leagues')).list;
+    const lgv = lgs.find((x) => x.id === lc.id);
+    assert(lgv && lgv.standings.length === 2 && lgv.standings.every((x) => x.games === 1) && lgv.standings[0].pts === 3, 'classifica del campionato dopo la partita');
+    step(`campionato tra amici: ${lgv.standings.map((x) => `${x.name} ${x.pts} pt`).join(', ')}`);
     step('mini-torneo: vittorie contate partita dopo partita');
 
     // allenamento: Classico in 2, computer facile, suggerimenti attivi
@@ -487,7 +497,8 @@ const step = (t) => console.log('✓ ' + t);
     A.sock.close(); B.sock.close();
     console.log('\nProva multigiocatore: tutto OK');
   } finally {
-    server.kill();
-    fs.rmSync(dataDir, { recursive: true, force: true });
+    // il database resta aperto finché il server non si chiude (su Windows non si può cancellare prima)
+    await new Promise((res) => { if (server.exitCode !== null) res(); else { server.once('exit', res); server.kill(); } });
+    fs.rmSync(dataDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 })().catch((e) => { console.error('✗', e.message); process.exitCode = 1; setTimeout(() => process.exit(1), 200); });

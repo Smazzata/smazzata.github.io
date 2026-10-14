@@ -12,6 +12,8 @@ const Coach = require('./coach');
 const Levels = require('./levels');
 const Daily = require('./daily');
 const createPush = require('./push');
+const createLeagues = require('./leagues');
+const { openStore } = require('./store');
 const Rules = require('../shared/rules');
 const createSocial = require('./social');
 
@@ -21,7 +23,6 @@ const BOT_DELAY = Number(process.env.BOT_DELAY || 700);
 const TIMER_SCALE = Number(process.env.TIMER_SCALE || 1);
 const BOT_SPEEDS = { lenta: BOT_DELAY * 1.9, normale: BOT_DELAY, veloce: BOT_DELAY * 0.45 };
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
-const DATA_FILE = path.join(DATA_DIR, 'stato.json');
 
 /* ---------- Ultimi errori (per la pagina di stato) ---------- */
 const recentErrors = [];
@@ -148,6 +149,22 @@ const leaderboard = new Map();
 let reports = [];
 /* sfida del giorno: data -> { token: { name, score, at } } (score null = partita in corso o abbandonata) */
 const daily = new Map();
+/* campionati tra amici: id -> { name, owner, period, members, seasonStart, standings, past } */
+const leagues = new Map();
+const League = createLeagues({ leagues, nickOf: (t) => (sessions.get(t) || {}).nick });
+
+/** Assegna trofei a un giocatore (se non li ha già) e lo avvisa */
+function awardTrophies(token, name, ids) {
+  const e = { ...STATS0, ...(leaderboard.get(token) || {}) };
+  e.name = e.name || name;
+  e.trophies = { ...(e.trophies || {}) };
+  const fresh = [...new Set(ids)].filter((id) => !e.trophies[id]);
+  if (!fresh.length) return;
+  for (const id of fresh) e.trophies[id] = Date.now();
+  leaderboard.set(token, e);
+  const list = fresh.map((id) => { const t = Trophies.BY_ID.get(id); return { id, e: t.e, name: t.name, desc: t.desc }; });
+  for (const sock of io.sockets.sockets.values()) if (sock.data.token === token) sock.emit('trophy', list);
+}
 const BOT_NAMES = ['Nonna Pina', 'Zio Gino', 'Carmela', 'Totò', 'Rosetta', 'Peppino', 'Ninetta', 'Gegè'];
 
 function newCode() {
@@ -474,7 +491,7 @@ function recordLeaderboard(room) {
       won.push(...Trophies.fromGame(g, seat, {
         tutorial: !!room.tutorial,
         withFriend: room.seats.some((o) => o && !o.isBot && o.token !== s.token && friends.includes(o.token)),
-        allBotsDifficile: room.botLevel === 'difficile' && room.seats.every((o, i) => myTeam.members.includes(i) || (o && o.isBot)),
+        allBotsDifficile: ['difficile', 'esperto'].includes(room.botLevel) && room.seats.every((o, i) => myTeam.members.includes(i) || (o && o.isBot)),
       }));
       if (room.series && room.series.champion && room.series.champion.includes(seat)) won.push('campione');
       e.games++;
@@ -502,6 +519,10 @@ function recordLeaderboard(room) {
       for (const sock of io.sockets.sockets.values()) if (sock.data.token === s.token) sock.emit('trophy', list);
     }
   });
+  if (gameEnds && !room.tutorial) {
+    const players = room.seats.map((s, seat) => (s && !s.isBot && s.token ? { token: s.token, name: s.name, won: g.winners.includes(seat) } : null)).filter(Boolean);
+    for (const t of League.recordGame(players)) awardTrophies(t, '', ['campione_lega']);
+  }
   room.recordedHand = handKey;
   if (g.over) room.recordedGame = room.gameSeq;
 }
@@ -713,6 +734,7 @@ const social = createSocial({
     leaderboard.delete(token);
     const sess = sessions.get(token);
     if (sess) sess.push = []; // niente più notifiche a quel dispositivo
+    League.forget(token);
     scheduleSave();
   },
 });
@@ -999,7 +1021,7 @@ io.on('connection', (socket) => {
   socket.on('setBotLevel', handler(({ level }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
-    if (!['facile', 'normale', 'difficile'].includes(level)) throw new E.GameError('Livello non valido');
+    if (!['facile', 'normale', 'difficile', 'esperto'].includes(level)) throw new E.GameError('Livello non valido');
     room.botLevel = level;
     broadcast(room);
   }));
@@ -1096,6 +1118,40 @@ io.on('connection', (socket) => {
   }));
 
   socket.on('myGames', handler(() => ({ list: myGames(socket.data.token) })));
+
+  // Campionati tra amici
+  const myNick = () => { const s = sessions.get(socket.data.token); if (!s || !s.nick) throw new E.GameError('Scegli prima il tuo nickname'); return s; };
+  const leagueCall = (fn) => { try { return fn(); } catch (e) { if (e instanceof E.GameError) throw e; throw new E.GameError(e.message); } };
+  const tokenOfNick = (nick) => { const x = [...sessions.entries()].find(([, v]) => v.nick && v.nick.toLowerCase() === String(nick || '').toLowerCase()); return x && x[0]; };
+  socket.on('leagues', handler(() => {
+    const me = socket.data.token;
+    const list = League.mine(me);
+    for (const lg of list) for (const t of League.rollover(lg)) awardTrophies(t, '', ['campione_lega']);
+    scheduleSave();
+    return { list: League.mine(me).map((lg) => League.view(lg, me)) };
+  }));
+  socket.on('leagueCreate', handler(({ name, period }) => {
+    myNick();
+    const id = leagueCall(() => League.create(socket.data.token, name, period));
+    scheduleSave();
+    return { id };
+  }));
+  socket.on('leagueAdd', handler(({ id, nick }) => {
+    const me = myNick();
+    const other = tokenOfNick(nick);
+    if (!other || !(me.friends || []).includes(other)) throw new E.GameError('Puoi aggiungere solo i tuoi amici');
+    const lg = leagueCall(() => League.get(id, socket.data.token));
+    leagueCall(() => League.addMember(lg, socket.data.token, other));
+    for (const s of socketsOf(other)) s.emit('notice', { text: `🏟️ ${me.nick} ti ha aggiunto al campionato «${lg.name}»` });
+    scheduleSave();
+  }));
+  socket.on('leagueRemove', handler(({ id, nick }) => {
+    const lg = leagueCall(() => League.get(id, socket.data.token));
+    const other = nick ? tokenOfNick(nick) : socket.data.token;
+    if (!other || !lg.members.includes(other)) throw new E.GameError('Giocatore non trovato nel campionato');
+    leagueCall(() => League.removeMember(lg, socket.data.token, other));
+    scheduleSave();
+  }));
 
   // Moviola: l'ultima smazzata finita, con le carte di tutti (mai nella sfida del giorno: rivelerebbe il mazzo)
   socket.on('replay', handler(() => {
@@ -1264,27 +1320,31 @@ function saveNow() {
       leaderboard: [...leaderboard],
       reports,
       daily: [...daily].map(([d, m]) => [d, m]),
+      leagues: [...leagues.values()],
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
         ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series, daily: r.daily, seed: r.seed, slow: r.slow, lastActionAt: r.lastActionAt,
       })),
     };
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-    fs.writeFileSync(DATA_FILE + '.tmp', JSON.stringify(data));
-    fs.renameSync(DATA_FILE + '.tmp', DATA_FILE);
+    store.save(data);
   } catch (e) {
     console.error('Salvataggio non riuscito:', e.message);
   }
 }
 
+// archivio: database SQLite se disponibile, altrimenti stato.json (vedi server/store.js)
+const store = openStore(DATA_DIR);
+
 function loadSaved() {
   try {
-    if (!fs.existsSync(DATA_FILE)) return;
-    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    const data = store.load();
+    console.log(`Archivio dati: ${store.kind === 'sqlite' ? 'database SQLite (data/burraco.db)' : 'file data/stato.json'}`);
+    if (!data) return;
     for (const [token, sess] of data.sessions || []) sessions.set(token, sess);
     for (const [token, e] of data.leaderboard || []) leaderboard.set(token, e);
     reports = data.reports || [];
     for (const [d, m] of data.daily || []) daily.set(d, m);
+    for (const lg of data.leagues || []) leagues.set(lg.id, lg);
     social.rebuildIndexes();
     for (const r of data.rooms || []) {
       rooms.set(r.code, { ...r, ready: new Set(r.ready || []), botTimer: null, botMemo: {}, botMemoTurn: -1 });

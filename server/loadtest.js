@@ -84,7 +84,8 @@ const pct = (a, p) => { const s = a.slice().sort((x, y) => x - y); return s.leng
   console.log(`tempo di risposta di una mossa: mediana ${pct(latencies, 50).toFixed(1)} ms, 95% ${pct(latencies, 95).toFixed(1)} ms, massimo ${Math.max(...latencies).toFixed(0)} ms`);
   console.log(`ritardo del server (99%): ${Math.max(...stats.map((s) => s.ritardo_ms.p99))} ms · CPU massima: ${Math.max(...stats.map((s) => s.cpu_percento))}% · memoria: ${last.memoria_mb} MB`);
   clients.forEach((c) => c.sock.close());
-  server.kill();
-  fs.rmSync(dataDir, { recursive: true, force: true });
+  // il database resta aperto finché il server non si chiude (su Windows non si può cancellare prima)
+  await new Promise((res) => { if (server.exitCode !== null) res(); else { server.once('exit', res); server.kill(); } });
+  fs.rmSync(dataDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   setTimeout(() => process.exit(0), 300);
 })().catch((e) => { console.error(e); server.kill(); process.exit(1); });

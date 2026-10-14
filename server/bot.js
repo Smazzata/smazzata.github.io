@@ -158,12 +158,26 @@ function tryActions(g, seat, actions) {
   return null;
 }
 
+const strongLevel = (level) => level === 'difficile' || level === 'esperto';
+
+/** Carte che un giocatore ha raccolto dagli scarti e ha ancora in mano (informazione pubblica: tutti le hanno viste) */
+function knownCards(g, seat) {
+  const ids = new Set((g.known && g.known[seat]) || []);
+  return g.players[seat].hand.filter((c) => ids.has(c.id));
+}
+
+/** Il giocatore avversario con meno carte in mano (per capire se sta per chiudere) */
+function minOpponentCards(g, seat) {
+  const mine = E.teamOf(g, seat);
+  return Math.min(...g.players.filter((p) => E.teamOf(g, p.seat) !== mine).map((p) => p.hand.length));
+}
+
 function keepScore(g, seat, card, level = 'normale') {
   const hand = g.players[seat].hand;
   const cfg = g.cfg;
   if (E.isWild(card)) return 1000;
   let s = 0;
-  if (level === 'difficile') {
+  if (strongLevel(level)) {
     // il monte va all'avversario successivo: non dargli carte che legano con quelle già scartate
     for (const o of g.discard) {
       if (E.isWild(o)) continue;
@@ -190,6 +204,20 @@ function keepScore(g, seat, card, level = 'normale') {
   for (const m of teamMelds(g, seat)) {
     if (E.analyzeMeld(m.cards.concat([card]), cfg, m.type)) s += 8;
   }
+  // esperto: ricorda le carte raccolte dagli avversari e non scarta quelle che ci si legano
+  if (level === 'esperto') {
+    const mine = E.teamOf(g, seat);
+    for (const p of g.players) {
+      if (E.teamOf(g, p.seat) === mine) continue;
+      for (const o of knownCards(g, p.seat)) {
+        if (E.isWild(o)) continue;
+        if (cfg.allowSets && o.r === card.r) s += 14;
+        if (o.s === card.s) { const d = Math.abs(o.r - card.r); if (d === 1) s += 14; else if (d === 2) s += 7; }
+      }
+    }
+    // un avversario sta per chiudere: via le carte che pesano di più
+    if (minOpponentCards(g, seat) <= 4) s -= E.cardValue(card, cfg.values) / 2.5;
+  }
   // a parità, meglio liberarsi delle carte di valore alto
   s -= E.cardValue(card, cfg.values) / 5;
   return s;
@@ -204,7 +232,7 @@ function pileIsUseful(g, seat, level = 'normale') {
   if (E.isWild(top)) return true;
   for (const m of teamMelds(g, seat)) if (E.analyzeMeld(m.cards.concat([top]), cfg, m.type)) return true;
   if (level === 'facile' && Math.random() < 0.5) return false;
-  if (level === 'difficile' && pile.length >= 4) return true;
+  if (strongLevel(level) && pile.length >= 4) return true;
   const after = hand.concat(pile);
   const cands = naturalMeldCandidates(g, after);
   const pileIds = new Set(pile.map((c) => c.id));
@@ -280,7 +308,9 @@ function nextAction(g, seat, memo = {}) {
     if (a) return a;
     let hurry = hand.length <= 5 || (team.pozzettoTaken && !E.canClose(g, team) && hand.length <= 7);
     // difficile: corre verso il pozzetto e, se può chiudere, cala tutto
-    if (level === 'difficile') hurry = hurry || E.canClose(g, team) || (!team.pozzettoTaken && hand.length <= 7);
+    if (strongLevel(level)) hurry = hurry || E.canClose(g, team) || (!team.pozzettoTaken && hand.length <= 7);
+    // esperto: se un avversario sta per chiudere cala le matte per non restare con punti in mano
+    if (level === 'esperto') hurry = hurry || minOpponentCards(g, seat) <= 3;
     if (hurry) {
       a = tryActions(g, seat, wildMeldCandidates(g, hand).map((ids) => ({ type: 'meld', cardIds: ids })));
       if (a) return a;

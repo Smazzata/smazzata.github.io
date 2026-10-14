@@ -25,6 +25,7 @@ const LIST = [
   { id: 'amici', e: '🤝', name: 'Tra amici', desc: 'Finisci una partita al tavolo con un amico' },
   { id: 'sfida', e: '📅', name: 'Sfidante', desc: 'Completa una sfida del giorno' },
   { id: 'sfida_primo', e: '🌟', name: 'Re del giorno', desc: 'Primo nella sfida del giorno (almeno 3 partecipanti)' },
+  { id: 'campione_lega', e: '🏟️', name: 'Campione del campionato', desc: 'Vinci una stagione di un campionato tra amici' },
   { id: 'diplomato', e: '🎓', name: 'Diplomato', desc: 'Finisci la partita di allenamento' },
 ];
 const BY_ID = new Map(LIST.map((t) => [t.id, t]));

@@ -130,6 +130,23 @@
     roomRules() { rulesModal(S.room.rules); },
     daily() { if (!requireName()) return; dailyModal(); },
     replay() { openReplay(); },
+    leagues() { leaguesModal(); },
+    leagueToggle(el) { leaguesModal(S.leagueOpen === el.dataset.id ? null : el.dataset.id); },
+    async leagueAdd(el) {
+      const sel = $(`#lgadd-${el.dataset.id}`);
+      const r = await emit('leagueAdd', { id: el.dataset.id, nick: sel && sel.value });
+      if (r.ok) { toast(`${sel.value} aggiunto al campionato`); leaguesModal(); }
+    },
+    async leagueKick(el) {
+      if (!confirm(`Togliere ${el.dataset.nick} dal campionato?`)) return;
+      const r = await emit('leagueRemove', { id: el.dataset.id, nick: el.dataset.nick });
+      if (r.ok) leaguesModal();
+    },
+    async leagueLeave(el) {
+      if (!confirm('Uscire dal campionato? I tuoi punti di questa stagione andranno persi.')) return;
+      const r = await emit('leagueRemove', { id: el.dataset.id });
+      if (r.ok) leaguesModal(null);
+    },
     async surrender(el) {
       const accepting = el && el.dataset.ok;
       const text = accepting ? 'Confermi la resa? Vincono gli avversari.'

@@ -149,6 +149,7 @@ function startHand(g) {
   g.turnInfo = null;
   g.snapshot = null;
   g.events = [];
+  g.known = g.players.map(() => []); // carte raccolte dagli scarti: tutti le hanno viste
   g.handResult = null;
   g.meldSeq = 0;
   g.partnershipFormed = n !== 3;
@@ -282,6 +283,7 @@ function takePile(g, seat, { cardIds = [], meldId = null } = {}) {
     if (preSnap) takeSnapshot(g);
     g.discard = [];
     p.hand.push(...pile);
+    if (g.known) g.known[seat].push(...pile.map((c) => c.id));
     g.pileTakeStreak++;
     addLog(g, `${p.name} raccoglie gli scarti (${pile.length} carte)`);
     beginPlay(g, seat);
@@ -295,6 +297,7 @@ function takePile(g, seat, { cardIds = [], meldId = null } = {}) {
 
   g.discard = [];
   p.hand.push(...pile);
+  if (g.known) g.known[seat].push(...pile.map((c) => c.id));
   g.pileTakeStreak++;
   addLog(g, `${p.name} raccoglie gli scarti (${pile.length} ${pile.length === 1 ? 'carta' : 'carte'})`);
   setEvent(g, { type: 'pile', seat, count: pile.length });

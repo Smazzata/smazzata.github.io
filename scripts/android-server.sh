@@ -140,7 +140,7 @@ publish_url() {
 
 # 4b. Backup cifrato nel ramo "backup" (gli ultimi 7 giorni)
 backup_once() {
-  [ -s "$TOKEN_FILE" ] && [ -s "$PASS_FILE" ] && [ -f "$DIR/data/stato.json" ] || return
+  [ -s "$TOKEN_FILE" ] && [ -s "$PASS_FILE" ] && { [ -f "$DIR/data/burraco.db" ] || [ -f "$DIR/data/stato.json" ]; } || return
   tmp=$(mktemp -d)
   url="https://${GH_REPO%%/*}:$(cat "$TOKEN_FILE")@github.com/$GH_REPO.git"
   if ! git clone -q --depth 1 --branch backup "$url" "$tmp/b" 2>/dev/null; then
