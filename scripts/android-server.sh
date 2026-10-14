@@ -18,6 +18,9 @@ UPDATE_EVERY=300
 # token GitHub (solo permesso "Contents" su questo repository) per pubblicare l'indirizzo del tunnel
 TOKEN_FILE="$HOME/.burraco-github-token"
 GH_REPO="simonemuliello010500-web/BurracoByMSF"
+# frase segreta del backup cifrato (scelta da te: senza, il backup non si può ripristinare)
+PASS_FILE="$HOME/.burraco-backup-pass"
+BACKUP_EVERY=21600
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
@@ -27,6 +30,32 @@ if [ "${1:-}" = "--set-token" ]; then
   [ -n "$tok" ] || { echo "Token vuoto, niente salvato."; exit 1; }
   printf '%s' "$tok" > "$TOKEN_FILE" && chmod 600 "$TOKEN_FILE"
   echo "Token salvato. Riavvia lo script per pubblicare l'indirizzo."
+  exit 0
+fi
+
+if [ "${1:-}" = "--set-backup-pass" ]; then
+  echo "Scegli una frase segreta per cifrare i backup (es. 4-5 parole). SALVALA anche altrove:"
+  echo "senza di lei il backup non si può ripristinare."
+  printf "Frase segreta: "
+  stty -echo 2>/dev/null; read -r p1; stty echo 2>/dev/null; echo
+  printf "Ripetila: "
+  stty -echo 2>/dev/null; read -r p2; stty echo 2>/dev/null; echo
+  [ -n "$p1" ] && [ "$p1" = "$p2" ] || { echo "Le frasi non coincidono, niente salvato."; exit 1; }
+  [ ${#p1} -ge 12 ] || { echo "Troppo corta: usa almeno 12 caratteri."; exit 1; }
+  printf '%s' "$p1" > "$PASS_FILE" && chmod 600 "$PASS_FILE"
+  echo "Frase salvata. I backup partiranno al prossimo avvio dello script."
+  exit 0
+fi
+
+if [ "${1:-}" = "--restore" ]; then
+  # ripristina l'ultimo backup dal ramo "backup" del repository
+  tmp=$(mktemp -d)
+  git clone -q --depth 1 --branch backup "https://github.com/$GH_REPO.git" "$tmp/b" || { echo "Nessun backup trovato"; exit 1; }
+  last=$(ls -1 "$tmp/b"/backup-*.json | sort | tail -1)
+  echo "Ripristino $(basename "$last")…"
+  mkdir -p "$DIR/data"
+  node "$DIR/scripts/backup.js" ripristina "$last" "$DIR/data/stato.json"
+  rm -rf "$tmp"
   exit 0
 fi
 
@@ -109,6 +138,34 @@ publish_url() {
   rm -rf "$tmp"
 }
 
+# 4b. Backup cifrato nel ramo "backup" (gli ultimi 7 giorni)
+backup_once() {
+  [ -s "$TOKEN_FILE" ] && [ -s "$PASS_FILE" ] && [ -f "$DIR/data/stato.json" ] || return
+  tmp=$(mktemp -d)
+  url="https://${GH_REPO%%/*}:$(cat "$TOKEN_FILE")@github.com/$GH_REPO.git"
+  if ! git clone -q --depth 1 --branch backup "$url" "$tmp/b" 2>/dev/null; then
+    mkdir -p "$tmp/b" && (cd "$tmp/b" && git init -q && git checkout -q -b backup)
+  fi
+  if node "$DIR/scripts/backup.js" crea "$DIR/data/stato.json" "$tmp/b/backup-$(date +%Y-%m-%d).json" >/dev/null; then
+    (
+      cd "$tmp/b" || exit 1
+      ls -1 backup-*.json | sort | head -n -7 | xargs -r rm -f
+      printf 'Backup cifrati di Burraco Online.
+Ripristino sul telefono: bash ~/burraco/scripts/android-server.sh --restore
+' > LEGGIMI.txt
+      git add -A
+      git -c user.name="Burraco server" -c user.email="server@burraco.invalid" commit -qm "Backup $(date +%Y-%m-%d)" 2>/dev/null
+      git push -q "$url" backup 2>/dev/null
+    ) && log "Backup salvato su GitHub" || log "Backup non riuscito"
+  fi
+  rm -rf "$tmp"
+}
+
+backup_loop() {
+  sleep 300
+  while true; do backup_once; sleep "$BACKUP_EVERY"; done
+}
+
 cleanup() {
   log "Chiusura"
   [ -f "$PID_FILE" ] && kill "$(cat "$PID_FILE")" 2>/dev/null
@@ -118,6 +175,7 @@ trap cleanup EXIT INT TERM
 
 server_loop &
 update_loop &
+backup_loop &
 sleep 3
 
 # 5. Tunnel pubblico (ripartito se cade). L'indirizzo cambia a ogni riavvio del tunnel.

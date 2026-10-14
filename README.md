@@ -60,3 +60,12 @@ Le partite vengono salvate in `data/stato.json` (cartella configurabile con `DAT
   Va ricostruito solo se cambia `android-app/`: gli aggiornamenti del gioco arrivano dal server.
 - Lo script Android pubblica l'indirizzo se trova il token in `~/.burraco-github-token`
   (`bash ~/burraco/scripts/android-server.sh --set-token`; token GitHub "fine-grained" con permesso Contents su questo repository).
+
+## Backup
+
+Ogni 6 ore il telefono-server cifra `data/stato.json` con una frase segreta scelta da te (scrypt + AES-256-GCM)
+e lo carica nel ramo `backup` del repository (ultimi 7 giorni). Senza la frase il file è illeggibile.
+
+- Impostare la frase (una volta): `bash ~/burraco/scripts/android-server.sh --set-backup-pass` — servono anche il token (`--set-token`).
+- Ripristinare su un telefono nuovo: imposta la stessa frase, poi `bash ~/burraco/scripts/android-server.sh --restore`.
+- A mano: `node scripts/backup.js crea data/stato.json backup.json` / `node scripts/backup.js ripristina backup.json data/stato.json`.
