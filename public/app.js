@@ -11,12 +11,17 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage non disponibile */ } },
   };
 
-  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'auto' };
+  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro' };
   const S = {
     token: store.get('bur_token', null),
     name: store.get('bur_name', ''),
     rules: R.normalize(store.get('bur_rules', R.PRESETS[0].rules)),
-    prefs: { ...DEFAULT_PREFS, ...store.get('bur_prefs', {}) },
+    prefs: (() => {
+      const p = { ...DEFAULT_PREFS, ...store.get('bur_prefs', {}) };
+      // vecchie scelte (automatico/giorno/notte) → chiaro/scuro
+      if (!['chiaro', 'scuro'].includes(p.theme)) p.theme = p.theme === 'notte' ? 'scuro' : 'chiaro';
+      return p;
+    })(),
     editRules: null,
     screen: 'home',
     room: null,
@@ -81,9 +86,8 @@
   };
 
   /* ================= Preferenze grafiche ================= */
-  const darkQuery = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
   function applyPrefs() {
-    const night = S.prefs.theme === 'notte' || (S.prefs.theme === 'auto' && darkQuery && darkQuery.matches);
+    const night = S.prefs.theme === 'scuro';
     document.body.dataset.theme = night ? 'notte' : 'giorno';
     const meta = document.querySelector('meta[name=theme-color]');
     if (meta) meta.content = night ? '#06180f' : '#0f5132';
@@ -93,7 +97,6 @@
     store.set('bur_prefs', S.prefs);
   }
   applyPrefs();
-  if (darkQuery && darkQuery.addEventListener) darkQuery.addEventListener('change', () => { if (S.prefs.theme === 'auto') applyPrefs(); });
 
   /* ================= Connessione ================= */
   const socket = io();
@@ -406,7 +409,7 @@
     const opt = (key, val, label, extra = '') => `<button class="swatch ${S.prefs[key] === val ? 'on' : ''}" data-act="pref" data-key="${key}" data-val="${val}" ${extra}>${label}</button>`;
     openModal('settings', `<h2>Aspetto e suoni</h2>
       <h4>Tema</h4>
-      <div class="row">${opt('theme', 'auto', '🌓 Automatico')}${opt('theme', 'giorno', '☀️ Giorno')}${opt('theme', 'notte', '🌙 Notte')}</div>
+      <div class="row">${opt('theme', 'chiaro', '☀️ Chiaro')}${opt('theme', 'scuro', '🌙 Scuro')}</div>
       <h4>Colore del tavolo</h4>
       <div class="row">${opt('felt', 'verde', '<i class="sw felt-verde"></i>Verde')}${opt('felt', 'blu', '<i class="sw felt-blu"></i>Blu')}${opt('felt', 'bordeaux', '<i class="sw felt-bordeaux"></i>Bordeaux')}${opt('felt', 'antracite', '<i class="sw felt-antracite"></i>Antracite')}</div>
       <h4>Dorso delle carte</h4>
@@ -509,7 +512,7 @@
         <h2>Regole e varianti</h2>
         <p class="muted">Ogni preset è un punto di partenza: quando crei una partita puoi modificare ogni singola regola.</p>
         <div class="presets">${R.PRESETS.map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>
-        <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si gioca nell'app</button><button class="btn ghost small" data-act="settings">⚙️ Aspetto e suoni</button><button class="btn ghost small" data-act="stats">📊 Statistiche</button><button class="btn ghost small" data-act="leaders">🏆 Classifica</button></div>
+        <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si gioca nell'app</button><button class="btn ghost small" data-act="settings">⚙️ Aspetto e suoni</button><button class="btn ghost small" data-act="toggleTheme">${S.prefs.theme === 'scuro' ? '☀️ Tema chiaro' : '🌙 Tema scuro'}</button><button class="btn ghost small" data-act="stats">📊 Statistiche</button><button class="btn ghost small" data-act="leaders">🏆 Classifica</button></div>
       </div>
     </div>`;
   }
@@ -1237,6 +1240,7 @@
     },
     music() { musicModal(); render(); },
     stats: statsModal,
+    toggleTheme() { S.prefs.theme = S.prefs.theme === 'scuro' ? 'chiaro' : 'scuro'; applyPrefs(); render(); },
     async leaders() {
       const r = await emit('leaderboard');
       if (!r.ok) return;
