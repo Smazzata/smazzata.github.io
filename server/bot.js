@@ -197,8 +197,10 @@ function keepScore(g, seat, card, level = 'normale') {
     }
   }
   // non regalare carte che servono agli avversari (raccoglierebbero lo scarto)
+  // esperto: più grande è il mucchio degli scarti, più costa regalarlo all'avversario
+  const risk = level === 'esperto' ? 1 + Math.min(g.discard.length, 12) / 4 : 1;
   for (const m of opponentMelds(g, seat)) {
-    if (E.analyzeMeld(m.cards.concat([card]), cfg, m.type)) s += 25;
+    if (E.analyzeMeld(m.cards.concat([card]), cfg, m.type)) s += 25 * risk;
   }
   // carte che servono ai nostri giochi: meglio tenerle (non attaccate solo per vincoli)
   for (const m of teamMelds(g, seat)) {
@@ -211,8 +213,8 @@ function keepScore(g, seat, card, level = 'normale') {
       if (E.teamOf(g, p.seat) === mine) continue;
       for (const o of knownCards(g, p.seat)) {
         if (E.isWild(o)) continue;
-        if (cfg.allowSets && o.r === card.r) s += 14;
-        if (o.s === card.s) { const d = Math.abs(o.r - card.r); if (d === 1) s += 14; else if (d === 2) s += 7; }
+        if (cfg.allowSets && o.r === card.r) s += 14 * risk;
+        if (o.s === card.s) { const d = Math.abs(o.r - card.r); if (d === 1) s += 14 * risk; else if (d === 2) s += 7 * risk; }
       }
     }
     // un avversario sta per chiudere: via le carte che pesano di più
