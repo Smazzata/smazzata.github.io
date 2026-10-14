@@ -563,8 +563,11 @@ function viewFor(g, seat) {
   };
 }
 
+/** Aggiunge una riga alla cronaca dall'esterno del motore (es. timer del turno) */
+function note(g, text) { addLog(g, text); }
+
 module.exports = {
-  GameError, createGame, apply, isLegal, viewFor, nextHand,
+  GameError, note, createGame, apply, isLegal, viewFor, nextHand,
   analyzeMeld, analyzeSequence, analyzeSet, meldKind, cardValue, cardName,
   isWild, isJoker, teamOf, canClose, canTakePozzetto, buildCfg,
 };

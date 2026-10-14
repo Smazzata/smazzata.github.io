@@ -6,7 +6,8 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
-    "test": "node server/selftest.js"
+    "test": "node server/selftest.js",
+    "e2e": "node server/e2etest.js"
   },
   "engines": {
     "node": ">=18"
@@ -14,5 +15,8 @@
   "dependencies": {
     "express": "^4.21.2",
     "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.1"
   }
 }

@@ -125,6 +125,9 @@
       if (prevMusic !== undefined && !room.isHost) { S.musicUnseen = true; toast(`🎵 ${room.music.by} ha avviato la musica: tocca 🎵 per ascoltarla`); }
     }
     if (room && !room.music) S.musicUnseen = false;
+    S.turnEnd = room && room.turnLeft != null ? Date.now() + room.turnLeft : null;
+    S.warned10 = S.turnKey === (game && `${game.handNo}:${game.turn}`) ? S.warned10 : false;
+    S.turnKey = game && `${game.handNo}:${game.turn}`;
     S.room = room;
     S.game = game;
     if (!room) {
@@ -327,9 +330,15 @@
       <div class="row">${opt('big', false, 'Normali')}${opt('big', true, 'Grandi')}</div>
       <h4>Suoni</h4>
       <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
+      ${S.room && S.room.isHost ? `<h4>Tempo per turno</h4>${turnTimeHTML(S.room.turnTime)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Velocità del computer</h4>${botSpeedHTML(S.room.botSpeed)}` : ''}
       ${S.room && S.room.isHost && S.room.humans <= 1 ? `<h4>Suggerimenti 💡 (solo contro il computer)</h4>
         <div class="row"><button class="swatch ${S.room.hints ? 'on' : ''}" data-act="setHints" data-val="1">Attivi</button><button class="swatch ${S.room.hints ? '' : 'on'}" data-act="setHints" data-val="0">Disattivati</button></div>` : ''}`);
+  }
+
+  function turnTimeHTML(cur) {
+    return `<div class="row">${[[0, 'Nessun limite'], [30, '30 s'], [60, '60 s'], [90, '90 s']]
+      .map(([v, l]) => `<button class="swatch ${Number(cur || 0) === v ? 'on' : ''}" data-act="turnTime" data-val="${v}">${l}</button>`).join('')}</div>`;
   }
 
   function botSpeedHTML(cur) {
@@ -473,6 +482,8 @@
         <div class="row"><button class="btn small" data-act="music">🎵 Musica del tavolo${r.music ? ' (attiva)' : ''}</button></div>
         <div class="row" style="margin-top:8px"><button class="btn small" data-act="roomRules">📜 Leggi le regole</button>
         ${isHost ? '<button class="btn small" data-act="editRules">✏️ Modifica regole</button>' : ''}</div>
+        ${isHost ? `<h2 style="margin-top:14px">Tempo per turno</h2>${turnTimeHTML(r.turnTime)}
+          <p class="muted small">Allo scadere il gioco pesca e scarta al posto del giocatore.</p>` : ''}
         ${isHost ? `<h2 style="margin-top:14px">Velocità del computer</h2>${botSpeedHTML(r.botSpeed)}` : ''}
       </div>
     </div>`;
@@ -586,7 +597,7 @@
       <div class="sinfo"><b>${esc(p.name)}</b>
         <span class="smeta">${partner ? 'compagno · ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` · ${g.cfg.pozzettoName} ✓` : ''}</span></div>
       <div class="minifan">${fan}</div>
-      ${turn ? '<span class="thinking"><i></i><i></i><i></i></span>' : ''}
+      ${turn ? (S.turnEnd ? '<span class="thinking cdchip" data-cd></span>' : '<span class="thinking"><i></i><i></i><i></i></span>') : ''}
     </div>`;
   }
 
@@ -670,7 +681,7 @@
       <div class="ticker" title="Ultima mossa">${esc(lastMove(g))}</div>
       <div class="felt" id="felt">${others}${center}${mineZone}</div>
       <div class="statusbar ${myTurn ? 'on' : ''}">
-        <span class="msg">${statusText(g)}</span>
+        <span class="msg">${S.turnEnd && g.phase !== 'handEnd' && myTurn ? '<b class="cd" data-cd></b> ' : ''}${statusText(g)}</span>
         <div class="btns">${actions}</div>
       </div>
       <div class="handwrap" data-drop="hand"><div class="hand" id="hand">${handHTML(g)}</div></div>
@@ -809,7 +820,8 @@
     let footer;
     if (g.over) {
       footer = `<div class="winner">🏆 Vince ${esc(g.winners.map((s) => (s === g.you ? 'Tu' : g.players[s].name)).join(' & '))}!</div>
-        ${S.room.isHost ? '<button class="btn primary big" data-act="ready" style="width:100%">Nuova partita con le stesse regole</button>' : '<p class="muted">L\'host può avviare una nuova partita.</p>'}`;
+        <button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Rivincita: hai votato ✓' : '🔁 Rivincita'}</button>
+        ${imReady && waiting.length ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : '<p class="muted">Stessi posti, stesse regole: si riparte quando tutti premono Rivincita.</p>'}`;
     } else {
       footer = `<button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Pronto ✓' : 'Prossima smazzata'}</button>
         ${waiting.length && imReady ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : ''}`;
@@ -1020,6 +1032,7 @@
     },
     music() { musicModal(); render(); },
     musicStop() { emit('setMusic', { url: '' }).then(() => musicModal()); },
+    turnTime(el) { emit('setTurnTime', { seconds: Number(el.dataset.val) }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     setHints(el) { emit('setHints', { on: el.dataset.val === '1' }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     botSpeed(el) { emit('setBotSpeed', { speed: el.dataset.val }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
   };
@@ -1282,6 +1295,21 @@
     if (e.key === 'Escape' && S.modalKind) closeModal();
     if (e.key === 'Enter' && e.target.id === 'joinCode') handlers.join();
   });
+
+  setInterval(() => {
+    if (!S.turnEnd) return;
+    const left = Math.max(0, Math.ceil((S.turnEnd - Date.now()) / 1000));
+    for (const el of $$('[data-cd]')) {
+      el.textContent = `⏱ ${left}s`;
+      el.classList.toggle('low', left <= 10);
+    }
+    const g = S.game;
+    if (g && g.turn === g.you && left <= 10 && left > 0 && !S.warned10) {
+      S.warned10 = true;
+      if (navigator.vibrate) navigator.vibrate([80, 60, 80]);
+      Sound.play('turn');
+    }
+  }, 500);
 
   let resizeTimer = null;
   window.addEventListener('resize', () => {

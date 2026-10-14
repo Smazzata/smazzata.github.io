@@ -11,6 +11,8 @@ const Rules = require('../shared/rules');
 
 const PORT = process.env.PORT || 3000;
 const BOT_DELAY = Number(process.env.BOT_DELAY || 700);
+// solo per i test automatici: accelera il timer del turno (es. 0.02 = 50 volte più veloce)
+const TIMER_SCALE = Number(process.env.TIMER_SCALE || 1);
 const BOT_SPEEDS = { lenta: BOT_DELAY * 1.9, normale: BOT_DELAY, veloce: BOT_DELAY * 0.45 };
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
 const DATA_FILE = path.join(DATA_DIR, 'stato.json');
@@ -51,6 +53,8 @@ function roomInfo(room) {
     started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
     hints: !!room.hints && humanCount(room) <= 1, humans: humanCount(room),
     music: room.music || null,
+    turnTime: room.turnTime || 0,
+    turnLeft: room.turnDeadline ? Math.max(0, room.turnDeadline - Date.now()) : null,
   };
 }
 
@@ -64,6 +68,7 @@ function isConnected(token) {
 }
 
 function broadcast(room) {
+  scheduleTurnTimer(room);
   for (const s of io.sockets.sockets.values()) {
     if (s.data.room !== room.code) continue;
     const seat = seatOfToken(room, s.data.token);
@@ -74,6 +79,37 @@ function broadcast(room) {
   }
   scheduleBot(room);
   scheduleSave();
+}
+
+/* ---------- Timer del turno: allo scadere si pesca e si scarta in automatico ---------- */
+function turnTimerKey(room) {
+  const g = room.game;
+  if (!g || g.phase === 'handEnd' || !room.turnTime) return null;
+  const s = room.seats[g.turn];
+  if (!s || s.isBot) return null;
+  return `${g.handNo}:${g.turn}:${room.turnCounter || 0}`;
+}
+
+function scheduleTurnTimer(room) {
+  const key = turnTimerKey(room);
+  if (key === room.timerKey) return;
+  clearTimeout(room.turnTimerHandle);
+  room.timerKey = key;
+  room.turnDeadline = key ? Date.now() + room.turnTime * 1000 * TIMER_SCALE : null;
+  if (!key) return;
+  room.turnTimerHandle = setTimeout(() => autoPlay(room, key), room.turnTime * 1000 * TIMER_SCALE);
+}
+
+function autoPlay(room, key) {
+  const g = room.game;
+  if (!g || turnTimerKey(room) !== key) return;
+  const seat = g.turn;
+  const memo = { noMeld: true }; // niente calate automatiche: solo pesca e scarto
+  E.note(g, `⏱ Tempo scaduto per ${g.players[seat].name}: pesca e scarta in automatico`);
+  for (let i = 0; i < 6 && g.turn === seat && g.phase !== 'handEnd'; i++) {
+    try { E.apply(g, seat, Bot.nextAction(g, seat, memo)); } catch (e) { console.error('Turno automatico:', e.message); break; }
+  }
+  afterAction(room);
 }
 
 function scheduleBot(room) {
@@ -159,9 +195,9 @@ function joinRoom(socket, room) {
   const sess = sessions.get(token);
   let seat = seatOfToken(room, token);
   if (seat < 0) {
-    if (room.game) throw new Error('La partita è già iniziata');
+    if (room.game) throw new E.GameError('La partita è già iniziata');
     seat = room.seats.findIndex((s) => !s);
-    if (seat < 0) throw new Error('Il tavolo è pieno');
+    if (seat < 0) throw new E.GameError('Il tavolo è pieno');
     room.seats[seat] = { token, name: sess.name };
   }
   if (socket.data.room && socket.data.room !== room.code) leaveRoom(socket);
@@ -173,12 +209,12 @@ function joinRoom(socket, room) {
 
 function getRoom(socket) {
   const room = rooms.get(socket.data.room);
-  if (!room) throw new Error('Non sei in nessun tavolo');
+  if (!room) throw new E.GameError('Non sei in nessun tavolo');
   return room;
 }
 
 function requireHost(socket, room) {
-  if (room.hostToken !== socket.data.token) throw new Error('Solo chi ha creato il tavolo può farlo');
+  if (room.hostToken !== socket.data.token) throw new E.GameError('Solo chi ha creato il tavolo può farlo');
 }
 
 function cleanName(n) {
@@ -217,7 +253,7 @@ io.on('connection', (socket) => {
 
   socket.on('setName', handler(({ name }) => {
     const sess = sessions.get(socket.data.token);
-    if (!sess) throw new Error('Sessione non valida');
+    if (!sess) throw new E.GameError('Sessione non valida');
     sess.name = cleanName(name);
     const room = rooms.get(socket.data.room);
     if (room) {
@@ -247,7 +283,7 @@ io.on('connection', (socket) => {
 
   socket.on('joinRoom', handler(({ code }) => {
     const room = rooms.get(String(code || '').toUpperCase().trim());
-    if (!room) throw new Error('Tavolo non trovato');
+    if (!room) throw new E.GameError('Tavolo non trovato');
     joinRoom(socket, room);
   }));
 
@@ -258,8 +294,8 @@ io.on('connection', (socket) => {
 
   socket.on('sit', handler(({ seat }) => {
     const room = getRoom(socket);
-    if (room.game) throw new Error('Partita già iniziata');
-    if (room.seats[seat]) throw new Error('Posto occupato');
+    if (room.game) throw new E.GameError('Partita già iniziata');
+    if (room.seats[seat]) throw new E.GameError('Posto occupato');
     const cur = seatOfToken(room, socket.data.token);
     room.seats[seat] = room.seats[cur];
     room.seats[cur] = null;
@@ -269,9 +305,9 @@ io.on('connection', (socket) => {
   socket.on('addBot', handler(({ seat }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
-    if (room.game) throw new Error('Partita già iniziata');
+    if (room.game) throw new E.GameError('Partita già iniziata');
     if (seat === undefined) { fillBots(room); } else {
-      if (room.seats[seat]) throw new Error('Posto occupato');
+      if (room.seats[seat]) throw new E.GameError('Posto occupato');
       room.seats[seat] = { isBot: true, name: botName(room) };
     }
     broadcast(room);
@@ -280,8 +316,8 @@ io.on('connection', (socket) => {
   socket.on('removeSeat', handler(({ seat }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
-    if (room.game) throw new Error('Partita già iniziata');
-    if (!room.seats[seat] || !room.seats[seat].isBot) throw new Error('Puoi togliere solo i bot');
+    if (room.game) throw new E.GameError('Partita già iniziata');
+    if (!room.seats[seat] || !room.seats[seat].isBot) throw new E.GameError('Puoi togliere solo i bot');
     room.seats[seat] = null;
     broadcast(room);
   }));
@@ -289,11 +325,11 @@ io.on('connection', (socket) => {
   socket.on('configure', handler(({ rules }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
-    if (room.game) throw new Error('Partita già iniziata');
+    if (room.game) throw new E.GameError('Partita già iniziata');
     const r = Rules.normalize(rules);
     const n = r.players;
     const people = room.seats.filter(Boolean);
-    if (people.filter((s) => !s.isBot).length > n) throw new Error('Troppi giocatori al tavolo per questa variante');
+    if (people.filter((s) => !s.isBot).length > n) throw new E.GameError('Troppi giocatori al tavolo per questa variante');
     const humans = people.filter((s) => !s.isBot);
     const bots = people.filter((s) => s.isBot);
     room.seats = Array(n).fill(null);
@@ -305,14 +341,14 @@ io.on('connection', (socket) => {
   socket.on('start', handler(() => {
     const room = getRoom(socket);
     requireHost(socket, room);
-    if (room.game) throw new Error('Partita già iniziata');
-    if (room.seats.some((s) => !s)) throw new Error('Ci sono posti liberi: aspetta altri giocatori o aggiungi dei bot');
+    if (room.game) throw new E.GameError('Partita già iniziata');
+    if (room.seats.some((s) => !s)) throw new E.GameError('Ci sono posti liberi: aspetta altri giocatori o aggiungi dei bot');
     startGame(room);
   }));
 
   socket.on('action', handler((action) => {
     const room = getRoom(socket);
-    if (!room.game) throw new Error('Partita non iniziata');
+    if (!room.game) throw new E.GameError('Partita non iniziata');
     const seat = seatOfToken(room, socket.data.token);
     E.apply(room.game, seat, action);
     afterAction(room);
@@ -322,8 +358,8 @@ io.on('connection', (socket) => {
     const room = getRoom(socket);
     const g = room.game;
     const seat = seatOfToken(room, socket.data.token);
-    if (humanCount(room) > 1 || !room.hints) throw new Error('I suggerimenti sono disponibili solo giocando da soli contro il computer');
-    if (!g || g.turn !== seat || g.phase === 'handEnd') throw new Error('Il suggerimento è disponibile solo nel tuo turno');
+    if (humanCount(room) > 1 || !room.hints) throw new E.GameError('I suggerimenti sono disponibili solo giocando da soli contro il computer');
+    if (!g || g.turn !== seat || g.phase === 'handEnd') throw new E.GameError('Il suggerimento è disponibile solo nel tuo turno');
     const hint = Bot.nextAction(JSON.parse(JSON.stringify(g)), seat, {});
     return { hint };
   }));
@@ -335,19 +371,29 @@ io.on('connection', (socket) => {
     if (!url) { room.music = null; broadcast(room); return; }
     const u = String(url).trim().slice(0, 300);
     let parsed;
-    try { parsed = new URL(u); } catch (e) { throw new Error('Link non valido'); }
+    try { parsed = new URL(u); } catch (e) { throw new E.GameError('Link non valido'); }
     if (parsed.protocol !== 'https:' || !/(^|\.)(spotify\.com|spotify\.link)$/.test(parsed.hostname)) {
-      throw new Error('Incolla un link di Spotify (Jam, playlist, album o brano)');
+      throw new E.GameError('Incolla un link di Spotify (Jam, playlist, album o brano)');
     }
     const seat = seatOfToken(room, socket.data.token);
     room.music = { url: parsed.href, by: seat >= 0 ? room.seats[seat].name : 'Host', at: Date.now() };
     broadcast(room);
   }));
 
+  socket.on('setTurnTime', handler(({ seconds }) => {
+    const room = getRoom(socket);
+    requireHost(socket, room);
+    const sec = Number(seconds);
+    if (![0, 30, 60, 90].includes(sec)) throw new E.GameError('Tempo non valido');
+    room.turnTime = sec;
+    room.timerKey = undefined; // riparte il conteggio con il nuovo tempo
+    broadcast(room);
+  }));
+
   socket.on('setHints', handler(({ on }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
-    if (humanCount(room) > 1) throw new Error('In multiplayer i suggerimenti non sono disponibili');
+    if (humanCount(room) > 1) throw new E.GameError('In multiplayer i suggerimenti non sono disponibili');
     room.hints = !!on;
     broadcast(room);
   }));
@@ -355,7 +401,7 @@ io.on('connection', (socket) => {
   socket.on('setBotSpeed', handler(({ speed }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
-    if (!BOT_SPEEDS[speed]) throw new Error('Velocità non valida');
+    if (!BOT_SPEEDS[speed]) throw new E.GameError('Velocità non valida');
     room.botSpeed = speed;
     broadcast(room);
   }));
@@ -363,15 +409,16 @@ io.on('connection', (socket) => {
   socket.on('ready', handler(() => {
     const room = getRoom(socket);
     const g = room.game;
-    if (!g || g.phase !== 'handEnd') throw new Error('Nessuna smazzata da chiudere');
+    if (!g || g.phase !== 'handEnd') throw new E.GameError('Nessuna smazzata da chiudere');
     const seat = seatOfToken(room, socket.data.token);
-    if (g.over) {
-      requireHost(socket, room);
-      startGame(room);
-      return;
-    }
     room.ready.add(seat);
     const humans = room.seats.map((s, i) => (s && !s.isBot ? i : -1)).filter((i) => i >= 0);
+    // a fine partita "pronto" vale come voto per la rivincita: si riparte quando tutti hanno votato
+    if (g.over) {
+      if (humans.every((i) => room.ready.has(i))) startGame(room);
+      else broadcast(room);
+      return;
+    }
     if (humans.every((i) => room.ready.has(i))) {
       E.nextHand(g);
       room.ready = new Set();
@@ -448,7 +495,7 @@ function saveNow() {
       sessions: [...sessions],
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
-        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, music: r.music,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, music: r.music, turnTime: r.turnTime,
       })),
     };
     fs.mkdirSync(DATA_DIR, { recursive: true });
