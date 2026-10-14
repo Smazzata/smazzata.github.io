@@ -122,7 +122,8 @@ pre{white-space:pre-wrap;font-size:12px;margin:4px 0;color:#ffd7d7}.m{color:#bcd
 <span class="k">CPU<b>${d.cpu_percento}%</b></span><span class="k">Ritardo (99%)<b>${d.ritardo_ms.p99} ms</b></span></div>
 <div class="box"><b>Tavoli</b>${d.tavoli.length ? `<table><tr><th>Codice</th><th>Fase</th><th>Giocatori</th><th>Regole</th></tr>${d.tavoli.map((t) => `<tr><td>${esc(t.codice)}</td><td>${esc(t.fase)}</td><td>${t.giocatori.map(esc).join(', ')}</td><td>${esc(t.regole)}</td></tr>`).join('')}</table>` : '<p class="m">Nessun tavolo aperto.</p>'}</div>
 <div class="box"><b>Segnalazioni dei giocatori</b>${d.segnalazioni.length ? d.segnalazioni.map((r) => `<div style="border-bottom:1px solid rgba(255,255,255,.15);padding:6px 0">
-<b>${esc(r.nick)}</b> <span class="m">${esc(r.quando)} · ${esc(r.screen)}${r.table ? ` · tavolo ${esc(r.table.code)} (${esc(r.table.rules)})` : ''}</span><br>${esc(r.text)}
+${r.kind === 'player' ? `<span style="color:#ffb4a8">⚠️ <b>${esc(r.nick)}</b> segnala <b>${esc(r.target)}</b>: ${esc(r.reason)}</span><br>` : ''}<b>${esc(r.nick)}</b> <span class="m">${esc(r.quando)} · ${esc(r.screen)}${r.table ? ` · tavolo ${esc(r.table.code)} (${esc(r.table.rules)})` : ''}</span><br>${esc(r.text)}
+${r.chat && r.chat.length ? `<pre style="color:#ffe">${r.chat.map(esc).join('\n')}</pre>` : ''}
 ${r.table && r.table.game ? `<pre style="color:#cfe">smazzata ${r.table.game.hand} · fase ${esc(r.table.game.phase)} · turno ${r.table.game.turn} · posto ${r.table.seat} · tallone ${r.table.game.stock} · scarti ${r.table.game.discard} · carte in mano ${r.table.game.myCards}
 ${r.table.game.log.map(esc).join('\n')}</pre>` : ''}<span class="m">${esc(r.device)}</span></div>`).join('') : '<p class="m">Nessuna segnalazione.</p>'}</div>
 <div class="box"><b>Ultimi errori</b>${d.errori.length ? d.errori.map((e) => `<pre>${esc(e.quando)} — ${esc(e.testo)}</pre>`).join('') : '<p class="m">Nessun errore 🎉</p>'}</div>
@@ -1219,6 +1220,30 @@ io.on('connection', (socket) => {
   }));
 
   // Segnala un problema: testo dell'utente + situazione del tavolo (senza le carte degli altri)
+  // Segnala un giocatore (offese, comportamento scorretto…): arriva nella pagina di stato con la chat del tavolo
+  const REPORT_REASONS = { offese: 'Offese o linguaggio inappropriato', scorretto: 'Comportamento scorretto', nick: 'Nickname inappropriato', altro: 'Altro' };
+  socket.on('reportPlayer', handler(({ nick, reason, text }) => {
+    const me = sessions.get(socket.data.token) || {};
+    if (!me.nick) throw new E.GameError('Scegli prima il tuo nickname');
+    const target = String(nick || '').trim();
+    const other = [...sessions.values()].find((x) => x.nick && x.nick.toLowerCase() === target.toLowerCase());
+    if (!other || other === me) throw new E.GameError('Giocatore non trovato');
+    if (!REPORT_REASONS[reason]) throw new E.GameError('Scegli il motivo della segnalazione');
+    const now = Date.now();
+    if (socket.data.lastReport && now - socket.data.lastReport < 60000) throw new E.GameError('Hai già inviato una segnalazione: riprova tra un minuto');
+    socket.data.lastReport = now;
+    const room = rooms.get(socket.data.room);
+    reports.unshift({
+      at: now, kind: 'player', nick: me.nick, target: other.nick, reason: REPORT_REASONS[reason],
+      text: String(text || '').trim().slice(0, 500), screen: 'giocatore', device: '',
+      chat: room && room.chatLog ? room.chatLog.slice(-15).map((m) => `${m.name}: ${m.text}`) : [],
+      table: room ? { code: room.code, rules: Games.of(room).presetOf(room.rules) || 'personalizzate', seat: seatOfToken(room, socket.data.token), game: null } : null,
+    });
+    reports = reports.slice(0, 100);
+    scheduleSave();
+    return {};
+  }));
+
   socket.on('report', handler(({ text, screen, device }) => {
     const t = String(text || '').trim().slice(0, 1000);
     if (t.length < 5) throw new E.GameError('Descrivi il problema in qualche parola');
@@ -1264,6 +1289,8 @@ io.on('connection', (socket) => {
     if (!t) return;
     const seat = seatOfToken(room, socket.data.token);
     const name = seat >= 0 ? room.seats[seat].name : 'Ospite';
+    // ultimi messaggi solo in memoria (mai salvati): servono se qualcuno segnala un giocatore
+    room.chatLog = [...(room.chatLog || []), { at: Date.now(), name, text: t }].slice(-30);
     io.to(room.code).emit('chat', { name, text: t, seat });
   }));
 

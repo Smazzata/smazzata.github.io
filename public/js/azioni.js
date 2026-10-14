@@ -144,6 +144,20 @@
     roomRules() { rulesModal(S.room.rules); },
     daily() { if (!requireName()) return; dailyModal(); },
     replay() { openReplay(); },
+    playerMenu(el) { playerMenu(el.dataset.nick); },
+    async addFriendNick(el) {
+      const r = await emit('friendRequest', { nick: el.dataset.nick });
+      if (r.ok) { toast(`Richiesta inviata a ${el.dataset.nick}`); closeModal(); }
+    },
+    reportPlayer(el) {
+      openModal('reportPlayer', `<h2>⚠️ Segnala ${esc(el.dataset.nick)}</h2>
+        <p class="muted small">La segnalazione arriva al gestore insieme agli ultimi messaggi della chat di questo tavolo. Chi segnali non lo saprà.</p>
+        <form id="reportPlayerForm" data-nick="${esc(el.dataset.nick)}">
+          ${[['offese', 'Offese o linguaggio inappropriato'], ['scorretto', 'Comportamento scorretto'], ['nick', 'Nickname inappropriato'], ['altro', 'Altro']]
+            .map(([v, l], i) => `<label class="radio"><input type="radio" name="rpreason" value="${v}" ${i === 0 ? 'checked' : ''}> ${l}</label>`).join('')}
+          <textarea id="rptext" rows="3" maxlength="500" placeholder="Vuoi aggiungere qualcosa? (facoltativo)"></textarea>
+          <div class="row" style="margin-top:8px"><button class="btn primary grow">Invia segnalazione</button></div></form>`);
+    },
     leagues() { leaguesModal(); },
     leagueToggle(el) { leaguesModal(S.leagueOpen === el.dataset.id ? null : el.dataset.id); },
     async leagueAdd(el) {
@@ -310,7 +324,7 @@
         ${t.games ? `<p>${t.games} partite insieme: ${t.asPartners} in coppia (${t.winsTogether} vinte), ${t.games - t.asPartners} da avversari (tu ne hai vinte ${t.winsAgainst}).</p>${historyHTML(t.recent.map((h) => ({ ...h, preset: '', hands: 0 })))}` : '<p class="muted">Non avete ancora finito una partita insieme.</p>'}
         <h3>Statistiche</h3>${r.stats ? byGameHTML(r.byGame, r.stats) : '<p class="muted">Nessuna partita completata.</p>'}
         ${r.trophies && r.trophies.length ? `<h3>🏆 Trofei (${r.trophies.length})</h3><div class="trophyrow">${r.trophies.map((t) => `<span title="${esc(t.name)}">${esc(t.e)}</span>`).join('')}</div>` : ''}
-        ${r.nick !== (S.social && S.social.nick) ? `<button class="btn small danger" style="margin-top:12px" data-act="block" data-nick="${esc(r.nick)}">🚫 Rimuovi e blocca</button>` : ''}</div>`);
+        ${r.nick !== (S.social && S.social.nick) ? `<div class="row" style="margin-top:12px"><button class="btn small danger" data-act="block" data-nick="${esc(r.nick)}">🚫 Rimuovi e blocca</button><button class="btn small" data-act="reportPlayer" data-nick="${esc(r.nick)}">⚠️ Segnala</button></div>` : ''}</div>`);
     },
     async pickAvatar(el) { const r = await emit('setAvatar', { e: el.dataset.e, c: el.dataset.c }); if (r.ok) profileModal(); },
     reactPicker() {

@@ -127,6 +127,20 @@
         <label class="small"><input type="radio" name="lgperiod" value="mese"> Mensile</label><button class="btn small primary grow">Crea</button></div></form></div>`);
   }
 
+  /** Menu di un giocatore (toccando il suo nome al tavolo o in chat): amicizia, blocco, segnalazione */
+  function playerMenu(nick) {
+    if (!nick || !S.social || !S.social.nick || nick === S.social.nick) return;
+    const so = S.social;
+    const isFriend = so.friends.some((f) => f.nick === nick);
+    const pending = so.reqOut.includes(nick);
+    const blocked = (so.blocked || []).includes(nick);
+    openModal('playerMenu', `<h2>${esc(nick)}</h2><div class="leaveopts">
+      ${isFriend ? `<button class="btn" data-act="playerCard" data-nick="${esc(nick)}">👤 Vedi la scheda</button>`
+        : pending ? '<p class="muted">Richiesta di amicizia inviata</p>' : `<button class="btn primary" data-act="addFriendNick" data-nick="${esc(nick)}">👥 Aggiungi agli amici</button>`}
+      ${blocked ? `<button class="btn" data-act="unblock" data-nick="${esc(nick)}">Sblocca</button>` : `<button class="btn" data-act="block" data-nick="${esc(nick)}">🚫 Blocca</button>`}
+      <button class="btn danger" data-act="reportPlayer" data-nick="${esc(nick)}">⚠️ Segnala</button></div>`);
+  }
+
   function friendsModal() {
     const so = S.social || { friends: [], reqIn: [], reqOut: [] };
     const inRoom = S.room && S.room.code;

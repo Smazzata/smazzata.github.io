@@ -750,3 +750,7 @@ body[data-theme="notte"] .rteam .rgrand { color: #8fd3a8; }
 body[data-theme="notte"] .rteam .rgrand.neg { color: #ff9b9b; }
 body[data-theme="notte"] .rteam .rlabel { color: #a5aca8; }
 body[data-theme="notte"] .result tr.grand td { background: #4a3f1e; }
+
+/* segnalazione di un giocatore */
+label.radio { display: block; padding: 6px 2px; font-size: 14px; }
+#reportPlayerForm textarea { width: 100%; margin-top: 6px; }

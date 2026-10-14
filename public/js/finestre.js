@@ -117,7 +117,7 @@
 
   function renderLogModal() {
     const g = S.game;
-    const chat = S.chat.map((m) => `<div class="chat"><b>${esc(m.name)}:</b> ${esc(m.text)}</div>`).join('');
+    const chat = S.chat.map((m) => `<div class="chat"><b ${S.room && m.seat !== S.room.you && m.seat >= 0 ? `data-act="playerMenu" data-nick="${esc(m.name)}" style="cursor:pointer;text-decoration:underline dotted"` : ''}>${esc(m.name)}:</b> ${esc(m.text)}</div>`).join('');
     openModal('log', `<h2>Chat</h2>
       <div class="log" id="chatlog">${chat || '<div class="muted">Nessun messaggio</div>'}</div>
       <form id="chatform" class="row" style="margin:8px 0"><input id="chatin" class="grow" maxlength="140" placeholder="Scrivi un messaggio" autocomplete="off"><button class="btn primary">Invia</button></form>

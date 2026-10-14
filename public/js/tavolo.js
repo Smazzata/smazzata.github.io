@@ -197,7 +197,7 @@
     const off = rs && !rs.isBot && !rs.connected;
     return `<div class="seatchip pos-${pos} ${turn ? 'turn' : ''} ${partner ? 'partner' : ''} ${off ? 'offline' : ''}" data-seat="${seat}">
       ${avatarHTML(p.name, seat, p.isBot, rs && rs.avatar)}
-      <div class="sinfo"><b>${esc(p.name)} ${lvlHTML(rs && rs.level)}</b>
+      <div class="sinfo"><b ${rs && !rs.isBot && !p.isBot ? `data-act="playerMenu" data-nick="${esc(p.name)}"` : ''}>${esc(p.name)} ${lvlHTML(rs && rs.level)}</b>
         <span class="smeta">${p.out ? '❌ eliminato · ' : ''}${off ? '📴 ' : ''}${partner ? '<span title="compagno">🤝</span> ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` <span class="pz-ok" title="${g.cfg.pozzettoName} preso">✓ ${g.cfg.pozzettoName}</span>` : ''}</span></div>
       <div class="minifan">${fan}</div>
       ${turn ? (S.turnEnd ? '<span class="thinking cdchip" data-cd></span>' : '<span class="thinking"><i></i><i></i><i></i></span>') : ''}
