@@ -30,6 +30,14 @@ const LIST = [
   { id: 's40_apertura', e: '⚡', name: 'Apertura lampo', desc: 'Scala 40: apri al tuo primo turno' },
   { id: 's40_mano', e: '🎩', name: 'Chiusura in mano', desc: 'Scala 40: apri e chiudi nello stesso turno' },
   { id: 's40_jolly', e: '🃏', name: 'Ladro di jolly', desc: 'Scala 40: prendi un jolly dal tavolo' },
+  { id: 'can_vittoria', e: '🎴', name: 'Prima Canasta', desc: 'Vinci una partita di Canasta' },
+  { id: 'can_pulita', e: '💎', name: 'Canasta pulita', desc: 'Canasta: completa una canasta senza matte' },
+  { id: 'can_rossi', e: '🔴', name: 'Quattro tre rossi', desc: 'Canasta: metti in tavola tutti e quattro i tre rossi' },
+  { id: 'sc_vittoria', e: '🧹', name: 'Prima Scopa', desc: 'Vinci una partita di Scopa' },
+  { id: 'sc_scope3', e: '💨', name: 'Spazzino', desc: 'Scopa: fai almeno 3 scope nella stessa smazzata' },
+  { id: 'sc_cappotto', e: '🎯', name: 'Tutto mio', desc: 'Scopa: prendi carte, denari, settebello e primiera nella stessa smazzata' },
+  { id: 'br_vittoria', e: '🍷', name: 'Prima Briscola', desc: 'Vinci una partita di Briscola' },
+  { id: 'br_cento', e: '💪', name: 'Briscola da cento', desc: 'Briscola: fai almeno 100 punti in una smazzata' },
   { id: 'torneo', e: '🎖️', name: 'Campione di torneo', desc: 'Vinci un torneo a eliminazione' },
   { id: 'diplomato', e: '🎓', name: 'Diplomato', desc: 'Finisci la partita di allenamento' },
 ];
@@ -40,9 +48,21 @@ function fromStats(e) {
   return LIST.filter((t) => t.stat && (e[t.stat] || 0) >= t.goal).map((t) => t.id);
 }
 
-/** Trofei di una smazzata appena finita (mine = risultato della mia squadra) */
-function fromHand(mine) {
+/** Trofei di una smazzata appena finita (mine = risultato della mia squadra), secondo il gioco */
+function fromHand(mine, gid = 'burraco') {
   const out = [];
+  if (gid === 'canasta') {
+    if (mine.burraco.some((b) => b.kind === 'clean')) out.push('can_pulita');
+    if (mine.pozPts >= 800) out.push('can_rossi');
+    return out;
+  }
+  if (gid === 'scopa') {
+    const d = mine.detail || {};
+    if (d.scope >= 3) out.push('sc_scope3');
+    if (d.carte && d.denari && d.settebello && d.primiera) out.push('sc_cappotto');
+    return out;
+  }
+  if (gid === 'briscola') return mine.points >= 100 ? ['br_cento'] : [];
   const kinds = mine.burraco.map((b) => b.kind);
   if (kinds.includes('clean') || kinds.includes('real13') || kinds.includes('real14')) out.push('pulito');
   if (kinds.length >= 3) out.push('tris_burraco');
@@ -77,6 +97,8 @@ function fromGame(g, seat, ctx) {
   const rivals = g.players.filter((p) => !g.teams[myTeamIdx].members.includes(p.seat)).map((p) => g.scores[p.seat]);
   if (rivals.length && rivals.every((s) => myScore - s >= 1000)) out.push('schiacciante');
   if (ctx.allBotsDifficile) out.push('difficile');
+  const first = { scala40: 's40_vittoria', canasta: 'can_vittoria', scopa: 'sc_vittoria', briscola: 'br_vittoria' }[ctx.gid];
+  if (first) out.push(first);
   return out;
 }
 

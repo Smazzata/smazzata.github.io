@@ -327,7 +327,14 @@ const step = (t) => console.log('✓ ' + t);
     const t4 = await T4.until((st) => st.game, 'allenamento di Scala 40');
     assert(t4.room.tutorial && t4.room.game === 'scala40' && t4.room.n === 2 && t4.room.hints, 'allenamento di Scala 40');
     T4.sock.close();
-    step('allenamento (Burraco e Scala 40): 2 giocatori, computer facile, suggerimenti attivi');
+    for (const gm of ['canasta', 'scopa', 'briscola']) {
+      const Tx = player('Allievo ' + gm); await Tx.hello(); assert((await Tx.call('setNick', { nick: 'Allievo_' + gm })).ok);
+      assert((await Tx.call('createRoom', { tutorial: true, rules: { game: gm } })).ok);
+      const tx = await Tx.until((st) => st.game, 'allenamento di ' + gm);
+      assert(tx.room.tutorial && tx.room.game === gm && tx.room.n === 2, 'allenamento di ' + gm);
+      Tx.sock.close();
+    }
+    step('allenamento (tutti i giochi): 2 giocatori, computer facile, suggerimenti attivi');
 
     // sfida del giorno: un tentativo, stesse carte per tutti, punteggio in classifica, niente rivincita
     const Dd = player('Dora'); await Dd.hello(); assert((await Dd.call('setNick', { nick: 'Dora' })).ok);
@@ -342,7 +349,9 @@ const step = (t) => console.log('✓ ' + t);
     while (!(Dd.state.game && Dd.state.game.over)) {
       if (Date.now() > endD) throw new Error('la sfida non finisce');
       const g = Dd.state.game;
-      if (g.turn === g.you && g.phase === 'draw') await Dd.call('action', { type: 'draw' });
+      // la variante cambia ogni giorno: nei giochi di presa si gioca una carta, negli altri si pesca e si scarta
+      if (g.turn === g.you && g.presa) await Dd.call('action', { type: 'play', cardId: g.hand[0].id });
+      else if (g.turn === g.you && g.phase === 'draw') await Dd.call('action', { type: 'draw' });
       else if (g.turn === g.you && g.phase === 'play') {
         for (const c of g.hand.slice().reverse()) if ((await Dd.call('action', { type: 'discard', cardId: c.id })).ok) break;
       }

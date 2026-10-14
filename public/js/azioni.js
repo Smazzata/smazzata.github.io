@@ -338,8 +338,8 @@
       const r = await emit('joinRoom', { code });
       if (!r.ok) render();
     },
-    tutStep(el) { tutorialModal(Number(el.dataset.i)); },
-    practice(el) { if (!requireName()) return; closeModal(); emit('createRoom', { tutorial: true, rules: el && el.dataset.game === 'scala40' ? { game: 'scala40' } : undefined }); },
+    tutStep(el) { tutorialModal(Number(el.dataset.i), el.dataset.game); },
+    practice(el) { if (!requireName()) return; closeModal(); emit('createRoom', { tutorial: true, rules: el && el.dataset.game && el.dataset.game !== 'burraco' ? { game: el.dataset.game } : undefined }); },
     coachOff() { S.coachOff = true; render(); },
     quickMenu() {
       if (!requireName()) return;

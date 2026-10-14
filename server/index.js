@@ -538,7 +538,7 @@ function recordLeaderboard(room) {
     if (room.recordedHand !== handKey) {
       const mine = hr.teams.find((t) => t.members.includes(seat));
       if (mine && hr.reason !== 'surrender') {
-        won.push(...(gid === 'scala40' ? Trophies.fromScala40(g.lastReplay, hr, seat) : Trophies.fromHand(mine)));
+        won.push(...(gid === 'scala40' ? Trophies.fromScala40(g.lastReplay, hr, seat) : Trophies.fromHand(mine, gid)));
         const handWon = mine.total === Math.max(...hr.teams.map((t) => t.total));
         for (const x of [e, gs]) {
           x.hands++;
@@ -554,12 +554,11 @@ function recordLeaderboard(room) {
       const myTeam = g.teams.find((t) => t.members.includes(seat));
       const friends = (sessions.get(s.token) || {}).friends || [];
       won.push(...Trophies.fromGame(g, seat, {
-        tutorial: !!room.tutorial,
+        tutorial: !!room.tutorial, gid,
         withFriend: room.seats.some((o) => o && !o.isBot && o.token !== s.token && friends.includes(o.token)),
         allBotsDifficile: ['difficile', 'esperto'].includes(room.botLevel) && room.seats.every((o, i) => myTeam.members.includes(i) || (o && o.isBot)),
       }));
       if (room.series && room.series.champion && room.series.champion.includes(seat)) won.push('campione');
-      if (gid === 'scala40' && g.winners.includes(seat)) won.push('s40_vittoria');
       for (const x of [e, gs]) {
         x.games++;
         if (g.winners.includes(seat)) x.wins++;
@@ -614,13 +613,15 @@ function recordDaily(room) {
   room.seats.forEach((s, seat) => {
     if (!s || s.isBot || !s.token) return;
     const mine = hr.teams.find((t) => t.members.includes(seat));
-    board[s.token] = { name: s.name, score: mine.total, at: Date.now() };
+    // Briscola: in classifica i punti delle prese (il totale della smazzata è solo vinta/persa)
+    const score = mine.points != null ? mine.points : mine.total;
+    board[s.token] = { name: s.name, score, at: Date.now() };
     // trofei: sfida completata, primo in classifica al momento della chiusura
     const e = { ...STATS0, ...(leaderboard.get(s.token) || {}) };
     e.name = e.name || s.name;
     const done = Object.values(board).filter((x) => x.score != null);
     const won = ['sfida'];
-    if (done.length >= 3 && done.every((x) => x.score <= mine.total)) won.push('sfida_primo');
+    if (done.length >= 3 && done.every((x) => x.score <= score)) won.push('sfida_primo');
     e.trophies = { ...(e.trophies || {}) };
     const fresh = won.filter((id) => !e.trophies[id]);
     for (const id of fresh) e.trophies[id] = Date.now();
@@ -867,10 +868,10 @@ io.on('connection', (socket) => {
   }));
 
   socket.on('createRoom', handler(({ rules, vsBots, tutorial }) => {
-    // allenamento: Classico in 2 contro un computer facile e lento, con i suggerimenti
-    // allenamento: Classico in 2 (a 505) oppure Scala 40 in 2, contro un computer facile e lento
+    // allenamento: Classico in 2 (a 505) oppure un altro gioco in 2, contro un computer facile e lento, con i suggerimenti
+    const other = tutorial && rules && Games.idOf(rules) !== 'burraco' ? Games.idOf(rules) : null;
     const r = tutorial
-      ? (rules && rules.game === 'scala40' ? Games.of(rules).normalize({ game: 'scala40', players: 2 }) : Rules.normalize({ ...Rules.PRESETS[0].rules, players: 2, target: 505 }))
+      ? (other ? Games.of(rules).normalize({ game: other, players: 2 }) : Rules.normalize({ ...Rules.PRESETS[0].rules, players: 2, target: 505 }))
       : Games.of(rules).normalize(rules);
     const code = newCode();
     const room = {

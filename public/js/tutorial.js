@@ -25,22 +25,67 @@
        <p>Ora prova una partita di allenamento: il computer gioca piano e il pulsante 💡 ti suggerisce la mossa.</p>` },
   ];
 
-  function tutorialModal(i = 0) {
-    const sl = TUTORIAL[i];
+  const it = (r, s) => italianCardHTML({ id: -300 - r * 4 - 'dcsb'.indexOf(s), r, s }, 'tut', '');
+  /** le lezioni di tutti i giochi (quella del Burraco è TUTORIAL qui sopra) */
+  const LESSONS = {
+    burraco: { name: '🃏 Burraco', slides: TUTORIAL },
+    scala40: { name: '🂡 Scala 40', slides: [
+      { t: 'Lo scopo', h: `<p>Ognuno gioca per sé con due mazzi e i jolly. Si cerca di <b>restare senza carte</b>: quelle che ti restano in mano sono punti di penalità. Chi arriva a <b>101</b> è eliminato; vince l'ultimo rimasto.</p>
+         <div class="tutcards">${mini(5, 'S')}${mini(6, 'S')}${mini(7, 'S')}${mini(8, 'S')}</div>` },
+      { t: 'Aprire', h: `<p>Per calare la prima volta devi <b>aprire</b> con almeno <b>40 punti</b>, anche con più giochi insieme (Asso 11, figure 10, le altre il loro valore).</p>
+         <div class="tutcards">${mini(13, 'H')}${mini(13, 'S')}${mini(13, 'C')}${mini(10, 'D')}${mini(11, 'D')}${mini(12, 'D')}</div><p class="muted small">30 + 30 = 60 punti: puoi aprire.</p>` },
+      { t: 'Il turno', h: `<ol><li><b>Pesca</b> dal tallone (lo scarto si prende solo se lo usi subito).</li><li>Dopo aver aperto puoi <b>attaccare</b> ai giochi di tutti.</li><li><b>Scarta</b> una carta.</li></ol>
+         <p>Se un gioco ha un jolly e tu hai la carta che sostituisce, puoi <b>prenderti il jolly</b>.</p>` },
+    ] },
+    canasta: { name: '🎴 Canasta', slides: [
+      { t: 'Lo scopo', h: `<p>Due mazzi e i jolly. Si calano <b>tris</b> di carte uguali (non scale!) e si cerca di fare <b>canaste</b>: giochi di almeno 7 carte. Pulita (senza matte) <b>+500</b>, sporca <b>+300</b>.</p>
+         <div class="tutcards">${mini(9, 'H')}${mini(9, 'S')}${mini(9, 'D')}${mini(9, 'C')}${mini(9, 'H')}${mini(9, 'S')}${mini(9, 'D')}</div>` },
+      { t: 'Le carte speciali', h: `<p><b>Jolly</b> e <b>2</b> sono matte, ma in un gioco devono essere meno delle carte vere.</p>
+         <p>I <b>3 rossi</b> vanno subito in tavola (+100 l'uno, 800 se li hai tutti e 4); i <b>3 neri</b> scartati bloccano gli scarti.</p>
+         <div class="tutcards">${mini(3, 'H')}${mini(3, 'D')}${cardHTML({ id: -299, r: 0, s: 'J' }, 'tut')}${mini(2, 'C')}</div>` },
+      { t: 'Il turno e la chiusura', h: `<ol><li><b>Pesca</b> dal tallone, oppure prendi <i>tutti</i> gli scarti se usi subito la carta in cima.</li><li><b>Cala</b> e attacca ai tuoi giochi.</li><li><b>Scarta</b> una carta.</li></ol>
+         <p>Il primo gioco deve valere un minimo di punti che cresce col punteggio. Per <b>chiudere</b> serve almeno una canasta.</p>` },
+    ] },
+    scopa: { name: '🧹 Scopa', slides: [
+      { t: 'Lo scopo', h: `<p>Carte italiane da 40. Ricevi 3 carte, in tavola ce ne sono 4. A turno giochi una carta per <b>prendere</b> carte dal tavolo.</p>
+         <div class="tutcards">${it(1, 'd')}${it(7, 'c')}${it(8, 's')}${it(10, 'b')}</div><p class="muted small">Fante 8, Cavallo 9, Re 10.</p>` },
+      { t: 'Prendere', h: `<p>Prendi la carta <b>dello stesso valore</b>, oppure <b>più carte che sommano</b> al valore della tua. Se c'è la carta uguale devi prendere quella.</p>
+         <div class="tutcards">${it(7, 'b')}<span style="align-self:center">➜</span>${it(3, 'c')}${it(4, 's')}</div>
+         <p>Se pulisci il tavolo fai <b>scopa</b>: un punto!</p>` },
+      { t: 'I punti', h: `<p>A fine smazzata: un punto a chi ha più <b>carte</b>, più <b>denari</b>, il <b>settebello</b> e la <b>primiera</b> (i 7 e i 6 contano di più), più le scope.</p>
+         <div class="tutcards">${it(7, 'd')}</div><p class="muted small">Il settebello: tienilo d'occhio!</p>` },
+    ] },
+    briscola: { name: '🍷 Briscola', slides: [
+      { t: 'Lo scopo', h: `<p>Carte italiane da 40, 3 carte a testa. La carta scoperta sotto il mazzo è la <b>briscola</b>: il suo seme batte tutti gli altri. Servono <b>più di 60 punti</b> su 120.</p>
+         <div class="tutcards">${it(1, 'c')}${it(3, 'c')}${it(10, 'c')}${it(9, 'c')}${it(8, 'c')}</div><p class="muted small">Asso 11, Tre 10, Re 4, Cavallo 3, Fante 2; le altre 0.</p>` },
+      { t: 'La presa', h: `<p>Chi apre gioca una carta, l'altro risponde con <b>quella che vuole</b> (non c'è obbligo di seme). Vince la carta più alta del seme di apertura, a meno che qualcuno giochi una <b>briscola</b>.</p>
+         <p>Chi prende pesca per primo e apre il giro dopo.</p>` },
+      { t: 'Consigli', h: `<p>Non sprecare le briscole per prese senza punti; se l'avversario apre con un carico (Asso o Tre) e hai una briscola piccola, prendilo!</p>` },
+    ] },
+  };
+
+  function tutorialModal(i = 0, game) {
+    if (game) S.tutGame = game;
+    const gid = LESSONS[S.tutGame] ? S.tutGame : 'burraco';
+    const slides = LESSONS[gid].slides;
+    const sl = slides[i];
+    const last = i === slides.length - 1;
     openModal('tutorial', `<div class="tutorial">
-      <div class="tutdots">${TUTORIAL.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</div>
+      <div class="row tutgames">${Object.entries(LESSONS).map(([id, l]) => `<button class="swatch ${id === gid ? 'on' : ''}" data-act="tutStep" data-i="0" data-game="${id}">${l.name}</button>`).join('')}</div>
+      <div class="tutdots">${slides.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</div>
       <h2>${i + 1}. ${sl.t}</h2>${sl.h}
       <div class="row" style="margin-top:14px">
         ${i ? `<button class="btn" data-act="tutStep" data-i="${i - 1}">← Indietro</button>` : ''}
-        ${i < TUTORIAL.length - 1 ? `<button class="btn primary grow" data-act="tutStep" data-i="${i + 1}">Avanti →</button>`
-          : '<button class="btn primary grow big" data-act="practice">🎓 Allenamento a Burraco</button>'}
-      </div>${i === TUTORIAL.length - 1 ? `<div class="row" style="margin-top:8px"><button class="btn grow" data-act="practice" data-game="scala40">🂡 Allenamento a Scala 40</button></div>
-        <p class="muted small">La Scala 40: ognuno per sé, apri con almeno 40 punti, poi attacca ai giochi di tutti; chi resta senza carte chiude.</p>` : ''}</div>`);
+        ${!last ? `<button class="btn primary grow" data-act="tutStep" data-i="${i + 1}">Avanti →</button>`
+          : `<button class="btn primary grow big" data-act="practice" data-game="${gid}">🎓 Allenamento a ${LESSONS[gid].name.slice(LESSONS[gid].name.indexOf(' ') + 1)}</button>`}
+      </div></div>`);
   }
 
   /** Consiglio dell'allenatore durante la partita di allenamento */
   function coachTip(g) {
     if (isS40Game()) return coachTipS40(g);
+    if (isPresaGame()) return coachTipPresa(g);
+    if (isCanastaGame()) return coachTipCanasta(g);
     if (g.phase === 'handEnd') return 'Guarda il riepilogo: le carte calate e i burraco danno punti, quelle in mano li tolgono.';
     if (g.turn !== g.you) return 'Ora gioca il computer: osserva cosa cala e cosa scarta.';
     const myTeam = g.teams.find((t) => t.members.includes(g.you));
@@ -50,6 +95,27 @@
     if (sel >= 3) return 'Se la casella ＋ dice "✓ Cala", toccala per calare queste carte.';
     if (sel === 1) return 'Tocca gli scarti per scartare questa carta, oppure un tuo gioco per attaccarla.';
     return 'Cerca 3 carte in scala dello stesso seme o 3 uguali e selezionale. Non sai cosa fare? Tocca 💡.';
+  }
+
+  /** Allenatore di Scopa e Briscola */
+  function coachTipPresa(g) {
+    const scopa = g.game === 'scopa';
+    if (g.phase === 'handEnd') return scopa ? 'Si contano carte, denari, settebello, primiera e scope.' : 'Si contano i punti delle carte prese: servono più di 60.';
+    if (g.turn !== g.you) return 'Ora gioca il computer: guarda cosa sceglie.';
+    if (scopa) return 'Tocca una carta e poi il tavolo: se c\'è una carta uguale o una somma giusta, la prendi. Attento a non lasciare una scopa facile!';
+    return g.trick && g.trick.length ? 'Rispondi: con una carta più alta dello stesso seme o con una briscola prendi; altrimenti gioca una carta senza punti.'
+      : 'Apri il giro con una carta che vale poco: tieni Assi, Tre e briscole per dopo.';
+  }
+
+  /** Allenatore della Canasta */
+  function coachTipCanasta(g) {
+    if (g.phase === 'handEnd') return 'Canaste e carte calate danno punti, le carte in mano li tolgono.';
+    if (g.turn !== g.you) return 'Ora gioca il computer: osserva cosa cala e cosa scarta.';
+    if (g.phase === 'draw') return 'Tocca il tallone per pescare, oppure gli scarti se puoi usare subito la carta in cima.';
+    const sel = S.selected.size;
+    if (sel >= 3) return 'Se la casella ＋ dice "✓ Cala", toccala per calare queste carte.';
+    if (sel === 1) return 'Tocca gli scarti per scartare questa carta, oppure un tuo gioco per attaccarla.';
+    return 'Cerca 3 carte uguali (anche con una matta) e selezionale. Non sai cosa fare? Tocca 💡.';
   }
 
   /** Allenatore della Scala 40 */

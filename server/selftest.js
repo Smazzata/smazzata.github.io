@@ -253,6 +253,27 @@ function leagueTests() {
   console.log('campionati: classifica, stagioni e albo d\'oro OK');
 }
 
+/** Sfida del giorno: ogni variante (tutti i giochi) si gioca fino a fine smazzata, con le stesse carte per tutti */
+function dailyTests() {
+  const Daily = require('./daily');
+  const Games = require('./games');
+  const seen = new Set();
+  for (let d = 0; d < Daily.VARIANTS.length; d++) {
+    const date = new Date(Date.UTC(2026, 0, 1 + d)).toISOString().slice(0, 10);
+    const c = Daily.challenge(date);
+    seen.add(c.title);
+    const G = Games.of(c.rules);
+    const mk = () => G.E.createGame({ rules: c.rules, seed: c.seed, players: [{ name: 'Tu' }, { name: 'PC', isBot: true }] });
+    const g = mk();
+    assert.deepStrictEqual(mk().players[0].hand.map((x) => x.id), g.players[0].hand.map((x) => x.id), 'stesse carte per tutti: ' + c.title);
+    let guard = 0;
+    while (g.phase !== 'handEnd' && guard++ < 5000) { const s = g.turn; G.E.apply(g, s, G.Bot.nextAction(g, s, { level: 'difficile' })); }
+    assert.strictEqual(g.phase, 'handEnd', 'la sfida finisce: ' + c.title);
+  }
+  assert.strictEqual(seen.size, Daily.VARIANTS.length, 'una variante diversa ogni giorno');
+  console.log(`sfida del giorno: ${seen.size} varianti, tutti i giochi OK`);
+}
+
 function trophyTests() {
   const T = require('./trophies');
   const hand = (kinds, total) => ({ burraco: kinds.map((kind) => ({ kind })), total });
@@ -268,6 +289,11 @@ function trophyTests() {
   const got = T.fromGame(g, 0, { allBotsDifficile: true, tutorial: false, withFriend: true });
   assert(got.includes('rimonta') && got.includes('schiacciante') && got.includes('difficile') && got.includes('amici'), 'trofei di fine partita');
   assert.deepStrictEqual(T.fromGame(g, 1, { withFriend: false }), [], 'chi perde non prende trofei di vittoria');
+  // altri giochi: trofei propri, niente trofei del Burraco
+  assert.deepStrictEqual(T.fromHand({ burraco: [{ kind: 'clean' }], pozPts: 800, total: 3000 }, 'canasta').sort(), ['can_pulita', 'can_rossi']);
+  assert.deepStrictEqual(T.fromHand({ burraco: [], detail: { carte: 1, denari: 1, settebello: 1, primiera: 1, scope: 3 }, total: 7 }, 'scopa').sort(), ['sc_cappotto', 'sc_scope3']);
+  assert.deepStrictEqual(T.fromHand({ burraco: [], points: 101, total: 1 }, 'briscola'), ['br_cento']);
+  assert(T.fromGame(g, 0, { gid: 'scopa' }).includes('sc_vittoria') && !T.fromGame(g, 1, { gid: 'scopa' }).includes('sc_vittoria'));
   assert.deepStrictEqual(T.fromStats({ wins: 10, burraco: 0, closures: 1, games: 12 }).sort(), ['chiusura', 'prima_vittoria', 'vittorie_10']);
   // Scala 40: apertura al primo turno, chiusura in mano, jolly rubato (dalla moviola)
   const rp = { actions: [
@@ -371,6 +397,7 @@ function simulate(label, rules, n, games = 3) {
 
 unitTests();
 trophyTests();
+dailyTests();
 leagueTests();
 storeTests();
 scala40Tests();

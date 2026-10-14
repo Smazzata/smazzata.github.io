@@ -3,9 +3,10 @@
  * Sfida del giorno: una smazzata secca contro il computer difficile, con le stesse carte per tutti
  * (mazzo mescolato con un "seme" ricavato dalla data) e una variante di regole che cambia ogni giorno.
  * Un solo tentativo al giorno; i punti della smazzata vanno nella classifica del giorno.
+ * Le varianti girano tra tutti i giochi (Burraco, Scala 40, Canasta, Scopa, Briscola).
  */
 const Rules = require('../shared/rules');
-const S40 = require('../shared/scala40');
+const Games = require('./games');
 
 const VARIANTS = [
   { title: 'Burraco Classico', preset: 'classico' },
@@ -16,6 +17,10 @@ const VARIANTS = [
   { title: 'Buraco Brasiliano Fechado', preset: 'fechado' },
   { title: 'Classico, Asso alto e basso', preset: 'classico', tweak: { aceBothEnds: true } },
   { title: 'Scala 40', game: 'scala40' },
+  { title: 'Canasta', game: 'canasta' },
+  { title: 'Scopa', game: 'scopa' },
+  { title: 'Briscola', game: 'briscola' },
+  { title: 'Scopa, Asso piglia tutto', game: 'scopa', tweak: { aceTakesAll: true } },
 ];
 
 /** Data di oggi in Italia, es. "2026-10-14" */
@@ -33,7 +38,7 @@ function hash(str) {
 function challenge(date = todayKey()) {
   const day = Math.floor(Date.parse(date + 'T12:00:00Z') / 86400000);
   const v = VARIANTS[((day % VARIANTS.length) + VARIANTS.length) % VARIANTS.length];
-  const rules = v.game === 'scala40' ? S40.normalize({ players: 2 })
+  const rules = v.game ? Games.of({ game: v.game }).normalize({ ...(v.tweak || {}), game: v.game, players: 2 })
     : Rules.normalize({ ...Rules.PRESETS.find((p) => p.id === v.preset).rules, ...(v.tweak || {}), players: 2 });
   return { date, title: v.title, rules, seed: hash('burraco-' + date) };
 }
