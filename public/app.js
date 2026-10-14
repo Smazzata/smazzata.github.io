@@ -102,18 +102,32 @@
   applyPrefs();
 
   /* ================= Connessione ================= */
-  const socket = io();
+  // tentativi di ricollegamento ravvicinati (0,3 s → massimo 2 s)
+  const socket = io({ reconnectionDelay: 300, reconnectionDelayMax: 2000, randomizationFactor: 0.3 });
   socket.on('connect', () => {
     if (S.lostConnection) toast('✓ Riconnesso');
     S.lostConnection = false;
     S.connected = true;
     socket.emit('hello', { token: S.token, name: S.name });
   });
-  socket.on('disconnect', () => { S.connected = false; S.lostConnection = true; render(); });
-  // tornando sull'app dopo un periodo in background ci si ricollega subito
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && !socket.connected) socket.connect();
+  socket.on('disconnect', () => {
+    S.connected = false;
+    if (S.silentReconnect) { S.silentReconnect = false; return; } // riconnessione voluta: niente avvisi
+    S.lostConnection = true;
+    render();
   });
+  // Tornando sull'app dopo un periodo in background la vecchia connessione può essere "morta"
+  // senza che il browser se ne accorga: se si è stati via più di qualche secondo se ne apre subito una nuova.
+  let hiddenAt = 0;
+  const freshConnection = () => {
+    if (!socket.connected) { socket.connect(); return; }
+    if (Date.now() - hiddenAt > 4000) { S.silentReconnect = true; socket.disconnect(); socket.connect(); }
+  };
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') hiddenAt = Date.now();
+    else if (hiddenAt) freshConnection();
+  });
+  window.addEventListener('online', () => { if (!socket.connected) socket.connect(); });
   socket.on('welcome', ({ token, name, nick }) => {
     S.token = token;
     store.set('bur_token', token);

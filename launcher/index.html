@@ -77,10 +77,22 @@
       $('retry').classList.remove('hidden');
     }
 
+    const LAST = 'bur_last_server';
+    async function alive(url, ms) {
+      try { const h = await fetch(url + '/health', { cache: 'no-store', signal: withTimeout(ms) }); return h.ok; } catch (e) { return false; }
+    }
+
     async function go() {
       $('retry').classList.add('hidden');
       $('spin').classList.remove('hidden');
       $('msg').textContent = 'Sto cercando il tavolo da gioco…';
+      // prima prova l'ultimo indirizzo che ha funzionato: di solito è ancora quello giusto
+      let last = null;
+      try { last = localStorage.getItem(LAST); } catch (e) { /* niente memoria */ }
+      if (last && await alive(last, 2500)) {
+        location.replace(last + '/' + location.search + location.hash);
+        return;
+      }
       let url;
       try { url = String(await serverUrl()).replace(/\/+$/, ''); }
       catch (e) { return fail('Non trovo l\'indirizzo del server.<br>Controlla la connessione e riprova.'); }
@@ -91,6 +103,7 @@
       } catch (e) {
         return fail('Il server di gioco al momento è <b>spento</b> o si sta riavviando.<br>Riprova tra qualche minuto.');
       }
+      try { localStorage.setItem(LAST, url); } catch (e) { /* niente memoria */ }
       $('msg').textContent = 'Trovato! Entro al tavolo…';
       location.replace(url + '/' + location.search + location.hash);
     }

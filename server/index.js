@@ -122,7 +122,8 @@ app.get('/vendor/qrcode.js', (req, res) => res.sendFile(require.resolve('qrcode-
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/shared', express.static(path.join(__dirname, '..', 'shared')));
 const server = http.createServer(app);
-const io = new Server(server);
+// controlli più frequenti: le connessioni cadute (telefono in tasca, rete persa) si notano in pochi secondi
+const io = new Server(server, { pingInterval: 10000, pingTimeout: 8000 });
 
 /* sessions: token -> { name, room, nick, code, pw, friends, reqIn, reqOut } ; rooms: code -> room */
 const sessions = new Map();
