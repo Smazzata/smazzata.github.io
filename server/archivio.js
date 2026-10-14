@@ -1,0 +1,76 @@
+'use strict';
+/*
+ * Salvataggio: tutto lo stato (profili, classifica, tavoli, gare) va nell'archivio (SQLite o stato.json)
+ * un secondo dopo ogni modifica e alla chiusura; all'avvio si ripristina, partite in corso comprese.
+ */
+const { openStore } = require('./store');
+const { DATA_DIR } = require('./config');
+const ctx = require('./contesto');
+const { sessions, rooms, leaderboard, daily, leagues, tournaments } = ctx;
+// funzioni degli altri moduli (lette dal contesto al momento della chiamata)
+const scheduleBot = (...a) => ctx.scheduleBot(...a);
+
+/* ---------- Salvataggio su file: le partite sopravvivono ai riavvii ---------- */
+let saveTimer = null;
+function scheduleSave() {
+  if (saveTimer) return;
+  saveTimer = setTimeout(() => { saveTimer = null; saveNow(); }, 1000);
+}
+
+function saveNow() {
+  try {
+    const data = {
+      savedAt: Date.now(),
+      sessions: [...sessions],
+      leaderboard: [...leaderboard],
+      reports: ctx.reports,
+      daily: [...daily].map(([d, m]) => [d, m]),
+      leagues: [...leagues.values()],
+      tournaments: [...tournaments.values()],
+      rooms: [...rooms.values()].map((r) => ({
+        code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series, daily: r.daily, seed: r.seed, slow: r.slow, lastActionAt: r.lastActionAt, tournament: r.tournament,
+      })),
+    };
+    store.save(data);
+  } catch (e) {
+    console.error('Salvataggio non riuscito:', e.message);
+  }
+}
+
+// archivio: database SQLite se disponibile, altrimenti stato.json (vedi server/store.js)
+const store = openStore(DATA_DIR);
+
+function loadSaved() {
+  try {
+    const data = store.load();
+    console.log(`Archivio dati: ${store.kind === 'sqlite' ? 'database SQLite (data/burraco.db)' : 'file data/stato.json'}`);
+    if (!data) return;
+    for (const [token, sess] of data.sessions || []) sessions.set(token, sess);
+    for (const [token, e] of data.leaderboard || []) {
+      // prima delle statistiche per gioco si giocava solo a Burraco
+      if (!e.byGame && (e.games || e.hands)) {
+        e.byGame = { burraco: { games: e.games || 0, wins: e.wins || 0, points: e.points || 0, burraco: e.burraco || 0, hands: e.hands || 0, handsWon: e.handsWon || 0, closures: e.closures || 0, bestHand: e.bestHand == null ? null : e.bestHand, handPoints: e.handPoints || 0 } };
+      }
+      leaderboard.set(token, e);
+    }
+    ctx.reports = data.reports || [];
+    for (const [d, m] of data.daily || []) daily.set(d, m);
+    for (const lg of data.leagues || []) leagues.set(lg.id, lg);
+    for (const t of data.tournaments || []) tournaments.set(t.id, t);
+    ctx.social.rebuildIndexes();
+    for (const r of data.rooms || []) {
+      rooms.set(r.code, { ...r, ready: new Set(r.ready || []), botTimer: null, botMemo: {}, botMemoTurn: -1 });
+    }
+    for (const room of rooms.values()) scheduleBot(room);
+    console.log(`Ripristinati ${rooms.size} tavoli salvati`);
+  } catch (e) {
+    console.error('Impossibile leggere il salvataggio:', e.message);
+  }
+}
+
+for (const sig of ['SIGTERM', 'SIGINT']) {
+  process.on(sig, () => { clearTimeout(saveTimer); saveNow(); process.exit(0); });
+}
+
+Object.assign(ctx, { scheduleSave, saveNow, loadSaved });

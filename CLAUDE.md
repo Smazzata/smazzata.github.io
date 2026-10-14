@@ -17,7 +17,10 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 - `server/engine.js` — motore autoritativo, stato JSON puro; `apply()` è transazionale (in caso di errore ripristina). Le giocate NON si annullano; da vulnerabili una calata sotto i 75 punti è rifiutata.
 - `server/bot.js` — computer a quattro livelli (`memo.level`: facile/normale/difficile/esperto; l'esperto ricorda le carte raccolte, `g.known`).
 - `server/social.js` — profili: nickname univoco, codice personale/QR, password facoltativa (scrypt), amici, inviti, eliminazione profilo.
-- `server/index.js` — tavoli, posti, riconnessione via token, chat, musica Spotify, timer del turno, rivincita a voto, classifica; salva tutto in `data/stato.json` (anche ai riavvii); `/health` per la pagina d'ingresso.
+- `server/index.js` — avvio: Express, Socket.IO, collega i moduli. I moduli condividono stato e funzioni tramite `server/contesto.js` (ognuno si registra con `Object.assign(ctx, {...})` e chiama gli altri con piccoli "rimandi" `(...a) => ctx.f(...a)`):
+  `config.js` (impostazioni), `admin.js` (/health, pagina di stato), `tavoli.js` (tavoli, posti, stato ai giocatori, pronto, avvio), `turni.js` (timer, computer, reazioni),
+  `statistiche.js` (classifica, trofei, sfida del giorno), `gare.js` (campionati, tornei), `archivio.js` (salvataggio/ripristino),
+  `messaggi-tavolo.js` e `messaggi-comunita.js` (i messaggi socket dal browser).
 - `public/js/` — interfaccia divisa per sezioni (base, connessione, carte, ui, profilo, tutorial, schermate, tavolo,
   animazioni, finestre, azioni, comandi): file normali caricati in ordine da `index.html` che condividono le stesse
   dichiarazioni. Un file nuovo va aggiunto a `index.html` e ai due service worker (`npm test` lo controlla).
