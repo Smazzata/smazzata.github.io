@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 /*
  * Prova multigiocatore end-to-end: avvia un server di prova, collega due giocatori
  * e verifica le funzioni del tavolo una dopo l'altra.  npm run e2e
@@ -138,6 +138,14 @@ const step = (t) => console.log('✓ ' + t);
     r = await A.call('setHints', { on: true });
     assert(!r.ok && /multiplayer/.test(r.error), 'i suggerimenti non devono attivarsi con due umani');
     step('suggerimenti bloccati in multiplayer');
+
+    // aiuto "dove attaccare": attivo di serie, solo l'host lo cambia, arriva a tutti
+    assert(B.state.room.aids === true, 'aiuti attivi di serie');
+    assert(!(await B.call('setAids', { on: false })).ok, "solo l'host");
+    assert((await A.call('setAids', { on: false })).ok);
+    await B.until((s) => s.room.aids === false, 'aiuti disattivati per tutti');
+    assert((await A.call('setAids', { on: true })).ok);
+    step("aiuto 'dove attaccare' attivabile solo dall'host");
 
     // musica: l'host condivide, l'altro la riceve; link non Spotify rifiutato
     assert(!(await A.call('setMusic', { url: 'https://evil.example/x' })).ok);

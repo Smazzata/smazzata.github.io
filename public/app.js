@@ -475,11 +475,17 @@
       <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
       <h4>Qualcosa non va?</h4><button class="btn small" data-act="report">🐞 Segnala un problema</button>
       ${S.room && S.room.isHost && (!S.game || S.game.over) ? `<h4>Torneo (si imposta tra una partita e l'altra)</h4>${seriesPickHTML(S.room.series && S.room.series.bestOf)}` : ''}
+      ${S.room && S.room.isHost ? `<h4>Aiuto: dove attaccare le carte</h4>${aidsHTML(S.room.aids !== false)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Tempo per turno</h4>${turnTimeHTML(S.room.turnTime)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Bravura del computer</h4>${botLevelHTML(S.room.botLevel)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Velocità del computer</h4>${botSpeedHTML(S.room.botSpeed)}` : ''}
       ${S.room && S.room.isHost && S.room.humans <= 1 ? `<h4>Suggerimenti 💡 (solo contro il computer)</h4>
         <div class="row"><button class="swatch ${S.room.hints ? 'on' : ''}" data-act="setHints" data-val="1">Attivi</button><button class="swatch ${S.room.hints ? '' : 'on'}" data-act="setHints" data-val="0">Disattivati</button></div>` : ''}`);
+  }
+
+  function aidsHTML(on) {
+    return `<div class="row"><button class="swatch ${on ? 'on' : ''}" data-act="setAids" data-val="1">Attivi</button><button class="swatch ${on ? '' : 'on'}" data-act="setAids" data-val="0">Disattivati</button></div>
+      <p class="muted small">Selezionando delle carte si illuminano le combinazioni a cui si possono attaccare e si vede se la nuova calata è valida.</p>`;
   }
 
   function turnTimeHTML(cur) {
@@ -826,6 +832,7 @@
         <div class="row" style="margin-top:8px"><button class="btn small" data-act="roomRules">📜 Leggi le regole</button>
         ${isHost ? '<button class="btn small" data-act="editRules">✏️ Modifica regole</button>' : ''}</div>
         ${isHost ? `<h2 style="margin-top:14px">Torneo</h2>${seriesPickHTML(r.series && r.series.bestOf)}` : r.series ? `<p>🏆 Torneo al meglio di ${r.series.bestOf}</p>` : ''}
+        ${isHost ? `<h2 style="margin-top:14px">Aiuto: dove attaccare le carte</h2>${aidsHTML(r.aids !== false)}` : ''}
         ${isHost ? `<h2 style="margin-top:14px">Tempo per turno</h2>${turnTimeHTML(r.turnTime)}
           <p class="muted small">Allo scadere il gioco pesca e scarta al posto del giocatore.</p>` : ''}
         ${isHost ? `<h2 style="margin-top:14px">Bravura del computer</h2>${botLevelHTML(r.botLevel)}` : ''}
@@ -850,6 +857,7 @@
   function selectionPreview(g, myTeam) {
     const out = { canAdd: new Set(), newMeld: null };
     if (!myTeam || g.turn !== g.you) return out;
+    if (S.room && S.room.aids === false) return out; // aiuti visivi disattivati dall'host
     const sel = orderedHand().filter((c) => S.selected.has(c.id));
     const closedDraw = g.phase === 'draw' && g.cfg.pile === 'closed' && g.discard.length;
     if (g.phase !== 'play' && !closedDraw) return out;
@@ -1705,6 +1713,7 @@
     musicStop() { emit('setMusic', { url: '' }).then(() => musicModal()); },
     botLevel(el) { emit('setBotLevel', { level: el.dataset.val }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     turnTime(el) { emit('setTurnTime', { seconds: Number(el.dataset.val) }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
+    setAids(el) { emit('setAids', { on: el.dataset.val === '1' }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     setHints(el) { emit('setHints', { on: el.dataset.val === '1' }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     botSpeed(el) { emit('setBotSpeed', { speed: el.dataset.val }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
   };

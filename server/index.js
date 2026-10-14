@@ -173,6 +173,7 @@ function roomInfo(room) {
     seats: room.seats.map((s) => (s ? { name: s.name, isBot: !!s.isBot, connected: s.isBot || isConnected(s.token), avatar: s.isBot ? null : s.avatar || null } : null)),
     started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
     hints: !!room.hints && humanCount(room) <= 1, humans: humanCount(room),
+    aids: room.aids !== false,
     music: room.music || null,
     spectators: (room.spectators || []).filter((t) => isConnected(t)).map((t) => (sessions.get(t) || {}).name || 'Ospite'),
     botLevel: room.botLevel || 'normale',
@@ -766,6 +767,14 @@ io.on('connection', (socket) => {
     broadcast(room);
   }));
 
+  // Aiuto visivo "dove attaccare": l'host lo attiva o lo disattiva per tutto il tavolo
+  socket.on('setAids', handler(({ on }) => {
+    const room = getRoom(socket);
+    requireHost(socket, room);
+    room.aids = !!on;
+    broadcast(room);
+  }));
+
   socket.on('setHints', handler(({ on }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
@@ -909,7 +918,7 @@ function saveNow() {
       reports,
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
-        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series,
       })),
     };
     fs.mkdirSync(DATA_DIR, { recursive: true });
