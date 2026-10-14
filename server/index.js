@@ -289,18 +289,27 @@ function scheduleBot(room) {
   }
   const seat = g.turn;
   if (!room.seats[seat] || !room.seats[seat].isBot) return;
+  // memoria del bot valida solo per il turno corrente
+  if (room.botMemoTurn !== room.turnCounter) {
+    room.botMemo = {};
+    room.botMemoTurn = room.turnCounter;
+  }
+  // la mossa si decide subito: il tempo di attesa dipende da cosa sta per fare (come una persona)
+  let planned = null;
+  try {
+    room.botMemo.level = room.botLevel || 'normale';
+    planned = Bot.nextAction(g, seat, room.botMemo);
+  } catch (e) { planned = null; }
+  const base = BOT_SPEEDS[room.botSpeed] || BOT_DELAY;
   room.botTimer = setTimeout(() => {
     room.botTimer = null;
     if (!room.game || room.game !== g || g.turn !== seat || g.phase === 'handEnd') return;
-    // memoria del bot valida solo per il turno corrente
-    if (room.botMemoTurn !== room.turnCounter) {
-      room.botMemo = {};
-      room.botMemoTurn = room.turnCounter;
-    }
+    const before = reactionSnapshot(g);
     try {
       room.botMemo.level = room.botLevel || 'normale';
-      const a = Bot.nextAction(g, seat, room.botMemo);
+      const a = planned && E.isLegal(g, seat, planned) ? planned : Bot.nextAction(g, seat, room.botMemo);
       E.apply(g, seat, a);
+      botReactions(room, seat, before, a);
     } catch (e) {
       console.error('Errore bot:', e.message);
       try {
@@ -313,7 +322,60 @@ function scheduleBot(room) {
       } catch (e2) { console.error('Bot bloccato:', e2.message); }
     }
     afterAction(room);
-  }, BOT_SPEEDS[room.botSpeed] || BOT_DELAY);
+  }, planned ? botThinkMs(g, seat, planned, base) : base);
+}
+
+/** Tempo "di riflessione" del computer: rapido sulle mosse ovvie, più lento su quelle impegnative */
+function botThinkMs(g, seat, a, base) {
+  const r = (lo, hi) => base * (lo + Math.random() * (hi - lo));
+  const handN = g.players[seat].hand.length;
+  switch (a.type) {
+    case 'draw': return r(0.55, 0.9);
+    case 'takePile': return r(0.9, 1.4) + Math.min(g.discard.length, 10) * base * 0.04;
+    case 'meld': return r(0.8, 1.2) + (a.cardIds ? a.cardIds.length : 3) * base * 0.12;
+    case 'add': return r(0.45, 0.8);
+    case 'discard': return handN <= 2 ? r(0.6, 1.0) : r(0.8, 1.5) + (handN >= 10 ? base * 0.2 : 0);
+    default: return r(0.8, 1.2);
+  }
+}
+
+/* ---------- Reazioni del computer (ogni tanto, mai troppe) ---------- */
+const BOT_REACT_GAP = 20000;
+
+function reactionSnapshot(g) {
+  return { burraco: g.teams.map((t) => t.melds.filter((m) => m.length >= 7).length), phase: g.phase };
+}
+
+function botReactions(room, actor, before, action) {
+  const g = room.game;
+  if (!g || room.tutorial || humanCount(room) === 0) return;
+  const now = Date.now();
+  if (room.lastBotReact && now - room.lastBotReact < BOT_REACT_GAP) return;
+  const bots = room.seats.map((s, i) => (s && s.isBot ? i : -1)).filter((i) => i >= 0);
+  if (!bots.length) return;
+  const team = (seat) => g.teams.findIndex((t) => t.members.includes(seat));
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const actorIsBot = bots.includes(actor);
+  const mates = bots.filter((b) => b !== actor && team(b) === team(actor));
+  const rivals = bots.filter((b) => team(b) !== team(actor));
+  let who = null, emoji = null;
+  const newBurraco = before.burraco.length === g.teams.length && g.teams.some((t, i) => t.melds.filter((m) => m.length >= 7).length > before.burraco[i]);
+  if (newBurraco) {
+    if (actorIsBot && Math.random() < 0.35) { who = actor; emoji = pick(['🔥', '😍']); }
+    else if (!actorIsBot && rivals.length && Math.random() < 0.3) { who = pick(rivals); emoji = pick(['😱', '👏']); }
+    else if (!actorIsBot && mates.length && Math.random() < 0.35) { who = pick(mates); emoji = pick(['🔥', '👍']); }
+  } else if (action && action.type === 'takePile' && g.players[actor].hand.length >= 14 && rivals.length && Math.random() < 0.25) {
+    who = pick(rivals); emoji = '😱';
+  } else if (before.phase !== 'handEnd' && g.phase === 'handEnd' && g.handResult) {
+    const best = Math.max(...g.handResult.teams.map((t) => t.total));
+    const winners = bots.filter((b) => g.handResult.teams.some((t) => t.total === best && t.members.includes(b)));
+    const losers = bots.filter((b) => !winners.includes(b));
+    if (winners.length && Math.random() < 0.3) { who = pick(winners); emoji = pick(['🔥', '😂']); }
+    else if (losers.length && Math.random() < 0.25) { who = pick(losers); emoji = pick(['🙏', '😡']); }
+  }
+  if (who == null) return;
+  room.lastBotReact = now;
+  setTimeout(() => io.to(room.code).emit('reaction', { seat: who, emoji }), 500 + Math.random() * 900);
 }
 
 /** A fine partita aggiorna la classifica una sola volta per partita */
@@ -659,7 +721,9 @@ io.on('connection', (socket) => {
     const room = getRoom(socket);
     if (!room.game) throw new E.GameError('Partita non iniziata');
     const seat = seatOfToken(room, socket.data.token);
+    const before = reactionSnapshot(room.game);
     E.apply(room.game, seat, action);
+    botReactions(room, seat, before, action);
     afterAction(room);
   }));
 
