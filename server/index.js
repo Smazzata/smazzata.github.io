@@ -11,6 +11,10 @@ const Trophies = require('./trophies');
 const Coach = require('./coach');
 const Levels = require('./levels');
 const Daily = require('./daily');
+const Games = require('./games');
+/** motore, computer e coach del gioco di questo tavolo */
+const GE = (room) => Games.of(room).E;
+const GBot = (room) => Games.of(room).Bot;
 const createPush = require('./push');
 const createLeagues = require('./leagues');
 const { openStore } = require('./store');
@@ -87,7 +91,7 @@ function statusData() {
     profili: [...sessions.values()].filter((x) => x.nick).length,
     tavoli: [...rooms.values()].map((r) => ({
       codice: r.code,
-      regole: Rules.matchPreset(r.rules) || 'personalizzate',
+      regole: Games.of(r).presetOf(r.rules) || 'personalizzate',
       giocatori: r.seats.map((x) => (x ? `${x.name}${x.isBot ? ' 🤖' : isConnected(x.token) ? ' 🟢' : ' ⚪'}` : '—')),
       fase: !r.game ? 'in attesa' : r.game.over ? 'partita finita' : r.game.phase === 'handEnd' ? `fine smazzata ${r.game.handNo}` : `smazzata ${r.game.handNo}`,
       punteggi: r.game ? r.game.scores : null,
@@ -202,7 +206,7 @@ function seatOfToken(room, token) {
 function roomInfo(room) {
   return {
     code: room.code, host: room.seats.findIndex((s) => s && s.token === room.hostToken),
-    rules: room.rules, n: room.n, preset: Rules.matchPreset(room.rules),
+    rules: room.rules, n: room.n, preset: Games.of(room).presetOf(room.rules), game: Games.idOf(room.rules),
     seats: room.seats.map((s) => (s ? {
       name: s.name, isBot: !!s.isBot, connected: s.isBot || isConnected(s.token), avatar: s.isBot ? null : s.avatar || null,
       level: s.isBot ? null : Levels.levelOf(leaderboard.get(s.token)).level,
@@ -241,7 +245,7 @@ function broadcast(room) {
     const seat = seatOfToken(room, s.data.token);
     s.emit('state', {
       room: { ...roomInfo(room), you: seat, isHost: s.data.token === room.hostToken },
-      game: room.game ? { ...E.viewFor(room.game, seat), coach: room.game.phase === 'handEnd' && room.coachTips ? room.coachTips[seat] || null : null } : null,
+      game: room.game ? { ...GE(room).viewFor(room.game, seat), coach: room.game.phase === 'handEnd' && room.coachTips ? room.coachTips[seat] || null : null } : null,
     });
   }
   scheduleBot(room);
@@ -337,10 +341,10 @@ function playForAbsent(room, key) {
   const seat = g.turn;
   const s = room.seats[seat];
   if (!s || s.isBot || isConnected(s.token)) return;
-  E.note(g, `🤖 ${s.name} è offline: il computer gioca al suo posto`);
+  GE(room).note(g, `🤖 ${s.name} è offline: il computer gioca al suo posto`);
   const memo = { level: 'normale' };
   for (let i = 0; i < 60 && g.turn === seat && g.phase !== 'handEnd'; i++) {
-    try { E.apply(g, seat, Bot.nextAction(g, seat, memo)); } catch (e) { console.error('Turno per giocatore offline:', e.message); break; }
+    try { GE(room).apply(g, seat, GBot(room).nextAction(g, seat, memo)); } catch (e) { console.error('Turno per giocatore offline:', e.message); break; }
   }
   room.absentKey = null;
   afterAction(room);
@@ -361,9 +365,9 @@ function autoPlay(room, key) {
   if (!g || turnTimerKey(room) !== key) return;
   const seat = g.turn;
   const memo = { noMeld: true }; // niente calate automatiche: solo pesca e scarto
-  E.note(g, `⏱ Tempo scaduto per ${g.players[seat].name}: pesca e scarta in automatico`);
+  GE(room).note(g, `⏱ Tempo scaduto per ${g.players[seat].name}: pesca e scarta in automatico`);
   for (let i = 0; i < 6 && g.turn === seat && g.phase !== 'handEnd'; i++) {
-    try { E.apply(g, seat, Bot.nextAction(g, seat, memo)); } catch (e) { console.error('Turno automatico:', e.message); break; }
+    try { GE(room).apply(g, seat, GBot(room).nextAction(g, seat, memo)); } catch (e) { console.error('Turno automatico:', e.message); break; }
   }
   afterAction(room);
 }
@@ -386,7 +390,7 @@ function scheduleBot(room) {
   let planned = null;
   try {
     room.botMemo.level = room.botLevel || 'normale';
-    planned = Bot.nextAction(g, seat, room.botMemo);
+    planned = GBot(room).nextAction(g, seat, room.botMemo);
   } catch (e) { planned = null; }
   const base = BOT_SPEEDS[room.botSpeed] || BOT_DELAY;
   room.botTimer = setTimeout(() => {
@@ -395,22 +399,22 @@ function scheduleBot(room) {
     const before = reactionSnapshot(g);
     try {
       room.botMemo.level = room.botLevel || 'normale';
-      const a = planned && E.isLegal(g, seat, planned) ? planned : Bot.nextAction(g, seat, room.botMemo);
-      E.apply(g, seat, a);
+      const a = planned && GE(room).isLegal(g, seat, planned) ? planned : GBot(room).nextAction(g, seat, room.botMemo);
+      GE(room).apply(g, seat, a);
       botReactions(room, seat, before, a);
     } catch (e) {
       console.error('Errore bot:', e.message);
       try {
-        if (g.phase === 'draw') E.apply(g, seat, { type: 'draw' });
+        if (g.phase === 'draw') GE(room).apply(g, seat, { type: 'draw' });
         else {
-          const legal = g.players[seat].hand.map((c) => ({ type: 'discard', cardId: c.id })).find((x) => E.isLegal(g, seat, x));
-          if (legal) E.apply(g, seat, legal);
-          else E.apply(g, seat, { type: 'undo' });
+          const legal = g.players[seat].hand.map((c) => ({ type: 'discard', cardId: c.id })).find((x) => GE(room).isLegal(g, seat, x));
+          if (legal) GE(room).apply(g, seat, legal);
+          else GE(room).apply(g, seat, { type: 'undo' });
         }
       } catch (e2) { console.error('Bot bloccato:', e2.message); }
     }
     afterAction(room);
-  }, planned ? Bot.thinkMs(g, seat, planned, base) : base);
+  }, planned ? GBot(room).thinkMs(g, seat, planned, base) : base);
 }
 
 /* ---------- Reazioni del computer (ogni tanto, mai troppe) ---------- */
@@ -433,7 +437,7 @@ function botReactions(room, actor, before, action) {
   const mates = bots.filter((b) => b !== actor && team(b) === team(actor));
   const rivals = bots.filter((b) => team(b) !== team(actor));
   let who = null, emoji = null;
-  const newBurraco = before.burraco.length === g.teams.length && g.teams.some((t, i) => t.melds.filter((m) => m.length >= 7).length > before.burraco[i]);
+  const newBurraco = Games.idOf(room.rules) === 'burraco' && before.burraco.length === g.teams.length && g.teams.some((t, i) => t.melds.filter((m) => m.length >= 7).length > before.burraco[i]);
   if (newBurraco) {
     if (actorIsBot && Math.random() < 0.35) { who = actor; emoji = pick(['🔥', '😍']); }
     else if (!actorIsBot && rivals.length && Math.random() < 0.3) { who = pick(rivals); emoji = pick(['😱', '👏']); }
@@ -499,7 +503,7 @@ function recordLeaderboard(room) {
       e.points += g.scores[seat];
       const team = g.teams.find((t) => t.members.includes(seat));
       e.history = [{
-        at: Date.now(), preset: Rules.matchPreset(room.rules) || 'personalizzate', won: g.winners.includes(seat),
+        at: Date.now(), preset: Games.of(room).presetOf(room.rules) || 'personalizzate', won: g.winners.includes(seat),
         hands: g.history.length,
         teams: g.teams.map((t) => ({ names: t.members.map((x) => room.seats[x].name), score: g.scores[t.members[0]], mine: t === team })),
         tokens: room.seats.filter((x) => x && !x.isBot && x.token).map((x) => x.token),
@@ -603,7 +607,7 @@ function checkReady(room) {
   const allReady = humans.length > 0 && humans.every((i) => room.ready.has(i));
   if (allReady && g.over) { startGame(room); return; }
   if (allReady) {
-    E.nextHand(g);
+    GE(room).nextHand(g);
     room.ready = new Set();
     room.turnCounter = (room.turnCounter || 0) + 1;
   }
@@ -618,7 +622,7 @@ function afterAction(room) {
     room.coachKey = `${room.gameSeq}:${g.handNo}`;
     room.coachTips = {};
     room.seats.forEach((s, seat) => {
-      if (s && !s.isBot) { try { room.coachTips[seat] = Coach.analyze(E, g.lastReplay, seat); } catch (e) { room.coachTips[seat] = []; } }
+      if (s && !s.isBot) { try { room.coachTips[seat] = Games.of(room).Coach.analyze(GE(room), g.lastReplay, seat); } catch (e) { room.coachTips[seat] = []; } }
     });
   }
   recordLeaderboard(room);
@@ -684,7 +688,7 @@ function joinRoom(socket, room) {
     delete s.leftToken; delete s.leftName;
     room.game.players[back].isBot = false;
     room.game.players[back].name = s.name;
-    E.note(room.game, `${s.name} è tornato al tavolo`);
+    GE(room).note(room.game, `${s.name} è tornato al tavolo`);
     seat = back;
     room.spectators = room.spectators.filter((t) => t !== token);
   }
@@ -793,7 +797,7 @@ io.on('connection', (socket) => {
 
   socket.on('createRoom', handler(({ rules, vsBots, tutorial }) => {
     // allenamento: Classico in 2 contro un computer facile e lento, con i suggerimenti
-    const r = Rules.normalize(tutorial ? { ...Rules.PRESETS[0].rules, players: 2, target: 505 } : rules);
+    const r = tutorial ? Rules.normalize({ ...Rules.PRESETS[0].rules, players: 2, target: 505 }) : Games.of(rules).normalize(rules);
     const code = newCode();
     const room = {
       code, rules: r, n: r.players, hostToken: socket.data.token,
@@ -898,7 +902,7 @@ io.on('connection', (socket) => {
     const room = getRoom(socket);
     requireHost(socket, room);
     if (room.game) throw new E.GameError('Partita già iniziata');
-    const r = Rules.normalize(rules);
+    const r = Games.of(rules).normalize(rules);
     const n = r.players;
     const people = room.seats.filter(Boolean);
     if (people.filter((s) => !s.isBot).length > n) throw new E.GameError('Troppi giocatori al tavolo per questa variante');
@@ -923,7 +927,7 @@ io.on('connection', (socket) => {
     if (!room.game) throw new E.GameError('Partita non iniziata');
     const seat = seatOfToken(room, socket.data.token);
     const before = reactionSnapshot(room.game);
-    E.apply(room.game, seat, action);
+    GE(room).apply(room.game, seat, action);
     botReactions(room, seat, before, action);
     afterAction(room);
   }));
@@ -934,7 +938,7 @@ io.on('connection', (socket) => {
     const seat = seatOfToken(room, socket.data.token);
     if (humanCount(room) > 1 || !room.hints) throw new E.GameError('I suggerimenti sono disponibili solo giocando da soli contro il computer');
     if (!g || g.turn !== seat || g.phase === 'handEnd') throw new E.GameError('Il suggerimento è disponibile solo nel tuo turno');
-    const hint = Bot.nextAction(JSON.parse(JSON.stringify(g)), seat, { level: 'difficile' });
+    const hint = GBot(room).nextAction(JSON.parse(JSON.stringify(g)), seat, { level: 'difficile' });
     return { hint };
   }));
 
@@ -1052,12 +1056,12 @@ io.on('connection', (socket) => {
     const seat = seatOfToken(room, socket.data.token);
     if (seat < 0) throw new E.GameError('Solo chi gioca può arrendersi');
     if (!g || g.over) throw new E.GameError('Nessuna partita in corso');
-    const team = E.teamOf(g, seat);
+    const team = GE(room).teamOf(g, seat);
     const humans = team.members.filter((x) => room.seats[x] && !room.seats[x].isBot);
     room.surrenderVotes = [...new Set([...(room.surrenderVotes || []).filter((x) => team.members.includes(x)), seat])];
     if (humans.every((x) => room.surrenderVotes.includes(x))) {
       room.surrenderVotes = null;
-      E.surrender(g, seat);
+      GE(room).surrender(g, seat);
       clearTimeout(room.botTimer); room.botTimer = null;
       afterAction(room);
       return { done: true };
@@ -1214,7 +1218,7 @@ io.on('connection', (socket) => {
       at: now, nick: sess.nick || sess.name || 'anonimo', text: t,
       screen: String(screen || '').slice(0, 20), device: String(device || '').slice(0, 160),
       table: room ? {
-        code: room.code, rules: Rules.matchPreset(room.rules) || 'personalizzate', seat,
+        code: room.code, rules: Games.of(room).presetOf(room.rules) || 'personalizzate', seat,
         game: g ? {
           hand: g.handNo, phase: g.phase, turn: g.turn, stock: g.stock.length, discard: g.discard.length,
           myCards: seat >= 0 ? g.players[seat].hand.length : null, scores: g.scores, log: g.log.slice(-10),
@@ -1273,7 +1277,7 @@ function startGame(room) {
   if (room.series && room.series.champion) room.series = { ...room.series, wins: Array(room.n).fill(0), games: 0, champion: null };
   clearTimeout(room.botTimer);
   room.botTimer = null;
-  room.game = E.createGame({
+  room.game = GE(room).createGame({
     rules: room.rules,
     players: room.seats.map((s) => ({ name: s.name, isBot: !!s.isBot })),
     seed: room.daily ? room.seed : undefined,
