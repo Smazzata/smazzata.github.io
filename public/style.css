@@ -414,3 +414,26 @@ iframe.spotify { width: 100%; height: 152px; border: 0; border-radius: 12px; mar
 canvas.confetti { position: fixed; inset: 0; z-index: 96; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .meld.shine, .meld.shine::after, .bigtoast { animation: none; } }
 .result tr.meRow td { background: #fff3c8; font-weight: 700; }
+
+/* ---------- Tema notte: tavolo più scuro, carte meno abbaglianti, riquadri scuri ---------- */
+body[data-theme="notte"] {
+  --paper: #e4dece; --paper-2: #d2cab4; --gold: #d8ad48; --muted: #9fb3a8;
+  background:
+    linear-gradient(rgba(0,0,0,.42), rgba(0,0,0,.42)),
+    radial-gradient(ellipse at 50% 35%, var(--felt-1), var(--felt-2) 55%, var(--felt-3)), var(--felt-2);
+  background-attachment: fixed;
+}
+body[data-theme="notte"] .card:not(.back) { filter: brightness(.9); }
+body[data-theme="notte"] .modal-box { background: #1e2422; color: #e6e6e1; }
+body[data-theme="notte"] .modal-box .muted, body[data-theme="notte"] .rules-text .note { color: #a5aca8; }
+body[data-theme="notte"] .rules-text { color: #e6e6e1; }
+body[data-theme="notte"] .rules-text h3, body[data-theme="notte"] .modal-box h4, body[data-theme="notte"] .winner { color: #8fd3a8; }
+body[data-theme="notte"] .modal-close { background: #333a37; color: #eee; }
+body[data-theme="notte"] .swatch, body[data-theme="notte"] .modal-box .preset { background: #2a312e; color: #e6e6e1; border-color: #444; }
+body[data-theme="notte"] .swatch.on { background: #4a3f1e; border-color: var(--gold); }
+body[data-theme="notte"] .result td, body[data-theme="notte"] .result th { border-color: #3a413e; }
+body[data-theme="notte"] .result tr.meRow td { background: #4a3f1e; }
+body[data-theme="notte"] .rules-table td, body[data-theme="notte"] .rules-table th { border-color: #3a413e; }
+body[data-theme="notte"] .log div { border-color: #333; }
+body[data-theme="notte"] .log .chat { color: #9cc7ff; }
+body[data-theme="notte"] .modal-box input, body[data-theme="notte"] .modal-box select { background: #2a312e; color: #eee; border-color: #444; }

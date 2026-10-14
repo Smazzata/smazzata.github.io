@@ -11,7 +11,7 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage non disponibile */ } },
   };
 
-  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false };
+  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'auto' };
   const S = {
     token: store.get('bur_token', null),
     name: store.get('bur_name', ''),
@@ -81,13 +81,19 @@
   };
 
   /* ================= Preferenze grafiche ================= */
+  const darkQuery = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
   function applyPrefs() {
+    const night = S.prefs.theme === 'notte' || (S.prefs.theme === 'auto' && darkQuery && darkQuery.matches);
+    document.body.dataset.theme = night ? 'notte' : 'giorno';
+    const meta = document.querySelector('meta[name=theme-color]');
+    if (meta) meta.content = night ? '#06180f' : '#0f5132';
     document.body.dataset.felt = S.prefs.felt;
     document.body.dataset.back = S.prefs.back;
     document.body.classList.toggle('bigcards', !!S.prefs.big);
     store.set('bur_prefs', S.prefs);
   }
   applyPrefs();
+  if (darkQuery && darkQuery.addEventListener) darkQuery.addEventListener('change', () => { if (S.prefs.theme === 'auto') applyPrefs(); });
 
   /* ================= Connessione ================= */
   const socket = io();
@@ -374,6 +380,8 @@
   function settingsModal() {
     const opt = (key, val, label, extra = '') => `<button class="swatch ${S.prefs[key] === val ? 'on' : ''}" data-act="pref" data-key="${key}" data-val="${val}" ${extra}>${label}</button>`;
     openModal('settings', `<h2>Aspetto e suoni</h2>
+      <h4>Tema</h4>
+      <div class="row">${opt('theme', 'auto', '🌓 Automatico')}${opt('theme', 'giorno', '☀️ Giorno')}${opt('theme', 'notte', '🌙 Notte')}</div>
       <h4>Colore del tavolo</h4>
       <div class="row">${opt('felt', 'verde', '<i class="sw felt-verde"></i>Verde')}${opt('felt', 'blu', '<i class="sw felt-blu"></i>Blu')}${opt('felt', 'bordeaux', '<i class="sw felt-bordeaux"></i>Bordeaux')}${opt('felt', 'antracite', '<i class="sw felt-antracite"></i>Antracite')}</div>
       <h4>Dorso delle carte</h4>
