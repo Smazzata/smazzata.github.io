@@ -76,6 +76,13 @@ function simulate(label, rules, n, games = 3) {
         const a = Bot.nextAction(g, seat, memo);
         E.apply(g, seat, a);
         assert.strictEqual(countCards(g), total, `carte non conservate (${variantId})`);
+        // cronaca degli eventi: le carte calate/attaccate sono davvero sul tavolo, gli eventi sono in ordine
+        const ev = g.events[g.events.length - 1];
+        if (ev && (ev.type === 'meld' || ev.type === 'add') && g.phase !== 'handEnd') {
+          const onTable = new Set(g.teams.flatMap((t) => t.melds.flatMap((m) => m.cards.map((c) => c.id))));
+          assert(ev.cardIds.length && ev.cardIds.every((id) => onTable.has(id)), `cronaca: carte non sul tavolo (${variantId})`);
+        }
+        assert(g.events.every((e, i) => i === 0 || e.n > g.events[i - 1].n), 'cronaca fuori ordine');
         steps++;
       }
       maxActions = Math.max(maxActions, steps);

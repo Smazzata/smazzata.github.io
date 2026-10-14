@@ -105,6 +105,10 @@ function createGame({ rules, players }) {
 function setEvent(g, ev) {
   g.eventSeq = (g.eventSeq || 0) + 1;
   g.lastEvent = { ...ev, n: g.eventSeq };
+  // breve cronaca della smazzata: serve all'interfaccia per mostrare cosa hanno fatto gli altri
+  if (!g.events) g.events = [];
+  g.events.push(g.lastEvent);
+  if (g.events.length > 30) g.events.splice(0, g.events.length - 30);
 }
 
 function addLog(g, text) {
@@ -133,6 +137,7 @@ function startHand(g) {
   g.pileTakeStreak = 0;
   g.turnInfo = null;
   g.snapshot = null;
+  g.events = [];
   g.handResult = null;
   g.meldSeq = 0;
   g.partnershipFormed = n !== 3;
@@ -268,6 +273,7 @@ function takePile(g, seat, { cardIds = [], meldId = null } = {}) {
     addLog(g, `${p.name} raccoglie gli scarti (${pile.length} carte)`);
     beginPlay(g, seat);
     g.turnInfo.pileCount = pile.length;
+    setEvent(g, { type: 'pile', seat, count: pile.length });
     const ids = [top.id, ...hand.map((c) => c.id)];
     if (meldId != null) addToMeld(g, seat, meldId, ids); else meld(g, seat, ids);
     if (!preSnap) takeSnapshot(g);
@@ -302,14 +308,16 @@ function meld(g, seat, cardIds) {
   requireVulnerabilityPoints(g, seat, cards);
   removeFromHand(p, cards);
   let last = null;
+  const meldIds = [];
   for (const an of groups) {
     last = { id: ++g.meldSeq };
     storeAnalysis(last, an);
     team.melds.push(last);
+    meldIds.push(last.id);
   }
   if (!g.turnInfo.startHadMelds) g.turnInfo.newMeldPts += cards.reduce((s, c) => s + cardValue(c, g.cfg.values), 0);
   addLog(g, `${p.name} cala ${groups.map((an) => an.cards.map(cardName).join(' ')).join(' · ')}`);
-  setEvent(g, { type: 'meld', seat, meldId: last.id });
+  setEvent(g, { type: 'meld', seat, meldId: last.id, meldIds, cardIds: cards.map((c) => c.id) });
   postMeldCheck(g, seat);
 }
 
@@ -329,7 +337,7 @@ function addToMeld(g, seat, meldId, cardIds) {
   if (!g.turnInfo.startHadMelds) g.turnInfo.newMeldPts += cards.reduce((s, c) => s + cardValue(c, g.cfg.values), 0);
   addLog(g, `${p.name} attacca ${cards.map(cardName).join(' ')}`);
   if (!wasBurraco && m.length >= 7) addLog(g, `★ ${meldKind(m, g.cfg).label}!`);
-  setEvent(g, { type: 'add', seat, meldId: m.id });
+  setEvent(g, { type: 'add', seat, meldId: m.id, cardIds: cards.map((c) => c.id) });
   postMeldCheck(g, seat);
 }
 
@@ -421,6 +429,7 @@ function discard(g, seat, cardId) {
       removeFromHand(p, [c]);
       g.discard.push(c);
       addLog(g, `${p.name} scarta ${cardName(c)}`);
+      setEvent(g, { type: 'discard', seat, cardId, card: { r: c.r, s: c.s } });
       takePozzetto(g, seat, 'indirect');
       if (g.lastTurn) return endHand(g, 'stock');
       return nextTurn(g);
@@ -438,7 +447,7 @@ function discard(g, seat, cardId) {
   removeFromHand(p, [c]);
   g.discard.push(c);
   addLog(g, `${p.name} scarta ${cardName(c)}`);
-  setEvent(g, { type: 'discard', seat, cardId });
+  setEvent(g, { type: 'discard', seat, cardId, card: { r: c.r, s: c.s } });
   if (g.lastTurn) return endHand(g, 'stock');
   nextTurn(g);
 }
@@ -559,7 +568,7 @@ function viewFor(g, seat) {
     scores: g.scores, history: g.history.slice(-30),
     handResult: g.handResult, over: g.over, winners: g.winners,
     partnershipFormed: g.partnershipFormed,
-    log: g.log.slice(-25), lastEvent: g.lastEvent,
+    log: g.log.slice(-25), lastEvent: g.lastEvent, events: g.events || [],
   };
 }
 

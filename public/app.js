@@ -883,12 +883,14 @@
     const attrs = `data-mid="${m.id}"` + (mine ? ` data-meld="${m.id}" data-drop="meld"` : '');
     const can = preview && preview.canAdd.has(m.id) ? 'can-add' : '';
     const hint = S.hint && S.hint.meldId === m.id ? 'hinted' : '';
+    const fr = S.freshCards || new Set();
     return `<div class="meld ${m.kind ? 'burraco ' + m.kind : ''} ${S.flashMeld === m.id ? 'flash' : ''} ${m.type === 'set' ? 'set' : ''} ${can} ${hint}" ${attrs} title="${esc(m.label || '')}">
       ${m.cards.map((c, i) => {
         // in modalità compatta si vedono solo le prime 2 carte e l'ultima
         const mid = m.cards.length >= 5 && i >= 2 && i < m.cards.length - 1;
-        const more = mid && i === 2 ? `<span class="more">+${m.cards.length - 3}</span>` : '';
-        return more + cardHTML(c, `mini ${m.wild[i] ? 'wildmark' : 'natural'} ${mid ? 'mid' : ''}`);
+        const hiddenFresh = mid && i === 2 && m.cards.slice(2, -1).some((x) => fr.has(x.id));
+        const more = mid && i === 2 ? `<span class="more ${hiddenFresh ? 'fresh' : ''}">+${m.cards.length - 3}</span>` : '';
+        return more + cardHTML(c, `mini ${m.wild[i] ? 'wildmark' : 'natural'} ${mid ? 'mid' : ''} ${fr.has(c.id) ? 'fresh' : ''}`);
       }).join('')}
       ${m.kind ? `<span class="tag">${short}</span>` : `<span class="cnt">${m.length}</span>`}</div>`;
   }
@@ -928,6 +930,47 @@
   }
 
   /** ultima riga significativa della cronaca */
+  /** Mosse degli altri dopo la mia ultima giocata (per evidenziarle e riassumerle) */
+  function freshEvents(g) {
+    if (g.you < 0 || !g.events) return [];
+    let myLast = 0;
+    for (const e of g.events) if (e.seat === g.you) myLast = e.n;
+    return g.events.filter((e) => e.seat !== g.you && e.n > myLast);
+  }
+
+  /** Riassunto, una riga per giocatore: "Gegè: raccoglie 3 scarti · cala 4 · scarta K♦" */
+  function recapHTML(g, fresh) {
+    const bySeat = new Map();
+    for (const e of fresh) {
+      if (!bySeat.has(e.seat)) bySeat.set(e.seat, []);
+      const parts = bySeat.get(e.seat);
+      const k = (e.cardIds || []).length;
+      const prevPart = parts[parts.length - 1];
+      if (e.type === 'pile') parts.push(e.count === 1 ? 'raccoglie lo scarto' : `raccoglie <b>${e.count}</b> scarti`);
+      else if (e.type === 'meld') {
+        const ids = e.meldIds || [e.meldId];
+        if (prevPart && prevPart.melds) prevPart.melds.push(...ids); else parts.push({ melds: ids.slice() });
+      } else if (e.type === 'add') {
+        if (prevPart && prevPart.k != null) prevPart.k += k; else parts.push({ k });
+      } else if (e.type === 'pozzetto') parts.push(`prende il ${esc(g.cfg.pozzettoName)}`);
+      else if (e.type === 'discard' && e.card) {
+        const red = e.card.s === 'H' || e.card.s === 'D';
+        parts.push(`scarta <span class="${red ? 'rs' : ''}">${e.card.r === 0 ? 'Jolly' : rankName(e.card.r) + SUIT[e.card.s]}</span>`);
+      }
+    }
+    const allMelds = g.teams.flatMap((t) => t.melds);
+    const say = (x) => {
+      if (typeof x === 'string') return x;
+      if (x.k != null) return `attacca <b>${x.k}</b> ${x.k === 1 ? 'carta' : 'carte'}`;
+      if (x.melds.length > 1) return `cala <b>${x.melds.length}</b> giochi`;
+      const m = allMelds.find((mm) => mm.id === x.melds[0]);
+      return `cala ${m && m.type === 'set' ? 'un <b>tris</b>' : 'una <b>scala</b>'}`;
+    };
+    const lines = [...bySeat].filter(([, parts]) => parts.length)
+      .map(([seat, parts]) => `<div><b>${esc(g.players[seat].name)}</b>: ${parts.map(say).join(' · ')}</div>`);
+    return lines.length ? `<div class="recap" data-act="log" title="Cosa hanno fatto gli altri (tocca per la cronaca)">${lines.join('')}</div>` : '';
+  }
+
   function lastMove(g) {
     for (let i = g.log.length - 1; i >= 0; i--) {
       if (!g.log[i].startsWith('—')) return g.log[i];
@@ -971,6 +1014,9 @@
     const P = g.cfg.pozzettoName;
     const canDraw = myTurn && g.phase === 'draw';
     const playing = myTurn && g.phase === 'play';
+    // carte giocate dagli altri dopo la mia ultima mossa: restano evidenziate finché non gioco
+    const fresh = freshEvents(g);
+    S.freshCards = new Set(fresh.flatMap((e) => e.cardIds || []));
 
     // punteggi
     let scores;
@@ -1040,7 +1086,11 @@
       </div>
       <div class="scorebar">${r.series ? `<span class="sc series">${seriesHTML(r, g)}</span>` : ''}${scores}</div>
       <div class="seats-row n${g.n} ${g.you < 0 ? 'spect' : ''}">${seats}</div>
-      ${(() => { const w = stockWarning(g); return w ? `<div class="ticker warn w${w.level}">${w.text}</div>` : `<div class="ticker" title="Ultima mossa">${esc(lastMove(g))}</div>`; })()}
+      ${(() => {
+        const w = stockWarning(g);
+        const recap = canDraw ? recapHTML(g, fresh) : '';
+        return (w ? `<div class="ticker warn w${w.level}">${w.text}</div>` : recap ? '' : `<div class="ticker" data-act="log" title="Ultima mossa (tocca per la cronaca)">${esc(lastMove(g))}</div>`) + recap;
+      })()}
       <div class="felt" id="felt">${others}${center}${mineZone}</div>
       ${r.tutorial && !S.coachOff ? `<div class="coach">🎓 ${coachTip(g)} <button class="ico" data-act="coachOff" title="Nascondi">✕</button></div>` : ''}
       <div class="statusbar ${myTurn ? 'on' : ''}">
