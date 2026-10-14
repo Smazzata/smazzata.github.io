@@ -13,6 +13,23 @@ function countCards(g) {
   return n;
 }
 
+/** I file dell'interfaccia (public/js) devono essere caricati dalla pagina e salvati per il gioco offline */
+function filesTests() {
+  const fs = require('fs');
+  const path = require('path');
+  const root = path.join(__dirname, '..');
+  const js = fs.readdirSync(path.join(root, 'public', 'js')).filter((f) => f.endsWith('.js'));
+  const html = fs.readFileSync(path.join(root, 'public', 'index.html'), 'utf8');
+  const sw = fs.readFileSync(path.join(root, 'public', 'sw.js'), 'utf8');
+  const lsw = fs.readFileSync(path.join(root, 'launcher', 'sw.js'), 'utf8');
+  for (const f of js) {
+    assert(html.includes(`src="js/${f}"`), `index.html non carica js/${f}`);
+    assert(sw.includes(`'js/${f}'`), `public/sw.js non salva js/${f} per l'uso offline`);
+    assert(lsw.includes(`'gioca/js/${f}'`), `launcher/sw.js non salva gioca/js/${f}`);
+  }
+  console.log(`file dell'interfaccia: ${js.length}, tutti caricati e salvati per l'uso offline`);
+}
+
 function trophyTests() {
   const T = require('./trophies');
   const hand = (kinds, total) => ({ burraco: kinds.map((kind) => ({ kind })), total });
@@ -117,6 +134,7 @@ function simulate(label, rules, n, games = 3) {
 
 unitTests();
 trophyTests();
+filesTests();
 for (const p of Rules.PRESETS) for (const n of [4, 2, 3]) simulate(p.id, p.rules, n);
 // configurazioni casuali
 for (let i = 0; i < 12; i++) {

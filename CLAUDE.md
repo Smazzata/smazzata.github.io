@@ -10,6 +10,9 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 - `server/bot.js` — computer a tre livelli (`memo.level`: facile/normale/difficile).
 - `server/social.js` — profili: nickname univoco, codice personale/QR, password facoltativa (scrypt), amici, inviti, eliminazione profilo.
 - `server/index.js` — tavoli, posti, riconnessione via token, chat, musica Spotify, timer del turno, rivincita a voto, classifica; salva tutto in `data/stato.json` (anche ai riavvii); `/health` per la pagina d'ingresso.
+- `public/js/` — interfaccia divisa per sezioni (base, connessione, carte, ui, profilo, tutorial, schermate, tavolo,
+  animazioni, finestre, azioni, comandi): file normali caricati in ordine da `index.html` che condividono le stesse
+  dichiarazioni. Un file nuovo va aggiunto a `index.html` e ai due service worker (`npm test` lo controlla).
 - `public/` — interfaccia: tavolo mobile-first, trascinamento carte, animazioni, suoni sintetizzati, tema chiaro/scuro a scelta dell'utente, statistiche personali in localStorage.
 - `launcher/` — pagina d'ingresso su GitHub Pages (link fisso) che legge l'indirizzo del server dal ramo `indirizzo` (`server.json`).
 - Gioco senza internet: `public/local-server.js` è un "server" nel browser (stessi eventi di socket.io) che usa motore e computer
