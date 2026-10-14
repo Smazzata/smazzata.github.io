@@ -74,7 +74,6 @@
     modalKind: null,
     newIds: new Set(),
     flashMeld: null,
-    lastTap: { id: null, t: 0 },
     drag: null,
     pendingRender: false,
     justDragged: 0,

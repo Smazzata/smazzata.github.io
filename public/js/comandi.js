@@ -176,13 +176,6 @@
     }
     if (card && g) {
       const id = Number(card.dataset.card);
-      const now = Date.now();
-      if (S.lastTap.id === id && now - S.lastTap.t < 350 && g.turn === g.you && g.phase === 'play') {
-        S.lastTap = { id: null, t: 0 };
-        act('discard', { cardId: id });
-        return;
-      }
-      S.lastTap = { id, t: now };
       if (S.selected.has(id)) S.selected.delete(id); else S.selected.add(id);
       S.toggledCard = id;
       S.hint = null;

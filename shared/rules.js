@@ -120,7 +120,7 @@
 <li><b>Tocca</b> le carte della mano per selezionarle.</li>
 <li><b>Cala</b> crea una nuova combinazione con le carte selezionate.</li>
 <li>Per <b>attaccare</b>, seleziona le carte e tocca una combinazione della tua squadra.</li>
-<li><b>Scarta</b> con una sola carta selezionata, oppure fai doppio tocco sulla carta.</li>
+<li><b>Scarta</b>: seleziona una carta e tocca il monte degli scarti (o trascinala sul monte).</li>
 <li><b>Annulla</b> riporta il turno a subito dopo la pesca.</li>
 </ul>`;
 
