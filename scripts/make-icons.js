@@ -1,104 +1,70 @@
 'use strict';
-// Genera le icone PNG dell'app (carta con cuore su panno verde) senza dipendenze esterne.
-//   node scripts/make-icons.js
+/*
+ * Genera tutte le icone di Smazzata (PNG) dal disegno in scripts/icona.js, facendole "fotografare" a Chrome/Edge
+ * senza finestra. Serve un browser installato (lo stesso della prova dell'interfaccia).
+ *   node scripts/make-icons.js
+ * Scrive: public/icon.svg, public/icons e launcher/icons (web), android-app/icons (app Android), store/ (Play Store).
+ */
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
-const zlib = require('zlib');
-
-const CRC = new Uint32Array(256).map((_, n) => {
-  let c = n;
-  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-  return c >>> 0;
-});
-function crc32(buf) {
-  let c = 0xffffffff;
-  for (const b of buf) c = CRC[(c ^ b) & 0xff] ^ (c >>> 8);
-  return (c ^ 0xffffffff) >>> 0;
-}
-function chunk(type, data) {
-  const len = Buffer.alloc(4); len.writeUInt32BE(data.length);
-  const td = Buffer.concat([Buffer.from(type), data]);
-  const crc = Buffer.alloc(4); crc.writeUInt32BE(crc32(td));
-  return Buffer.concat([len, td, crc]);
-}
-function png(size, pixel) {
-  const raw = Buffer.alloc((size * 4 + 1) * size);
-  for (let y = 0; y < size; y++) {
-    raw[y * (size * 4 + 1)] = 0;
-    for (let x = 0; x < size; x++) {
-      const [r, g, b, a] = pixel(x, y);
-      const o = y * (size * 4 + 1) + 1 + x * 4;
-      raw[o] = r; raw[o + 1] = g; raw[o + 2] = b; raw[o + 3] = a;
-    }
-  }
-  const ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(size, 0); ihdr.writeUInt32BE(size, 4);
-  ihdr[8] = 8; ihdr[9] = 6; ihdr[10] = 0; ihdr[11] = 0; ihdr[12] = 0;
-  return Buffer.concat([
-    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
-    chunk('IHDR', ihdr), chunk('IDAT', zlib.deflateSync(raw, { level: 9 })), chunk('IEND', Buffer.alloc(0)),
-  ]);
-}
-
-const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
-function inRoundRect(x, y, x0, y0, x1, y1, r) {
-  if (x < x0 || x > x1 || y < y0 || y > y1) return false;
-  const cx = Math.min(Math.max(x, x0 + r), x1 - r), cy = Math.min(Math.max(y, y0 + r), y1 - r);
-  return (x - cx) ** 2 + (y - cy) ** 2 <= r * r;
-}
-function inHeart(x, y) {
-  const X = x * 1.25, Y = -y * 1.25 + 0.25;
-  return (X * X + Y * Y - 1) ** 3 - X * X * Y ** 3 <= 0;
-}
-
-/** Colore di un punto in coordinate 0..1; `full` = sfondo pieno (icone maskable/Android) */
-function sample(u, v, full) {
-  const bgIn = full || inRoundRect(u, v, 0, 0, 1, 1, 0.2);
-  if (!bgIn) return [0, 0, 0, 0];
-  const d = Math.hypot(u - 0.5, v - 0.4);
-  let col = mix([31, 122, 77], [8, 45, 28], Math.min(1, d * 1.5));
-  // carta dietro, ruotata
-  const a = -0.22, cu = u - 0.42, cv = v - 0.52;
-  const ru = cu * Math.cos(a) - cv * Math.sin(a) + 0.42, rv = cu * Math.sin(a) + cv * Math.cos(a) + 0.52;
-  if (inRoundRect(ru, rv, 0.24, 0.22, 0.6, 0.78, 0.05)) col = [176, 38, 58];
-  if (inRoundRect(ru, rv, 0.27, 0.25, 0.57, 0.75, 0.03)) col = mix([196, 51, 74], [155, 27, 44], (ru + rv) % 0.06 > 0.03 ? 1 : 0);
-  // carta davanti
-  if (inRoundRect(u, v, 0.33, 0.2, 0.75, 0.82, 0.055)) col = [214, 207, 188];
-  if (inRoundRect(u, v, 0.34, 0.21, 0.74, 0.81, 0.05)) col = [255, 253, 246];
-  if (inHeart((u - 0.54) / 0.13, (v - 0.53) / 0.13)) col = [196, 32, 43];
-  return [...col, 255];
-}
-
-function render(size, full) {
-  const S = 3; // supersampling per bordi morbidi
-  return png(size, (x, y) => {
-    const acc = [0, 0, 0, 0];
-    for (let i = 0; i < S; i++) for (let j = 0; j < S; j++) {
-      const p = sample((x + (i + 0.5) / S) / size, (y + (j + 0.5) / S) / size, full);
-      acc[0] += p[0] * p[3]; acc[1] += p[1] * p[3]; acc[2] += p[2] * p[3]; acc[3] += p[3];
-    }
-    const a = acc[3] / (S * S);
-    return a ? [acc[0] / acc[3], acc[1] / acc[3], acc[2] / acc[3], a].map(Math.round) : [0, 0, 0, 0];
-  });
-}
+const { execFileSync } = require('child_process');
+const { svg } = require('./icona');
 
 const root = path.join(__dirname, '..');
-const targets = [path.join(root, 'public', 'icons'), path.join(root, 'launcher', 'icons')];
-const files = { 'icon-192.png': [192, false], 'icon-512.png': [512, false], 'maskable-512.png': [512, true], 'apple-touch-icon.png': [180, true] };
-for (const dir of targets) fs.mkdirSync(dir, { recursive: true });
-for (const [name, [size, full]] of Object.entries(files)) {
-  const buf = render(size, full);
-  for (const dir of targets) fs.writeFileSync(path.join(dir, name), buf);
-  console.log(`${name} (${size}px, ${buf.length} byte)`);
+
+function findBrowser() {
+  const c = [process.env.CHROME_PATH,
+    'C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+    'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
+    '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser',
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
+  const found = c.find((p) => fs.existsSync(p));
+  if (!found) throw new Error('Nessun browser trovato: installa Chrome o indica CHROME_PATH');
+  return found;
 }
 
-// icone dell'app Android (densità standard dei launcher)
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'smazzata-icone-'));
+const browser = findBrowser();
+
+/** "Fotografa" un pezzo di HTML grande w×h e lo salva in PNG (sfondo trasparente) */
+function shoot(html, w, h, out) {
+  const page = path.join(tmp, 'p.html');
+  fs.writeFileSync(page, `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;background:transparent;overflow:hidden}</style>${html}`);
+  const shot = path.join(tmp, 'shot.png');
+  execFileSync(browser, ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--force-device-scale-factor=1',
+    '--default-background-color=00000000', `--window-size=${w},${h}`, `--user-data-dir=${path.join(tmp, 'profilo')}`,
+    `--screenshot=${shot}`, 'file:///' + page.replace(/\\/g, '/')], { stdio: 'ignore' });
+  fs.mkdirSync(path.dirname(out), { recursive: true });
+  fs.copyFileSync(shot, out);
+  console.log(`${path.relative(root, out)} (${w}×${h})`);
+}
+const icon = (size, opts, out) => shoot(svg(opts).replace('width="512" height="512"', `width="${size}" height="${size}"`), size, size, out);
+
+// web: icona normale (angoli arrotondati), "maskable" (sfondo pieno, il telefono la ritaglia), Apple (sfondo pieno)
+for (const dir of ['public/icons', 'launcher/icons']) {
+  icon(192, { shape: 'round' }, path.join(root, dir, 'icon-192.png'));
+  icon(512, { shape: 'round' }, path.join(root, dir, 'icon-512.png'));
+  icon(512, { shape: 'full', scale: 0.78 }, path.join(root, dir, 'maskable-512.png'));
+  icon(180, { shape: 'full', scale: 0.9 }, path.join(root, dir, 'apple-touch-icon.png'));
+}
+fs.writeFileSync(path.join(root, 'public', 'icon.svg'), svg({ shape: 'round' }));
+
+// app Android: icona quadrata arrotondata e rotonda, nelle densità dei launcher
 const dens = { mdpi: 48, hdpi: 72, xhdpi: 96, xxhdpi: 144, xxxhdpi: 192 };
 for (const [d, size] of Object.entries(dens)) {
-  const dir = path.join(root, 'android-app', 'icons', `mipmap-${d}`);
-  fs.mkdirSync(dir, { recursive: true });
-  const buf = render(size, false);
-  fs.writeFileSync(path.join(dir, 'ic_launcher.png'), buf);
-  fs.writeFileSync(path.join(dir, 'ic_launcher_round.png'), buf);
-  console.log(`android ${d} (${size}px)`);
+  icon(size, { shape: 'round', scale: 0.9 }, path.join(root, 'android-app', 'icons', `mipmap-${d}`, 'ic_launcher.png'));
+  icon(size, { shape: 'circle', scale: 0.82 }, path.join(root, 'android-app', 'icons', `mipmap-${d}`, 'ic_launcher_round.png'));
 }
+
+// Play Store: icona 512×512 (sfondo pieno, Google arrotonda da sé) e immagine in evidenza 1024×500
+icon(512, { shape: 'full', scale: 0.9 }, path.join(root, 'store', 'icona-512.png'));
+shoot(`<div style="width:1024px;height:500px;display:flex;align-items:center;gap:36px;padding:0 70px;box-sizing:border-box;
+  background:radial-gradient(ellipse at 30% 40%,#26905e,#0f5132 55%,#052014);font-family:Georgia,'Times New Roman',serif">
+  <div style="width:340px;height:340px;flex:none">${svg({ shape: 'full', scale: 1.15 }).replace('width="512" height="512"', 'width="340" height="340"').replace(/<rect width="512" height="512" rx="0" fill="url\(#felt\)"\/>/, '')}</div>
+  <div><div style="font-size:96px;font-weight:700;background:linear-gradient(90deg,#f2c14e,#fff6d5,#f2c14e);-webkit-background-clip:text;color:transparent">Smazzata</div>
+  <div style="font-family:system-ui,Segoe UI,Roboto,sans-serif;color:#d8eadf;font-size:25px;margin-top:6px;white-space:nowrap">Burraco · Scala 40 · Canasta · Scopa · Briscola</div>
+  <div style="font-family:system-ui,Segoe UI,Roboto,sans-serif;color:#f2c14e;font-size:26px;margin-top:18px">Gioca con gli amici o contro il computer</div></div></div>`,
+1024, 500, path.join(root, 'store', 'immagine-in-evidenza.png'));
+
+fs.rmSync(tmp, { recursive: true, force: true, maxRetries: 5 });

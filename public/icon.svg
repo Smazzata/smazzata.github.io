@@ -1,1 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#0f5132"/><rect x="14" y="10" width="28" height="40" rx="4" fill="#fff" transform="rotate(-12 28 30)"/><rect x="22" y="14" width="28" height="40" rx="4" fill="#fff" stroke="#0f5132" stroke-width="1.5"/><text x="36" y="42" font-size="20" text-anchor="middle" fill="#c62828" font-family="sans-serif">♥</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="felt" cx="50%" cy="36%" r="78%"><stop offset="0" stop-color="#26905e"/><stop offset=".55" stop-color="#0f5132"/><stop offset="1" stop-color="#052014"/></radialGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#f1ead8"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe9a0"/><stop offset=".5" stop-color="#f2c14e"/><stop offset="1" stop-color="#c8901c"/></linearGradient>
+    <linearGradient id="back" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d23b52"/><stop offset="1" stop-color="#8e1b2e"/></linearGradient>
+    <pattern id="weave" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="14" fill="rgba(255,255,255,.12)"/></pattern>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000" flood-opacity=".38"/></filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#felt)"/>
+  <g transform="translate(256 396) scale(1.08)" filter="url(#sh)"><g transform="translate(-10 0) rotate(-26)"><rect x="-86" y="-252" width="172" height="244" rx="20" fill="#fff" stroke="#d8cfb8" stroke-width="3"/>
+    <rect x="-74" y="-240" width="148" height="220" rx="13" fill="url(#back)"/>
+    <rect x="-74" y="-240" width="148" height="220" rx="13" fill="url(#weave)"/>
+    <rect x="-62" y="-228" width="124" height="196" rx="9" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="3"/></g><g transform="rotate(-1)"><rect x="-86" y="-252" width="172" height="244" rx="20" fill="url(#paper)" stroke="#d8cfb8" stroke-width="3"/>
+    <text x="-62" y="-198" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="52" fill="#c62828">A</text>
+    <path transform="translate(-61 -186) scale(.3)" d="M50 90 C 20 60, 0 45, 0 25 C 0 8, 14 0, 26 0 C 38 0, 46 8, 50 18 C 54 8, 62 0, 74 0 C 86 0, 100 8, 100 25 C 100 45, 80 60, 50 90 Z" fill="#c62828"/>
+    <path transform="translate(-50 -165) scale(1)" d="M50 90 C 20 60, 0 45, 0 25 C 0 8, 14 0, 26 0 C 38 0, 46 8, 50 18 C 54 8, 62 0, 74 0 C 86 0, 100 8, 100 25 C 100 45, 80 60, 50 90 Z" fill="#c62828"/></g><g transform="translate(14 0) rotate(24)"><rect x="-86" y="-252" width="172" height="244" rx="20" fill="url(#paper)" stroke="#d8cfb8" stroke-width="3"/>
+    <circle cx="0" cy="-130" r="58" fill="url(#gold)" stroke="#9a6b10" stroke-width="4"/>
+    <circle cx="0" cy="-130" r="42" fill="none" stroke="#9a6b10" stroke-width="3"/>
+    <circle cx="0" cy="-130" r="16" fill="#c0392b" stroke="#7a2418" stroke-width="3"/>
+    <circle cx="30.0" cy="-130.0" r="4.5" fill="#9a6b10"/><circle cx="21.2" cy="-108.8" r="4.5" fill="#9a6b10"/><circle cx="0.0" cy="-100.0" r="4.5" fill="#9a6b10"/><circle cx="-21.2" cy="-108.8" r="4.5" fill="#9a6b10"/><circle cx="-30.0" cy="-130.0" r="4.5" fill="#9a6b10"/><circle cx="-21.2" cy="-151.2" r="4.5" fill="#9a6b10"/><circle cx="-0.0" cy="-160.0" r="4.5" fill="#9a6b10"/><circle cx="21.2" cy="-151.2" r="4.5" fill="#9a6b10"/></g></g>
+</svg>
