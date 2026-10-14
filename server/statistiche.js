@@ -8,6 +8,7 @@ const Levels = require('./levels');
 const Trophies = require('./trophies');
 const ctx = require('./contesto');
 const Elo = require('./elo');
+const Premi = require('../shared/premi');
 const { io, sessions, leaderboard, daily } = ctx;
 // funzioni degli altri moduli (lette dal contesto al momento della chiamata)
 const tournamentsChanged = (...a) => ctx.tournamentsChanged(...a);
@@ -117,7 +118,8 @@ function recordLeaderboard(room) {
     leaderboard.set(s.token, e);
     const lv = Levels.levelOf(e);
     if (room.recordedHand !== handKey || gameEnds) {
-      for (const sock of io.sockets.sockets.values()) if (sock.data.token === s.token) sock.emit('progress', { ...lv, up: lv.level > levelBefore });
+      const unlocks = Premi.unlockedIds({ level: lv.level, trophies: e.trophies || {} });
+      for (const sock of io.sockets.sockets.values()) if (sock.data.token === s.token) sock.emit('progress', { ...lv, unlocks, up: lv.level > levelBefore });
     }
     if (fresh.length) {
       const list = fresh.map((id) => { const t = Trophies.BY_ID.get(id); return { id, e: t.e, name: t.name, desc: t.desc }; });

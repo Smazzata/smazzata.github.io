@@ -327,6 +327,11 @@ function eloTests() {
   d = Elo.deltas([h(1000, 0), h(1000, 0), h(1000, 0), h(1000, 0)], [[0, 2], [1, 3]], [1, 3]);
   assert(d[1] === 20 && d[3] === 20 && d[0] === -20, 'a coppie: tutta la coppia sale o scende');
   console.log('punteggio Elo OK');
+  // premi: sbloccati per livello o trofei
+  const P = require('../shared/premi');
+  const ids = P.unlockedIds({ level: 6, trophies: { torneo: 1 } });
+  assert(ids.includes('t_veterano') && ids.includes('f_smeraldo') && ids.includes('f_argento') && !ids.includes('t_maestro'), 'premi sbloccati');
+  assert(P.LIST.every((p) => !p.need.trophy || require('./trophies').BY_ID.get(p.need.trophy)), 'ogni premio chiede un trofeo che esiste');
 }
 
 function trophyTests() {

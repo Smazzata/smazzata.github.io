@@ -910,3 +910,21 @@ body.vmelds .felt > .teamzone.theirs { flex: 1 1 auto; }
 .smdeck .card + .card { position: absolute; left: 15px; top: 9px; z-index: -1; }
 .smdeck.can { cursor: pointer; background: rgba(242,193,78,.18); box-shadow: 0 0 0 2px var(--gold); color: #fff; }
 @keyframes shake { 0%, 100% { transform: none; } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+
+/* premi: cornici dell'avatar, titolo sotto il nome, dorsi speciali */
+.avatar.fr-argento { box-shadow: 0 0 0 2px #e3e7ea, 0 0 0 4px #9aa4ab, 0 2px 6px rgba(0,0,0,.35); }
+.avatar.fr-oro { box-shadow: 0 0 0 2px #ffe08a, 0 0 0 4px #c8901c, 0 0 10px rgba(242,193,78,.6); }
+.avatar.fr-smeraldo { box-shadow: 0 0 0 2px #7ee2a8, 0 0 0 4px #148a4c, 0 0 10px rgba(46,204,113,.5); }
+.avatar.fr-fiamma { box-shadow: 0 0 0 2px #ffcc80, 0 0 0 4px #e8590c; animation: frFlame 1.6s ease-in-out infinite alternate; }
+.avatar.fr-arcobaleno { border-color: transparent; background: radial-gradient(circle at 35% 30%, #fff8, transparent 60%) padding-box, var(--c, #888) padding-box, conic-gradient(#ff6b6b, #ffd93d, #6bcb77, #4d96ff, #b06ab3, #ff6b6b) border-box; border-width: 3px; }
+@keyframes frFlame { from { box-shadow: 0 0 0 2px #ffcc80, 0 0 0 4px #e8590c, 0 0 6px rgba(232,89,12,.4); } to { box-shadow: 0 0 0 2px #ffe0b2, 0 0 0 4px #ff7a1a, 0 0 16px rgba(255,122,26,.75); } }
+.seatchip .stitle { font-size: 10px; color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+.tight1 .seatchip .stitle, .tight2 .seatchip .stitle { display: none; }
+.avtitle { display: block; font-size: 12px; color: var(--gold-2, #b8860b); font-weight: 600; }
+.looks { display: flex; flex-wrap: wrap; gap: 6px; }
+.swatch.locked { opacity: .55; }
+body[data-back="oro"] { --back-1: #b8860b; --back-2: #f2c14e; }
+body[data-back="notte"] { --back-1: #0b1d3a; --back-2: #2a3f7a; }
+body[data-back="smeraldo"] { --back-1: #0d5c3a; --back-2: #2bb673; }
+.back-oro { background: linear-gradient(135deg, #b8860b, #f2c14e); } .back-notte { background: linear-gradient(135deg, #0b1d3a, #2a3f7a); } .back-smeraldo { background: linear-gradient(135deg, #0d5c3a, #2bb673); }
+.swatch.locked { font-size: 11px; padding: 3px 7px; }

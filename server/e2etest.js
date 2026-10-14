@@ -114,6 +114,11 @@ const step = (t) => console.log('✓ ' + t);
     assert(!(await A.call('voice', { audio: Buffer.alloc(400 * 1024), mime: 'audio/webm', ms: 1000 })).ok, 'troppo lungo');
     step('messaggi vocali: inoltrati al tavolo, con limiti di formato, dimensione e frequenza');
 
+    // stile: un titolo bloccato è rifiutato, quello di partenza va bene e arriva agli altri al tavolo
+    assert(!(await A.call('setLook', { title: 't_maestro' })).ok, 'titolo bloccato');
+    assert((await A.call('setLook', { frame: 'f_nessuna', title: 't_principiante' })).ok, 'stile di partenza');
+    step('stile: titoli e cornici solo se sbloccati');
+
     // --- avatar e reazioni ---
     assert(!(await A.call('setAvatar', { e: '💩', c: '#000' })).ok, 'avatar non previsto rifiutato');
     assert((await A.call('setAvatar', { e: '🦊', c: '#64b5f6' })).ok);
@@ -367,7 +372,7 @@ const step = (t) => console.log('✓ ' + t);
       if (Date.now() > endD) throw new Error('la sfida non finisce');
       const g = Dd.state.game;
       // la variante cambia ogni giorno: nei giochi di presa si gioca una carta, negli altri si pesca e si scarta
-      if (g.turn === g.you && g.presa) await Dd.call('action', { type: 'play', cardId: g.hand[0].id });
+      if (g.turn === g.you && g.presa) await Dd.call('action', { type: 'play', cardId: (g.playable ? g.hand.find((c) => g.playable.includes(c.id)) : g.hand[0]).id });
       else if (g.turn === g.you && g.phase === 'draw') await Dd.call('action', { type: 'draw' });
       else if (g.turn === g.you && g.phase === 'play') {
         for (const c of g.hand.slice().reverse()) if ((await Dd.call('action', { type: 'discard', cardId: c.id })).ok) break;

@@ -102,7 +102,11 @@
       <h4>Colore del tavolo</h4>
       <div class="row">${opt('felt', 'verde', '<i class="sw felt-verde"></i>Verde')}${opt('felt', 'blu', '<i class="sw felt-blu"></i>Blu')}${opt('felt', 'bordeaux', '<i class="sw felt-bordeaux"></i>Bordeaux')}${opt('felt', 'antracite', '<i class="sw felt-antracite"></i>Antracite')}</div>
       <h4>Dorso delle carte</h4>
-      <div class="row">${opt('back', 'rosso', '<i class="sw back-rosso"></i>Rosso')}${opt('back', 'blu', '<i class="sw back-blu"></i>Blu')}${opt('back', 'verde', '<i class="sw back-verde"></i>Verde')}${opt('back', 'nero', '<i class="sw back-nero"></i>Nero')}</div>
+      <div class="row">${opt('back', 'rosso', '<i class="sw back-rosso"></i>Rosso')}${opt('back', 'blu', '<i class="sw back-blu"></i>Blu')}${opt('back', 'verde', '<i class="sw back-verde"></i>Verde')}${opt('back', 'nero', '<i class="sw back-nero"></i>Nero')}${[['oro', 'b_oro', 'Oro'], ['notte', 'b_notte', 'Notte stellata'], ['smeraldo', 'b_smeraldo', 'Smeraldo']].map(([id, pid, label]) => {
+        const free = ((S.progress && S.progress.unlocks) || []).includes(pid);
+        return free ? opt('back', id, `<i class="sw back-${id}"></i>${label}`)
+          : `<button class="swatch locked" disabled title="${esc(window.BurracoPremi.howTo(window.BurracoPremi.BY_ID[pid]))}"><i class="sw back-${id}"></i>🔒 ${label}</button>`;
+      }).join('')}</div>
       <h4>Stile delle carte</h4>
       <div class="row">${DECKS.map(([id, label]) => opt('deck', id, `<span class="deckprev" data-deck="${id}">${cardHTML({ r: 13, s: 'H', id: -80 }, 'withpips')}${cardHTML({ r: ['americane', 'francesi', 'italiane'].includes(id) ? 3 : 7, s: 'D', id: -81 }, 'withpips')}${cardHTML({ r: 1, s: 'C', id: -82 }, 'withpips')}</span>${label}`)).join('')}</div>
       <h4>Carte</h4>

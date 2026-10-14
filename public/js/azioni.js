@@ -371,6 +371,8 @@
         ${r.trophies && r.trophies.length ? `<h3>🏆 Trofei (${r.trophies.length})</h3><div class="trophyrow">${r.trophies.map((t) => `<span title="${esc(t.name)}">${esc(t.e)}</span>`).join('')}</div>` : ''}
         ${r.nick !== (S.social && S.social.nick) ? `<div class="row" style="margin-top:12px"><button class="btn small danger" data-act="block" data-nick="${esc(r.nick)}">🚫 Rimuovi e blocca</button><button class="btn small" data-act="reportPlayer" data-nick="${esc(r.nick)}">⚠️ Segnala</button></div>` : ''}</div>`);
     },
+    async pickTitle(el) { const r = await emit('setLook', { title: el.dataset.id }); if (r.ok) profileModal(); },
+    async pickFrame(el) { const r = await emit('setLook', { frame: el.dataset.id }); if (r.ok) profileModal(); },
     async pickAvatar(el) { const r = await emit('setAvatar', { e: el.dataset.e, c: el.dataset.c }); if (r.ok) profileModal(); },
     reactPicker() {
       S.reactOpen = !S.reactOpen;

@@ -153,7 +153,7 @@
 
   const SEAT_COLORS = ['#f2c14e', '#64b5f6', '#ef7d7d', '#81c784'];
   function avatarHTML(name, seat, isBot, av) {
-    if (av && !isBot) return `<span class="avatar emo" style="--c:${esc(av.c)}">${esc(av.e)}</span>`;
+    if (av && !isBot) return `<span class="avatar emo ${av.f ? 'fr-' + esc(av.f) : ''}" style="--c:${esc(av.c)}">${esc(av.e)}</span>`;
     const initial = esc((name || '?').trim().charAt(0).toUpperCase());
     return `<span class="avatar" style="--c:${SEAT_COLORS[seat % 4]}">${isBot ? '🤖' : initial}</span>`;
   }

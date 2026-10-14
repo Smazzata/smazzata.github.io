@@ -70,6 +70,9 @@ ctx.social = createSocial({
 });
 ctx.push = createPush({ dataDir: DATA_DIR, sessions, contact: HOME_URL });
 const { social } = ctx;
+const Premi = require('../shared/premi');
+/** livello + premi sbloccati (titoli, cornici, dorsi) */
+const progressOf = (e) => { const lv = Levels.levelOf(e); return { ...lv, unlocks: Premi.unlockedIds({ level: lv.level, trophies: (e && e.trophies) || {} }) }; };
 
 io.on('connection', (socket) => {
   const handler = (fn) => (data, cb) => {
@@ -90,7 +93,7 @@ io.on('connection', (socket) => {
     if (sess.nick) sess.name = sess.nick; else if (name) sess.name = cleanName(name);
     socket.data.token = token;
     socket.emit('welcome', { token, name: sess.name, nick: sess.nick || null });
-    socket.emit('progress', Levels.levelOf(leaderboard.get(token)));
+    socket.emit('progress', progressOf(leaderboard.get(token)));
     socket.emit('myGames', myGames(token));
     social.push(token);
     social.pushFriends(token);

@@ -9,6 +9,8 @@
  */
 const crypto = require('crypto');
 const { GameError } = require('./engine');
+const Premi = require('../shared/premi');
+const Levels = require('./levels');
 
 const NICK_RE = /^[A-Za-z0-9_.-]{3,16}$/;
 const CODE_ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -136,7 +138,28 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       const token = me();
       const s = sess(token);
       if (!AVATAR_EMOJI.includes(e) || !AVATAR_COLORS.includes(c)) fail('Avatar non valido');
-      s.avatar = { e, c };
+      // si cambiano emoji e colore, titolo e cornice restano
+      s.avatar = { ...(s.avatar || {}), e, c };
+      renamePlayer(token, null);
+      push(token);
+      pushFriends(token);
+      return { avatar: s.avatar };
+    }));
+
+    // Il mio stile: titolo sotto il nome e cornice dell'avatar, tra i premi sbloccati giocando
+    socket.on('setLook', handler(({ title, frame }) => {
+      const token = me();
+      const s = sess(token);
+      if (!s.nick) fail('Scegli prima un nickname');
+      const e = (require('./contesto').leaderboard.get(token)) || {};
+      const mine = { level: Levels.levelOf(e).level, trophies: e.trophies || {} };
+      const ok = (id, kind) => id && Premi.BY_ID[id] && Premi.BY_ID[id].kind === kind && Premi.isUnlocked(Premi.BY_ID[id], mine);
+      if (title !== undefined && title !== null && !ok(title, 'title')) fail('Titolo non ancora sbloccato');
+      if (frame !== undefined && frame !== null && !ok(frame, 'frame')) fail('Cornice non ancora sbloccata');
+      const av = { ...(s.avatar || { e: s.nick.charAt(0).toUpperCase(), c: '#f2c14e' }) };
+      if (title !== undefined) { if (title && title !== 't_principiante') av.t = Premi.BY_ID[title].name; else delete av.t; av.tid = title || undefined; }
+      if (frame !== undefined) { if (frame && frame !== 'f_nessuna') av.f = frame.slice(2); else delete av.f; }
+      s.avatar = av;
       renamePlayer(token, null);
       push(token);
       pushFriends(token);

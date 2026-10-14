@@ -38,6 +38,20 @@
     return q.createDataURL(6, 2);
   }
 
+  /** Il mio stile: titolo e cornice tra i premi sbloccati (gli altri si vedono con il lucchetto e come sbloccarli) */
+  function lookHTML(av) {
+    const P = window.BurracoPremi;
+    const free = new Set((S.progress && S.progress.unlocks) || []);
+    const curT = av.tid || 't_principiante', curF = av.f ? 'f_' + av.f : 'f_nessuna';
+    const chip = (p, cur, act) => (free.has(p.id)
+      ? `<button class="swatch ${p.id === cur ? 'on' : ''}" data-act="${act}" data-id="${p.id}">${esc(p.name)}</button>`
+      : `<button class="swatch locked" disabled title="Si sblocca con: ${esc(P.howTo(p))}">🔒 ${esc(p.name)} <small>· ${esc(P.howTo(p))}</small></button>`);
+    return `<h4>Il tuo stile</h4>
+      <p class="muted small">Titolo e cornice si vedono al tavolo. Si sbloccano salendo di livello e vincendo trofei.</p>
+      <div class="looks">${P.LIST.filter((p) => p.kind === 'title').map((p) => chip(p, curT, 'pickTitle')).join('')}</div>
+      <div class="looks" style="margin-top:8px">${P.LIST.filter((p) => p.kind === 'frame').map((p) => chip(p, curF, 'pickFrame')).join('')}</div>`;
+  }
+
   async function profileModal() {
     const r = await emit('profile');
     if (!r.ok) return;
@@ -50,6 +64,7 @@
       <div class="avpick">${avatarHTML(r.nick, 0, false, av)}
         <div class="avgrid">${r.emoji.map((e) => `<button class="avopt ${e === av.e ? 'on' : ''}" data-act="pickAvatar" data-e="${e}" data-c="${av.c}">${e}</button>`).join('')}</div>
         <div class="avcolors">${r.colors.map((c) => `<button class="avcol ${c === av.c ? 'on' : ''}" style="background:${c}" data-act="pickAvatar" data-e="${av.e}" data-c="${c}" aria-label="colore"></button>`).join('')}</div></div>
+      ${lookHTML(av)}
       <h4>Cambia nickname</h4>
       <form id="nickform" class="row"><input id="nickEdit" class="grow" maxlength="16" autocomplete="off" value="${esc(r.nick)}"><button class="btn primary">Salva</button></form>
       <div class="nickstatus" id="nickStatusEdit"></div>

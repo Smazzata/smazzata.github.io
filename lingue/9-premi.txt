@@ -1,0 +1,41 @@
+# Premi: titoli, cornici, dorsi
+# italiano ‖ English ‖ Español ‖ Português
+Il tuo stile ‖ Your style ‖ Tu estilo ‖ Seu estilo
+Titolo e cornice si vedono al tavolo. Si sbloccano salendo di livello e vincendo trofei. ‖ Title and frame are shown at the table. They unlock as you level up and win trophies. ‖ El título y el marco se ven en la mesa. Se desbloquean subiendo de nivel y ganando trofeos. ‖ Título e moldura aparecem na mesa. São desbloqueados subindo de nível e ganhando troféus.
+Principiante ‖ Beginner ‖ Principiante ‖ Iniciante
+Appassionato ‖ Enthusiast ‖ Aficionado ‖ Entusiasta
+Veterano ‖ Veteran ‖ Veterano ‖ Veterano
+Maestro ‖ Master ‖ Maestro ‖ Mestre
+Leggenda del tavolo ‖ Table legend ‖ Leyenda de la mesa ‖ Lenda da mesa
+Re del Burraco ‖ Burraco King ‖ Rey del Burraco ‖ Rei da Canastra
+Re della Scopa ‖ Scopa King ‖ Rey de la Escoba ‖ Rei da Escopa
+Asso di Briscola ‖ Briscola Ace ‖ As de la Brisca ‖ Ás da Bisca
+Napoletano doc ‖ True Neapolitan ‖ Napolitano de pura cepa ‖ Napolitano legítimo
+Ladro di jolly ‖ Joker thief ‖ Ladrón de comodines ‖ Ladrão de coringa
+Mai dire mai ‖ Never say never ‖ Nunca digas nunca ‖ Nunca diga nunca
+Collezionista di trofei ‖ Trophy collector ‖ Coleccionista de trofeos ‖ Colecionador de troféus
+Nessuna ‖ None ‖ Ninguno ‖ Nenhuma
+Argento ‖ Silver ‖ Plata ‖ Prata
+Oro ‖ Gold ‖ Oro ‖ Ouro
+Smeraldo ‖ Emerald ‖ Esmeralda ‖ Esmeralda
+Fiamma ‖ Flame ‖ Llama ‖ Chama
+Arcobaleno ‖ Rainbow ‖ Arcoíris ‖ Arco-íris
+Notte stellata ‖ Starry night ‖ Noche estrellada ‖ Noite estrelada
+🔒 {0} ‖ 🔒 {0} ‖ 🔒 {0} ‖ 🔒 {0}
+· {0} ‖ · {0} ‖ · {0} ‖ · {0}
+Si sblocca con: {0} ‖ Unlocks with: {0} ‖ Se desbloquea con: {0} ‖ Desbloqueia com: {0}
+livello {0} ‖ level {0} ‖ nivel {0} ‖ nível {0}
+{0} trofei ‖ {0} trophies ‖ {0} trofeos ‖ {0} troféus
+50 burraco ‖ 50 burracos ‖ 50 burracos ‖ 50 canastras
+3 scope in una smazzata ‖ 3 sweeps in one hand ‖ 3 escobas en una mano ‖ 3 escopas numa mão
+100 punti a Briscola ‖ 100 points at Briscola ‖ 100 puntos en la Brisca ‖ 100 pontos na Bisca
+una napoletana a Tressette ‖ a napoletana at Tressette ‖ una napolitana en el Tressette ‖ uma napolitana no Tressette
+un jolly preso a Scala 40 ‖ a joker taken at Scala 40 ‖ un comodín tomado en Scala 40 ‖ um coringa pego na Scala 40
+una rimonta ‖ a comeback ‖ una remontada ‖ uma virada
+vincere un torneo ‖ winning a tournament ‖ ganar un torneo ‖ vencer um torneio
+primo nella sfida del giorno ‖ first in the daily challenge ‖ primero en el desafío del día ‖ primeiro no desafio do dia
+3 burraco in una smazzata ‖ 3 burracos in one hand ‖ 3 burracos en una mano ‖ 3 canastras numa mão
+50 vittorie ‖ 50 wins ‖ 50 victorias ‖ 50 vitórias
+100 partite ‖ 100 games ‖ 100 partidas ‖ 100 partidas
+Titolo non ancora sbloccato ‖ Title not unlocked yet ‖ Título aún no desbloqueado ‖ Título ainda não desbloqueado
+Cornice non ancora sbloccata ‖ Frame not unlocked yet ‖ Marco aún no desbloqueado ‖ Moldura ainda não desbloqueada
