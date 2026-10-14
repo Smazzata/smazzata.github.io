@@ -457,6 +457,13 @@ function botReactions(room, actor, before, action) {
 
 /** A fine partita aggiorna la classifica una sola volta per partita */
 const STATS0 = { games: 0, wins: 0, points: 0, burraco: 0, hands: 0, handsWon: 0, closures: 0, bestHand: null, handPoints: 0, history: [] };
+/* statistiche di un singolo gioco (e.byGame[gioco]); quelle in cima a e sono il totale (livello e trofei) */
+const GSTATS0 = { games: 0, wins: 0, points: 0, burraco: 0, hands: 0, handsWon: 0, closures: 0, bestHand: null, handPoints: 0 };
+function gameStats(e, gid) {
+  e.byGame = { ...(e.byGame || {}) };
+  e.byGame[gid] = { ...GSTATS0, ...(e.byGame[gid] || {}) };
+  return e.byGame[gid];
+}
 
 /**
  * Statistiche dei giocatori sul server: aggiornate a ogni fine smazzata e a fine partita
@@ -476,17 +483,22 @@ function recordLeaderboard(room) {
     e.name = s.name;
     const levelBefore = Levels.levelOf(e).level;
     const won = []; // trofei guadagnati con questa smazzata/partita
+    const gid = Games.idOf(room.rules);
+    const gs = gameStats(e, gid);
     if (room.recordedHand !== handKey) {
       const mine = hr.teams.find((t) => t.members.includes(seat));
       if (mine && hr.reason !== 'surrender') {
         won.push(...Trophies.fromHand(mine));
-        e.hands++;
-        if (mine.total === Math.max(...hr.teams.map((t) => t.total))) e.handsWon++;
-        e.burraco += mine.burraco.length;
-        e.handPoints += mine.total;
-        e.bestHand = e.bestHand == null ? mine.total : Math.max(e.bestHand, mine.total);
+        const handWon = mine.total === Math.max(...hr.teams.map((t) => t.total));
+        for (const x of [e, gs]) {
+          x.hands++;
+          if (handWon) x.handsWon++;
+          x.burraco += mine.burraco.length;
+          x.handPoints += mine.total;
+          x.bestHand = x.bestHand == null ? mine.total : Math.max(x.bestHand, mine.total);
+        }
       }
-      if (hr.reason === 'close' && hr.closer === seat) e.closures++;
+      if (hr.reason === 'close' && hr.closer === seat) { e.closures++; gs.closures++; }
     }
     if (gameEnds) {
       const myTeam = g.teams.find((t) => t.members.includes(seat));
@@ -497,12 +509,14 @@ function recordLeaderboard(room) {
         allBotsDifficile: ['difficile', 'esperto'].includes(room.botLevel) && room.seats.every((o, i) => myTeam.members.includes(i) || (o && o.isBot)),
       }));
       if (room.series && room.series.champion && room.series.champion.includes(seat)) won.push('campione');
-      e.games++;
-      if (g.winners.includes(seat)) e.wins++;
-      e.points += g.scores[seat];
+      for (const x of [e, gs]) {
+        x.games++;
+        if (g.winners.includes(seat)) x.wins++;
+        x.points += g.scores[seat];
+      }
       const team = g.teams.find((t) => t.members.includes(seat));
       e.history = [{
-        at: Date.now(), preset: Games.of(room).presetOf(room.rules) || 'personalizzate', won: g.winners.includes(seat),
+        at: Date.now(), game: gid, preset: Games.of(room).presetOf(room.rules) || 'personalizzate', won: g.winners.includes(seat),
         hands: g.history.length,
         teams: g.teams.map((t) => ({ names: t.members.map((x) => room.seats[x].name), score: g.scores[t.members[0]], mine: t === team })),
         tokens: room.seats.filter((x) => x && !x.isBot && x.token).map((x) => x.token),
@@ -587,6 +601,13 @@ function recordSeries(room) {
 }
 
 /** Statistiche pubblicabili di un giocatore (senza token) */
+/** Statistiche pubblicabili di ogni gioco giocato: { burraco: {...}, scala40: {...} } */
+function statsByGame(e) {
+  const out = {};
+  for (const [gid, x] of Object.entries((e && e.byGame) || {})) if (x.games || x.hands) out[gid] = publicStats({ ...x, name: e.name });
+  return out;
+}
+
 function publicStats(e) {
   return {
     name: e.name, games: e.games, wins: e.wins, points: e.points, burraco: e.burraco, hands: e.hands || 0,
@@ -949,17 +970,18 @@ io.on('connection', (socket) => {
     broadcast(room);
   }));
 
-  socket.on('leaderboard', handler(({ friends } = {}) => {
+  socket.on('leaderboard', handler(({ friends, game } = {}) => {
+    const gid = game === 'scala40' ? 'scala40' : 'burraco';
     const me = socket.data.token;
     const mine = sessions.get(me) || {};
     const allowed = friends ? new Set([me, ...(mine.friends || [])]) : null;
     const list = [...leaderboard.entries()]
       .filter(([token]) => !allowed || allowed.has(token))
-      .map(([token, e]) => ({ name: e.name, games: e.games, wins: e.wins, points: e.points, burraco: e.burraco, level: Levels.levelOf(e).level, me: token === me }))
+      .map(([token, e]) => { const x = (e.byGame && e.byGame[gid]) || GSTATS0; return { name: e.name, games: x.games, wins: x.wins, points: x.points, burraco: x.burraco, level: Levels.levelOf(e).level, me: token === me }; })
       .filter((e) => e.games > 0)
       .sort((a, b) => b.wins - a.wins || (b.wins / b.games) - (a.wins / a.games) || b.points - a.points)
       .slice(0, 30);
-    return { list };
+    return { list, game: gid };
   }));
 
   // Le mie statistiche e il mio storico
@@ -968,9 +990,10 @@ io.on('connection', (socket) => {
     if (!e) return { stats: null, history: [], trophies: Trophies.view(null), level: Levels.levelOf(null) };
     return {
       stats: publicStats(e),
+      byGame: statsByGame(e),
       level: Levels.levelOf(e),
       trophies: Trophies.view(e),
-      history: (e.history || []).map((h) => ({ at: h.at, preset: h.preset, won: h.won, hands: h.hands, teams: h.teams })),
+      history: (e.history || []).map((h) => ({ at: h.at, game: h.game || 'burraco', preset: h.preset, won: h.won, hands: h.hands, teams: h.teams })),
     };
   }));
 
@@ -991,6 +1014,7 @@ io.on('connection', (socket) => {
     return {
       nick: sess.nick, avatar: sess.avatar || null,
       stats: e ? publicStats(e) : null,
+      byGame: statsByGame(e),
       level: Levels.levelOf(e).level,
       trophies: Trophies.view(e).filter((t) => t.at).map(({ id, e: em, name, at }) => ({ id, e: em, name, at })),
       together: {
@@ -1336,7 +1360,13 @@ function loadSaved() {
     console.log(`Archivio dati: ${store.kind === 'sqlite' ? 'database SQLite (data/burraco.db)' : 'file data/stato.json'}`);
     if (!data) return;
     for (const [token, sess] of data.sessions || []) sessions.set(token, sess);
-    for (const [token, e] of data.leaderboard || []) leaderboard.set(token, e);
+    for (const [token, e] of data.leaderboard || []) {
+      // prima delle statistiche per gioco si giocava solo a Burraco
+      if (!e.byGame && (e.games || e.hands)) {
+        e.byGame = { burraco: { games: e.games || 0, wins: e.wins || 0, points: e.points || 0, burraco: e.burraco || 0, hands: e.hands || 0, handsWon: e.handsWon || 0, closures: e.closures || 0, bestHand: e.bestHand == null ? null : e.bestHand, handPoints: e.handPoints || 0 } };
+      }
+      leaderboard.set(token, e);
+    }
     reports = data.reports || [];
     for (const [d, m] of data.daily || []) daily.set(d, m);
     for (const lg of data.leagues || []) leagues.set(lg.id, lg);

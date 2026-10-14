@@ -308,7 +308,7 @@
         <div class="cardhead">${avatarHTML(r.nick, 0, false, r.avatar || { e: r.nick.charAt(0).toUpperCase(), c: '#9e9e9e' })}<h2>${esc(r.nick)} ${lvlHTML(r.level)}</h2></div>
         <h3>Insieme</h3>
         ${t.games ? `<p>${t.games} partite insieme: ${t.asPartners} in coppia (${t.winsTogether} vinte), ${t.games - t.asPartners} da avversari (tu ne hai vinte ${t.winsAgainst}).</p>${historyHTML(t.recent.map((h) => ({ ...h, preset: '', hands: 0 })))}` : '<p class="muted">Non avete ancora finito una partita insieme.</p>'}
-        <h3>Statistiche</h3>${r.stats ? statsTable(r.stats) : '<p class="muted">Nessuna partita completata.</p>'}
+        <h3>Statistiche</h3>${r.stats ? byGameHTML(r.byGame, r.stats) : '<p class="muted">Nessuna partita completata.</p>'}
         ${r.trophies && r.trophies.length ? `<h3>🏆 Trofei (${r.trophies.length})</h3><div class="trophyrow">${r.trophies.map((t) => `<span title="${esc(t.name)}">${esc(t.e)}</span>`).join('')}</div>` : ''}
         ${r.nick !== (S.social && S.social.nick) ? `<button class="btn small danger" style="margin-top:12px" data-act="block" data-nick="${esc(r.nick)}">🚫 Rimuovi e blocca</button>` : ''}</div>`);
     },
@@ -348,13 +348,17 @@
     unfriend(el) { if (confirm(`Rimuovere ${el.dataset.nick}?`)) emit('friendRemove', { nick: el.dataset.nick }); },
     toggleTheme() { S.prefs.theme = S.prefs.theme === 'scuro' ? 'chiaro' : 'scuro'; applyPrefs(); render(); },
     async leaders(el) {
-      const friends = !!(el && el.dataset && el.dataset.friends);
-      const r = await emit('leaderboard', { friends });
+      const d = (el && el.dataset) || {};
+      if (d.friends !== undefined) S.lbFriends = d.friends === '1';
+      if (d.game) S.lbGame = d.game;
+      const friends = !!S.lbFriends, game = S.lbGame || 'burraco';
+      const r = await emit('leaderboard', { friends, game });
       if (!r.ok) return;
-      const tabs = `<div class="row tabs"><button class="swatch ${friends ? '' : 'on'}" data-act="leaders">Tutti</button><button class="swatch ${friends ? 'on' : ''}" data-act="leaders" data-friends="1">Solo amici</button></div>`;
-      const rows = r.list.map((e, i) => `<tr class="${e.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][i] || i + 1}</td><td style="text-align:left">${esc(e.name)} ${lvlHTML(e.level)}${e.me ? ' (tu)' : ''}</td><td>${e.wins}/${e.games}</td><td>${Math.round((e.wins / e.games) * 100)}%</td><td>${e.burraco}</td></tr>`).join('');
+      const tabs = `<div class="row tabs"><button class="swatch ${game === 'burraco' ? 'on' : ''}" data-act="leaders" data-game="burraco">🃏 Burraco</button><button class="swatch ${game === 'scala40' ? 'on' : ''}" data-act="leaders" data-game="scala40">🂡 Scala 40</button></div>
+        <div class="row tabs"><button class="swatch ${friends ? '' : 'on'}" data-act="leaders" data-friends="0">Tutti</button><button class="swatch ${friends ? 'on' : ''}" data-act="leaders" data-friends="1">Solo amici</button></div>`;
+      const rows = r.list.map((e, i) => `<tr class="${e.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][i] || i + 1}</td><td style="text-align:left">${esc(e.name)} ${lvlHTML(e.level)}${e.me ? ' (tu)' : ''}</td><td>${e.wins}/${e.games}</td><td>${Math.round((e.wins / e.games) * 100)}%</td><td>${game === 'scala40' ? '' : e.burraco}</td></tr>`).join('');
       openModal('leaders', `<div class="result"><h2>🏆 Classifica</h2>${tabs}
-        ${rows ? `<table><tr><th></th><th style="text-align:left">Giocatore</th><th>Vinte</th><th>%</th><th>Burraco</th></tr>${rows}</table>` : '<p class="muted">Ancora nessuna partita completata. La classifica conta le partite finite tra giocatori umani (anche contro il computer).</p>'}
+        ${rows ? `<table><tr><th></th><th style="text-align:left">Giocatore</th><th>Vinte</th><th>%</th><th>${game === 'scala40' ? '' : 'Burraco'}</th></tr>${rows}</table>` : '<p class="muted">Ancora nessuna partita completata. La classifica conta le partite finite tra giocatori umani (anche contro il computer).</p>'}
         <p class="muted small">Classifica di tutti i giocatori di questo server.</p></div>`);
     },
     resetStats() { if (confirm('Azzerare le statistiche?')) { store.set('bur_stats', {}); statsModal(); } },

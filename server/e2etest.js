@@ -238,6 +238,7 @@ const step = (t) => console.log('✓ ' + t);
     const ms = await A.call('myStats');
     assert(ms.ok && ms.stats.games === 1 && ms.stats.hands >= 1 && ms.history.length === 1, 'statistiche e storico di Anna');
     assert(ms.history[0].teams.some((t) => t.mine), 'nello storico è segnata la propria squadra');
+    assert(ms.byGame.burraco && ms.byGame.burraco.games === 1 && !ms.byGame.scala40, 'statistiche del Burraco separate');
     // trofei: "Tra amici" (Anna e Bruno sono amici), avvisi in tempo reale, bacheca con l'avanzamento
     await A.until(() => A.trophies.includes('amici'), 'avviso del trofeo');
     const tAmici = ms.trophies.find((t) => t.id === 'amici');
@@ -518,6 +519,10 @@ const step = (t) => console.log('✓ ' + t);
     const hrQ = Q.state.game.handResult;
     assert(hrQ.teams.length === 2 && hrQ.teams.every((t) => t.total <= 0), 'penalità a fine smazzata');
     assert((await Q.call('replay')).ok, 'moviola della Scala 40');
+    const qst = await Q.call('myStats');
+    assert(qst.byGame.scala40 && qst.byGame.scala40.hands >= 1 && !qst.byGame.burraco, 'statistiche della Scala 40 separate');
+    const lb40 = await Q.call('leaderboard', { game: 'scala40' });
+    assert(lb40.ok && lb40.game === 'scala40' && lb40.list.every((x) => x.name !== 'Anna'), 'classifica della Scala 40 senza le partite di Burraco');
     Q.sock.close();
     step(`Scala 40: smazzata giocata, penalità ${hrQ.teams.map((t) => -t.total).join(' e ')}`);
 

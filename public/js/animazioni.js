@@ -130,9 +130,16 @@
         ${t.at ? `<span class="tdate">${new Date(t.at).toLocaleDateString('it-IT')}</span>` : ''}</div>`).join('')}</div>`;
   }
 
-  function statsTable(st) {
+  function statsTable(st, gid) {
     const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
     const row = (l, v) => `<tr><td>${l}</td><td><b>${v}</b></td></tr>`;
+    if (gid === 'scala40') {
+      return `<table>
+      ${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
+      ${row('Smazzate giocate', st.hands)}${row('Chiusure', `${st.closures} (${pct(st.closures, st.hands)})`)}
+      ${row('Penalità media a smazzata', st.avgHand == null ? '—' : -st.avgHand)}
+    </table>`;
+    }
     return `<table>
       ${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
       ${row('Smazzate giocate', st.hands)}${row('Smazzate vinte', `${st.handsWon} (${pct(st.handsWon, st.hands)})`)}
@@ -145,8 +152,15 @@
     if (!list.length) return '<p class="muted">Nessuna partita completata.</p>';
     return list.map((h) => `<div class="hist ${h.won ? 'won' : 'lost'}">
       <span class="hres">${h.won ? '🏆' : '—'}</span>
-      <span class="grow"><b>${h.won ? 'Vinta' : 'Persa'}</b> · ${fmtDate(h.at)} · ${PRESET_NAMES[h.preset] || h.preset}${h.hands ? ` · ${h.hands} smazzate` : ''}<br>
+      <span class="grow"><b>${h.won ? 'Vinta' : 'Persa'}</b> · ${fmtDate(h.at)} · ${h.game === 'scala40' ? 'Scala 40' : PRESET_NAMES[h.preset] || h.preset}${h.hands ? ` · ${h.hands} smazzate` : ''}<br>
       <span class="muted small">${h.teams.map((t) => `${t.mine ? '<b>' : ''}${t.names.map(esc).join(' & ')} ${t.score}${t.mine ? '</b>' : ''}`).join(' · ')}</span></span></div>`).join('');
+  }
+
+  /** Statistiche divise per gioco (una tabella per gioco giocato) */
+  function byGameHTML(byGame, total) {
+    const games = Object.entries(byGame || {});
+    if (!games.length) return total ? statsTable(total) : '<p class="muted">Gioca la tua prima smazzata per vedere le statistiche.</p>';
+    return games.map(([gid, st]) => `<h3>${gid === 'scala40' ? '🂡 Scala 40' : '🃏 Burraco'}</h3>${statsTable(st, gid)}`).join('');
   }
 
   async function statsModal() {
@@ -157,7 +171,7 @@
       ${r.level ? `<div class="lvlbox">${lvlHTML(r.level.level)}<div><b>Livello ${r.level.level}</b>
         <em class="xpbar"><u style="width:${Math.round((r.level.into / r.level.need) * 100)}%"></u></em>
         <span class="muted small">${r.level.into}/${r.level.need} punti esperienza al livello ${r.level.level + 1} · partite, vittorie, burraco, chiusure e trofei fanno salire</span></div></div>` : ''}
-      ${r.stats ? statsTable(r.stats) : '<p class="muted">Gioca la tua prima smazzata per vedere le statistiche.</p>'}
+      ${byGameHTML(r.byGame, r.stats)}
       ${r.trophies ? trophiesHTML(r.trophies) : ''}
       <h3>Ultime partite</h3>${historyHTML(r.history)}
       <p class="muted small">Le statistiche sono salvate sul server: ti seguono anche se cambi dispositivo.</p></div>`);
