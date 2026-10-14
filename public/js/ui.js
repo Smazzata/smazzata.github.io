@@ -85,6 +85,13 @@
 
   const DECKS = [['classiche', 'Classiche'], ['moderne', 'Moderne'], ['quattro', 'Quattro colori'], ['grandi', 'Indici grandi'], ['vintage', 'Vintage'], ['americane', 'Americane'], ['francesi', 'Francesi'], ['italiane', 'Italiane']];
 
+  /** Il mio compagno di squadra è una persona? (allora la resa va proposta) */
+  function partnerIsHuman() {
+    const g = S.game, r = S.room;
+    const team = g && g.teams.find((t) => t.members.includes(g.you));
+    return !!(team && team.members.some((x) => x !== g.you && r.seats[x] && !r.seats[x].isBot));
+  }
+
   function settingsModal() {
     const opt = (key, val, label, extra = '') => `<button class="swatch ${S.prefs[key] === val ? 'on' : ''}" data-act="pref" data-key="${key}" data-val="${val}" ${extra}>${label}</button>`;
     openModal('settings', `<h2>Aspetto e suoni</h2>
@@ -107,6 +114,11 @@
       <h4>Suoni</h4>
       <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
       ${S.room && S.room.slow && S.game && !S.game.over && S.game.you >= 0 ? '<h4>Partita con calma</h4><button class="btn small danger" data-act="abandon">🏳️ Abbandona la partita</button>' : ''}
+      ${S.game && !S.game.over && S.game.you >= 0 ? `<h4>Fine della partita</h4><div class="row">
+        <button class="btn small danger" data-act="surrender">🏳️ ${partnerIsHuman() ? 'Proponi la resa al compagno' : 'Arrenditi'}</button>
+        ${S.room.isHost && !S.room.daily ? '<button class="btn small" data-act="endGame">⛔ Termina la partita</button>' : ''}
+        ${S.room.isHost ? '<button class="btn small" data-act="closeTable">🚪 Chiudi il tavolo</button>' : ''}</div>
+        <p class="muted small">Arrendersi fa vincere gli avversari. «Termina» chiude la partita senza vincitori e riporta tutti in sala d'attesa; «Chiudi il tavolo» manda tutti alla schermata iniziale.</p>` : ''}
       <h4>Qualcosa non va?</h4><button class="btn small" data-act="report">🐞 Segnala un problema</button>
       ${S.room && S.room.isHost && (!S.game || S.game.over) ? `<h4>Torneo (si imposta tra una partita e l'altra)</h4>${seriesPickHTML(S.room.series && S.room.series.bestOf)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Aiuto: dove attaccare le carte</h4>${aidsHTML(S.room.aids !== false)}` : ''}

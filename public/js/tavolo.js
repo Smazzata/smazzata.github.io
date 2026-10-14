@@ -261,6 +261,7 @@
         const recap = canDraw ? recapHTML(g, fresh) : '';
         return (w ? `<div class="ticker warn w${w.level}">${w.text}</div>` : recap ? '' : `<div class="ticker" data-act="log" title="Ultima mossa (tocca per la cronaca)">${esc(lastMove(g))}</div>`) + recap;
       })()}
+      ${surrenderBarHTML(g, r)}
       <div class="felt" id="felt">${others}${center}${mineZone}</div>
       ${r.tutorial && !S.coachOff ? `<div class="coach">🎓 ${coachTip(g)} <button class="ico" data-act="coachOff" title="Nascondi">✕</button></div>` : ''}
       <div class="statusbar ${myTurn ? 'on' : ''}">
@@ -350,6 +351,18 @@
     if (fits()) return;
     felt.classList.add('compact');
     shrink(17);
+  }
+
+  /** Proposta di resa nella mia squadra: il compagno accetta o rifiuta, chi propone può annullare */
+  function surrenderBarHTML(g, r) {
+    const votes = r.surrender;
+    if (!votes || g.you < 0 || g.over) return '';
+    const team = g.teams.find((t) => t.members.includes(g.you));
+    const mine = votes.filter((x) => team && team.members.includes(x));
+    if (!mine.length) return '';
+    if (mine.includes(g.you)) return '<div class="surrbar">🏳️ Hai proposto la resa: aspetta che il compagno accetti. <button class="btn small" data-act="surrenderCancel">Annulla</button></div>';
+    return `<div class="surrbar">🏳️ <b>${esc(g.players[mine[0]].name)}</b> propone di arrendersi.
+      <button class="btn small danger" data-act="surrender" data-ok="1">Accetta</button><button class="btn small" data-act="surrenderCancel">No, giochiamo</button></div>`;
   }
 
   function afterGameRender() {

@@ -146,7 +146,8 @@
         <div class="seats">${seats}</div>
         ${isHost ? `<div class="row" style="margin-top:12px">
             ${full ? '' : '<button class="btn" data-act="fillBots">Riempi con il computer</button>'}
-            <button class="btn primary grow" data-act="start" ${full ? '' : 'disabled'}>Avvia partita</button></div>`
+            <button class="btn primary grow" data-act="start" ${full ? '' : 'disabled'}>Avvia partita</button></div>
+          <div class="row" style="margin-top:8px"><button class="btn small" data-act="closeTable">🚪 Chiudi il tavolo</button></div>`
           : '<p class="muted">In attesa che l\'host avvii la partita…</p>'}
       </div>
       <div class="panel">

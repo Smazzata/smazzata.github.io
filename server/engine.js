@@ -521,6 +521,33 @@ function endHand(g, reason, closerSeat = null) {
   }
 }
 
+/**
+ * Resa: la squadra di `seat` abbandona. La partita finisce subito e vincono le altre squadre.
+ * La smazzata in corso non assegna punti (riepilogo a zero) e non c'è moviola (le carte restano segrete).
+ */
+function surrender(g, seat) {
+  if (g.over) fail('La partita è già finita');
+  const team = teamOf(g, seat);
+  if (!team) fail('Non sei seduto al tavolo');
+  const handWasOpen = g.phase !== 'handEnd';
+  g.phase = 'handEnd';
+  g.snapshot = null;
+  g.turnInfo = null;
+  if (handWasOpen || !g.handResult) {
+    g.handResult = {
+      reason: 'surrender', closer: null, surrendered: team.members.slice(), scores: g.scores.slice(), hands: null,
+      teams: g.teams.map((t) => ({ members: t.members.slice(), names: t.members.map((x) => g.players[x].name), meldPts: 0, burraco: [], bonusPts: 0, handPts: 0, closePts: 0, pozPts: 0, total: 0 })),
+    };
+  } else {
+    g.handResult = { ...g.handResult, reason: 'surrender', surrendered: team.members.slice() };
+  }
+  g.replay = null;
+  if (handWasOpen) g.lastReplay = null; // niente moviola della smazzata precedente come se fosse questa
+  g.over = true;
+  g.winners = g.players.map((p) => p.seat).filter((x) => !team.members.includes(x));
+  addLog(g, `${team.members.map((x) => g.players[x].name).join(' e ')} si ${team.members.length > 1 ? 'arrendono' : 'arrende'}: vince ${g.winners.map((x) => g.players[x].name).join(' e ')}`);
+}
+
 function nextHand(g) {
   if (g.phase !== 'handEnd') fail('La smazzata non è finita');
   if (g.over) fail('La partita è finita');
@@ -600,7 +627,7 @@ function viewFor(g, seat) {
 function note(g, text) { addLog(g, text); }
 
 module.exports = {
-  GameError, note, createGame, apply, isLegal, viewFor, nextHand,
+  GameError, note, createGame, apply, isLegal, viewFor, nextHand, surrender,
   analyzeMeld, analyzeSequence, analyzeSet, meldKind, cardValue, cardName,
   isWild, isJoker, teamOf, canClose, canTakePozzetto, buildCfg,
 };

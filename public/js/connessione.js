@@ -44,6 +44,7 @@
     enablePush();
   });
   // partite con calma: elenco per la schermata iniziale e avvisi "tocca a te" dagli altri tavoli
+  socket.on('notice', ({ text }) => toast(text));
   socket.on('myGames', (list) => {
     S.myGames = list;
     if (S.screen === 'home') render();

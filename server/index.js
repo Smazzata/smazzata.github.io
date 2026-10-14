@@ -202,6 +202,7 @@ function roomInfo(room) {
     daily: room.daily ? { date: room.daily, title: Daily.challenge(room.daily).title } : null,
     quick: room.quick || 0,
     series: room.series || null,
+    surrender: room.surrenderVotes && room.surrenderVotes.length ? room.surrenderVotes : null,
     turnLeft: room.turnDeadline ? Math.max(0, room.turnDeadline - Date.now()) : null,
   };
 }
@@ -457,7 +458,7 @@ function recordLeaderboard(room) {
     const won = []; // trofei guadagnati con questa smazzata/partita
     if (room.recordedHand !== handKey) {
       const mine = hr.teams.find((t) => t.members.includes(seat));
-      if (mine) {
+      if (mine && hr.reason !== 'surrender') {
         won.push(...Trophies.fromHand(mine));
         e.hands++;
         if (mine.total === Math.max(...hr.teams.map((t) => t.total))) e.handsWon++;
@@ -592,7 +593,7 @@ function afterAction(room) {
   const g = room.game;
   room.lastActionAt = Date.now();
   // coach: a fine smazzata, consigli per ogni giocatore umano (li vede solo lui)
-  if (g && g.phase === 'handEnd' && g.lastReplay && room.coachKey !== `${room.gameSeq}:${g.handNo}`) {
+  if (g && g.phase === 'handEnd' && g.lastReplay && g.lastReplay.handNo === g.handNo && room.coachKey !== `${room.gameSeq}:${g.handNo}`) {
     room.coachKey = `${room.gameSeq}:${g.handNo}`;
     room.coachTips = {};
     room.seats.forEach((s, seat) => {
@@ -1022,6 +1023,68 @@ io.on('connection', (socket) => {
   }));
 
   // Ritmo della partita: "con calma" = ognuno gioca quando può, il posto resta suo e la partita aspetta
+  // Resa: la propria squadra abbandona (se il compagno è una persona deve essere d'accordo)
+  socket.on('surrender', handler(() => {
+    const room = getRoom(socket);
+    const g = room.game;
+    const seat = seatOfToken(room, socket.data.token);
+    if (seat < 0) throw new E.GameError('Solo chi gioca può arrendersi');
+    if (!g || g.over) throw new E.GameError('Nessuna partita in corso');
+    const team = E.teamOf(g, seat);
+    const humans = team.members.filter((x) => room.seats[x] && !room.seats[x].isBot);
+    room.surrenderVotes = [...new Set([...(room.surrenderVotes || []).filter((x) => team.members.includes(x)), seat])];
+    if (humans.every((x) => room.surrenderVotes.includes(x))) {
+      room.surrenderVotes = null;
+      E.surrender(g, seat);
+      clearTimeout(room.botTimer); room.botTimer = null;
+      afterAction(room);
+      return { done: true };
+    }
+    broadcast(room); // il compagno vede la proposta
+    return { done: false };
+  }));
+
+  socket.on('surrenderCancel', handler(() => {
+    const room = getRoom(socket);
+    room.surrenderVotes = null;
+    broadcast(room);
+  }));
+
+  // L'host termina la partita senza vincitori (non conta nelle statistiche): tutti tornano in sala d'attesa
+  socket.on('endGame', handler(() => {
+    const room = getRoom(socket);
+    requireHost(socket, room);
+    if (!room.game) throw new E.GameError('Nessuna partita in corso');
+    if (room.daily) throw new E.GameError('Non disponibile nella sfida del giorno');
+    clearTimeout(room.botTimer); room.botTimer = null;
+    room.game = null;
+    room.ready = new Set();
+    room.surrenderVotes = null;
+    // i posti lasciati al computer da chi era uscito tornano liberi
+    room.seats = room.seats.map((s) => (s && s.leftToken ? null : s));
+    io.to(room.code).emit('notice', { text: "L'host ha terminato la partita" });
+    broadcast(room);
+  }));
+
+  // L'host chiude il tavolo: tutti alla schermata iniziale, il tavolo sparisce
+  socket.on('closeTable', handler(() => {
+    const room = getRoom(socket);
+    requireHost(socket, room);
+    clearTimeout(room.botTimer); clearTimeout(room.turnTimerHandle); clearTimeout(room.absentHandle);
+    for (const s of io.sockets.sockets.values()) {
+      if (s.data.room !== room.code) continue;
+      s.leave(room.code);
+      s.data.room = null;
+      const sess = sessions.get(s.data.token);
+      if (sess) sess.room = null;
+      if (s !== socket) s.emit('notice', { text: "L'host ha chiuso il tavolo" });
+      s.emit('state', { room: null, game: null });
+    }
+    rooms.delete(room.code);
+    for (const x of room.seats) if (x && !x.isBot && x.token) pushMyGames(x.token);
+    scheduleSave();
+  }));
+
   socket.on('setSlow', handler(({ on }) => {
     const room = getRoom(socket);
     requireHost(socket, room);

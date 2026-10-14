@@ -93,10 +93,25 @@
     create() { emit('createRoom', { rules: S.rules }); },
     createBots() { emit('createRoom', { rules: S.rules, vsBots: true }); },
     leave() {
+      // in partita: una finestrella con tutte le scelte (uscire, arrendersi, terminare, chiudere)
+      if (S.game && !S.game.over && S.game.you >= 0 && S.modalKind !== 'leave') {
+        const slow = S.room.slow;
+        openModal('leave', `<h2>Uscire dal tavolo?</h2>
+          <div class="leaveopts">
+            <button class="btn primary" data-act="leaveNow">${slow ? '🐢 Torna alla schermata iniziale<br><small>la partita ti aspetta</small>' : '⏏ Esci<br><small>il computer gioca al tuo posto, puoi tornare quando vuoi</small>'}</button>
+            <button class="btn danger" data-act="surrender">🏳️ ${partnerIsHuman() ? 'Proponi la resa al compagno' : 'Arrenditi'}<br><small>vincono gli avversari</small></button>
+            ${S.room.isHost && !S.room.daily ? '<button class="btn" data-act="endGame">⛔ Termina la partita<br><small>nessun vincitore, tutti in sala d’attesa</small></button>' : ''}
+            ${S.room.isHost ? '<button class="btn" data-act="closeTable">🚪 Chiudi il tavolo<br><small>tutti alla schermata iniziale</small></button>' : ''}
+          </div>`);
+        return;
+      }
+      handlers.leaveNow();
+    },
+    leaveNow() {
+      closeModal();
       if (S.room && S.room.slow && S.game && !S.game.over && S.game.you >= 0) {
         toast('🐢 La partita ti aspetta: la trovi nella schermata iniziale');
       } else if (S.game && !S.game.over && S.game.you >= 0) {
-        if (!confirm('Vuoi davvero uscire? Il computer giocherà al tuo posto: potrai tornare quando vuoi dalla schermata iniziale.')) return;
         store.set('bur_lastroom', S.room.code);
       }
       emit('leaveRoom');
@@ -115,6 +130,26 @@
     roomRules() { rulesModal(S.room.rules); },
     daily() { if (!requireName()) return; dailyModal(); },
     replay() { openReplay(); },
+    async surrender(el) {
+      const accepting = el && el.dataset.ok;
+      const text = accepting ? 'Confermi la resa? Vincono gli avversari.'
+        : partnerIsHuman() ? 'Proporre la resa al compagno? Se accetta, la partita finisce e vincono gli avversari.'
+          : 'Arrendersi? La partita finisce e vincono gli avversari.';
+      if (!confirm(text)) return;
+      const r = await emit('surrender');
+      if (r.ok) { closeModal(); if (!r.done) toast('Proposta inviata al compagno'); }
+    },
+    surrenderCancel() { emit('surrenderCancel'); },
+    async endGame() {
+      if (!confirm('Terminare la partita per tutti? Non ci saranno vincitori e non conterà nelle statistiche.')) return;
+      const r = await emit('endGame');
+      if (r.ok) closeModal();
+    },
+    async closeTable() {
+      if (!confirm('Chiudere il tavolo? Tutti torneranno alla schermata iniziale.')) return;
+      const r = await emit('closeTable');
+      if (r.ok) { closeModal(); store.set('bur_lastroom', ''); S.screen = 'home'; render(); }
+    },
     rpGo(el) { if (RP.timer) { clearInterval(RP.timer); RP.timer = null; } replayGo(el.dataset.to); },
     rpPlay() { replayPlay(); },
     openSlow(el) { joinRoom(el.dataset.code); },

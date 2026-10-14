@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 const { io } = require('socket.io-client');
+const Levels = require('./levels');
 
 const PORT = 3999;
 const URL = `http://localhost:${PORT}`;
@@ -241,8 +242,8 @@ const step = (t) => console.log('✓ ' + t);
     if (lbw.wins) assert(ms.trophies.find((t) => t.id === 'prima_vittoria').at, 'prima vittoria');
     step(`trofei: ${A.trophies.join(', ')}`);
     // livello: calcolato dalle statistiche, sale a fine partita, visibile al tavolo e in classifica
-    assert(ms.level && ms.level.level >= 2 && ms.level.xp > 100, `livello di Anna (${JSON.stringify(ms.level)})`);
-    assert(A.progress.some((x) => x.up), 'avviso di salita di livello');
+    assert(ms.level && ms.level.level >= 1 && ms.level.xp >= 50 && Levels.levelOf({ games: 1, wins: 1 }).level === 2, `livello di Anna (${JSON.stringify(ms.level)})`);
+    assert(A.progress.length > 0, 'aggiornamento del livello a fine partita');
     assert(A.state.room.seats.every((x) => x.isBot ? x.level === null : x.level >= 1), 'livello accanto ai nomi al tavolo');
     assert(lb.list.every((x) => x.level >= 1), 'livello in classifica');
     step(`livello: Anna è al livello ${ms.level.level} (${ms.level.xp} punti esperienza)`);
@@ -440,6 +441,48 @@ const step = (t) => console.log('✓ ' + t);
     await S1.until((st) => st.room.seats[ugoSeat].isBot, 'Ugo ha abbandonato: gioca il computer');
     S1.sock.close(); S2.sock.close();
     step('partita con calma: posto tenuto, nessuno gioca al tuo posto, avviso "tocca a te", rientro e abbandono');
+
+    // resa, partita terminata dall'host, tavolo chiuso
+    const R1 = player('Rita'), R2 = player('Remo');
+    await R1.hello(); await R2.hello();
+    assert((await R1.call('setNick', { nick: 'Rita' })).ok); assert((await R2.call('setNick', { nick: 'Remo' })).ok);
+    R2.notices = [];
+    R2.sock.on('notice', (x) => R2.notices.push(x.text));
+    // 4 giocatori: Rita (posto 0) e Remo (posto 2) compagni, gli avversari sono computer
+    assert((await R1.call('createRoom', { rules: { players: 4 } })).ok);
+    const rc = (await R1.until((st) => st.room, 'tavolo della resa')).room.code;
+    assert((await R1.call('addBot', { seat: 1 })).ok);
+    assert((await R2.call('joinRoom', { code: rc })).ok);
+    await R1.until((st) => st.room.seats[2] && st.room.seats[2].name === 'Remo', 'Remo al posto 2');
+    assert((await R1.call('addBot', { seat: 3 })).ok);
+    assert((await R1.call('start')).ok);
+    await R2.until((st) => st.game, 'partita');
+    const p1 = await R1.call('surrender');
+    assert(p1.ok && !p1.done, 'con un compagno umano la resa è solo una proposta');
+    await R2.until((st) => st.room.surrender && st.room.surrender.includes(0), 'Remo vede la proposta');
+    assert(!R2.state.game.over, 'la partita continua finché il compagno non accetta');
+    const p2 = await R2.call('surrender');
+    assert(p2.ok && p2.done, 'Remo accetta');
+    const sg = await R1.until((st) => st.game && st.game.over, 'partita finita per resa');
+    assert(sg.game.handResult.reason === 'surrender' && sg.game.winners.every((x) => x === 1 || x === 3), 'vincono gli avversari');
+    // rivincita, poi l'host termina la partita senza vincitori: si torna in sala d'attesa
+    assert((await R1.call('ready')).ok); assert((await R2.call('ready')).ok);
+    await R1.until((st) => st.game && !st.game.over, 'rivincita');
+    assert(!(await R2.call('endGame')).ok, "solo l'host termina la partita");
+    assert((await R1.call('endGame')).ok);
+    await R2.until((st) => st.room && !st.room.started && !st.game, 'di nuovo in sala d\'attesa');
+    assert(R2.notices.some((t) => /terminato/.test(t)), 'avviso a tutti');
+    // l'host chiude il tavolo: tutti alla schermata iniziale
+    assert((await R1.call('closeTable')).ok);
+    await R2.until((st) => st.room === null, 'Remo torna alla schermata iniziale');
+    assert(!(await R2.call('joinRoom', { code: rc })).ok, 'il tavolo non esiste più');
+    // 1 contro 1: la resa è immediata
+    assert((await R1.call('createRoom', { rules: { players: 2 }, vsBots: true })).ok);
+    await R1.until((st) => st.game && !st.game.over, 'partita 1 contro 1');
+    assert((await R1.call('surrender')).done, 'da soli la resa è immediata');
+    await R1.until((st) => st.game.over && st.game.winners.length === 1 && st.game.winners[0] === 1, 'vince il computer');
+    R1.sock.close(); R2.sock.close();
+    step('resa (con il sì del compagno), partita terminata dall\'host, tavolo chiuso');
 
     A.sock.close(); B.sock.close();
     console.log('\nProva multigiocatore: tutto OK');

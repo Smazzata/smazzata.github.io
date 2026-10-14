@@ -151,6 +151,19 @@
           if (g.turn !== 0 || g.phase === 'handEnd') throw new Error('Il suggerimento è disponibile solo nel tuo turno');
           return { hint: Bot().nextAction(JSON.parse(JSON.stringify(g)), 0, { level: 'difficile' }) };
         }
+        case 'surrender': {
+          const g = requireRoom().game;
+          if (!g || g.over) throw new Error('Nessuna partita in corso');
+          E().surrender(g, 0);
+          clearTimeout(botTimer);
+          broadcast();
+          return { done: true };
+        }
+        case 'endGame': case 'closeTable':
+          clearTimeout(botTimer);
+          room = null;
+          broadcast();
+          return {};
         case 'replay': {
           const g = requireRoom().game;
           if (!g || !g.lastReplay) throw new Error('Nessuna smazzata da rivedere');
