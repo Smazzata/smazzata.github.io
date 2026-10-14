@@ -507,3 +507,7 @@ body[data-theme="notte"] .hist { border-color: #3a413e; }
 .coach { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: rgba(30, 136, 229, .35); font-size: 13px; line-height: 1.3; }
 .coach .ico { margin-left: auto; min-width: 26px; height: 26px; font-size: 12px; }
 .scorebar .sc.series { background: rgba(242,193,78,.25); }
+
+/* ---------- Segnala un problema ---------- */
+#reportin { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; font: inherit; font-size: 16px; resize: vertical; }
+body[data-theme="notte"] #reportin { background: #2a312e; color: #eee; border-color: #444; }

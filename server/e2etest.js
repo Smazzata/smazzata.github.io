@@ -74,6 +74,14 @@ const step = (t) => console.log('✓ ' + t);
     assert((await B.call('setNick', { nick: 'Bruno' })).ok);
     step('nickname univoco con controllo disponibile / non disponibile');
 
+    // --- segnalazione di un problema: arriva nella pagina di stato con la situazione del tavolo ---
+    assert(!(await A.call('report', { text: 'ok' })).ok, 'testo troppo corto');
+    assert((await A.call('report', { text: 'Il pulsante non funziona', screen: 'game', device: 'test' })).ok);
+    assert(!(await A.call('report', { text: 'Seconda segnalazione subito' })).ok, 'una al minuto');
+    const st2 = await (await fetch(`${URL}/stato.json?k=${key}`)).json();
+    assert(st2.segnalazioni[0].text === 'Il pulsante non funziona' && st2.segnalazioni[0].table.code === code, 'segnalazione con il tavolo');
+    step('segnala un problema: arriva nella pagina di stato con la situazione del tavolo');
+
     // --- avatar e reazioni ---
     assert(!(await A.call('setAvatar', { e: '💩', c: '#000' })).ok, 'avatar non previsto rifiutato');
     assert((await A.call('setAvatar', { e: '🦊', c: '#64b5f6' })).ok);

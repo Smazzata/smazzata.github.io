@@ -458,6 +458,7 @@
         : '<p class="muted small">Su questo dispositivo o browser le notifiche non sono disponibili.</p>'}
       <h4>Suoni</h4>
       <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
+      <h4>Qualcosa non va?</h4><button class="btn small" data-act="report">🐞 Segnala un problema</button>
       ${S.room && S.room.isHost && (!S.game || S.game.over) ? `<h4>Torneo (si imposta tra una partita e l'altra)</h4>${seriesPickHTML(S.room.series && S.room.series.bestOf)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Tempo per turno</h4>${turnTimeHTML(S.room.turnTime)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Bravura del computer</h4>${botLevelHTML(S.room.botLevel)}` : ''}
@@ -733,7 +734,7 @@
         <h2>Regole e varianti</h2>
         <p class="muted">Ogni preset è un punto di partenza: quando crei una partita puoi modificare ogni singola regola.</p>
         <div class="presets">${R.PRESETS.map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>
-        <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si gioca nell'app</button><button class="btn ghost small" data-act="settings">⚙️ Aspetto e suoni</button><button class="btn ghost small" data-act="toggleTheme">${S.prefs.theme === 'scuro' ? '☀️ Tema chiaro' : '🌙 Tema scuro'}</button><button class="btn ghost small" data-act="stats">📊 Statistiche</button><button class="btn ghost small" data-act="leaders">🏆 Classifica</button></div>
+        <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si gioca nell'app</button><button class="btn ghost small" data-act="settings">⚙️ Aspetto e suoni</button><button class="btn ghost small" data-act="toggleTheme">${S.prefs.theme === 'scuro' ? '☀️ Tema chiaro' : '🌙 Tema scuro'}</button><button class="btn ghost small" data-act="stats">📊 Statistiche</button><button class="btn ghost small" data-act="leaders">🏆 Classifica</button><button class="btn ghost small" data-act="report">🐞 Segnala un problema</button></div>
       </div>
     </div>`;
   }
@@ -1519,6 +1520,14 @@
     },
     profile: profileModal,
     tutorial() { tutorialModal(0); },
+    report() {
+      openModal('report', `<h2>🐞 Segnala un problema</h2>
+        <p class="muted small">Descrivi cosa è successo e cosa ti aspettavi. Insieme al messaggio inviamo la situazione del tavolo
+          (smazzata, turno, ultime mosse e quante carte hai), senza le carte degli altri giocatori.</p>
+        <form id="reportform"><textarea id="reportin" rows="5" maxlength="1000" placeholder="Es. ho trascinato una carta sugli scarti ma non è stata scartata…"></textarea>
+        <div class="row" style="margin-top:8px"><button class="btn primary grow">Invia segnalazione</button></div></form>`);
+      setTimeout(() => { const t = $('#reportin'); if (t) t.focus(); }, 50);
+    },
     async rejoin() {
       const code = store.get('bur_lastroom', '');
       store.set('bur_lastroom', '');
@@ -1851,6 +1860,10 @@
       pwform: async () => { const r = await emit('setPassword', { password: $('#pwin').value }); if (r.ok) { toast('Password salvata'); profileModal(); } },
       codeform: async () => { const r = await emit('importProfile', { code: $('#codein').value }); if (r.ok) adoptProfile(r.token, r.nick); },
       loginform: async () => { const r = await emit('login', { nick: $('#lnick').value, password: $('#lpw').value }); if (r.ok) adoptProfile(r.token, r.nick); },
+      reportform: async () => {
+        const r = await emit('report', { text: $('#reportin').value, screen: S.screen, device: `${navigator.userAgent.slice(0, 120)} · ${innerWidth}x${innerHeight}` });
+        if (r.ok) { closeModal(); toast('Grazie! Segnalazione inviata 🙏'); }
+      },
       friendform: async () => { const n = $('#friendin').value.trim(); if (!n) return; const r = await emit('friendRequest', { nick: n }); if (r.ok) toast(`Richiesta inviata a ${n}`); },
     };
     if (forms[e.target.id]) { e.preventDefault(); forms[e.target.id](); return; }

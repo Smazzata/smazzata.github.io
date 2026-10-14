@@ -32,6 +32,7 @@ Computer: 3 livelli + apertura da vulnerabile con più combinazioni + pianificat
 - `npm test` — test del motore e partite simulate tra bot con tutti i preset e regole casuali.
 - `npm run e2e` — prova multigiocatore end-to-end su un server di prova (porta 3999).
 - `npm run bench` — forza relativa dei livelli del computer.
+- `npm run load [tavoli] [secondi]` — prova di carico (tavoli simulati insieme: tempi di risposta, ritardo, CPU, memoria).
 - `npm run playtest [partite] [varianti]` — statistiche su partite simulate in massa (durata, finali, punteggi, dati inviati).
 - Controlla le modifiche visive nel browser a misura di telefono (375×812).
 

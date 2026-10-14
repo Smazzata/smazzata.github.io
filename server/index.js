@@ -84,6 +84,7 @@ function statusData() {
       fase: !r.game ? 'in attesa' : r.game.over ? 'partita finita' : r.game.phase === 'handEnd' ? `fine smazzata ${r.game.handNo}` : `smazzata ${r.game.handNo}`,
       punteggi: r.game ? r.game.scores : null,
     })),
+    segnalazioni: reports.slice(0, 30).map((r) => ({ ...r, quando: new Date(r.at).toLocaleString('it-IT') })),
     errori: recentErrors.slice().reverse().map((e) => ({ quando: new Date(e.at).toLocaleString('it-IT'), testo: e.text })),
   };
 }
@@ -109,6 +110,10 @@ pre{white-space:pre-wrap;font-size:12px;margin:4px 0;color:#ffd7d7}.m{color:#bcd
 <span class="k">Versione<b>${esc(d.versione)}</b></span>
 <span class="k">CPU<b>${d.cpu_percento}%</b></span><span class="k">Ritardo (99%)<b>${d.ritardo_ms.p99} ms</b></span></div>
 <div class="box"><b>Tavoli</b>${d.tavoli.length ? `<table><tr><th>Codice</th><th>Fase</th><th>Giocatori</th><th>Regole</th></tr>${d.tavoli.map((t) => `<tr><td>${esc(t.codice)}</td><td>${esc(t.fase)}</td><td>${t.giocatori.map(esc).join(', ')}</td><td>${esc(t.regole)}</td></tr>`).join('')}</table>` : '<p class="m">Nessun tavolo aperto.</p>'}</div>
+<div class="box"><b>Segnalazioni dei giocatori</b>${d.segnalazioni.length ? d.segnalazioni.map((r) => `<div style="border-bottom:1px solid rgba(255,255,255,.15);padding:6px 0">
+<b>${esc(r.nick)}</b> <span class="m">${esc(r.quando)} · ${esc(r.screen)}${r.table ? ` · tavolo ${esc(r.table.code)} (${esc(r.table.rules)})` : ''}</span><br>${esc(r.text)}
+${r.table && r.table.game ? `<pre style="color:#cfe">smazzata ${r.table.game.hand} · fase ${esc(r.table.game.phase)} · turno ${r.table.game.turn} · posto ${r.table.seat} · tallone ${r.table.game.stock} · scarti ${r.table.game.discard} · carte in mano ${r.table.game.myCards}
+${r.table.game.log.map(esc).join('\n')}</pre>` : ''}<span class="m">${esc(r.device)}</span></div>`).join('') : '<p class="m">Nessuna segnalazione.</p>'}</div>
 <div class="box"><b>Ultimi errori</b>${d.errori.length ? d.errori.map((e) => `<pre>${esc(e.quando)} — ${esc(e.testo)}</pre>`).join('') : '<p class="m">Nessun errore 🎉</p>'}</div>
 <p class="m">La pagina si aggiorna ogni 10 secondi. 🟢 online · ⚪ offline · 🤖 computer</p></body></html>`);
 });
@@ -124,6 +129,8 @@ const sessions = new Map();
 const rooms = new Map();
 /* classifica: token -> { name, games, wins, points, burraco } (solo giocatori umani) */
 const leaderboard = new Map();
+/* segnalazioni dei giocatori (le più recenti per prime), visibili nella pagina di stato */
+let reports = [];
 const BOT_NAMES = ['Nonna Pina', 'Zio Gino', 'Carmela', 'Totò', 'Rosetta', 'Peppino', 'Ninetta', 'Gegè'];
 
 function newCode() {
@@ -784,6 +791,33 @@ io.on('connection', (socket) => {
     checkReady(room);
   }));
 
+  // Segnala un problema: testo dell'utente + situazione del tavolo (senza le carte degli altri)
+  socket.on('report', handler(({ text, screen, device }) => {
+    const t = String(text || '').trim().slice(0, 1000);
+    if (t.length < 5) throw new E.GameError('Descrivi il problema in qualche parola');
+    const now = Date.now();
+    if (socket.data.lastReport && now - socket.data.lastReport < 60000) throw new E.GameError('Hai già inviato una segnalazione: riprova tra un minuto');
+    socket.data.lastReport = now;
+    const sess = sessions.get(socket.data.token) || {};
+    const room = rooms.get(socket.data.room);
+    const g = room && room.game;
+    const seat = room ? seatOfToken(room, socket.data.token) : -1;
+    reports.unshift({
+      at: now, nick: sess.nick || sess.name || 'anonimo', text: t,
+      screen: String(screen || '').slice(0, 20), device: String(device || '').slice(0, 160),
+      table: room ? {
+        code: room.code, rules: Rules.matchPreset(room.rules) || 'personalizzate', seat,
+        game: g ? {
+          hand: g.handNo, phase: g.phase, turn: g.turn, stock: g.stock.length, discard: g.discard.length,
+          myCards: seat >= 0 ? g.players[seat].hand.length : null, scores: g.scores, log: g.log.slice(-10),
+        } : null,
+      } : null,
+    });
+    reports = reports.slice(0, 100);
+    scheduleSave();
+    return {};
+  }));
+
   // Reazioni rapide al tavolo (con un limite per evitare raffiche)
   const REACTIONS = ['👏', '😂', '😱', '🔥', '👍', '😡', '🙏', '😍'];
   socket.on('react', handler(({ emoji }) => {
@@ -871,6 +905,7 @@ function saveNow() {
       savedAt: Date.now(),
       sessions: [...sessions],
       leaderboard: [...leaderboard],
+      reports,
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
         ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series,
@@ -890,6 +925,7 @@ function loadSaved() {
     const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
     for (const [token, sess] of data.sessions || []) sessions.set(token, sess);
     for (const [token, e] of data.leaderboard || []) leaderboard.set(token, e);
+    reports = data.reports || [];
     social.rebuildIndexes();
     for (const r of data.rooms || []) {
       rooms.set(r.code, { ...r, ready: new Set(r.ready || []), botTimer: null, botMemo: {}, botMemoTurn: -1 });
