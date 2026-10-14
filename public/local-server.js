@@ -63,7 +63,13 @@
     }
 
     function broadcast() {
-      fire('state', room ? { room: roomInfo(), game: room.game ? E().viewFor(room.game, 0) : null } : { room: null, game: null });
+      const g = room && room.game;
+      // coach di fine smazzata (calcolato una volta)
+      if (g && g.phase === 'handEnd' && g.lastReplay && room.coachKey !== g.handNo) {
+        room.coachKey = g.handNo;
+        try { room.coachTips = self.BurracoCoach.analyze(E(), g.lastReplay, 0); } catch (e) { room.coachTips = []; }
+      }
+      fire('state', room ? { room: roomInfo(), game: g ? { ...E().viewFor(g, 0), coach: g.phase === 'handEnd' ? room.coachTips || null : null } : null } : { room: null, game: null });
       store.set(room);
       scheduleBot();
     }

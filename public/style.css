@@ -701,3 +701,11 @@ body[data-theme="notte"] .dailycard { border-color: #3a413e; background: rgba(58
 .replay .rpctl { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
 .replay #rpRange { width: 100%; margin-top: 8px; }
 body[data-theme="notte"] .replay .rpcap { background: rgba(255,255,255,.08); }
+
+/* coach di fine smazzata */
+.coachbox { margin: 10px 0; padding: 8px 12px; border-radius: 12px; background: #eef6ff; border: 1px solid #c7dcf5; }
+.coachbox h3 { margin: 2px 0 4px; }
+.coachbox ul { margin: 4px 0; padding-left: 18px; font-size: 13px; }
+.coachbox li { margin: 4px 0; }
+.coachbox p { margin: 4px 0; font-size: 13px; }
+body[data-theme="notte"] .coachbox { background: #1b2733; border-color: #2d4257; }

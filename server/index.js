@@ -8,6 +8,7 @@ const { Server } = require('socket.io');
 const E = require('./engine');
 const Bot = require('./bot');
 const Trophies = require('./trophies');
+const Coach = require('./coach');
 const Levels = require('./levels');
 const Daily = require('./daily');
 const createPush = require('./push');
@@ -222,7 +223,7 @@ function broadcast(room) {
     const seat = seatOfToken(room, s.data.token);
     s.emit('state', {
       room: { ...roomInfo(room), you: seat, isHost: s.data.token === room.hostToken },
-      game: room.game ? E.viewFor(room.game, seat) : null,
+      game: room.game ? { ...E.viewFor(room.game, seat), coach: room.game.phase === 'handEnd' && room.coachTips ? room.coachTips[seat] || null : null } : null,
     });
   }
   scheduleBot(room);
@@ -590,6 +591,14 @@ function checkReady(room) {
 function afterAction(room) {
   const g = room.game;
   room.lastActionAt = Date.now();
+  // coach: a fine smazzata, consigli per ogni giocatore umano (li vede solo lui)
+  if (g && g.phase === 'handEnd' && g.lastReplay && room.coachKey !== `${room.gameSeq}:${g.handNo}`) {
+    room.coachKey = `${room.gameSeq}:${g.handNo}`;
+    room.coachTips = {};
+    room.seats.forEach((s, seat) => {
+      if (s && !s.isBot) { try { room.coachTips[seat] = Coach.analyze(E, g.lastReplay, seat); } catch (e) { room.coachTips[seat] = []; } }
+    });
+  }
   recordLeaderboard(room);
   if (g && g.turn !== room.lastTurnSeat) {
     room.lastTurnSeat = g.turn;

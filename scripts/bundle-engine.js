@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const MODULES = ['shared/rules', 'shared/melds', 'server/engine', 'server/bot'];
+const MODULES = ['shared/rules', 'shared/melds', 'server/engine', 'server/bot', 'server/coach'];
 
 function bundle() {
   const defs = MODULES.map((name) => {
@@ -36,6 +36,7 @@ function bundle() {
   }
   self.BurracoEngine = load('server/engine');
   self.BurracoBot = load('server/bot');
+  self.BurracoCoach = load('server/coach');
 })();
 `;
 }

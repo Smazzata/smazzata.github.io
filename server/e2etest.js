@@ -219,6 +219,7 @@ const step = (t) => console.log('✓ ' + t);
     const rp = await A.call('replay');
     assert(rp.ok && rp.replay.actions.length > 10 && rp.replay.start.players.every((p) => p.hand.length > 0), 'moviola disponibile');
     assert(A.state.game.hasReplay, "il client sa che c'è una moviola");
+    assert(Array.isArray(A.state.game.coach) && A.state.game.coach.length <= 3, 'consigli del coach a fine smazzata');
 
     // classifica: entrambi gli umani hanno una partita giocata
     const lb = await A.call('leaderboard');

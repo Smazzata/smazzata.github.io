@@ -22,7 +22,7 @@
     } catch (e) { return typeof io === 'undefined'; }
   })();
 
-  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche' };
+  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche', coach: true };
   const S = {
     token: store.get('bur_token', null),
     name: store.get('bur_name', ''),

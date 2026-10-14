@@ -69,6 +69,9 @@
       <tr class="tot"><td>Smazzata</td>${hr.teams.map((t) => `<td>${signed(t.total)}</td>`).join('')}</tr>
       </table>
       ${leftoverHTML(g, hr)}
+      ${g.coach && g.you >= 0 && S.prefs.coach !== false ? `<div class="coachbox"><h3>🧑‍🏫 Il coach</h3>${g.coach.length
+        ? `<ul>${g.coach.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>`
+        : '<p>Nessun errore evidente negli scarti: bravo! 👏</p>'}</div>` : ''}
       ${g.hasReplay && !S.room.daily ? '<div class="row" style="justify-content:center;margin:8px 0"><button class="btn small" data-act="replay">🎬 Rivedi la smazzata</button></div>' : ''}
       ${footer}</div>`);
     if (firstShow) countUp($$('#modal [data-count]'));
