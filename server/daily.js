@@ -21,6 +21,7 @@ const VARIANTS = [
   { title: 'Scopa', game: 'scopa' },
   { title: 'Briscola', game: 'briscola' },
   { title: 'Tressette a due', game: 'tressette', tweak: { target: 21 } },
+  { title: 'Rubamazzetto', game: 'rubamazzetto' },
   { title: 'Scopa, Asso piglia tutto', game: 'scopa', tweak: { aceTakesAll: true } },
   { title: 'Scopone scientifico', game: 'scopa', tweak: { deal: 10, napola: true, target: 21 }, players: 4 },
 ];

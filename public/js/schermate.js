@@ -95,7 +95,7 @@
       <div class="panel">
         <h2>Regole e varianti</h2>
         <p class="muted">Ogni preset è un punto di partenza: quando crei una partita puoi modificare ogni singola regola.</p>
-        <div class="presets">${R.PRESETS.concat([S40R.PRESET, CANR.PRESET, OTHER.scopa.PRESET, OTHER.scopa.PRESETS[1], OTHER.briscola.PRESET, OTHER.tressette.PRESET]).map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>
+        <div class="presets">${R.PRESETS.concat([S40R.PRESET, CANR.PRESET, OTHER.scopa.PRESET, OTHER.scopa.PRESETS[1], OTHER.briscola.PRESET, OTHER.tressette.PRESET, OTHER.rubamazzetto.PRESET, OTHER.settemezzo.PRESET]).map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>
         <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si gioca nell'app</button><button class="btn ghost small" data-act="settings">⚙️ Aspetto e suoni</button><button class="btn ghost small" data-act="toggleTheme">${S.prefs.theme === 'scuro' ? '☀️ Tema chiaro' : '🌙 Tema scuro'}</button><button class="btn ghost small" data-act="stats">📊 Statistiche</button>${OFFLINE ? '' : '<button class="btn ghost small" data-act="leaders">🏆 Classifica</button><button class="btn ghost small" data-act="report">🐞 Segnala un problema</button>'}</div>
         <p class="muted small" style="margin:10px 0 0;text-align:center"><a href="privacy.html" style="color:inherit">🔒 Privacy: quali dati usiamo e come cancellarli</a></p>
       </div>
@@ -117,7 +117,9 @@
           ['scopa', '🧹 Scopa', 'Carte italiane: prendi, fai scopa, conta denari e primiera'],
           ['scopone', '🧹 Scopone', 'In quattro a coppie: 10 carte a testa, tavola vuota, napola'],
           ['briscola', '🍷 Briscola', 'Carte italiane: prese, carichi e briscole, vince chi fa 61'],
-          ['tressette', '🂱 Tressette', 'Carte italiane a coppie: si risponde al seme, contano Assi, Due, Tre e figure']]
+          ['tressette', '🂱 Tressette', 'Carte italiane a coppie: si risponde al seme, contano Assi, Due, Tre e figure'],
+          ['rubamazzetto', '🃁 Rubamazzetto', 'Facile e veloce: prendi le carte uguali e ruba il mazzetto agli altri'],
+          ['settemezzo', '🎲 Sette e mezzo', 'Chiedi carte e avvicinati a 7 e mezzo senza sballare (fiches finte)']]
           .map(([id, name, sub]) => `<button class="preset ${pickedGame(S.rules) === id ? 'active' : ''}" data-act="pickGame" data-game="${id}"><b>${name}</b><span>${sub}</span></button>`).join('')}</div>
         ${RX.isOther(S.rules) ? '' : `<h2 style="margin-top:12px">Variante</h2>${presetsHTML(S.rules)}`}
         <details class="custom" ${S.customOpen ? 'open' : ''}>

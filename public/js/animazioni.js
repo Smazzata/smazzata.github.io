@@ -133,7 +133,7 @@
   function statsTable(st, gid) {
     const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
     const row = (l, v) => `<tr><td>${l}</td><td><b>${v}</b></td></tr>`;
-    if (gid === 'scopa' || gid === 'briscola' || gid === 'tressette') {
+    if (['scopa', 'briscola', 'tressette', 'rubamazzetto', 'settemezzo'].includes(gid)) {
       return `<table>
       ${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
       ${row('Smazzate giocate', st.hands)}${row('Smazzate vinte', `${st.handsWon} (${pct(st.handsWon, st.hands)})`)}
@@ -158,7 +158,7 @@
     if (!list.length) return '<p class="muted">Nessuna partita completata.</p>';
     return list.map((h) => `<div class="hist ${h.won ? 'won' : 'lost'}">
       <span class="hres">${h.won ? '🏆' : '—'}</span>
-      <span class="grow"><b>${h.won ? 'Vinta' : 'Persa'}</b> · ${fmtDate(h.at)} · ${({ scala40: 'Scala 40', canasta: 'Canasta', scopa: 'Scopa', briscola: 'Briscola', tressette: 'Tressette' })[h.game] || PRESET_NAMES[h.preset] || h.preset}${h.hands ? ` · ${h.hands} smazzate` : ''}<br>
+      <span class="grow"><b>${h.won ? 'Vinta' : 'Persa'}</b> · ${fmtDate(h.at)} · ${({ scala40: 'Scala 40', canasta: 'Canasta', scopa: 'Scopa', briscola: 'Briscola', tressette: 'Tressette', rubamazzetto: 'Rubamazzetto', settemezzo: 'Sette e mezzo' })[h.game] || PRESET_NAMES[h.preset] || h.preset}${h.hands ? ` · ${h.hands} smazzate` : ''}<br>
       <span class="muted small">${h.teams.map((t) => `${t.mine ? '<b>' : ''}${t.names.map(esc).join(' & ')} ${t.score}${t.mine ? '</b>' : ''}`).join(' · ')}</span></span></div>`).join('');
   }
 
@@ -178,7 +178,7 @@
       <path d="${path}" class="trend"/>
       ${pts.map((p) => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" class="${p.w ? 'win' : 'loss'}"/>`).join('')}</svg>`;
     // vittorie per gioco
-    const names = { burraco: '🃏 Burraco', scala40: '🂡 Scala 40', canasta: '🎴 Canasta', scopa: '🧹 Scopa', briscola: '🍷 Briscola', tressette: '🂱 Tressette' };
+    const names = { burraco: '🃏 Burraco', scala40: '🂡 Scala 40', canasta: '🎴 Canasta', scopa: '🧹 Scopa', briscola: '🍷 Briscola', tressette: '🂱 Tressette', rubamazzetto: '🃁 Rubamazzetto', settemezzo: '🎲 Sette e mezzo' };
     const per = {};
     for (const x of tl) { per[x.g] = per[x.g] || { n: 0, w: 0 }; per[x.g].n++; per[x.g].w += x.w; }
     const maxN = Math.max(...Object.values(per).map((v) => v.n));
@@ -199,7 +199,7 @@
   function byGameHTML(byGame, total) {
     const games = Object.entries(byGame || {});
     if (!games.length) return total ? statsTable(total) : '<p class="muted">Gioca la tua prima smazzata per vedere le statistiche.</p>';
-    const names = { burraco: '🃏 Burraco', scala40: '🂡 Scala 40', canasta: '🎴 Canasta', scopa: '🧹 Scopa', briscola: '🍷 Briscola', tressette: '🂱 Tressette' };
+    const names = { burraco: '🃏 Burraco', scala40: '🂡 Scala 40', canasta: '🎴 Canasta', scopa: '🧹 Scopa', briscola: '🍷 Briscola', tressette: '🂱 Tressette', rubamazzetto: '🃁 Rubamazzetto', settemezzo: '🎲 Sette e mezzo' };
     return games.map(([gid, st]) => `<h3>${names[gid] || gid}</h3>${statsTable(st, gid)}`).join('');
   }
 

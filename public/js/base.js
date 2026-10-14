@@ -26,7 +26,7 @@
   const S40R = window.BurracoScala40;
   const CANR = window.BurracoCanasta;
   // regole degli altri giochi (oltre al Burraco): stesso "contratto" (normalize, SCHEMA, PRESET, describe)
-  const OTHER = { scala40: S40R, canasta: CANR, scopa: window.BurracoScopa, briscola: window.BurracoBriscola, tressette: window.BurracoTressette };
+  const OTHER = { scala40: S40R, canasta: CANR, scopa: window.BurracoScopa, briscola: window.BurracoBriscola, tressette: window.BurracoTressette, rubamazzetto: window.BurracoRubamazzetto, settemezzo: window.BurracoSetteMezzo };
   const otherOf = (r) => (r && OTHER[r.game]) || null;
   const RX = {
     isS40: (r) => !!r && r.game === 'scala40',
@@ -37,7 +37,7 @@
     matchPreset: (r) => (otherOf(r) ? (otherOf(r).presetOf ? otherOf(r).presetOf(r) : r.game) : R.matchPreset(r)),
     describe: (r) => (otherOf(r) ? otherOf(r).describe(r) : R.describe(r)),
     presetById: (id) => (OTHER[id] ? OTHER[id].PRESET : id === 'scopone' ? OTHER.scopa.PRESETS[1] : R.PRESETS.find((p) => p.id === id)),
-    gameName: (r) => (r && r.game === 'scopa' && r.deal && r.deal !== 3 ? 'Scopone' : { scala40: 'Scala 40', canasta: 'Canasta', scopa: 'Scopa', briscola: 'Briscola', tressette: 'Tressette' }[r && r.game] || 'Burraco'),
+    gameName: (r) => (r && r.game === 'scopa' && r.deal && r.deal !== 3 ? 'Scopone' : { scala40: 'Scala 40', canasta: 'Canasta', scopa: 'Scopa', briscola: 'Briscola', tressette: 'Tressette', rubamazzetto: 'Rubamazzetto', settemezzo: 'Sette e mezzo' }[r && r.game] || 'Burraco'),
   };
   /** la partita in corso è di Scala 40? di Canasta? */
   const isS40Game = () => !!(S.game && S.game.game === 'scala40');

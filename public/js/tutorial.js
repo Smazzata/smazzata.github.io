@@ -70,6 +70,18 @@
       { t: 'I punti', h: `<p>L'<b>Asso</b> vale 1 punto, <b>Tre, Due e figure</b> 1/3 di punto, l'<b>ultima presa</b> 1 punto: 11 punti a smazzata.</p>
          <p>Con gli <b>accusi</b>: napoletana (Asso, Due, Tre dello stesso seme) o tre/quattro Assi, Due o Tre danno punti in più.</p>` },
     ] },
+    rubamazzetto: { name: '🃁 Rubamazzetto', slides: [
+      { t: 'Lo scopo', h: `<p>Carte italiane da 40, ognuno per sé: 3 carte a testa e 4 in tavola. Vince chi alla fine ha il <b>mazzetto più alto</b>.</p>
+         <div class="tutcards">${it(5, 'c')}<span style="align-self:center">➜</span>${it(5, 'b')}</div><p class="muted small">Con un 5 prendi il 5 in tavola.</p>` },
+      { t: 'Rubare il mazzetto', h: `<p>La carta in cima al mazzetto di ognuno si vede. Se hai una carta <b>dello stesso valore</b>, giocala e <b>rubi tutto il mazzetto</b>!</p>
+         <p class="muted small">Attento alla carta che lasci in cima al tuo: gli altri possono fare lo stesso.</p>` },
+    ] },
+    settemezzo: { name: '🎲 Sette e mezzo', slides: [
+      { t: 'Lo scopo', h: `<p>Avvicinati a <b>7 e mezzo</b> senza superarlo. Dall'Asso al 7 le carte valgono il loro numero, le figure mezzo punto.</p>
+         <div class="tutcards">${it(7, 'c')}${it(10, 's')}</div><p class="muted small">7 + ½ = 7 e mezzo!</p>` },
+      { t: 'Il turno', h: `<p>Hai una carta coperta. Tocca il <b>mazzo</b> per chiederne un'altra, oppure ✋ per fermarti. Se superi 7 e mezzo <b>sballi</b>.</p>
+         <p>Alla fine gioca il <b>banco</b> (passa a turno): chi ha più del banco vince una fiche. Si gioca con fiches finte.</p>` },
+    ] },
   };
 
   function tutorialModal(i = 0, game) {
@@ -107,6 +119,16 @@
 
   /** Allenatore di Scopa e Briscola */
   function coachTipPresa(g) {
+    if (g.game === 'rubamazzetto') {
+      if (g.phase === 'handEnd') return 'Vince chi ha il mazzetto più alto.';
+      if (g.turn !== g.you) return 'Ora gioca il computer: guarda se riesce a rubare un mazzetto.';
+      return 'Se hai una carta uguale alla cima di un altro mazzetto, giocala per rubarlo! Altrimenti prendi la carta uguale in tavola.';
+    }
+    if (g.game === 'settemezzo') {
+      if (g.phase === 'handEnd') return 'Chi ha più del banco vince, a parità vince il banco.';
+      if (g.turn !== g.you) return 'Ora gioca un altro: guarda le carte scoperte.';
+      return 'Sotto i 5 conviene chiedere carta (tocca il mazzo); da 5 in su di solito è meglio fermarsi con ✋.';
+    }
     if (g.game === 'tressette') {
       if (g.phase === 'handEnd') return 'Asso 1 punto, Tre, Due e figure 1/3, l\'ultima presa 1 punto.';
       if (g.turn !== g.you) return 'Ora gioca il computer: guarda a che seme risponde.';

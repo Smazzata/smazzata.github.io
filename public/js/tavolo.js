@@ -113,6 +113,28 @@
         <div class="pinfo">${g.cfg.rules.deal && g.cfg.rules.deal !== 3 ? '' : `<span>Mazzo <b>${g.stockCount}</b></span>`}${g.teams.map((t) => `<span>${teamLbl(t)}: <b>${t.taken}</b> carte${t.scope ? ` · <b>${t.scope}</b> ${t.scope === 1 ? 'scopa' : 'scope'} 🧹` : ''}</span>`).join('')}</div>
       </div>`;
     }
+    if (g.game === 'rubamazzetto') {
+      const fresh = new Set(g.lastTake && g.lastTake.cardIds ? g.lastTake.cardIds : []);
+      return `<div class="presa">
+        <div class="ptable">${g.table.length ? g.table.map((c) => cardHTML(c, fresh.has(c.id) ? 'fresh' : '')).join('') : '<span class="empty">Tavolo vuoto</span>'}</div>
+        <div class="ppiles">${g.teams.map((t) => `<span class="ppile ${t.id === g.you ? 'mine' : ''} ${g.lastTake && g.lastTake.from === t.id ? 'robbed' : ''}">
+          ${t.top ? cardHTML(t.top) : '<span class="card slot"></span>'}<span>${esc(name(t.id))}<br><b>${t.taken}</b> ${t.taken === 1 ? 'carta' : 'carte'}</span></span>`).join('')}</div>
+        <div class="pinfo"><span>Mazzo <b>${g.stockCount}</b></span></div>
+      </div>`;
+    }
+    if (g.game === 'settemezzo') {
+      const SMR = window.BurracoSetteMezzo;
+      const myTurn = g.turn === g.you && g.phase !== 'handEnd';
+      const badge = { stand: '✋ sta bene', bust: '💥 sballato', play: '' };
+      return `<div class="presa sm">
+        ${g.seats.map((x) => `<div class="smrow ${x.seat === g.turn && g.phase !== 'handEnd' ? 'turn' : ''} ${x.status}">
+          <span class="smname">${x.seat === g.banker ? '🏦 ' : ''}${esc(name(x.seat))}</span>
+          <span class="smcards">${x.cards.map((c) => (c.hidden ? backHTML('mini') : cardHTML(c, 'mini'))).join('')}</span>
+          <span class="smtot">${x.full ? `<b>${SMR.fmt(x.total)}</b>` : `? + ${SMR.fmt(x.total)}`} ${badge[x.status] ? `<i>${badge[x.status]}</i>` : ''}</span>
+        </div>`).join('')}
+        <div class="smdeck ${myTurn ? 'can' : ''}" ${myTurn ? 'data-act="smDraw" title="Chiedi carta"' : ''}>${backHTML()}${backHTML('', 'style="--l:1"')}<span>${myTurn ? 'Tocca per una carta' : `Mazzo ${g.stockCount}`}</span></div>
+      </div>`;
+    }
     const trick = g.trick.length ? g.trick : (g.lastTrick ? g.lastTrick.cards : []);
     if (g.game === 'tressette') {
       const win = !g.trick.length && g.lastTrick ? g.lastTrick.winner : null;
@@ -164,6 +186,7 @@
     if (g.phase === 'handEnd') return g.over ? 'Partita terminata' : 'Smazzata terminata';
     const cur = g.players[g.turn];
     if (g.turn !== me) return `Turno di <b>${esc(cur.name)}</b>${g.lastTurn ? ' · <b>ultimo giro</b>' : ''}`;
+    if (g.game === 'settemezzo') return g.you === g.banker ? 'Tocca a te (banco): tocca il <b>mazzo</b> per una carta, ✋ per stare' : 'Tocca a te: tocca il <b>mazzo</b> per una carta, ✋ per stare';
     if (g.presa) return 'Tocca a te: tocca una carta per giocarla';
     if (g.phase === 'draw') {
       if (g.mustDraw) return 'Tocca a te: tocca il <b>tallone</b> per pescare';
@@ -344,6 +367,7 @@
     let actions = '';
     if (g.phase === 'handEnd') actions = '<button class="btn primary small" data-act="result">Risultati</button>';
     if (myTurn && r.hints) actions += '<button class="ico" data-act="hint" title="Suggerimento">💡</button>';
+    if (myTurn && g.game === 'settemezzo') actions += '<button class="ico" data-act="smStand" title="Sto bene">✋</button>';
     if (g.you >= 0) actions = '<button class="ico" data-act="reactPicker" title="Reazioni">😊</button>' + actions;
     // messaggio vocale: solo se al tavolo c'è almeno un'altra persona
     if (g.you >= 0 && S.room.humans > 1) actions = '<button class="ico voicebtn" data-voice title="Tieni premuto per parlare">🎤</button>' + actions;

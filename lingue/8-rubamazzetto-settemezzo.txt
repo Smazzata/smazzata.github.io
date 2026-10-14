@@ -1,0 +1,86 @@
+# Rubamazzetto e Sette e mezzo
+# italiano ‖ English ‖ Español ‖ Português
+Rubamazzetto ‖ Rubamazzetto ‖ Rubamazzetto ‖ Rouba-monte
+🃁 Rubamazzetto ‖ 🃁 Rubamazzetto ‖ 🃁 Rubamazzetto ‖ 🃁 Rouba-monte
+Sette e mezzo ‖ Sette e mezzo ‖ Siete y medio ‖ Sete e meio
+🎲 Sette e mezzo ‖ 🎲 Sette e mezzo ‖ 🎲 Siete y medio ‖ 🎲 Sete e meio
+Facile e veloce: prendi le carte uguali e ruba il mazzetto agli altri ‖ Quick and easy: take matching cards and steal the others' piles ‖ Fácil y rápido: toma las cartas iguales y roba el montón a los demás ‖ Fácil e rápido: pegue as cartas iguais e roube o monte dos outros
+Chiedi carte e avvicinati a 7 e mezzo senza sballare (fiches finte) ‖ Ask for cards and get close to 7½ without going bust (play chips) ‖ Pide cartas y acércate a 7 y medio sin pasarte (fichas de juego) ‖ Peça cartas e chegue perto de 7 e meio sem estourar (fichas de brincadeira)
+Il gioco di carte dei bambini (e dei nonni): prendi le carte uguali e ruba il mazzetto agli altri. ‖ The card game of children (and grandparents): take matching cards and steal the others' piles. ‖ El juego de cartas de los niños (y de los abuelos): toma las cartas iguales y roba el montón a los demás. ‖ O jogo de cartas das crianças (e dos avós): pegue as cartas iguais e roube o monte dos outros.
+Il Rubamazzetto si gioca con le carte italiane da 40, ognuno per sé. Si prende la carta uguale dal tavolo e la si mette in cima al proprio mazzetto; se la carta in cima al mazzetto di un altro è uguale alla tua, gli rubi tutto il mazzetto! ‖ Rubamazzetto is played with the 40-card Italian deck, every player for themselves. You take the matching card from the table and put it on top of your pile; if the top card of someone else's pile matches yours, you steal their whole pile! ‖ El Rubamazzetto se juega con la baraja italiana de 40, cada uno para sí. Se toma la carta igual de la mesa y se pone encima del propio montón; si la carta de arriba del montón de otro es igual a la tuya, ¡le robas todo el montón! ‖ O Rouba-monte se joga com o baralho italiano de 40, cada um por si. Pega-se a carta igual da mesa e coloca-se em cima do próprio monte; se a carta de cima do monte de outro for igual à sua, você rouba o monte inteiro!
+Il gioco delle feste: chiedi carte e avvicinati a 7 e mezzo senza sballare. Con fiches finte. ‖ The holiday game: ask for cards and get close to 7½ without going bust. With play chips. ‖ El juego de las fiestas: pide cartas y acércate a 7 y medio sin pasarte. Con fichas de juego. ‖ O jogo das festas: peça cartas e chegue perto de 7 e meio sem estourar. Com fichas de brincadeira.
+Il Sette e mezzo si gioca con le carte italiane da 40: a turno si chiedono carte per avvicinarsi a ‖ Sette e mezzo is played with the 40-card Italian deck: in turn you ask for cards to get close to ‖ El Siete y medio se juega con la baraja italiana de 40: por turnos se piden cartas para acercarse a ‖ O Sete e meio se joga com o baralho italiano de 40: na sua vez pedem-se cartas para chegar perto de
+7 e mezzo ‖ 7½ ‖ 7 y medio ‖ 7 e meio
+senza superarlo, e si sfida il ‖ without going over, and you challenge the ‖ sin pasarse, y se desafía a la ‖ sem passar, e desafia-se a
+banco ‖ bank ‖ banca ‖ banca
+. Qui si gioca con fiches finte. ‖ . Here you play with play chips. ‖ . Aquí se juega con fichas de juego. ‖ . Aqui se joga com fichas de brincadeira.
+Giocatori (banco compreso) ‖ Players (bank included) ‖ Jugadores (banca incluida) ‖ Jogadores (banca incluída)
+Smazzate ‖ Hands ‖ Manos ‖ Mãos
+Matta: il Re di denari vale quello che serve ‖ Wild card: the King of Coins is worth whatever you need ‖ Comodín: el Rey de oros vale lo que haga falta ‖ Curinga: o Rei de ouros vale o que for preciso
+4 (ognuno per sé) ‖ 4 (every player for themselves) ‖ 4 (cada uno para sí) ‖ 4 (cada um por si)
+Carte nel mazzetto ‖ Cards in the pile ‖ Cartas en el montón ‖ Cartas no monte
+Smazzata vinta ‖ Hand won ‖ Mano ganada ‖ Mão vencida
+Fiches ‖ Chips ‖ Fichas ‖ Fichas
+sballato ‖ bust ‖ se pasó ‖ estourou
+vince ‖ wins ‖ gana ‖ vence
+perde ‖ loses ‖ pierde ‖ perde
+reale! ‖ royal! ‖ ¡real! ‖ real!
+banco sballato ‖ bank bust ‖ banca pasada ‖ banca estourou
+fiches · smazzata {0} di {1} ‖ chips · hand {0} of {1} ‖ fichas · mano {0} de {1} ‖ fichas · mão {0} de {1}
+✋ sta bene ‖ ✋ stands ‖ ✋ se planta ‖ ✋ parou
+💥 sballato ‖ 💥 bust ‖ 💥 se pasó ‖ 💥 estourou
+Tocca per una carta ‖ Tap for a card ‖ Toca para una carta ‖ Toque para uma carta
+Mazzo {0} ‖ Deck {0} ‖ Mazo {0} ‖ Baralho {0}
+Chiedi carta ‖ Ask for a card ‖ Pedir carta ‖ Pedir carta
+Sto bene ‖ I stand ‖ Me planto ‖ Paro
+Tocca a te (banco): tocca il ‖ Your turn (bank): tap the ‖ Te toca (banca): toca el ‖ Sua vez (banca): toque no
+Tocca a te: tocca il ‖ Your turn: tap the ‖ Te toca: toca el ‖ Sua vez: toque no
+mazzo ‖ deck ‖ mazo ‖ baralho
+per una carta, ✋ per stare ‖ for a card, ✋ to stand ‖ para una carta, ✋ para plantarte ‖ para uma carta, ✋ para parar
+{0} chiede carta: {1} ‖ {0} asks for a card: {1} ‖ {0} pide carta: {1} ‖ {0} pede carta: {1}
+{0} ha sballato! ‖ {0} went bust! ‖ ¡{0} se pasó! ‖ {0} estourou!
+{0}: sette e mezzo! ‖ {0}: seven and a half! ‖ {0}: ¡siete y medio! ‖ {0}: sete e meio!
+{0} sta bene ‖ {0} stands ‖ {0} se planta ‖ {0} para
+— Smazzata {0}: tiene il banco {1} ‖ — Hand {0}: {1} is the bank ‖ — Mano {0}: {1} hace de banca ‖ — Mão {0}: {1} é a banca
+Il banco ({0}) ha {1}. ‖ The bank ({0}) has {1}. ‖ La banca ({0}) tiene {1}. ‖ A banca ({0}) tem {1}.
+Il banco ({0}) ha sballato. ‖ The bank ({0}) went bust. ‖ La banca ({0}) se pasó. ‖ A banca ({0}) estourou.
+Partita finita! Vince {0} con {1} fiches ‖ Game over! {0} wins with {1} chips ‖ ¡Partida terminada! Gana {0} con {1} fichas ‖ Partida encerrada! {0} vence com {1} fichas
+{0} gioca {1} e ruba il mazzetto di {2} ({3} carte)! ‖ {0} plays {1} and steals {2}'s pile ({3} cards)! ‖ ¡{0} juega {1} y roba el montón de {2} ({3} cartas)! ‖ {0} joga {1} e rouba o monte de {2} ({3} cartas)!
+Smazzata a {0} con {1} carte. ‖ Hand to {0} with {1} cards. ‖ Mano para {0} con {1} cartas. ‖ Mão para {0} com {1} cartas.
+Smazzata pari: {0} carte. ‖ Tied hand: {0} cards. ‖ Mano empatada: {0} cartas. ‖ Mão empatada: {0} cartas.
+Il mazzo è finito: devi stare ‖ The deck is over: you must stand ‖ Se acabó el mazo: debes plantarte ‖ O baralho acabou: você precisa parar
+Con questa carta non puoi rubare quel mazzetto ‖ With this card you cannot steal that pile ‖ Con esta carta no puedes robar ese montón ‖ Com esta carta você não pode roubar esse monte
+Il Rubamazzetto si gioca da 2 a 4 ‖ Rubamazzetto is played by 2 to 4 ‖ El Rubamazzetto se juega de 2 a 4 ‖ O Rouba-monte se joga de 2 a 4
+Il Sette e mezzo si gioca da 2 a 4 ‖ Sette e mezzo is played by 2 to 4 ‖ El Siete y medio se juega de 2 a 4 ‖ O Sete e meio se joga de 2 a 4
+Primo Rubamazzetto ‖ First Rubamazzetto ‖ Primer Rubamazzetto ‖ Primeiro Rouba-monte
+Vinci una partita di Rubamazzetto ‖ Win a game of Rubamazzetto ‖ Gana una partida de Rubamazzetto ‖ Vença uma partida de Rouba-monte
+Primo Sette e mezzo ‖ First Sette e mezzo ‖ Primer Siete y medio ‖ Primeiro Sete e meio
+Vinci una partita di Sette e mezzo ‖ Win a game of Sette e mezzo ‖ Gana una partida de Siete y medio ‖ Vença uma partida de Sete e meio
+Sette e mezzo reale ‖ Royal seven and a half ‖ Siete y medio real ‖ Sete e meio real
+Sette e mezzo: fai 7 e mezzo con due sole carte ‖ Sette e mezzo: make 7½ with just two cards ‖ Siete y medio: haz 7 y medio con solo dos cartas ‖ Sete e meio: faça 7 e meio com só duas cartas
+🎓 Allenamento a Rubamazzetto ‖ 🎓 Rubamazzetto practice ‖ 🎓 Práctica de Rubamazzetto ‖ 🎓 Treino de Rouba-monte
+🎓 Allenamento a Sette e mezzo ‖ 🎓 Sette e mezzo practice ‖ 🎓 Práctica de Siete y medio ‖ 🎓 Treino de Sete e meio
+Carte italiane da 40, ognuno per sé: 3 carte a testa e 4 in tavola. Vince chi alla fine ha il ‖ Italian 40-card deck, every player for themselves: 3 cards each and 4 on the table. The winner is whoever ends with the ‖ Baraja italiana de 40, cada uno para sí: 3 cartas cada uno y 4 en la mesa. Gana quien al final tiene el ‖ Baralho italiano de 40, cada um por si: 3 cartas cada e 4 na mesa. Vence quem no fim tiver o
+mazzetto più alto ‖ tallest pile ‖ montón más alto ‖ monte mais alto
+Con un 5 prendi il 5 in tavola. ‖ With a 5 you take the 5 on the table. ‖ Con un 5 te llevas el 5 de la mesa. ‖ Com um 5 você pega o 5 da mesa.
+2. Rubare il mazzetto ‖ 2. Stealing the pile ‖ 2. Robar el montón ‖ 2. Roubar o monte
+La carta in cima al mazzetto di ognuno si vede. Se hai una carta ‖ The top card of everyone's pile is visible. If you have a card ‖ La carta de arriba del montón de cada uno se ve. Si tienes una carta ‖ A carta de cima do monte de cada um fica à vista. Se você tem uma carta
+dello stesso valore ‖ of the same value ‖ del mismo valor ‖ do mesmo valor
+, giocala e ‖ , play it and ‖ , juégala y ‖ , jogue-a e
+rubi tutto il mazzetto ‖ steal the whole pile ‖ robas todo el montón ‖ roube o monte inteiro
+Attento alla carta che lasci in cima al tuo: gli altri possono fare lo stesso. ‖ Mind the card you leave on top of yours: the others can do the same. ‖ Cuidado con la carta que dejas encima del tuyo: los demás pueden hacer lo mismo. ‖ Cuidado com a carta que fica em cima do seu: os outros podem fazer o mesmo.
+Avvicinati a ‖ Get close to ‖ Acércate a ‖ Chegue perto de
+senza superarlo. Dall'Asso al 7 le carte valgono il loro numero, le figure mezzo punto. ‖ without going over. From Ace to 7 cards are worth their number, face cards half a point. ‖ sin pasarte. Del As al 7 las cartas valen su número, las figuras medio punto. ‖ sem passar. Do Ás ao 7 as cartas valem o seu número, as figuras meio ponto.
+7 + ½ = 7 e mezzo! ‖ 7 + ½ = 7½! ‖ 7 + ½ = ¡7 y medio! ‖ 7 + ½ = 7 e meio!
+2. Il turno ‖ 2. The turn ‖ 2. El turno ‖ 2. A vez
+Hai una carta coperta. Tocca il ‖ You have a face-down card. Tap the ‖ Tienes una carta tapada. Toca el ‖ Você tem uma carta virada para baixo. Toque no
+per chiederne un'altra, oppure ✋ per fermarti. Se superi 7 e mezzo ‖ to ask for another, or ✋ to stop. If you go over 7½ you ‖ para pedir otra, o ✋ para plantarte. Si pasas de 7 y medio ‖ para pedir outra, ou ✋ para parar. Se passar de 7 e meio você
+sballi ‖ go bust ‖ te pasas ‖ estoura
+Alla fine gioca il ‖ At the end the ‖ Al final juega la ‖ No fim joga a
+(passa a turno): chi ha più del banco vince una fiche. Si gioca con fiches finte. ‖ plays (it rotates): whoever beats the bank wins a chip. You play with play chips. ‖ (va rotando): quien tiene más que la banca gana una ficha. Se juega con fichas de juego. ‖ (troca a cada mão): quem tem mais que a banca ganha uma ficha. Joga-se com fichas de brincadeira.
+Vince chi ha il mazzetto più alto. ‖ The tallest pile wins. ‖ Gana quien tiene el montón más alto. ‖ Vence quem tiver o monte mais alto.
+Ora gioca il computer: guarda se riesce a rubare un mazzetto. ‖ The computer is playing now: see if it manages to steal a pile. ‖ Ahora juega la computadora: mira si consigue robar un montón. ‖ Agora o computador joga: veja se consegue roubar um monte.
+Se hai una carta uguale alla cima di un altro mazzetto, giocala per rubarlo! Altrimenti prendi la carta uguale in tavola. ‖ If you have a card matching the top of another pile, play it to steal it! Otherwise take the matching card on the table. ‖ Si tienes una carta igual a la de arriba de otro montón, ¡juégala para robarlo! Si no, toma la carta igual de la mesa. ‖ Se você tem uma carta igual à de cima de outro monte, jogue-a para roubá-lo! Senão pegue a carta igual na mesa.
+Chi ha più del banco vince, a parità vince il banco. ‖ Whoever beats the bank wins; ties go to the bank. ‖ Gana quien tiene más que la banca; en empate gana la banca. ‖ Vence quem tem mais que a banca; no empate vence a banca.
+Ora gioca un altro: guarda le carte scoperte. ‖ Someone else is playing now: look at the face-up cards. ‖ Ahora juega otro: mira las cartas descubiertas. ‖ Agora joga outro: veja as cartas viradas.
+Sotto i 5 conviene chiedere carta (tocca il mazzo); da 5 in su di solito è meglio fermarsi con ✋. ‖ Under 5 it pays to ask for a card (tap the deck); from 5 up it is usually better to stop with ✋. ‖ Por debajo de 5 conviene pedir carta (toca el mazo); de 5 para arriba suele ser mejor plantarse con ✋. ‖ Abaixo de 5 vale a pena pedir carta (toque no baralho); de 5 para cima geralmente é melhor parar com ✋.

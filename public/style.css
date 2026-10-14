@@ -889,3 +889,24 @@ body.vmelds .felt > .teamzone.theirs { flex: 1 1 auto; }
 
 /* Tressette: carte che non rispondono al seme */
 #hand .card.unplayable { filter: brightness(.62) saturate(.6); }
+
+/* Rubamazzetto: i mazzetti di tutti, con la carta in cima che si può rubare */
+.presa .ppiles { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+.presa .ppile { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 12px; background: rgba(0,0,0,.22); font-size: 12px; line-height: 1.25; }
+.presa .ppile .card { --cw: 40px; }
+.presa .ppile.mine { box-shadow: inset 0 0 0 2px var(--gold); }
+.presa .ppile.robbed { animation: shake .5s; }
+/* Sette e mezzo: una riga per giocatore e il mazzo da toccare */
+.presa.sm { display: flex; flex-direction: column; gap: 8px; }
+.smrow { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 12px; background: rgba(0,0,0,.2); }
+.smrow.turn { box-shadow: 0 0 0 2px var(--gold); }
+.smrow.bust { opacity: .55; }
+.smname { flex: 0 0 92px; font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.smcards { flex: 1; display: flex; gap: 3px; flex-wrap: wrap; }
+.smtot { flex: 0 0 auto; text-align: right; font-size: 13px; }
+.smtot i { display: block; font-style: normal; font-size: 11px; color: var(--muted); }
+.smdeck { align-self: center; position: relative; display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-radius: 14px; font-size: 13px; color: var(--muted); }
+.smdeck .card { --cw: 44px; }
+.smdeck .card + .card { position: absolute; left: 15px; top: 9px; z-index: -1; }
+.smdeck.can { cursor: pointer; background: rgba(242,193,78,.18); box-shadow: 0 0 0 2px var(--gold); color: #fff; }
+@keyframes shake { 0%, 100% { transform: none; } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }

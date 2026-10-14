@@ -11,6 +11,8 @@ const CAN = require('../shared/canasta');
 const SCO = require('../shared/scopa');
 const BRI = require('../shared/briscola');
 const TRE = require('../shared/tressette');
+const RUB = require('../shared/rubamazzetto');
+const SEM = require('../shared/settemezzo');
 
 const GAMES = {
   burraco: {
@@ -48,6 +50,18 @@ const GAMES = {
     E: require('./tressette'), Bot: require('./tressette-bot'),
     normalize: (r) => TRE.normalize(r),
     presetOf: () => 'tressette',
+  },
+  rubamazzetto: {
+    id: 'rubamazzetto', name: 'Rubamazzetto',
+    E: require('./rubamazzetto'), Bot: require('./rubamazzetto-bot'),
+    normalize: (r) => RUB.normalize(r),
+    presetOf: () => 'rubamazzetto',
+  },
+  settemezzo: {
+    id: 'settemezzo', name: 'Sette e mezzo',
+    E: require('./settemezzo'), Bot: require('./settemezzo-bot'),
+    normalize: (r) => SEM.normalize(r),
+    presetOf: () => 'settemezzo',
   },
 };
 

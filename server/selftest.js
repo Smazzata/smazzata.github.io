@@ -140,6 +140,34 @@ function presaTests() {
   assert.strictEqual(BR.winner([c(1, 'd', 1), c(2, 'c', 2)], 'c'), 1);
   assert.strictEqual(BR.winner([c(1, 'd', 1), c(10, 's', 2)], 'c'), 0, 'seme diverso senza briscola: vince chi esce');
   let hands = 0;
+  // Rubamazzetto: con una carta uguale alla cima di un mazzetto lo si ruba
+  const RMB = require('../shared/rubamazzetto');
+  const mv = RMB.moves(c(5, 'd', 1), [c(5, 'c', 2)], [[], [c(9, 'b', 3), c(5, 's', 4)]], 0);
+  assert.deepStrictEqual(mv.map((m) => m.kind), ['steal', 'table'], 'si può rubare o prendere dal tavolo');
+  // Sette e mezzo: figure mezzo punto, matta, reale
+  const SMB = require('../shared/settemezzo');
+  assert.strictEqual(SMB.total([c(7, 'c', 1), c(9, 'b', 2)], {}), 7.5);
+  assert.strictEqual(SMB.total([c(10, 'd', 1), c(3, 'c', 2)], { matta: true }), 7, 'la matta vale quello che serve (fino a 7)');
+  assert(SMB.reale([c(7, 'c', 1), c(8, 's', 2)], {}) && !SMB.reale([c(3, 'c', 1), c(4, 's', 2), c(8, 'b', 3)], {}), 'reale solo con due carte');
+  {
+    const ES = require('./settemezzo'), BS = require('./settemezzo-bot');
+    for (const n of [2, 4]) {
+      const g = ES.createGame({ rules: { players: n }, players: Array.from({ length: n }, (_, i) => ({ name: 'S' + i, isBot: true })) });
+      let guard = 0;
+      while (!g.over && guard++ < 5000) {
+        if (g.phase === 'handEnd') {
+          assert.strictEqual(g.scores.reduce((a, b) => a + b, 0), SMB.START_CHIPS * n, 'le fiches non si creano né si perdono');
+          ES.nextHand(g); continue;
+        }
+        ES.apply(g, g.turn, BS.nextAction(g, g.turn, { level: guard % 2 ? 'difficile' : 'normale' }));
+      }
+      assert(g.over, 'sette e mezzo: la partita finisce');
+      // le carte coperte degli altri non si vedono
+      const g2 = ES.createGame({ rules: { players: n }, players: Array.from({ length: n }, (_, i) => ({ name: 'S' + i, isBot: true })) });
+      const v = ES.viewFor(g2, 0);
+      assert(v.seats[1].cards[0].hidden && !v.seats[0].cards[0].hidden, 'carta coperta visibile solo a chi la ha');
+    }
+  }
   // Tressette: si risponde al seme; il Tre batte l'Asso; accusi
   const TRS = require('../shared/tressette');
   assert.strictEqual(TRS.winner([c(1, 'd', 1), c(3, 'd', 2), c(3, 'c', 3)]), 1, 'il Tre di denari prende; il Tre di coppe non risponde');
@@ -148,7 +176,7 @@ function presaTests() {
   // napola: Asso, 2, 3 di denari = 3 punti, con il 4 e il 5 in fila = 5
   assert.strictEqual(SC.napola([c(1, 'd', 1), c(2, 'd', 2), c(3, 'd', 3), c(4, 'd', 4), c(5, 'd', 5), c(7, 'd', 6)]), 5);
   assert.strictEqual(SC.napola([c(1, 'd', 1), c(3, 'd', 3)]), 0);
-  for (const [gid, ns, extra] of [['scopa', [2, 4], {}], ['scopa', [4], { deal: 10, napola: true }], ['scopa', [4], { deal: 9 }], ['briscola', [2, 4], {}], ['tressette', [2, 4], {}]]) {
+  for (const [gid, ns, extra] of [['scopa', [2, 4], {}], ['scopa', [4], { deal: 10, napola: true }], ['scopa', [4], { deal: 9 }], ['briscola', [2, 4], {}], ['tressette', [2, 4], {}], ['rubamazzetto', [2, 3, 4], {}]]) {
     const EG = require('./' + gid), BG = require('./' + gid + '-bot');
     for (const n of ns) {
       const g = EG.createGame({ rules: { players: n, ...extra }, players: Array.from({ length: n }, (_, i) => ({ name: 'B' + i, isBot: true })) });

@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const MODULES = ['shared/rules', 'shared/melds', 'shared/scala40', 'shared/canasta', 'shared/scopa', 'shared/briscola', 'shared/tressette', 'server/engine', 'server/bot', 'server/scala40', 'server/scala40-bot', 'server/canasta', 'server/canasta-bot', 'server/scopa', 'server/scopa-bot', 'server/briscola', 'server/briscola-bot', 'server/tressette', 'server/tressette-bot'];
+const MODULES = ['shared/rules', 'shared/melds', 'shared/scala40', 'shared/canasta', 'shared/scopa', 'shared/briscola', 'shared/tressette', 'shared/rubamazzetto', 'shared/settemezzo', 'server/engine', 'server/bot', 'server/scala40', 'server/scala40-bot', 'server/canasta', 'server/canasta-bot', 'server/scopa', 'server/scopa-bot', 'server/briscola', 'server/briscola-bot', 'server/tressette', 'server/tressette-bot', 'server/rubamazzetto', 'server/rubamazzetto-bot', 'server/settemezzo', 'server/settemezzo-bot'];
 
 function bundle() {
   const defs = MODULES.map((name) => {
@@ -44,6 +44,8 @@ function bundle() {
     scopa: { E: load('server/scopa'), Bot: load('server/scopa-bot') },
     briscola: { E: load('server/briscola'), Bot: load('server/briscola-bot') },
     tressette: { E: load('server/tressette'), Bot: load('server/tressette-bot') },
+    rubamazzetto: { E: load('server/rubamazzetto'), Bot: load('server/rubamazzetto-bot') },
+    settemezzo: { E: load('server/settemezzo'), Bot: load('server/settemezzo-bot') },
   };
 })();
 `;
