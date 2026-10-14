@@ -172,6 +172,7 @@ function isConnected(token) {
 
 function broadcast(room) {
   scheduleTurnTimer(room);
+  scheduleAbsent(room);
   for (const s of io.sockets.sockets.values()) {
     if (s.data.room !== room.code) continue;
     const seat = seatOfToken(room, s.data.token);
@@ -191,6 +192,46 @@ function turnTimerKey(room) {
   const s = room.seats[g.turn];
   if (!s || s.isBot) return null;
   return `${g.handNo}:${g.turn}:${room.turnCounter || 0}`;
+}
+
+/* ---------- Giocatore offline: dopo un'attesa il computer gioca al suo posto ---------- */
+const ABSENT_MS = Number(process.env.ABSENT_MS || 45000) * TIMER_SCALE;
+
+function scheduleAbsent(room) {
+  const g = room.game;
+  const s = g && g.phase !== 'handEnd' && !g.over ? room.seats[g.turn] : null;
+  const absent = s && !s.isBot && s.token && !isConnected(s.token);
+  room.absentSince = room.absentSince || {};
+  // ricorda da quando ciascun giocatore è offline (si azzera quando rientra)
+  room.seats.forEach((x, i) => {
+    if (!x || x.isBot || !x.token) return;
+    if (isConnected(x.token)) delete room.absentSince[i];
+    else if (!room.absentSince[i]) room.absentSince[i] = Date.now();
+  });
+  const key = absent ? `${g.handNo}:${g.turn}:${room.turnCounter || 0}` : null;
+  if (key === room.absentKey) return;
+  clearTimeout(room.absentHandle);
+  room.absentKey = key;
+  if (!key) return;
+  // la prima volta si aspetta ABSENT_MS; se è già offline da tanto si gioca subito
+  const waited = Date.now() - room.absentSince[g.turn];
+  const delay = Math.max(BOT_DELAY, ABSENT_MS - waited);
+  room.absentHandle = setTimeout(() => playForAbsent(room, key), delay);
+}
+
+function playForAbsent(room, key) {
+  const g = room.game;
+  if (!g || room.absentKey !== key) return;
+  const seat = g.turn;
+  const s = room.seats[seat];
+  if (!s || s.isBot || isConnected(s.token)) return;
+  E.note(g, `🤖 ${s.name} è offline: il computer gioca al suo posto`);
+  const memo = { level: 'normale' };
+  for (let i = 0; i < 60 && g.turn === seat && g.phase !== 'handEnd'; i++) {
+    try { E.apply(g, seat, Bot.nextAction(g, seat, memo)); } catch (e) { console.error('Turno per giocatore offline:', e.message); break; }
+  }
+  room.absentKey = null;
+  afterAction(room);
 }
 
 function scheduleTurnTimer(room) {
@@ -320,6 +361,24 @@ function publicStats(e) {
   };
 }
 
+/**
+ * Fine smazzata / fine partita: si prosegue quando tutti i giocatori COLLEGATI sono pronti
+ * (chi è offline non blocca il tavolo). A fine partita "pronto" vale come voto per la rivincita.
+ */
+function checkReady(room) {
+  const g = room.game;
+  if (!g || g.phase !== 'handEnd') return;
+  const humans = room.seats.map((s, i) => (s && !s.isBot && isConnected(s.token) ? i : -1)).filter((i) => i >= 0);
+  const allReady = humans.length > 0 && humans.every((i) => room.ready.has(i));
+  if (allReady && g.over) { startGame(room); return; }
+  if (allReady) {
+    E.nextHand(g);
+    room.ready = new Set();
+    room.turnCounter = (room.turnCounter || 0) + 1;
+  }
+  broadcast(room);
+}
+
 function afterAction(room) {
   const g = room.game;
   recordLeaderboard(room);
@@ -347,6 +406,8 @@ function leaveRoom(socket) {
     // in partita: il posto passa a un bot
     const s = room.seats[seat];
     s.isBot = true;
+    s.leftToken = s.token; // per poter tornare al proprio posto
+    s.leftName = s.name;
     s.token = null;
     s.name = s.name + ' (bot)';
     room.game.players[seat].isBot = true;
@@ -370,6 +431,18 @@ function joinRoom(socket, room) {
   const sess = sessions.get(token);
   let seat = seatOfToken(room, token);
   room.spectators = room.spectators || [];
+  // rientro al proprio posto dopo essere usciti da una partita in corso
+  const back = seat < 0 && room.game ? room.seats.findIndex((x) => x && x.leftToken === token) : -1;
+  if (back >= 0) {
+    const s = room.seats[back];
+    Object.assign(s, { isBot: false, token, name: sess.name || s.leftName, avatar: sess.avatar || null });
+    delete s.leftToken; delete s.leftName;
+    room.game.players[back].isBot = false;
+    room.game.players[back].name = s.name;
+    E.note(room.game, `${s.name} è tornato al tavolo`);
+    seat = back;
+    room.spectators = room.spectators.filter((t) => t !== token);
+  }
   if (seat < 0) {
     const free = room.game ? -1 : room.seats.findIndex((s) => !s);
     if (free >= 0) {
@@ -693,19 +766,7 @@ io.on('connection', (socket) => {
     const seat = seatOfToken(room, socket.data.token);
     if (seat < 0) throw new E.GameError('Gli spettatori non partecipano');
     room.ready.add(seat);
-    const humans = room.seats.map((s, i) => (s && !s.isBot ? i : -1)).filter((i) => i >= 0);
-    // a fine partita "pronto" vale come voto per la rivincita: si riparte quando tutti hanno votato
-    if (g.over) {
-      if (humans.every((i) => room.ready.has(i))) startGame(room);
-      else broadcast(room);
-      return;
-    }
-    if (humans.every((i) => room.ready.has(i))) {
-      E.nextHand(g);
-      room.ready = new Set();
-      room.turnCounter = (room.turnCounter || 0) + 1;
-    }
-    broadcast(room);
+    checkReady(room);
   }));
 
   // Reazioni rapide al tavolo (con un limite per evitare raffiche)
@@ -734,7 +795,8 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     const room = rooms.get(socket.data.room);
-    if (room) setTimeout(() => rooms.has(room.code) && broadcast(room), 50);
+    // chi va offline non blocca il "pronto" di fine smazzata
+    if (room) setTimeout(() => { if (rooms.has(room.code)) { if (room.game && room.game.phase === 'handEnd') checkReady(room); else broadcast(room); } }, 50);
     const token = socket.data.token;
     if (token) setTimeout(() => social.pushFriends(token), 80);
   });

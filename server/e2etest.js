@@ -272,6 +272,47 @@ const step = (t) => console.log('✓ ' + t);
     Q1.sock.close(); Q2.sock.close();
     step('gioca subito: tavolo veloce che parte da solo quando è pieno');
 
+    // giocatore offline: senza timer, il computer gioca al suo posto e il tavolo non si blocca
+    const O1 = player('Ottavio'), O2 = player('Nora');
+    await O1.hello(); await O2.hello();
+    assert((await O1.call('setNick', { nick: 'Ottavio' })).ok); assert((await O2.call('setNick', { nick: 'Nora' })).ok);
+    assert((await O1.call('createRoom', { rules: { players: 2 } })).ok);
+    const oc = (await O1.until((s) => s.room, 'tavolo')).room.code;
+    assert((await O2.call('joinRoom', { code: oc })).ok);
+    assert((await O1.call('start')).ok);
+    await O1.until((s) => s.game, 'partita');
+    let autoplay = true;
+    (async () => { // Ottavio gioca da solo: pesca e scarta
+      while (autoplay) {
+        const g = O1.state && O1.state.game;
+        if (g && g.turn === g.you && g.phase === 'draw') await O1.call('action', { type: 'draw' });
+        else if (g && g.turn === g.you && g.phase === 'play') await O1.call('action', { type: 'discard', cardId: g.hand[g.hand.length - 1].id });
+        else if (g && g.phase === 'handEnd' && !O1.state.room.ready.includes(g.you)) await O1.call('ready');
+        await wait(30);
+      }
+    })();
+    const noraToken = O2.token;
+    const noraSeat = (await O2.until((s) => s.game, 'partita per Nora')).game.you;
+    O2.sock.close();
+    await O1.until((s) => s.game && s.game.log.some((l) => l.includes('Nora è offline: il computer gioca')), 'il computer gioca per Nora', 20000);
+    const turnsBefore = O1.state.game.log.length;
+    await wait(500);
+    assert(O1.state.game.log.length > turnsBefore || O1.state.game.phase === 'handEnd', 'il tavolo va avanti');
+    step('giocatore offline: il computer gioca al suo posto, il tavolo non si blocca');
+
+    // rientro: Nora ritrova il posto; poi esce dalla partita e torna al suo posto col codice
+    const O3 = player('Nora');
+    await O3.hello(noraToken);
+    await O3.until((s) => s.game && s.game.you === noraSeat, 'Nora di nuovo al suo posto');
+    assert((await O3.call('leaveRoom')).ok);
+    await O1.until((s) => s.room.seats[noraSeat].isBot, 'posto passato al computer');
+    assert((await O3.call('joinRoom', { code: oc })).ok);
+    const nb = await O3.until((s) => s.game && s.game.you === noraSeat, 'Nora torna al suo posto');
+    assert(!nb.room.seats[noraSeat].isBot && nb.game.hand.length > 0, 'di nuovo umana, con le sue carte');
+    autoplay = false;
+    O1.sock.close(); O3.sock.close();
+    step('chi esce da una partita in corso può tornare al suo posto');
+
     A.sock.close(); B.sock.close();
     console.log('\nProva multigiocatore: tutto OK');
   } finally {

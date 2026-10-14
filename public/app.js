@@ -184,6 +184,7 @@
       if (S.pendingJoin && S.social && S.social.nick) { const code = S.pendingJoin; S.pendingJoin = ''; joinRoom(code); }
     } else {
       S.pendingJoin = '';
+      if (store.get('bur_lastroom', '') === room.code) store.set('bur_lastroom', '');
       S.screen = game ? 'game' : 'lobby';
       if (location.search) history.replaceState(null, '', location.pathname);
     }
@@ -718,6 +719,7 @@
               <div class="row"><button class="btn primary grow" data-act="claimNick">Conferma nickname</button></div>
               <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a></p>`}
         <div class="row" style="margin-top:10px"><button class="btn primary grow big" data-act="goSetup">Nuova partita</button></div>
+        ${store.get('bur_lastroom', '') ? `<div class="row" style="margin-top:8px"><button class="btn primary grow" data-act="rejoin">↩ Torna al tavolo ${esc(store.get('bur_lastroom', ''))}</button></div>` : ''}
         <div class="row" style="margin-top:8px"><button class="btn grow" data-act="quickMenu">⚡ Gioca subito</button><button class="btn grow" data-act="tutorial">🎓 Impara a giocare</button></div>
         <div class="row" style="margin-top:10px">
           <input type="text" id="joinCode" class="grow codein" maxlength="4" placeholder="Codice tavolo" value="${esc(S.pendingJoin)}">
@@ -1434,7 +1436,10 @@
     create() { emit('createRoom', { rules: S.rules }); },
     createBots() { emit('createRoom', { rules: S.rules, vsBots: true }); },
     leave() {
-      if (S.game && !S.game.over && !confirm('Vuoi davvero uscire? Il tuo posto passerà al computer.')) return;
+      if (S.game && !S.game.over && S.game.you >= 0) {
+        if (!confirm('Vuoi davvero uscire? Il computer giocherà al tuo posto: potrai tornare quando vuoi dalla schermata iniziale.')) return;
+        store.set('bur_lastroom', S.room.code);
+      }
       emit('leaveRoom');
       S.screen = 'home';
     },
@@ -1514,6 +1519,12 @@
     },
     profile: profileModal,
     tutorial() { tutorialModal(0); },
+    async rejoin() {
+      const code = store.get('bur_lastroom', '');
+      store.set('bur_lastroom', '');
+      const r = await emit('joinRoom', { code });
+      if (!r.ok) render();
+    },
     tutStep(el) { tutorialModal(Number(el.dataset.i)); },
     practice() { if (!requireName()) return; closeModal(); emit('createRoom', { tutorial: true }); },
     coachOff() { S.coachOff = true; render(); },
