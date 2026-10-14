@@ -105,6 +105,9 @@
       <div class="row">${DECKS.map(([id, label]) => opt('deck', id, `<span class="deckprev" data-deck="${id}">${cardHTML({ r: 13, s: 'H', id: -80 }, 'withpips')}${cardHTML({ r: ['americane', 'francesi', 'italiane'].includes(id) ? 3 : 7, s: 'D', id: -81 }, 'withpips')}${cardHTML({ r: 1, s: 'C', id: -82 }, 'withpips')}</span>${label}`)).join('')}</div>
       <h4>Carte</h4>
       <div class="row">${opt('big', false, 'Normali')}${opt('big', true, 'Grandi')}</div>
+      <h4>Giochi calati sul tavolo</h4>
+      <div class="row">${opt('melds', 'colonna', '⬇️ In colonna')}${opt('melds', 'fila', '➡️ In fila')}</div>
+      <p class="muted small">In colonna le carte stanno una sotto l'altra: sul telefono restano più grandi anche con tanti giochi.</p>
       <h4>Notifiche "tocca a te"</h4>
       ${canNotify ? `<div class="row">${opt('notify', true, '🔔 Attive')}${opt('notify', false, '🔕 Disattivate')}</div>
         <p class="muted small">Arrivano quando il gioco è aperto in secondo piano.${typeof Notification !== 'undefined' && Notification.permission === 'denied' ? ' <b>Il browser le ha bloccate: riattivale dalle impostazioni del sito.</b>' : ''}</p>`

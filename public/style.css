@@ -827,3 +827,26 @@ body[data-theme="notte"] .cbar .ctrack { background: rgba(255,255,255,.1); }
 .meld.poker .pstack b { position: absolute; left: 3px; top: 3px; width: var(--mw); height: calc(var(--mw) * 1.42); display: flex; align-items: center; justify-content: center;
   font: 800 calc(var(--mw) * .55) Georgia, serif; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.6); z-index: 2; }
 .meld.poker .pstack.fresh .card:last-of-type { box-shadow: 0 0 0 2px #ffd34d, 0 0 9px rgba(255,211,77,.85); }
+
+/* ---------- Giochi calati in colonna (impostazione «In colonna», predefinita) ---------- */
+body.vmelds .melds { gap: 10px 8px; }
+body.vmelds .meld:not(.poker):not(.newmeld) { flex-direction: column; align-items: flex-start; }
+body.vmelds .meld .card { margin-right: 0; margin-bottom: calc(var(--mw) * -1.06); }
+/* in colonna valore e seme stanno sulla stessa riga: basta una striscia sottile per leggere ogni carta */
+body.vmelds .meld .card .ix:not(.br) { display: flex; align-items: baseline; gap: 1px; top: calc(var(--cw) * .03); }
+body.vmelds .meld .card .ix:not(.br) i { display: inline; font-size: calc(var(--cw) * .28); }
+/* jolly in colonna: la stella in alto, al posto della scritta verticale */
+body.vmelds .meld .card.joker .ix { display: none; }
+body.vmelds .meld .card.joker .jk { align-items: flex-start; justify-content: flex-start; padding: calc(var(--cw) * .02) 0 0 calc(var(--cw) * .1); font-size: calc(var(--cw) * .3); }
+body.vmelds .meld .card.joker:last-of-type .jk { align-items: center; justify-content: center; padding: 0; font-size: calc(var(--cw) * .55); }
+body.vmelds .meld .card:last-of-type { margin-bottom: 0; }
+body.vmelds .meld .cnt { bottom: -7px; right: -7px; }
+body.vmelds .meld .tag { top: -10px; right: -10px; }
+body.vmelds .meld.newmeld { min-width: calc(var(--mw) * 1.6); height: calc(var(--mw) * 2.2); }
+/* compatto: le carte di mezzo restano nascoste, il "+N" sta tra le visibili */
+body.vmelds .felt.compact .meld .more { margin: calc(var(--mw) * -0.3) 0 calc(var(--mw) * -0.3) calc(var(--mw) * .1); align-self: flex-start; position: relative; z-index: 2; }
+
+/* in colonna le zone con pochi giochi si affiancano (es. Scala 40 in quattro: tre avversari) */
+body.vmelds .felt { display: flex; flex-wrap: wrap; align-content: flex-start; column-gap: 8px; }
+body.vmelds .felt > * { flex: 1 1 100%; min-width: 0; }
+body.vmelds .felt > .teamzone.theirs { flex: 1 1 auto; }

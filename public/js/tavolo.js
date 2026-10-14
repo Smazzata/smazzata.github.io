@@ -420,7 +420,8 @@
       const cs0 = getComputedStyle(felt);
       let mw0 = parseFloat(cs0.getPropertyValue('--mw')) || 30;
       let pw0 = parseFloat(cs0.getPropertyValue('--pw')) || 42;
-      const maxMw = mw0 * 1.45;
+      // in colonna lo spazio in larghezza basta più a lungo: le carte possono crescere di più
+      const maxMw = mw0 * (document.body.classList.contains('vmelds') ? 1.9 : 1.45);
       while (mw0 + 2 <= maxMw) {
         felt.style.setProperty('--mw', `${mw0 + 2}px`);
         felt.style.setProperty('--pw', `${Math.min(pw0 + 2, 72)}px`);
