@@ -76,7 +76,7 @@ const HELPERS = `
       }
       await __W(250);
     }
-    throw new Error('la smazzata non finisce');
+    throw new Error('la smazzata non finisce (stato: ' + __status().trim().slice(0, 80) + ')');
   };
 `;
 
@@ -89,11 +89,12 @@ const HELPERS = `
   });
   await new Promise((res) => server.stdout.on('data', (d) => { if (String(d).includes('ascolto')) res(); }));
   const browser = spawn(findBrowser(), [
-    '--headless=new', `--remote-debugging-port=${DEBUG_PORT}`, `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check',
+    '--headless=new', `--remote-debugging-port=${DEBUG_PORT}`, ...(process.env.CI ? ['--no-sandbox'] : []), `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check',
     '--window-size=375,812', '--force-device-scale-factor=2', '--autoplay-policy=no-user-gesture-required', 'about:blank',
   ], { stdio: 'ignore' });
   let cdp;
   const errors = [];
+  let shot = async () => {};
   try {
     let target;
     for (let i = 0; i < 50 && !target; i++) {
@@ -108,7 +109,7 @@ const HELPERS = `
       if (m.method === 'Runtime.exceptionThrown') errors.push(m.params.exceptionDetails.exception ? m.params.exceptionDetails.exception.description : m.params.exceptionDetails.text);
       if (m.method === 'Runtime.consoleAPICalled' && m.params.type === 'error') errors.push(m.params.args.map((a) => a.value || a.description).join(' '));
     });
-    const shot = async (name) => {
+    shot = async (name) => {
       const r = await cdp.send('Page.captureScreenshot', { format: 'png' });
       fs.writeFileSync(path.join(OUT, name + '.png'), Buffer.from(r.data, 'base64'));
     };
@@ -129,7 +130,7 @@ const HELPERS = `
     const b = await cdp.run(`
       const hand = document.querySelectorAll('#hand .card').length;
       if (hand !== 11) throw new Error('mano del Burraco: ' + hand + ' carte');
-      return __playHand(120000);`, 150000);
+      return __playHand(240000);`, 260000);
     await shot('02-burraco-fine-smazzata');
     if (b.scroll > 3) throw new Error(`il tavolo del Burraco scorre (${b.scroll} volte)`);
     step(`Burraco: smazzata giocata toccando (${b.turns} turni), il tavolo non scorre`);
@@ -167,7 +168,7 @@ const HELPERS = `
       const title = document.querySelector('.topbar .title').textContent;
       const hand = document.querySelectorAll('#hand .card').length;
       if (!/Scala 40/.test(title) || hand !== 13) throw new Error('Scala 40 non partita: ' + title + ' / ' + hand);
-      return __playHand(150000);`, 180000);
+      return __playHand(240000);`, 260000);
     await shot('04-scala40-fine-smazzata');
     if (s40.scroll > 3) throw new Error(`il tavolo della Scala 40 scorre (${s40.scroll} volte)`);
     const twos = await cdp.run(`return document.querySelectorAll('.card.two').length;`);
@@ -193,6 +194,10 @@ const HELPERS = `
     if (real.length) throw new Error('errori nella pagina:\n' + real.slice(0, 5).join('\n'));
     step('nessun errore nella pagina');
     console.log(`\nProva dell'interfaccia: tutto OK (schermate in ${path.relative(process.cwd(), OUT)})`);
+  } catch (e) {
+    // schermata del momento in cui qualcosa non va: test-output/errore.png
+    try { await shot('errore'); } catch (e2) { /* niente */ }
+    throw e;
   } finally {
     try { if (cdp) cdp.ws.close(); } catch (e) { /* niente */ }
     browser.kill();

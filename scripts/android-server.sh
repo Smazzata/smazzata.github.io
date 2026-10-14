@@ -107,12 +107,36 @@ server_loop() {
 }
 
 # 4. Aggiornamenti automatici da GitHub
+# Esito delle prove automatiche (GitHub Actions, controllo "Prove") per una versione:
+# success | failure | pending | missing (nessuna prova trovata: si aggiorna lo stesso)
+tests_status() {
+  node -e '
+    fetch("https://api.github.com/repos/" + process.argv[1] + "/commits/" + process.argv[2] + "/check-runs?check_name=Prove", { headers: { Accept: "application/vnd.github+json" } })
+      .then((r) => r.json()).then((d) => {
+        const runs = d.check_runs || [];
+        if (!runs.length) return console.log("missing");
+        const r = runs[0];
+        console.log(r.status !== "completed" ? "pending" : r.conclusion === "success" ? "success" : r.conclusion || "failure");
+      }).catch(() => console.log("pending"));
+  ' "$GH_REPO" "$1"
+}
+
 update_loop() {
   while true; do
     sleep "$UPDATE_EVERY"
     git fetch -q origin main 2>/dev/null || continue
     if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
-      log "Nuova versione trovata: aggiorno"
+      # si aggiorna solo se le prove automatiche su GitHub sono passate per quella versione
+      esito=$(tests_status "$(git rev-parse origin/main)")
+      # appena pubblicata il controllo può non esistere ancora: si aspetta (fino a 15 minuti)
+      if [ "$esito" = "missing" ] && [ $(( $(date +%s) - $(git log -1 --format=%ct origin/main) )) -lt 900 ]; then esito=pending; fi
+      case "$esito" in
+        success|missing) ;;
+        pending) continue ;;
+        *) [ "$skipped" = "$(git rev-parse origin/main)" ] || log "Nuova versione NON installata: le prove su GitHub sono fallite ($esito)"
+           skipped=$(git rev-parse origin/main); continue ;;
+      esac
+      log "Nuova versione trovata (prove superate): aggiorno"
       git reset -q --hard origin/main
       npm ci --omit=dev --no-audit --no-fund >/dev/null 2>&1
       [ -f "$PID_FILE" ] && kill "$(cat "$PID_FILE")" 2>/dev/null
