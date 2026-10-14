@@ -8,6 +8,7 @@ const { Server } = require('socket.io');
 const E = require('./engine');
 const Bot = require('./bot');
 const Rules = require('../shared/rules');
+const createSocial = require('./social');
 
 const PORT = process.env.PORT || 3000;
 const BOT_DELAY = Number(process.env.BOT_DELAY || 700);
@@ -24,12 +25,13 @@ app.get('/health', (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json({ ok: true, tavoli: rooms.size });
 });
+app.get('/vendor/qrcode.js', (req, res) => res.sendFile(require.resolve('qrcode-generator')));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/shared', express.static(path.join(__dirname, '..', 'shared')));
 const server = http.createServer(app);
 const io = new Server(server);
 
-/* sessions: token -> { name, room } ; rooms: code -> room */
+/* sessions: token -> { name, room, nick, code, pw, friends, reqIn, reqOut } ; rooms: code -> room */
 const sessions = new Map();
 const rooms = new Map();
 /* classifica: token -> { name, games, wins, points, burraco } (solo giocatori umani) */
@@ -41,6 +43,25 @@ function newCode() {
   let c;
   do { c = Array.from({ length: 4 }, () => A[Math.floor(Math.random() * A.length)]).join(''); } while (rooms.has(c));
   return c;
+}
+
+function roomOfToken(token) {
+  const sess = sessions.get(token);
+  const room = sess && sess.room && rooms.get(sess.room);
+  return room && seatOfToken(room, token) >= 0 ? room : null;
+}
+
+/** Il nickname scelto diventa il nome mostrato nei tavoli e in classifica */
+function renamePlayer(token, nick) {
+  for (const room of rooms.values()) {
+    const seat = seatOfToken(room, token);
+    if (seat < 0) continue;
+    room.seats[seat].name = nick;
+    if (room.game) room.game.players[seat].name = nick;
+    broadcast(room);
+  }
+  const e = leaderboard.get(token);
+  if (e) e.name = nick;
 }
 
 function seatOfToken(room, token) {
@@ -244,6 +265,11 @@ function cleanName(n) {
   return String(n || '').replace(/[<>]/g, '').trim().slice(0, 18) || 'Giocatore';
 }
 
+const social = createSocial({
+  io, sessions, isConnected: (t) => isConnected(t), roomOfToken, renamePlayer,
+  onDelete: (token) => { leaderboard.delete(token); scheduleSave(); },
+});
+
 io.on('connection', (socket) => {
   const handler = (fn) => (data, cb) => {
     try { const res = fn(data || {}); if (typeof cb === 'function') cb({ ok: true, ...(res || {}) }); }
@@ -259,9 +285,12 @@ io.on('connection', (socket) => {
       sessions.set(token, { name: cleanName(name), room: null });
     }
     const sess = sessions.get(token);
-    if (name) sess.name = cleanName(name);
+    // con un nickname il nome mostrato è sempre quello
+    if (sess.nick) sess.name = sess.nick; else if (name) sess.name = cleanName(name);
     socket.data.token = token;
-    socket.emit('welcome', { token, name: sess.name });
+    socket.emit('welcome', { token, name: sess.name, nick: sess.nick || null });
+    social.push(token);
+    social.pushFriends(token);
     if (sess.room && rooms.has(sess.room)) {
       const room = rooms.get(sess.room);
       if (seatOfToken(room, token) >= 0) {
@@ -277,6 +306,7 @@ io.on('connection', (socket) => {
   socket.on('setName', handler(({ name }) => {
     const sess = sessions.get(socket.data.token);
     if (!sess) throw new E.GameError('Sessione non valida');
+    if (sess.nick) return; // il nome è il nickname
     sess.name = cleanName(name);
     const room = rooms.get(socket.data.room);
     if (room) {
@@ -477,9 +507,13 @@ io.on('connection', (socket) => {
     io.to(room.code).emit('chat', { name, text: t, seat });
   }));
 
+  social.register(socket, handler);
+
   socket.on('disconnect', () => {
     const room = rooms.get(socket.data.room);
     if (room) setTimeout(() => rooms.has(room.code) && broadcast(room), 50);
+    const token = socket.data.token;
+    if (token) setTimeout(() => social.pushFriends(token), 80);
   });
 });
 
@@ -555,6 +589,7 @@ function loadSaved() {
     const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
     for (const [token, sess] of data.sessions || []) sessions.set(token, sess);
     for (const [token, e] of data.leaderboard || []) leaderboard.set(token, e);
+    social.rebuildIndexes();
     for (const r of data.rooms || []) {
       rooms.set(r.code, { ...r, ready: new Set(r.ready || []), botTimer: null, botMemo: {}, botMemoTurn: -1 });
     }

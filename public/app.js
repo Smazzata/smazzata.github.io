@@ -33,6 +33,9 @@
     unread: 0,
     connected: false,
     pendingJoin: (new URLSearchParams(location.search).get('t') || '').toUpperCase(),
+    pendingProfile: new URLSearchParams(location.search).get('profilo') || '',
+    social: null,
+    nickCheck: null,
     customOpen: false,
     modalKind: null,
     newIds: new Set(),
@@ -111,10 +114,26 @@
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && !socket.connected) socket.connect();
   });
-  socket.on('welcome', ({ token, name }) => {
+  socket.on('welcome', ({ token, name, nick }) => {
     S.token = token;
     store.set('bur_token', token);
-    if (!S.name && name !== 'Giocatore') S.name = name;
+    if (nick) { S.name = nick; store.set('bur_name', nick); } else if (!S.name && name !== 'Giocatore') S.name = name;
+    if (S.pendingProfile) { const c = S.pendingProfile; S.pendingProfile = ''; askImport(c); }
+  });
+  socket.on('social', (soc) => {
+    S.social = soc;
+    if (soc && soc.nick) { S.name = soc.nick; store.set('bur_name', soc.nick); }
+    if (S.modalKind === 'friends') friendsModal();
+    if (S.screen === 'home' || S.screen === 'lobby') render();
+  });
+  socket.on('invite', ({ from, code, started }) => {
+    Sound.play('turn');
+    if (navigator.vibrate) navigator.vibrate([80, 60, 80]);
+    notify('Burraco: invito', `${from} ti invita al tavolo ${code}`, 'invite');
+    openModal('invite', `<div class="result" style="text-align:center"><h2>🎴 Invito</h2>
+      <p><b>${esc(from)}</b> ti invita al suo tavolo <b>${esc(code)}</b>.</p>
+      ${started ? '<p class="muted">La partita è già iniziata: potrai entrare solo se si libera un posto.</p>' : ''}
+      <div class="row" style="justify-content:center"><button class="btn primary big" data-act="acceptInvite" data-code="${esc(code)}">Entra</button><button class="btn" data-act="closeModal">No grazie</button></div></div>`);
   });
   socket.on('state', ({ room, game }) => onState(room, game));
   socket.on('chat', (m) => {
@@ -147,7 +166,7 @@
     S.game = game;
     if (!room) {
       if (S.screen !== 'setup') S.screen = 'home';
-      if (S.pendingJoin && S.name) { const code = S.pendingJoin; S.pendingJoin = ''; joinRoom(code); }
+      if (S.pendingJoin && S.social && S.social.nick) { const code = S.pendingJoin; S.pendingJoin = ''; joinRoom(code); }
     } else {
       S.pendingJoin = '';
       S.screen = game ? 'game' : 'lobby';
@@ -468,6 +487,112 @@
       <p class="muted small" style="margin-top:12px">Ognuno ascolta dal proprio Spotify: per le Jam di solito serve Spotify Premium a chi la avvia.</p>`);
   }
 
+  /* ================= Profilo e amici ================= */
+  function nickStatusHTML() {
+    const c = S.nickCheck;
+    if (!c) return '';
+    if (c.checking) return '<span class="muted">Controllo…</span>';
+    return c.available ? `<span class="ok">✓ <b>${esc(c.nick)}</b> è disponibile</span>` : `<span class="ko">✗ ${esc(c.reason || 'Non disponibile')}</span>`;
+  }
+
+  let nickTimer = null;
+  function checkNickLive(value, target) {
+    const nick = value.trim();
+    S.nickCheck = nick ? { checking: true, nick } : null;
+    const paint = () => { const el = $(target); if (el) el.innerHTML = nickStatusHTML(); };
+    paint();
+    clearTimeout(nickTimer);
+    if (!nick) return;
+    nickTimer = setTimeout(async () => {
+      const r = await new Promise((res) => socket.emit('checkNick', { nick }, res));
+      if (S.nickCheck && S.nickCheck.nick === nick) { S.nickCheck = { nick, available: r.available, reason: r.reason }; paint(); }
+    }, 300);
+  }
+
+  function transferLink(code) {
+    const base = /\.trycloudflare\.com$/.test(location.hostname) ? HOME_URL : `${location.origin}/`;
+    return `${base}?profilo=${encodeURIComponent(code)}`;
+  }
+
+  function qrDataUrl(text) {
+    if (typeof qrcode !== 'function') return null;
+    const q = qrcode(0, 'M');
+    q.addData(text);
+    q.make();
+    return q.createDataURL(6, 2);
+  }
+
+  async function profileModal() {
+    const r = await emit('profile');
+    if (!r.ok) return;
+    if (!r.nick) { closeModal(); toast('Scegli prima il tuo nickname'); return; }
+    const link = transferLink(r.code);
+    const qr = qrDataUrl(link);
+    openModal('profile', `<h2>👤 ${esc(r.nick)}</h2>
+      <h4>Cambia nickname</h4>
+      <form id="nickform" class="row"><input id="nickEdit" class="grow" maxlength="16" autocomplete="off" value="${esc(r.nick)}"><button class="btn primary">Salva</button></form>
+      <div class="nickstatus" id="nickStatusEdit"></div>
+      <h4>Usa il profilo su un altro dispositivo</h4>
+      <p class="muted small">Inquadra il QR con la fotocamera del nuovo telefono, oppure inserisci lì il codice personale (<i>Hai già un profilo? Recuperalo</i>).
+        <b>Non condividerlo:</b> chi lo ha può usare il tuo profilo.</p>
+      ${qr ? `<div class="qr"><img src="${qr}" alt="QR del profilo"></div>` : ''}
+      <div class="code-box"><span id="pcode" class="masked">${esc(r.code)}</span>
+        <button class="btn small" data-act="toggleCode">Mostra</button><button class="btn small" data-act="copyCode" data-code="${esc(r.code)}">Copia</button></div>
+      <button class="btn small ghost dark" style="margin-top:6px" data-act="regenCode">Genera un nuovo codice (il vecchio smette di funzionare)</button>
+      <h4>Password ${r.hasPassword ? '(impostata ✓)' : '(facoltativa)'}</h4>
+      <p class="muted small">Con nickname e password puoi recuperare il profilo anche senza il codice.</p>
+      <form id="pwform" class="row"><input id="pwin" type="password" class="grow" minlength="6" autocomplete="new-password" placeholder="${r.hasPassword ? 'Nuova password' : 'Almeno 6 caratteri'}"><button class="btn">${r.hasPassword ? 'Cambia' : 'Imposta'}</button></form>
+      <h4>Altro profilo</h4>
+      <button class="btn small" data-act="recover">Usa un altro profilo su questo dispositivo</button>
+      <h4>Elimina profilo</h4>
+      <button class="btn small danger" data-act="deleteProfile">Elimina il mio profilo</button>
+      <p class="muted small">Libera il nickname e cancella codice, password, amicizie e classifica. Le statistiche su questo dispositivo restano.</p>`);
+  }
+
+  function recoverModal() {
+    openModal('recover', `<h2>Recupera il tuo profilo</h2>
+      <h4>Con il codice personale</h4>
+      <form id="codeform" class="row"><input id="codein" class="grow" autocomplete="off" placeholder="BUR-XXXX-XXXX-XXXX" style="text-transform:uppercase"><button class="btn primary">Usa</button></form>
+      <p class="muted small">Lo trovi nel Profilo del vecchio dispositivo (o inquadra il suo QR con la fotocamera).</p>
+      <h4>Con nickname e password</h4>
+      <form id="loginform"><div class="row"><input id="lnick" class="grow" autocomplete="username" placeholder="Nickname"></div>
+        <div class="row" style="margin-top:6px"><input id="lpw" type="password" class="grow" autocomplete="current-password" placeholder="Password"><button class="btn primary">Accedi</button></div></form>
+      ${S.social && S.social.nick ? `<p class="muted small" style="margin-top:12px">Questo dispositivo ora usa il profilo <b>${esc(S.social.nick)}</b>: per tornarci ti servirà il suo codice personale (lo trovi nel Profilo).</p>` : ''}`);
+  }
+
+  /** Passa a un altro profilo su questo dispositivo */
+  function adoptProfile(token, nick) {
+    store.set('bur_token', token);
+    if (nick) store.set('bur_name', nick);
+    toast(`Benvenuto, ${nick || 'giocatore'}!`);
+    setTimeout(() => { location.href = location.pathname; }, 600);
+  }
+
+  function askImport(code) {
+    if (location.search) history.replaceState(null, '', location.pathname);
+    openModal('recover', `<div class="result" style="text-align:center"><h2>Usare questo profilo?</h2>
+      <p>Hai aperto un link per spostare un profilo su questo dispositivo.</p>
+      <div class="row" style="justify-content:center"><button class="btn primary" data-act="importCode" data-code="${esc(code)}">Sì, usalo qui</button><button class="btn" data-act="closeModal">Annulla</button></div></div>`);
+  }
+
+  function friendsModal() {
+    const so = S.social || { friends: [], reqIn: [], reqOut: [] };
+    const inRoom = S.room && S.room.code;
+    const friend = (f) => `<div class="friend"><span class="dot ${f.online ? '' : 'off'}"></span>
+      <span class="grow"><b>${esc(f.nick)}</b><br><span class="muted small">${f.online ? (f.room ? (f.room === inRoom ? 'al tuo tavolo' : f.playing ? 'sta giocando' : 'in un tavolo') : 'online') : 'offline'}</span></span>
+      ${inRoom && f.online && f.room !== inRoom ? `<button class="btn small primary" data-act="invite" data-nick="${esc(f.nick)}">Invita</button>` : ''}
+      <button class="btn small ghost dark" data-act="unfriend" data-nick="${esc(f.nick)}" title="Rimuovi">✕</button></div>`;
+    openModal('friends', `<h2>👥 Amici</h2>
+      <form id="friendform" class="row"><input id="friendin" class="grow" maxlength="16" autocomplete="off" placeholder="Nickname dell'amico"><button class="btn primary">Aggiungi</button></form>
+      ${so.reqIn.length ? `<h4>Richieste ricevute</h4>${so.reqIn.map((n) => `<div class="friend"><span class="grow"><b>${esc(n)}</b> vuole essere tuo amico</span>
+        <button class="btn small primary" data-act="friendYes" data-nick="${esc(n)}">Accetta</button><button class="btn small" data-act="friendNo" data-nick="${esc(n)}">Rifiuta</button></div>`).join('')}` : ''}
+      <h4>I tuoi amici${so.friends.length ? ` (${so.friends.filter((f) => f.online).length} online)` : ''}</h4>
+      ${so.friends.length ? so.friends.map(friend).join('') : '<p class="muted">Nessun amico ancora: aggiungili con il loro nickname.</p>'}
+      ${!inRoom && so.friends.some((f) => f.online) ? '<p class="muted small">Crea o entra in un tavolo per invitare gli amici online.</p>' : ''}
+      ${so.reqOut.length ? `<h4>Richieste inviate</h4>${so.reqOut.map((n) => `<div class="friend"><span class="grow">${esc(n)} <span class="muted small">in attesa</span></span>
+        <button class="btn small" data-act="unfriend" data-nick="${esc(n)}">Annulla</button></div>`).join('')}` : ''}`);
+  }
+
   /* ================= Schermate ================= */
   function render() {
     if (S.drag && S.drag.started) { S.pendingRender = true; return; }
@@ -498,7 +623,15 @@
       <div class="logo"><div class="logo-fan">${fan}</div><h1>Burraco</h1>
         <div class="muted">Gioca con gli amici o contro il computer</div></div>
       <div class="panel">
-        <label class="field"><span>Il tuo nome</span><input type="text" id="name" maxlength="18" placeholder="Es. Simone" value="${esc(S.name)}"></label>
+        ${S.social && S.social.nick
+          ? `<div class="hello"><span>Ciao, <b>${esc(S.social.nick)}</b>!</span>
+              <span class="row"><button class="btn small" data-act="profile">👤 Profilo</button>
+              <button class="btn small" data-act="friends">👥 Amici${S.social.reqIn.length ? ` <span class="pill">${S.social.reqIn.length}</span>` : ''}</button></span></div>`
+          : `<label class="field"><span>Scegli il tuo nickname</span>
+              <input type="text" id="nick" maxlength="16" autocomplete="off" placeholder="Es. Simone_88" value="${esc(S.nickDraft != null ? S.nickDraft : (S.name || ''))}"></label>
+              <div class="nickstatus" id="nickStatus">${nickStatusHTML()}</div>
+              <div class="row"><button class="btn primary grow" data-act="claimNick">Conferma nickname</button></div>
+              <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a></p>`}
         <div class="row" style="margin-top:10px"><button class="btn primary grow big" data-act="goSetup">Nuova partita</button></div>
         <div class="row" style="margin-top:10px">
           <input type="text" id="joinCode" class="grow codein" maxlength="4" placeholder="Codice tavolo" value="${esc(S.pendingJoin)}">
@@ -567,7 +700,7 @@
       <div class="panel" style="text-align:center">
         <div class="muted">Codice tavolo</div>
         <div class="code">${esc(r.code)}</div>
-        <div class="row" style="justify-content:center"><button class="btn primary" data-act="share">Invita amici</button><button class="btn" data-act="copy">Copia link</button></div>
+        <div class="row" style="justify-content:center"><button class="btn primary" data-act="friends">👥 Invita amici</button><button class="btn" data-act="share">Condividi link</button><button class="btn" data-act="copy">Copia</button></div>
         <p class="muted">Gli amici aprono il link oppure scrivono il codice nella schermata iniziale.</p>
       </div>
       <div class="panel">
@@ -1083,12 +1216,11 @@
 
   /* ================= Azioni ================= */
   function requireName() {
-    const el = $('#name');
-    if (el) S.name = el.value.trim();
-    if (!S.name) { toast('Scrivi prima il tuo nome', true); if (el) el.focus(); return false; }
-    store.set('bur_name', S.name);
-    socket.emit('setName', { name: S.name });
-    return true;
+    if (S.social && S.social.nick) return true;
+    toast('Scegli prima il tuo nickname', true);
+    const el = $('#nick');
+    if (el) el.focus();
+    return false;
   }
 
   async function joinRoom(code) {
@@ -1240,6 +1372,29 @@
     },
     music() { musicModal(); render(); },
     stats: statsModal,
+    async claimNick() {
+      const nick = ($('#nick') || {}).value || '';
+      const r = await emit('setNick', { nick: nick.trim() });
+      if (r.ok) { S.nickDraft = null; S.nickCheck = null; toast(`Benvenuto, ${r.nick}!`); render(); }
+    },
+    profile: profileModal,
+    async deleteProfile() {
+      if (!confirm('Eliminare definitivamente il profilo? Nickname, amici e classifica andranno persi.')) return;
+      const r = await emit('deleteProfile');
+      if (r.ok) { closeModal(); S.social = null; toast('Profilo eliminato'); render(); }
+    },
+    friends: friendsModal,
+    recover(el, e) { if (e) e.preventDefault(); recoverModal(); },
+    closeModal,
+    toggleCode(el) { const c = $('#pcode'); c.classList.toggle('masked'); el.textContent = c.classList.contains('masked') ? 'Mostra' : 'Nascondi'; },
+    async copyCode(el) { try { await navigator.clipboard.writeText(el.dataset.code); toast('Codice copiato'); } catch (e) { prompt('Copia il codice:', el.dataset.code); } },
+    async regenCode() { if (!confirm('Generare un nuovo codice? Il vecchio codice e il vecchio QR smetteranno di funzionare.')) return; const r = await emit('regenCode'); if (r.ok) profileModal(); },
+    async importCode(el) { const r = await emit('importProfile', { code: el.dataset.code }); if (r.ok) adoptProfile(r.token, r.nick); },
+    acceptInvite(el) { closeModal(); if (!requireName()) return; joinRoom(el.dataset.code); },
+    async invite(el) { const r = await emit('inviteFriend', { nick: el.dataset.nick }); if (r.ok) toast(`Invito inviato a ${el.dataset.nick}`); },
+    friendYes(el) { emit('friendRespond', { nick: el.dataset.nick, accept: true }); },
+    friendNo(el) { emit('friendRespond', { nick: el.dataset.nick, accept: false }); },
+    unfriend(el) { if (confirm(`Rimuovere ${el.dataset.nick}?`)) emit('friendRemove', { nick: el.dataset.nick }); },
     toggleTheme() { S.prefs.theme = S.prefs.theme === 'scuro' ? 'chiaro' : 'scuro'; applyPrefs(); render(); },
     async leaders() {
       const r = await emit('leaderboard');
@@ -1478,6 +1633,11 @@
     if (e.target && e.target.id === 'felt') S.feltScroll = e.target.scrollTop;
   }, true);
 
+  document.addEventListener('input', (e) => {
+    if (e.target.id === 'nick') { S.nickDraft = e.target.value; checkNickLive(e.target.value, '#nickStatus'); }
+    if (e.target.id === 'nickEdit') checkNickLive(e.target.value, '#nickStatusEdit');
+  });
+
   document.addEventListener('change', (e) => {
     const el = e.target;
     if (el.dataset && el.dataset.rule) {
@@ -1497,6 +1657,14 @@
   }, true);
 
   document.addEventListener('submit', (e) => {
+    const forms = {
+      nickform: async () => { const r = await emit('setNick', { nick: $('#nickEdit').value.trim() }); if (r.ok) { toast('Nickname aggiornato'); profileModal(); } },
+      pwform: async () => { const r = await emit('setPassword', { password: $('#pwin').value }); if (r.ok) { toast('Password salvata'); profileModal(); } },
+      codeform: async () => { const r = await emit('importProfile', { code: $('#codein').value }); if (r.ok) adoptProfile(r.token, r.nick); },
+      loginform: async () => { const r = await emit('login', { nick: $('#lnick').value, password: $('#lpw').value }); if (r.ok) adoptProfile(r.token, r.nick); },
+      friendform: async () => { const n = $('#friendin').value.trim(); if (!n) return; const r = await emit('friendRequest', { nick: n }); if (r.ok) toast(`Richiesta inviata a ${n}`); },
+    };
+    if (forms[e.target.id]) { e.preventDefault(); forms[e.target.id](); return; }
     if (e.target.id === 'musicform') {
       e.preventDefault();
       const url = $('#musicin').value.trim();

@@ -8,6 +8,7 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 - `shared/melds.js` — analisi di scale/tris e divisione in più combinazioni (`partitionMelds`): il server valida, il browser fa l'anteprima.
 - `server/engine.js` — motore autoritativo, stato JSON puro; `apply()` è transazionale (in caso di errore ripristina). Le giocate NON si annullano; da vulnerabili una calata sotto i 75 punti è rifiutata.
 - `server/bot.js` — computer a tre livelli (`memo.level`: facile/normale/difficile).
+- `server/social.js` — profili: nickname univoco, codice personale/QR, password facoltativa (scrypt), amici, inviti, eliminazione profilo.
 - `server/index.js` — tavoli, posti, riconnessione via token, chat, musica Spotify, timer del turno, rivincita a voto, classifica; salva tutto in `data/stato.json` (anche ai riavvii); `/health` per la pagina d'ingresso.
 - `public/` — interfaccia: tavolo mobile-first, trascinamento carte, animazioni, suoni sintetizzati, tema chiaro/scuro a scelta dell'utente, statistiche personali in localStorage.
 - `launcher/` — pagina d'ingresso su GitHub Pages (link fisso) che legge l'indirizzo del server dal ramo `indirizzo` (`server.json`).

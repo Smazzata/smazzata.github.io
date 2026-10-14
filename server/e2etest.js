@@ -56,6 +56,58 @@ const step = (t) => console.log('✓ ' + t);
     await A.until((s) => s.room.seats.filter(Boolean).length === 2, 'secondo giocatore');
     step('due giocatori nello stesso tavolo');
 
+    // --- profili: nickname univoco ---
+    let ck = await A.call('checkNick', { nick: 'Anna' });
+    assert(ck.ok && ck.available, 'Anna disponibile');
+    assert((await A.call('setNick', { nick: 'Anna' })).ok);
+    ck = await B.call('checkNick', { nick: 'ANNA' });
+    assert(ck.ok && !ck.available, 'nickname già preso (maiuscole/minuscole non contano)');
+    assert(!(await B.call('setNick', { nick: 'anna' })).ok, 'non si può prendere un nick occupato');
+    assert(!(await B.call('checkNick', { nick: 'a' })).available, 'nick troppo corto');
+    assert((await B.call('setNick', { nick: 'Bruno' })).ok);
+    step('nickname univoco con controllo disponibile / non disponibile');
+
+    // --- amici: richiesta, accettazione, stato online, invito ---
+    const socialOf = (p) => new Promise((res) => p.call('social').then((r) => res(r.social)));
+    assert(!(await A.call('friendRequest', { nick: 'Anna' })).ok, 'niente amicizia con se stessi');
+    assert((await A.call('friendRequest', { nick: 'bruno' })).ok);
+    assert.deepStrictEqual((await socialOf(B)).reqIn, ['Anna']);
+    assert.deepStrictEqual((await socialOf(A)).reqOut, ['Bruno']);
+    assert((await B.call('friendRespond', { nick: 'Anna', accept: true })).ok);
+    const fa = await socialOf(A);
+    assert(fa.friends.length === 1 && fa.friends[0].nick === 'Bruno' && fa.friends[0].online, 'Bruno amico e online');
+    const invited = new Promise((res) => B.sock.once('invite', res));
+    assert((await A.call('inviteFriend', { nick: 'Bruno' })).ok);
+    const inv = await invited;
+    assert(inv.from === 'Anna' && inv.code === code, 'invito ricevuto con il codice del tavolo');
+    step('amicizia: richiesta, accettazione, online e invito al tavolo');
+
+    // --- cambio dispositivo: codice personale e nickname + password ---
+    const prof = await A.call('profile');
+    assert(prof.ok && /^BUR-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(prof.code), 'codice personale');
+    const C = player('Nuovo telefono');
+    await C.hello();
+    let imp = await C.call('importProfile', { code: prof.code.toLowerCase().replace(/-/g, ' ') });
+    assert(imp.ok && imp.token === A.token && imp.nick === 'Anna', 'profilo importato col codice');
+    assert(!(await C.call('importProfile', { code: 'BUR-AAAA-BBBB-CCCC' })).ok, 'codice sbagliato rifiutato');
+    assert(!(await B.call('setPassword', { password: '123' })).ok, 'password troppo corta');
+    assert((await B.call('setPassword', { password: 'segreta123' })).ok);
+    assert(!(await C.call('login', { nick: 'bruno', password: 'sbagliata' })).ok, 'password errata');
+    const lg = await C.call('login', { nick: 'bruno', password: 'segreta123' });
+    assert(lg.ok && lg.token === B.token, 'accesso con nickname e password');
+    // eliminazione: il nickname torna libero e l'amicizia sparisce
+    const D = player('Temporaneo');
+    await D.hello();
+    assert((await D.call('setNick', { nick: 'Tempo' })).ok);
+    assert((await D.call('friendRequest', { nick: 'Anna' })).ok);
+    assert.deepStrictEqual((await socialOf(A)).reqIn, ['Tempo']);
+    assert((await D.call('deleteProfile')).ok);
+    assert.deepStrictEqual((await socialOf(A)).reqIn, [], 'richiesta sparita');
+    assert((await C.call('checkNick', { nick: 'Tempo' })).available, 'nickname di nuovo libero');
+    D.sock.close();
+    C.sock.close();
+    step("cambio dispositivo con codice personale e con nickname + password; eliminazione del profilo");
+
     // suggerimenti vietati in multiplayer
     r = await A.call('setHints', { on: true });
     assert(!r.ok && /multiplayer/.test(r.error), 'i suggerimenti non devono attivarsi con due umani');
