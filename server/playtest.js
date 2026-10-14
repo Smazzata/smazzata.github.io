@@ -77,6 +77,8 @@ function run(preset, n, level = 'normale') {
 }
 
 const t0 = Date.now();
-for (const [p, n] of [['classico', 4], ['classico', 2], ['classico', 3], ['reale', 4], ['aberto', 4], ['fechado', 4]]) run(p, n);
-run('classico', 4, 'difficile');
+const only = process.argv[3];
+const all = [['classico', 4], ['classico', 2], ['classico', 3], ['reale', 4], ['aberto', 4], ['fechado', 4]];
+for (const [p, n] of all.filter(([p]) => !only || only.split(',').includes(p))) run(p, n);
+if (!only) run('classico', 4, 'difficile');
 console.log(`\nTempo totale: ${Math.round((Date.now() - t0) / 1000)} s`);

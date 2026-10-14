@@ -74,6 +74,44 @@ function wildMeldCandidates(g, hand) {
   return out;
 }
 
+/**
+ * Da vulnerabili (senza giochi calati) la prima calata deve valere almeno il minimo:
+ * cerca fino a 3 combinazioni separate che insieme ci arrivino e le cala in un colpo solo.
+ */
+function vulnerableOpening(g, seat, hand) {
+  const vul = g.cfg.vulnerability;
+  const team = E.teamOf(g, seat);
+  if (!vul || team.melds.length) return null;
+  if (Math.max(...team.members.map((x) => g.scores[x])) < g.cfg.target * vul.ratio) return null;
+  const byId = new Map(hand.map((c) => [c.id, c]));
+  const value = (ids) => ids.reduce((sum, id) => sum + E.cardValue(byId.get(id), g.cfg.values), 0);
+  const cands = [...naturalMeldCandidates(g, hand), ...wildMeldCandidates(g, hand)]
+    .map((ids) => ({ ids, v: value(ids) }))
+    .sort((a, b) => b.v - a.v)
+    .slice(0, 14);
+  const disjoint = (...lists) => new Set(lists.flat()).size === lists.reduce((n, l) => n + l.length, 0);
+  const options = [];
+  for (let i = 0; i < cands.length; i++) {
+    options.push([cands[i]]);
+    for (let j = i + 1; j < cands.length; j++) {
+      if (!disjoint(cands[i].ids, cands[j].ids)) continue;
+      options.push([cands[i], cands[j]]);
+      for (let k = j + 1; k < cands.length; k++) {
+        if (disjoint(cands[i].ids, cands[j].ids, cands[k].ids)) options.push([cands[i], cands[j], cands[k]]);
+      }
+    }
+  }
+  const good = options
+    .map((o) => ({ ids: o.flatMap((x) => x.ids), v: o.reduce((n, x) => n + x.v, 0) }))
+    .filter((o) => o.v >= vul.min)
+    .sort((a, b) => a.ids.length - b.ids.length || b.v - a.v); // meno carte possibile: si tengono le altre per dopo
+  for (const o of good.slice(0, 40)) {
+    const a = { type: 'meld', cardIds: o.ids };
+    if (E.isLegal(g, seat, a)) return a;
+  }
+  return null;
+}
+
 function tryActions(g, seat, actions) {
   for (const a of actions) if (E.isLegal(g, seat, a)) return a;
   return null;
@@ -169,7 +207,11 @@ function nextAction(g, seat, memo = {}) {
   const hand = p.hand;
   if (memo.noMeld) return discardAction(g, seat, hand, memo);
 
-  // fase di gioco: 1) attacchi naturali
+  // fase di gioco: 0) da vulnerabili, apertura da almeno 75 punti con più combinazioni
+  const opening = vulnerableOpening(g, seat, hand);
+  if (opening) return opening;
+
+  // 1) attacchi naturali
   const melds = teamMelds(g, seat);
   const adds = [];
   for (const c of hand.filter((x) => !E.isWild(x))) for (const m of melds) adds.push({ type: 'add', meldId: m.id, cardIds: [c.id] });

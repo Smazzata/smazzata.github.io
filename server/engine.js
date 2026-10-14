@@ -556,7 +556,7 @@ function viewFor(g, seat) {
     mustDraw: g.pileTakeStreak >= 4 && g.stock.length > 0,
     canUndo: false,
     singlePickId: g.turnInfo ? g.turnInfo.singlePickId : null,
-    scores: g.scores, history: g.history,
+    scores: g.scores, history: g.history.slice(-30),
     handResult: g.handResult, over: g.over, winners: g.winners,
     partnershipFormed: g.partnershipFormed,
     log: g.log.slice(-25), lastEvent: g.lastEvent,
