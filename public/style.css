@@ -151,24 +151,27 @@ details.custom summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
 /* =================== CARTE =================== */
 .card {
   width: var(--cw); height: calc(var(--cw) * 1.42); border-radius: calc(var(--cw) * .11);
-  background: linear-gradient(160deg, #fff, var(--paper) 55%, var(--paper-2)); color: var(--ink);
+  background: linear-gradient(160deg, var(--cp0, #fff), var(--cp1, var(--paper)) 55%, var(--cp2, var(--paper-2))); color: var(--cink, var(--ink));
   position: relative; flex: 0 0 auto; user-select: none; -webkit-user-select: none;
-  box-shadow: 0 1px 2px rgba(0,0,0,.35), 0 3px 8px rgba(0,0,0,.18); border: 1px solid #d6cfbc;
-  font-family: Georgia, "Times New Roman", serif;
+  box-shadow: 0 1px 2px rgba(0,0,0,.35), 0 3px 8px rgba(0,0,0,.18); border: 1px solid var(--cborder, #d6cfbc);
+  font-family: var(--cfont, Georgia, "Times New Roman", serif);
 }
-.card.red { color: var(--red); }
-.card .ix { position: absolute; top: calc(var(--cw) * .05); left: calc(var(--cw) * .07); line-height: .9; font-weight: 700; font-size: calc(var(--cw) * .3); text-align: center; letter-spacing: -1px; }
-.card .ix i { display: block; font-style: normal; font-size: calc(var(--cw) * .26); letter-spacing: 0; }
+.card.red { color: var(--cred, var(--red)); }
+/* stile "quattro colori": quadri e fiori con un colore loro */
+.card.s-D { color: var(--cD, var(--cred, var(--red))); }
+.card.s-C { color: var(--cC, var(--cink, var(--ink))); }
+.card .ix { position: absolute; top: calc(var(--cw) * .05); left: calc(var(--cw) * .07); line-height: .9; font-weight: var(--cixw, 700); font-size: calc(var(--cw) * var(--cix, .3)); text-align: center; letter-spacing: var(--cixls, -1px); }
+.card .ix i { display: block; font-style: normal; font-size: calc(var(--cw) * var(--cixs, .26)); letter-spacing: 0; }
 .card .ix.br { top: auto; left: auto; bottom: calc(var(--cw) * .05); right: calc(var(--cw) * .07); transform: rotate(180deg); }
-.card .pip { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: calc(var(--cw) * .62); padding-top: calc(var(--cw) * .06); }
+.card .pip { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: calc(var(--cw) * var(--cpip, .62)); padding-top: calc(var(--cw) * var(--cpippad, .06)); padding-left: calc(var(--cw) * var(--cpippadl, 0)); }
 .card .face {
   position: absolute; left: 22%; right: 22%; top: 18%; bottom: 18%; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  border: 1.5px solid currentColor; background: linear-gradient(180deg, rgba(242,193,78,.25), rgba(242,193,78,.08)); font-weight: 700; font-size: calc(var(--cw) * .36); line-height: 1;
+  border: var(--cfaceb, 1.5px solid currentColor); background: var(--cfacebg, linear-gradient(180deg, rgba(242,193,78,.25), rgba(242,193,78,.08))); font-weight: 700; font-size: calc(var(--cw) * .36); line-height: 1;
 }
 .card .face i { font-style: normal; font-size: calc(var(--cw) * .3); }
 .card.two { background: linear-gradient(160deg, #fff, #f6f0ff 60%, #ebe2fb); }
 /* nelle combinazioni il 2 al suo posto naturale è una carta normale */
-.card.two.natural { background: linear-gradient(160deg, #fff, var(--paper) 55%, var(--paper-2)); }
+.card.two.natural { background: linear-gradient(160deg, var(--cp0, #fff), var(--cp1, var(--paper)) 55%, var(--cp2, var(--paper-2))); }
 .card.joker { background: linear-gradient(150deg, #fff7d1, #ffe08a 60%, #f6c74f); color: #7a3e00; }
 .card.joker .ix { font-size: calc(var(--cw) * .15); letter-spacing: 0; line-height: 1.02; }
 .card.joker .jk { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: calc(var(--cw) * .55); padding-left: calc(var(--cw) * .12); }
@@ -616,3 +619,73 @@ body[data-theme="notte"] .dailycard { border-color: #3a413e; background: rgba(58
 .slowgame .meta { font-size: 12px; color: var(--muted); }
 .slowgame.myturn { border-color: var(--gold); background: rgba(242,193,78,.18); box-shadow: 0 0 0 3px rgba(242,193,78,.15); }
 .slowgame.myturn .meta b { color: var(--gold); }
+
+/* =================== STILI DELLE CARTE (Aspetto e suoni → Stile delle carte) ===================
+   Solo variabili: valgono per l'elemento con data-deck e tutto ciò che contiene (anche le anteprime). */
+[data-deck="moderne"] {
+  --cfont: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; --cp0: #fff; --cp1: #fff; --cp2: #f3f4f6; --cborder: #d9dce1;
+  --cixw: 800; --cixls: 0; --cfaceb: 0; --cfacebg: rgba(0,0,0,.05); --cred: #e0283a; --cink: #20232a;
+}
+[data-deck="quattro"] { --cD: #1565c0; --cC: #2e7d32; }
+[data-deck="grandi"] {
+  --cfont: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; --cixw: 800; --cixls: 0;
+  --cix: .46; --cixs: .36; --cpip: .4; --cpippad: .5; --cpippadl: .42; --cfaceb: 0; --cfacebg: transparent;
+}
+[data-deck="vintage"] {
+  --cp0: #fbf3dc; --cp1: #f1e2bd; --cp2: #e4cf9e; --cborder: #b89f6c; --cink: #3b2a1a; --cred: #9b2c1f;
+  --cfacebg: linear-gradient(180deg, rgba(155,44,31,.12), rgba(155,44,31,.04)); --cfont: "Palatino Linotype", Palatino, Georgia, serif;
+}
+/* negli "indici grandi" le figure lasciano spazio all'indice */
+[data-deck="grandi"] .card .face { left: 40%; right: 8%; top: 40%; bottom: 8%; font-size: calc(var(--cw) * .26); }
+[data-deck="grandi"] .card .face i { font-size: calc(var(--cw) * .22); }
+[data-deck="grandi"] .card .ix.br { display: none; }
+/* anteprime nella finestra delle impostazioni */
+.deckprev { display: inline-flex; gap: 2px; margin-right: 6px; --cw: 26px; vertical-align: middle; }
+.deckprev .card { box-shadow: 0 1px 2px rgba(0,0,0,.3); }
+
+/* Realistiche: semi disposti come nei mazzi tradizionali, figure con ritratto.
+   Variabili ereditate: ogni elemento con data-deck decide cosa mostrare (vale anche per le anteprime). */
+[data-deck] { --pipsd: none; --pipd: flex; --faced: flex; --figd: none; --figname: none; --rk1: 'A'; --rk11: 'J'; --rk12: 'Q'; --rk13: 'K'; }
+/* Americane (tipo Bicycle): bianche, rosso e nero pieni, Asso di picche grande e decorato */
+[data-deck="americane"] {
+  --pipsd: block; --pipd: none; --faced: none; --figd: flex;
+  --cp0: #fff; --cp1: #fff; --cp2: #f7f7f5; --cborder: #c9c9c9; --cred: #c8102e; --cink: #111;
+  --figbg: linear-gradient(180deg, #fdf3d6, #f2d98c); --figborder: 1.5px solid currentColor;
+}
+/* Francesi: indici R (Roi), D (Dame), V (Valet), figure con il nome storico */
+[data-deck="francesi"] {
+  --pipsd: block; --pipd: none; --faced: none; --figd: flex; --figname: block;
+  --rk11: 'V'; --rk12: 'D'; --rk13: 'R';
+  --cp0: #fff; --cp1: #fdfdfb; --cp2: #f3f1ea; --cborder: #c7c2b4; --cred: #d0021b; --cink: #1a1a1a;
+  --figbg: linear-gradient(180deg, #dfe9fb, #fbe7a8 70%, #f6c9c9); --figborder: 1.5px solid #2a4f9a;
+}
+/* Italiane (tipo Modiano da ramino): indici R (Re), D (Donna), F (Fante), carta avorio con cornice */
+[data-deck="italiane"] {
+  --pipsd: block; --pipd: none; --faced: none; --figd: flex;
+  --rk11: 'F'; --rk12: 'D'; --rk13: 'R';
+  --cp0: #fffaf0; --cp1: #fbf2de; --cp2: #f0e2c2; --cborder: #b9a57a; --cred: #b3202a; --cink: #222;
+  --cfont: "Palatino Linotype", Palatino, Georgia, serif;
+  --figbg: linear-gradient(180deg, #e8f2df, #f7e7b0); --figborder: 2px double #8a6d2e;
+}
+[data-deck="italiane"] .card:not(.back):not(.joker) { box-shadow: inset 0 0 0 calc(var(--cw) * .04) #fffaf0, inset 0 0 0 calc(var(--cw) * .055) #c9b27c, 0 1px 2px rgba(0,0,0,.35), 0 3px 8px rgba(0,0,0,.18); }
+/* lettere degli indici (cambiano con lo stile) */
+.rk::before { content: 'A'; }
+.rk.r1::before { content: var(--rk1, 'A'); }
+.rk.r11::before { content: var(--rk11, 'J'); }
+.rk.r12::before { content: var(--rk12, 'Q'); }
+.rk.r13::before { content: var(--rk13, 'K'); }
+/* Asso di picche grande e decorato nelle americane */
+[data-deck="americane"] .card.s-S.r1 .pip { font-size: calc(var(--cw) * .85); padding-top: 0; text-shadow: 0 0 0 #111, 0 0 calc(var(--cw) * .04) rgba(0,0,0,.35); }
+.card.haspips .pip { display: var(--pipd, flex); }
+.card.hasfig .face { display: var(--faced, flex); }
+.card .pips { display: var(--pipsd, none); position: absolute; inset: 0; }
+.card .pips b { position: absolute; transform: translate(-50%, -50%); font-size: calc(var(--cw) * .22); line-height: 1; font-weight: 400; }
+.card .pips b.dn { transform: translate(-50%, -50%) rotate(180deg); }
+.card .fig {
+  display: var(--figd, none); position: absolute; left: 20%; right: 20%; top: 16%; bottom: 16%; border-radius: 4px;
+  flex-direction: column; align-items: center; justify-content: center; border: var(--figborder, 1.5px solid currentColor);
+  background: var(--figbg, linear-gradient(180deg, rgba(242,193,78,.35), rgba(242,193,78,.1)));
+}
+.card .fig small { display: var(--figname, none); font-size: calc(var(--cw) * .1); font-style: italic; line-height: 1; margin-top: 2px; white-space: nowrap; }
+.card .fig em { font-style: normal; font-size: calc(var(--cw) * .42); line-height: 1.1; }
+.card .fig i { font-style: normal; font-size: calc(var(--cw) * .2); }

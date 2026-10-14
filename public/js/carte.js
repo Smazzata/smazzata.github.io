@@ -9,14 +9,49 @@
   const isWild = (c) => c.r === 0 || c.r === 2;
 
   const SUIT_NAME = { S: 'picche', H: 'cuori', D: 'quadri', C: 'fiori' };
+  /* Stile "Realistiche": i semi disposti come nei mazzi tradizionali (x, y in % della carta) */
+  const PIPS = {
+    2: [[50, 20], [50, 80]],
+    3: [[50, 20], [50, 50], [50, 80]],
+    4: [[36, 20], [64, 20], [36, 80], [64, 80]],
+    5: [[36, 20], [64, 20], [50, 50], [36, 80], [64, 80]],
+    6: [[36, 20], [64, 20], [36, 50], [64, 50], [36, 80], [64, 80]],
+    7: [[36, 20], [64, 20], [50, 35], [36, 50], [64, 50], [36, 80], [64, 80]],
+    8: [[36, 20], [64, 20], [50, 35], [36, 50], [64, 50], [50, 65], [36, 80], [64, 80]],
+    9: [[36, 18], [64, 18], [36, 39], [64, 39], [50, 50], [36, 61], [64, 61], [36, 82], [64, 82]],
+    10: [[36, 18], [64, 18], [50, 29], [36, 39], [64, 39], [36, 61], [64, 61], [50, 71], [36, 82], [64, 82]],
+  };
+  const FIGURES = { 11: '💂', 12: '👸', 13: '🤴' };
+  // nomi storici delle figure del mazzo francese (mostrati solo nello stile "Francesi")
+  const FIG_NAMES = {
+    13: { S: 'David', H: 'Charles', D: 'César', C: 'Alexandre' },
+    12: { S: 'Pallas', H: 'Judith', D: 'Rachel', C: 'Argine' },
+    11: { S: 'Ogier', H: 'La Hire', D: 'Hector', C: 'Lancelot' },
+  };
+  const REAL_DECKS = ['americane', 'francesi', 'italiane'];
+  // il disegno realistico si aggiunge solo quando serve (stile scelto o anteprima), per non appesantire il tavolo
+  const realistic = (cls) => REAL_DECKS.includes(S.prefs.deck) || / withpips /.test(` ${cls} `);
+  // indice della carta: le lettere di Asso e figure dipendono dallo stile (A/K/Q/J, R/D/V, R/D/F) e le decide il CSS
+  const ixName = (r) => (r === 1 || r >= 11 ? `<span class="rk r${r}"></span>` : String(r));
+
   function cardHTML(c, cls = '', attrs = '') {
     if (c.r === 0) {
       return `<div class="card joker ${cls}" data-card="${c.id}" aria-label="Jolly" ${attrs}><span class="ix">J<br>O<br>L<br>L<br>Y</span><span class="jk">★</span></div>`;
     }
     const red = c.s === 'H' || c.s === 'D';
-    const face = c.r >= 11 ? `<span class="face">${rankName(c.r)}<i>${SUIT[c.s]}</i></span>` : `<span class="pip">${SUIT[c.s]}</span>`;
-    return `<div class="card ${red ? 'red' : 'black'} ${c.r === 2 ? 'two' : ''} ${cls}" data-card="${c.id}" aria-label="${rankName(c.r)} di ${SUIT_NAME[c.s]}" ${attrs}>
-      <span class="ix">${rankName(c.r)}<i>${SUIT[c.s]}</i></span>${face}<span class="ix br">${rankName(c.r)}<i>${SUIT[c.s]}</i></span></div>`;
+    let face = c.r >= 11 ? `<span class="face">${ixName(c.r)}<i>${SUIT[c.s]}</i></span>` : `<span class="pip">${SUIT[c.s]}</span>`;
+    let extra = '';
+    if (realistic(cls)) {
+      if (PIPS[c.r]) {
+        face += `<span class="pips">${PIPS[c.r].map(([x, y]) => `<b class="${y > 50 ? 'dn' : ''}" style="left:${x}%;top:${y}%">${SUIT[c.s]}</b>`).join('')}</span>`;
+        extra = 'haspips';
+      } else if (FIGURES[c.r]) {
+        face += `<span class="fig"><em>${FIGURES[c.r]}</em><i>${SUIT[c.s]}</i><small>${FIG_NAMES[c.r][c.s]}</small></span>`;
+        extra = 'hasfig';
+      }
+    }
+    return `<div class="card ${red ? 'red' : 'black'} s-${c.s} r${c.r} ${c.r === 2 ? 'two' : ''} ${extra} ${cls}" data-card="${c.id}" aria-label="${rankName(c.r)} di ${SUIT_NAME[c.s]}" ${attrs}>
+      <span class="ix">${ixName(c.r)}<i>${SUIT[c.s]}</i></span>${face}<span class="ix br">${ixName(c.r)}<i>${SUIT[c.s]}</i></span></div>`;
   }
   const backHTML = (cls = '', attrs = '') => `<div class="card back ${cls}" ${attrs}></div>`;
 

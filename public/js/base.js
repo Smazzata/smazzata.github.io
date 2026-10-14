@@ -22,7 +22,7 @@
     } catch (e) { return typeof io === 'undefined'; }
   })();
 
-  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro' };
+  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche' };
   const S = {
     token: store.get('bur_token', null),
     name: store.get('bur_name', ''),
@@ -107,6 +107,7 @@
     if (meta) meta.content = night ? '#06180f' : '#0f5132';
     document.body.dataset.felt = S.prefs.felt;
     document.body.dataset.back = S.prefs.back;
+    document.body.dataset.deck = S.prefs.deck || 'classiche';
     document.body.classList.toggle('bigcards', !!S.prefs.big);
     store.set('bur_prefs', S.prefs);
   }

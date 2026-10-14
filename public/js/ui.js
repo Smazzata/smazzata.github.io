@@ -83,6 +83,8 @@
     return p ? `<span class="badge gold">${esc(p.name)}</span>` : '<span class="badge gold">Regole personalizzate</span>';
   }
 
+  const DECKS = [['classiche', 'Classiche'], ['moderne', 'Moderne'], ['quattro', 'Quattro colori'], ['grandi', 'Indici grandi'], ['vintage', 'Vintage'], ['americane', 'Americane'], ['francesi', 'Francesi'], ['italiane', 'Italiane']];
+
   function settingsModal() {
     const opt = (key, val, label, extra = '') => `<button class="swatch ${S.prefs[key] === val ? 'on' : ''}" data-act="pref" data-key="${key}" data-val="${val}" ${extra}>${label}</button>`;
     openModal('settings', `<h2>Aspetto e suoni</h2>
@@ -92,6 +94,8 @@
       <div class="row">${opt('felt', 'verde', '<i class="sw felt-verde"></i>Verde')}${opt('felt', 'blu', '<i class="sw felt-blu"></i>Blu')}${opt('felt', 'bordeaux', '<i class="sw felt-bordeaux"></i>Bordeaux')}${opt('felt', 'antracite', '<i class="sw felt-antracite"></i>Antracite')}</div>
       <h4>Dorso delle carte</h4>
       <div class="row">${opt('back', 'rosso', '<i class="sw back-rosso"></i>Rosso')}${opt('back', 'blu', '<i class="sw back-blu"></i>Blu')}${opt('back', 'verde', '<i class="sw back-verde"></i>Verde')}${opt('back', 'nero', '<i class="sw back-nero"></i>Nero')}</div>
+      <h4>Stile delle carte</h4>
+      <div class="row">${DECKS.map(([id, label]) => opt('deck', id, `<span class="deckprev" data-deck="${id}">${cardHTML({ r: 13, s: 'H', id: -80 }, 'withpips')}${cardHTML({ r: ['americane', 'francesi', 'italiane'].includes(id) ? 3 : 7, s: 'D', id: -81 }, 'withpips')}${cardHTML({ r: 1, s: 'C', id: -82 }, 'withpips')}</span>${label}`)).join('')}</div>
       <h4>Carte</h4>
       <div class="row">${opt('big', false, 'Normali')}${opt('big', true, 'Grandi')}</div>
       <h4>Notifiche "tocca a te"</h4>
