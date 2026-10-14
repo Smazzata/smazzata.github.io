@@ -179,6 +179,24 @@
     setTimeout(() => b.remove(), 2400);
     if (seat !== g.you) Sound.play('select');
   });
+  // trofei sbloccati: uno alla volta, con un piccolo festeggiamento
+  const trophyQueue = [];
+  socket.on('trophy', (list) => {
+    trophyQueue.push(...list);
+    if (trophyQueue.length === list.length) showNextTrophy();
+  });
+  function showNextTrophy() {
+    const t = trophyQueue[0];
+    if (!t) return;
+    const b = document.createElement('div');
+    b.className = 'trophytoast';
+    b.innerHTML = `<i>${esc(t.e)}</i><div><small>Trofeo sbloccato!</small><b>${esc(t.name)}</b><span>${esc(t.desc)}</span></div>`;
+    document.body.appendChild(b);
+    Sound.play('turn');
+    confetti(50, 1400);
+    setTimeout(() => { b.remove(); trophyQueue.shift(); showNextTrophy(); }, 3600);
+  }
+
   socket.on('chat', (m) => {
     S.chat.push(m);
     if (S.chat.length > 100) S.chat.shift();
@@ -1309,6 +1327,15 @@
   const PRESET_NAMES = { classico: 'Classico', reale: 'Reale', aberto: 'Aberto', fechado: 'Fechado', personalizzate: 'Personalizzate' };
   const fmtDate = (t) => new Date(t).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
 
+  /** Bacheca dei trofei: sbloccati a colori, gli altri in grigio con l'avanzamento */
+  function trophiesHTML(list) {
+    const got = list.filter((t) => t.at).length;
+    return `<h3>🏆 Trofei <span class="muted small">${got} su ${list.length}</span></h3><div class="trophies">${list.map((t) => `
+      <div class="trophy ${t.at ? 'got' : ''}" title="${esc(t.desc)}"><i>${esc(t.e)}</i><b>${esc(t.name)}</b><span>${esc(t.desc)}</span>
+        ${t.progress ? `<em class="tprog"><u style="width:${Math.round((t.progress.now / t.progress.goal) * 100)}%"></u></em><span class="tnum">${t.progress.now}/${t.progress.goal}</span>` : ''}
+        ${t.at ? `<span class="tdate">${new Date(t.at).toLocaleDateString('it-IT')}</span>` : ''}</div>`).join('')}</div>`;
+  }
+
   function statsTable(st) {
     const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
     const row = (l, v) => `<tr><td>${l}</td><td><b>${v}</b></td></tr>`;
@@ -1334,6 +1361,7 @@
     if (!r.ok) return;
     openModal('stats', `<div class="result"><h2>📊 Le tue statistiche</h2>
       ${r.stats ? statsTable(r.stats) : '<p class="muted">Gioca la tua prima smazzata per vedere le statistiche.</p>'}
+      ${r.trophies ? trophiesHTML(r.trophies) : ''}
       <h3>Ultime partite</h3>${historyHTML(r.history)}
       <p class="muted small">Le statistiche sono salvate sul server: ti seguono anche se cambi dispositivo.</p></div>`);
   }
@@ -1722,6 +1750,7 @@
         <h3>Insieme</h3>
         ${t.games ? `<p>${t.games} partite insieme: ${t.asPartners} in coppia (${t.winsTogether} vinte), ${t.games - t.asPartners} da avversari (tu ne hai vinte ${t.winsAgainst}).</p>${historyHTML(t.recent.map((h) => ({ ...h, preset: '', hands: 0 })))}` : '<p class="muted">Non avete ancora finito una partita insieme.</p>'}
         <h3>Statistiche</h3>${r.stats ? statsTable(r.stats) : '<p class="muted">Nessuna partita completata.</p>'}
+        ${r.trophies && r.trophies.length ? `<h3>🏆 Trofei (${r.trophies.length})</h3><div class="trophyrow">${r.trophies.map((t) => `<span title="${esc(t.name)}">${esc(t.e)}</span>`).join('')}</div>` : ''}
         ${r.nick !== (S.social && S.social.nick) ? `<button class="btn small danger" style="margin-top:12px" data-act="block" data-nick="${esc(r.nick)}">🚫 Rimuovi e blocca</button>` : ''}</div>`);
     },
     async pickAvatar(el) { const r = await emit('setAvatar', { e: el.dataset.e, c: el.dataset.c }); if (r.ok) profileModal(); },

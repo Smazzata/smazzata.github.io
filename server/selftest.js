@@ -13,6 +13,27 @@ function countCards(g) {
   return n;
 }
 
+function trophyTests() {
+  const T = require('./trophies');
+  const hand = (kinds, total) => ({ burraco: kinds.map((kind) => ({ kind })), total });
+  assert.deepStrictEqual(T.fromHand(hand(['clean', 'dirty', 'dirty'], 1200)).sort(), ['mille', 'pulito', 'tris_burraco']);
+  assert.deepStrictEqual(T.fromHand(hand(['real13'], 300)).sort(), ['pulito', 'reale']);
+  // rimonta: sotto di 600 dopo la prima smazzata, poi vittoria
+  const g = {
+    winners: [0, 2], teams: [{ members: [0, 2] }, { members: [1, 3] }], players: [0, 1, 2, 3].map((seat) => ({ seat })),
+    scores: [2100, 900, 2100, 900],
+    history: [{ teams: [{ members: [0, 2], total: 100 }, { members: [1, 3], total: 700 }] },
+      { teams: [{ members: [0, 2], total: 2000 }, { members: [1, 3], total: 200 }] }],
+  };
+  const got = T.fromGame(g, 0, { allBotsDifficile: true, tutorial: false, withFriend: true });
+  assert(got.includes('rimonta') && got.includes('schiacciante') && got.includes('difficile') && got.includes('amici'), 'trofei di fine partita');
+  assert.deepStrictEqual(T.fromGame(g, 1, { withFriend: false }), [], 'chi perde non prende trofei di vittoria');
+  assert.deepStrictEqual(T.fromStats({ wins: 10, burraco: 0, closures: 1, games: 12 }).sort(), ['chiusura', 'prima_vittoria', 'vittorie_10']);
+  const v = T.view({ wins: 3, trophies: { prima_vittoria: 1 } });
+  assert(v.find((t) => t.id === 'vittorie_10').progress.now === 3 && v.find((t) => t.id === 'prima_vittoria').at === 1, 'avanzamento trofei');
+  console.log(`trofei: ${T.LIST.length} definiti, controlli OK`);
+}
+
 function unitTests() {
   const cfg = E.buildCfg({ bonusSemi: 150 });
   const c = (r, s, id) => ({ id, r, s });
@@ -95,6 +116,7 @@ function simulate(label, rules, n, games = 3) {
 }
 
 unitTests();
+trophyTests();
 for (const p of Rules.PRESETS) for (const n of [4, 2, 3]) simulate(p.id, p.rules, n);
 // configurazioni casuali
 for (let i = 0; i < 12; i++) {

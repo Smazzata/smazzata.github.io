@@ -7,6 +7,7 @@ const express = require('express');
 const { Server } = require('socket.io');
 const E = require('./engine');
 const Bot = require('./bot');
+const Trophies = require('./trophies');
 const Rules = require('../shared/rules');
 const createSocial = require('./social');
 
@@ -383,13 +384,17 @@ function recordLeaderboard(room) {
   if (!g || g.phase !== 'handEnd' || !g.handResult) return;
   const handKey = `${room.gameSeq}:${g.handNo}`;
   const hr = g.handResult;
+  const gameEnds = g.over && room.recordedGame !== room.gameSeq;
+  if (gameEnds) recordSeries(room);
   room.seats.forEach((s, seat) => {
     if (!s || s.isBot || !s.token) return;
     const e = { ...STATS0, ...(leaderboard.get(s.token) || {}) };
     e.name = s.name;
+    const won = []; // trofei guadagnati con questa smazzata/partita
     if (room.recordedHand !== handKey) {
       const mine = hr.teams.find((t) => t.members.includes(seat));
       if (mine) {
+        won.push(...Trophies.fromHand(mine));
         e.hands++;
         if (mine.total === Math.max(...hr.teams.map((t) => t.total))) e.handsWon++;
         e.burraco += mine.burraco.length;
@@ -398,7 +403,15 @@ function recordLeaderboard(room) {
       }
       if (hr.reason === 'close' && hr.closer === seat) e.closures++;
     }
-    if (g.over && room.recordedGame !== room.gameSeq) {
+    if (gameEnds) {
+      const myTeam = g.teams.find((t) => t.members.includes(seat));
+      const friends = (sessions.get(s.token) || {}).friends || [];
+      won.push(...Trophies.fromGame(g, seat, {
+        tutorial: !!room.tutorial,
+        withFriend: room.seats.some((o) => o && !o.isBot && o.token !== s.token && friends.includes(o.token)),
+        allBotsDifficile: room.botLevel === 'difficile' && room.seats.every((o, i) => myTeam.members.includes(i) || (o && o.isBot)),
+      }));
+      if (room.series && room.series.champion && room.series.champion.includes(seat)) won.push('campione');
       e.games++;
       if (g.winners.includes(seat)) e.wins++;
       e.points += g.scores[seat];
@@ -410,10 +423,17 @@ function recordLeaderboard(room) {
         tokens: room.seats.filter((x) => x && !x.isBot && x.token).map((x) => x.token),
       }, ...(e.history || [])].slice(0, 20);
     }
+    won.push(...Trophies.fromStats(e));
+    e.trophies = { ...(e.trophies || {}) };
+    const fresh = [...new Set(won)].filter((id) => !e.trophies[id]);
+    for (const id of fresh) e.trophies[id] = Date.now();
     leaderboard.set(s.token, e);
+    if (fresh.length) {
+      const list = fresh.map((id) => { const t = Trophies.BY_ID.get(id); return { id, e: t.e, name: t.name, desc: t.desc }; });
+      for (const sock of io.sockets.sockets.values()) if (sock.data.token === s.token) sock.emit('trophy', list);
+    }
   });
   room.recordedHand = handKey;
-  if (g.over && room.recordedGame !== room.gameSeq) recordSeries(room);
   if (g.over) room.recordedGame = room.gameSeq;
 }
 
@@ -762,9 +782,10 @@ io.on('connection', (socket) => {
   // Le mie statistiche e il mio storico
   socket.on('myStats', handler(() => {
     const e = leaderboard.get(socket.data.token);
-    if (!e) return { stats: null, history: [] };
+    if (!e) return { stats: null, history: [], trophies: Trophies.view(null) };
     return {
       stats: publicStats(e),
+      trophies: Trophies.view(e),
       history: (e.history || []).map((h) => ({ at: h.at, preset: h.preset, won: h.won, hands: h.hands, teams: h.teams })),
     };
   }));
@@ -786,6 +807,7 @@ io.on('connection', (socket) => {
     return {
       nick: sess.nick, avatar: sess.avatar || null,
       stats: e ? publicStats(e) : null,
+      trophies: Trophies.view(e).filter((t) => t.at).map(({ id, e: em, name, at }) => ({ id, e: em, name, at })),
       together: {
         games: shared.length,
         asPartners: shared.filter(sameTeam).length,

@@ -1,0 +1,84 @@
+'use strict';
+/*
+ * Trofei: obiettivi da sbloccare giocando. Si salvano nella voce del giocatore in classifica
+ * (e.trophies = { id: data }), quindi spariscono con l'eliminazione del profilo.
+ * Alcuni dipendono da un contatore delle statistiche (stat + goal) e mostrano l'avanzamento.
+ */
+const LIST = [
+  { id: 'primo_burraco', e: '🃏', name: 'Primo burraco', desc: 'Completa il tuo primo burraco', stat: 'burraco', goal: 1 },
+  { id: 'pulito', e: '✨', name: 'Tutto pulito', desc: 'Fai un burraco pulito (senza matte)' },
+  { id: 'tris_burraco', e: '🔥', name: 'Tris di burraco', desc: 'Fai 3 burraco nella stessa smazzata' },
+  { id: 'reale', e: '👑', name: 'Scala reale', desc: 'Completa una scala dall\'Asso al Re' },
+  { id: 'mille', e: '💯', name: 'Smazzata da mille', desc: 'Fai almeno 1000 punti in una smazzata' },
+  { id: 'chiusura', e: '🚪', name: 'Si chiude!', desc: 'Chiudi una smazzata', stat: 'closures', goal: 1 },
+  { id: 'chiusure_25', e: '🗝️', name: 'Specialista della chiusura', desc: 'Chiudi 25 smazzate', stat: 'closures', goal: 25 },
+  { id: 'burraco_50', e: '🎴', name: 'Collezionista', desc: 'Completa 50 burraco', stat: 'burraco', goal: 50 },
+  { id: 'prima_vittoria', e: '🏆', name: 'Prima vittoria', desc: 'Vinci una partita', stat: 'wins', goal: 1 },
+  { id: 'vittorie_10', e: '🥉', name: 'Dieci vittorie', desc: 'Vinci 10 partite', stat: 'wins', goal: 10 },
+  { id: 'vittorie_50', e: '🥈', name: 'Cinquanta vittorie', desc: 'Vinci 50 partite', stat: 'wins', goal: 50 },
+  { id: 'vittorie_100', e: '🥇', name: 'Cento vittorie', desc: 'Vinci 100 partite', stat: 'wins', goal: 100 },
+  { id: 'maratona', e: '🎯', name: 'Maratona', desc: 'Gioca 100 partite', stat: 'games', goal: 100 },
+  { id: 'rimonta', e: '🔄', name: 'Rimonta', desc: 'Vinci una partita dopo essere stato sotto di almeno 500 punti' },
+  { id: 'schiacciante', e: '🧹', name: 'Vittoria schiacciante', desc: 'Vinci con almeno 1000 punti di vantaggio' },
+  { id: 'difficile', e: '🤖', name: 'Più forte del computer', desc: 'Batti il computer al livello difficile' },
+  { id: 'campione', e: '🏅', name: 'Campione', desc: 'Vinci un mini-torneo' },
+  { id: 'amici', e: '🤝', name: 'Tra amici', desc: 'Finisci una partita al tavolo con un amico' },
+  { id: 'diplomato', e: '🎓', name: 'Diplomato', desc: 'Finisci la partita di allenamento' },
+];
+const BY_ID = new Map(LIST.map((t) => [t.id, t]));
+
+/** Trofei legati a un contatore: sbloccati quando il contatore arriva all'obiettivo */
+function fromStats(e) {
+  return LIST.filter((t) => t.stat && (e[t.stat] || 0) >= t.goal).map((t) => t.id);
+}
+
+/** Trofei di una smazzata appena finita (mine = risultato della mia squadra) */
+function fromHand(mine) {
+  const out = [];
+  const kinds = mine.burraco.map((b) => b.kind);
+  if (kinds.includes('clean') || kinds.includes('real13') || kinds.includes('real14')) out.push('pulito');
+  if (kinds.length >= 3) out.push('tris_burraco');
+  if (kinds.includes('real13') || kinds.includes('real14')) out.push('reale');
+  if (mine.total >= 1000) out.push('mille');
+  return out;
+}
+
+/**
+ * Trofei di fine partita per il posto `seat`.
+ * ctx: { allBotsDifficile, tutorial, withFriend }
+ */
+function fromGame(g, seat, ctx) {
+  const out = [];
+  if (ctx.tutorial) out.push('diplomato');
+  if (ctx.withFriend) out.push('amici');
+  if (!g.winners.includes(seat)) return out;
+  const myTeamIdx = g.teams.findIndex((t) => t.members.includes(seat));
+  // andamento dei punteggi smazzata per smazzata: per la rimonta
+  const cum = g.teams.map(() => 0);
+  let worst = 0;
+  for (const h of g.history.slice(0, -1)) {
+    h.teams.forEach((t) => {
+      const i = g.teams.findIndex((x) => x.members.some((s) => t.members.includes(s)));
+      if (i >= 0) cum[i] += t.total;
+    });
+    const others = cum.filter((_, i) => i !== myTeamIdx);
+    if (others.length) worst = Math.min(worst, cum[myTeamIdx] - Math.max(...others));
+  }
+  if (worst <= -500) out.push('rimonta');
+  const myScore = g.scores[seat];
+  const rivals = g.players.filter((p) => !g.teams[myTeamIdx].members.includes(p.seat)).map((p) => g.scores[p.seat]);
+  if (rivals.length && rivals.every((s) => myScore - s >= 1000)) out.push('schiacciante');
+  if (ctx.allBotsDifficile) out.push('difficile');
+  return out;
+}
+
+/** Elenco per l'interfaccia: sbloccati (con data) e da sbloccare (con avanzamento) */
+function view(e) {
+  const got = (e && e.trophies) || {};
+  return LIST.map((t) => ({
+    id: t.id, e: t.e, name: t.name, desc: t.desc, at: got[t.id] || null,
+    progress: t.stat && t.goal > 1 && !got[t.id] ? { now: Math.min((e && e[t.stat]) || 0, t.goal), goal: t.goal } : null,
+  }));
+}
+
+module.exports = { LIST, BY_ID, fromStats, fromHand, fromGame, view };

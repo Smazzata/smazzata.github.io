@@ -30,6 +30,8 @@ function player(name) {
   const p = { name, sock, state: null, chats: [] };
   sock.on('state', (st) => { p.state = st; });
   sock.on('chat', (m) => p.chats.push(m));
+  p.trophies = [];
+  sock.on('trophy', (list) => p.trophies.push(...list.map((t) => t.id)));
   p.call = (ev, data = {}) => new Promise((res) => sock.emit(ev, data, res));
   p.until = async (fn, what, ms = 20000) => {
     const end = Date.now() + ms;
@@ -222,9 +224,18 @@ const step = (t) => console.log('✓ ' + t);
     const ms = await A.call('myStats');
     assert(ms.ok && ms.stats.games === 1 && ms.stats.hands >= 1 && ms.history.length === 1, 'statistiche e storico di Anna');
     assert(ms.history[0].teams.some((t) => t.mine), 'nello storico è segnata la propria squadra');
+    // trofei: "Tra amici" (Anna e Bruno sono amici), avvisi in tempo reale, bacheca con l'avanzamento
+    await A.until(() => A.trophies.includes('amici'), 'avviso del trofeo');
+    const tAmici = ms.trophies.find((t) => t.id === 'amici');
+    assert(tAmici && tAmici.at, 'trofeo "Tra amici" in bacheca');
+    assert(ms.trophies.find((t) => t.id === 'maratona').progress.now === 1, 'avanzamento: 1 partita su 100');
+    const lbw = lb.list.find((e) => e.me);
+    if (lbw.wins) assert(ms.trophies.find((t) => t.id === 'prima_vittoria').at, 'prima vittoria');
+    step(`trofei: ${A.trophies.join(', ')}`);
     const card = await A.call('playerCard', { nick: 'Bruno' });
     assert(card.ok && card.together.games === 1 && card.stats.games === 1, 'scheda di Bruno con la partita giocata insieme');
     assert.strictEqual(card.together.asPartners, 0, 'Anna e Bruno erano avversari');
+    assert(card.trophies.some((t) => t.id === 'amici'), 'i trofei di Bruno nella sua scheda');
     const D2 = player('Estraneo'); await D2.hello(); assert((await D2.call('setNick', { nick: 'Estraneo' })).ok);
     assert(!(await D2.call('playerCard', { nick: 'Anna' })).ok, 'scheda visibile solo agli amici');
     const lf = await A.call('leaderboard', { friends: true });
