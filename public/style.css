@@ -886,3 +886,6 @@ body.vmelds .felt > .teamzone.theirs { flex: 1 1 auto; }
 .tight2 .felt .center { gap: 8px; }
 .tight2 .seatchip .sinfo b { flex-shrink: 0; max-width: 72px; }
 .tight2 .seatchip .smeta { min-width: 0; }
+
+/* Tressette: carte che non rispondono al seme */
+#hand .card.unplayable { filter: brightness(.62) saturate(.6); }

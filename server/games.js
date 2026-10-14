@@ -10,6 +10,7 @@ const S40 = require('../shared/scala40');
 const CAN = require('../shared/canasta');
 const SCO = require('../shared/scopa');
 const BRI = require('../shared/briscola');
+const TRE = require('../shared/tressette');
 
 const GAMES = {
   burraco: {
@@ -41,6 +42,12 @@ const GAMES = {
     E: require('./briscola'), Bot: require('./briscola-bot'),
     normalize: (r) => BRI.normalize(r),
     presetOf: () => 'briscola',
+  },
+  tressette: {
+    id: 'tressette', name: 'Tressette',
+    E: require('./tressette'), Bot: require('./tressette-bot'),
+    normalize: (r) => TRE.normalize(r),
+    presetOf: () => 'tressette',
   },
 };
 

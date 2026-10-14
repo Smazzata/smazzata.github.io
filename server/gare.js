@@ -27,6 +27,7 @@ function tournamentRules(game) {
     burraco: { ...Rules.PRESETS[0].rules, players: 2, target: 1005 },
     scala40: { game: 'scala40', players: 2 }, canasta: { game: 'canasta', players: 2, target: 2000 },
     scopa: { game: 'scopa', players: 2, target: 11 }, briscola: { game: 'briscola', players: 2, target: 2 },
+    tressette: { game: 'tressette', players: 2, target: 21 },
   }[game];
   return Games.of(short).normalize(short);
 }

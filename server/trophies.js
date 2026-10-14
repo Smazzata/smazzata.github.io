@@ -38,6 +38,8 @@ const LIST = [
   { id: 'sc_cappotto', e: '🎯', name: 'Tutto mio', desc: 'Scopa: prendi carte, denari, settebello e primiera nella stessa smazzata' },
   { id: 'br_vittoria', e: '🍷', name: 'Prima Briscola', desc: 'Vinci una partita di Briscola' },
   { id: 'br_cento', e: '💪', name: 'Briscola da cento', desc: 'Briscola: fai almeno 100 punti in una smazzata' },
+  { id: 'tr_vittoria', e: '🂱', name: 'Primo Tressette', desc: 'Vinci una partita di Tressette' },
+  { id: 'tr_napoletana', e: '🌋', name: 'Napoletana', desc: 'Tressette: accusa una napoletana (Asso, Due e Tre dello stesso seme)' },
   { id: 'torneo', e: '🎖️', name: 'Campione di torneo', desc: 'Vinci un torneo a eliminazione' },
   { id: 'diplomato', e: '🎓', name: 'Diplomato', desc: 'Finisci la partita di allenamento' },
 ];
@@ -63,6 +65,7 @@ function fromHand(mine, gid = 'burraco') {
     return out;
   }
   if (gid === 'briscola') return mine.points >= 100 ? ['br_cento'] : [];
+  if (gid === 'tressette') return mine.napoletana ? ['tr_napoletana'] : [];
   const kinds = mine.burraco.map((b) => b.kind);
   if (kinds.includes('clean') || kinds.includes('real13') || kinds.includes('real14')) out.push('pulito');
   if (kinds.length >= 3) out.push('tris_burraco');
@@ -97,7 +100,7 @@ function fromGame(g, seat, ctx) {
   const rivals = g.players.filter((p) => !g.teams[myTeamIdx].members.includes(p.seat)).map((p) => g.scores[p.seat]);
   if (rivals.length && rivals.every((s) => myScore - s >= 1000)) out.push('schiacciante');
   if (ctx.allBotsDifficile) out.push('difficile');
-  const first = { scala40: 's40_vittoria', canasta: 'can_vittoria', scopa: 'sc_vittoria', briscola: 'br_vittoria' }[ctx.gid];
+  const first = { scala40: 's40_vittoria', canasta: 'can_vittoria', scopa: 'sc_vittoria', briscola: 'br_vittoria', tressette: 'tr_vittoria' }[ctx.gid];
   if (first) out.push(first);
   return out;
 }

@@ -113,8 +113,18 @@
         <div class="pinfo">${g.cfg.rules.deal && g.cfg.rules.deal !== 3 ? '' : `<span>Mazzo <b>${g.stockCount}</b></span>`}${g.teams.map((t) => `<span>${teamLbl(t)}: <b>${t.taken}</b> carte${t.scope ? ` · <b>${t.scope}</b> ${t.scope === 1 ? 'scopa' : 'scope'} 🧹` : ''}</span>`).join('')}</div>
       </div>`;
     }
-    // briscola
     const trick = g.trick.length ? g.trick : (g.lastTrick ? g.lastTrick.cards : []);
+    if (g.game === 'tressette') {
+      const win = !g.trick.length && g.lastTrick ? g.lastTrick.winner : null;
+      const SUITN = { d: 'denari', c: 'coppe', s: 'spade', b: 'bastoni' };
+      return `<div class="presa">
+        <div class="ptrump">${g.stockCount ? `Mazzo <b>${g.stockCount}</b> · ` : ''}${g.trick.length ? `si risponde a <b>${SUITN[g.trick[0].card.s]}</b>` : 'nessuna briscola: si risponde al seme'}</div>
+        <div class="ptrick">${trick.length ? trick.map((x) => `<span class="tc ${x.seat === win ? 'win' : ''}">${cardHTML(x.card)}<span>${esc(name(x.seat))}</span></span>`).join('') : '<span class="empty">Tocca a chi apre il giro</span>'}</div>
+        ${!g.trick.length && g.lastTrick ? `<div class="pinfo"><span>Ha preso <b>${esc(name(g.lastTrick.winner))}</b></span></div>` : ''}
+        <div class="pinfo">${g.teams.map((t) => `<span>${teamLbl(t)}: <b>${t.points}</b> ${t.points === 1 ? 'punto' : 'punti'}${t.accusi && t.accusi.length ? ` · accusi ${t.accusi.reduce((a, x) => a + x.points, 0)}` : ''}</span>`).join('')}</div>
+      </div>`;
+    }
+    // briscola
     const winner = !g.trick.length && g.lastTrick ? g.lastTrick.winner : null;
     return `<div class="presa">
       <div class="ptrump">${g.stockCount ? `Mazzo <b>${g.stockCount}</b>` : 'Mazzo finito'} · briscola ${cardHTML(g.trump, g.stockCount ? '' : 'mini')}</div>
@@ -176,6 +186,7 @@
   function stockWarning(g) {
     if (g.phase === 'handEnd' || isS40Game()) return null; // nella Scala 40 il tallone si rimescola
     if (g.game === 'scopa' && g.cfg.rules.deal && g.cfg.rules.deal !== 3) return null; // Scopone: niente mazzo da cui pescare
+    if (g.game === 'tressette' && !g.stockCount) return null; // Tressette in quattro: niente mazzo
     if (g.lastTurn) return { level: 3, text: '🔔 Ultimo turno della smazzata!' };
     const r = g.cfg.rules;
     if (r.stockEnd === 'mortoToStock' && g.pozzetti.length) return null; // un pozzetto ricaricherà il tallone
@@ -376,7 +387,9 @@
     const toggled = S.toggledCard;
     return cards.map((c) => {
       const sel = S.selected.has(c.id) !== (c.id === toggled); // la carta appena toccata cambia stato dopo
-      return cardHTML(c, `${sel ? 'sel' : ''} ${S.newIds.has(c.id) ? 'newc' : ''}`);
+      // Tressette: le carte che non rispondono al seme non si possono giocare
+      const off = g.playable && !g.playable.includes(c.id);
+      return cardHTML(c, `${sel ? 'sel' : ''} ${S.newIds.has(c.id) ? 'newc' : ''} ${off ? 'unplayable' : ''}`);
     }).join('');
   }
 

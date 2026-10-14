@@ -29,6 +29,7 @@
         return;
       }
     }
+    if (g.playable && !g.playable.includes(cardId)) { toast('Devi rispondere al seme'); Sound.play('error'); return; }
     Sound.play('card');
     act('play', { cardId });
   }
@@ -409,7 +410,7 @@
       const friends = !!S.lbFriends, game = S.lbGame || 'burraco';
       const r = await emit('leaderboard', { friends, game });
       if (!r.ok) return;
-      const tabs = `<div class="row tabs"><button class="swatch ${game === 'burraco' ? 'on' : ''}" data-act="leaders" data-game="burraco">🃏 Burraco</button><button class="swatch ${game === 'scala40' ? 'on' : ''}" data-act="leaders" data-game="scala40">🂡 Scala 40</button><button class="swatch ${game === 'canasta' ? 'on' : ''}" data-act="leaders" data-game="canasta">🎴 Canasta</button><button class="swatch ${game === 'scopa' ? 'on' : ''}" data-act="leaders" data-game="scopa">🧹 Scopa</button><button class="swatch ${game === 'briscola' ? 'on' : ''}" data-act="leaders" data-game="briscola">🍷 Briscola</button></div>
+      const tabs = `<div class="row tabs"><button class="swatch ${game === 'burraco' ? 'on' : ''}" data-act="leaders" data-game="burraco">🃏 Burraco</button><button class="swatch ${game === 'scala40' ? 'on' : ''}" data-act="leaders" data-game="scala40">🂡 Scala 40</button><button class="swatch ${game === 'canasta' ? 'on' : ''}" data-act="leaders" data-game="canasta">🎴 Canasta</button><button class="swatch ${game === 'scopa' ? 'on' : ''}" data-act="leaders" data-game="scopa">🧹 Scopa</button><button class="swatch ${game === 'briscola' ? 'on' : ''}" data-act="leaders" data-game="briscola">🍷 Briscola</button><button class="swatch ${game === 'tressette' ? 'on' : ''}" data-act="leaders" data-game="tressette">🂱 Tressette</button></div>
         <div class="row tabs"><button class="swatch ${friends ? '' : 'on'}" data-act="leaders" data-friends="0">Tutti</button><button class="swatch ${friends ? 'on' : ''}" data-act="leaders" data-friends="1">Solo amici</button></div>`;
       const rows = r.list.map((e, i) => `<tr class="${e.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][i] || i + 1}</td><td style="text-align:left">${esc(e.name)} ${lvlHTML(e.level)}${e.me ? ' (tu)' : ''}</td><td>${e.wins}/${e.games}</td><td>${Math.round((e.wins / e.games) * 100)}%</td><td>${game === 'canasta' || game === 'burraco' ? e.burraco : ''}</td></tr>`).join('');
       openModal('leaders', `<div class="result"><h2>🏆 Classifica</h2>${tabs}

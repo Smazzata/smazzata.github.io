@@ -54,7 +54,7 @@
 
     /** regole degli altri giochi (non Burraco) */
     function otherRules(r) {
-      const m = { canasta: self.BurracoCanasta, scopa: self.BurracoScopa, briscola: self.BurracoBriscola };
+      const m = { canasta: self.BurracoCanasta, scopa: self.BurracoScopa, briscola: self.BurracoBriscola, tressette: self.BurracoTressette };
       return r && m[r.game];
     }
 

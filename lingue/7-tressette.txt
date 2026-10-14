@@ -1,0 +1,74 @@
+# Tressette (gioco, tutorial, trofei, regole)
+# italiano ‖ English ‖ Español ‖ Português
+Tressette ‖ Tressette ‖ Tressette ‖ Tressette
+🂱 Tressette ‖ 🂱 Tressette ‖ 🂱 Tressette ‖ 🂱 Tressette
+Carte italiane a coppie: si risponde al seme, contano Assi, Due, Tre e figure ‖ Italian cards in pairs: follow suit, Aces, Twos, Threes and face cards count ‖ Cartas italianas en parejas: se responde al palo, cuentan Ases, Doses, Treses y figuras ‖ Cartas italianas em duplas: segue-se o naipe, contam Ases, Dois, Três e figuras
+Il re dei giochi italiani a coppie: si risponde al seme, contano Assi, Due, Tre e figure. ‖ The king of Italian partnership games: follow suit, Aces, Twos, Threes and face cards count. ‖ El rey de los juegos italianos en parejas: se responde al palo, cuentan Ases, Doses, Treses y figuras. ‖ O rei dos jogos italianos em duplas: segue-se o naipe, contam Ases, Dois, Três e figuras.
+Il Tressette si gioca con le carte italiane da 40, di solito in quattro a coppie. Non ci sono briscole: si deve rispondere al seme e prende la carta più forte del seme di uscita. Il Tre è la carta più forte. ‖ Tressette is played with the 40-card Italian deck, usually by four in pairs. There are no trumps: you must follow suit and the strongest card of the suit led wins. The Three is the strongest card. ‖ El Tressette se juega con la baraja italiana de 40, normalmente de a cuatro en parejas. No hay triunfos: hay que responder al palo y se lleva la baza la carta más fuerte del palo de salida. El Tres es la carta más fuerte. ‖ O Tressette se joga com o baralho italiano de 40, geralmente em quatro em duplas. Não há trunfos: é preciso seguir o naipe e vence a carta mais forte do naipe de saída. O Três é a carta mais forte.
+🎓 Allenamento a Tressette ‖ 🎓 Tressette practice ‖ 🎓 Práctica de Tressette ‖ 🎓 Treino de Tressette
+Carte italiane da 40, di solito in quattro a coppie: 10 carte a testa. Si fanno prese per raccogliere ‖ Italian 40-card deck, usually four in pairs: 10 cards each. You win tricks to collect ‖ Baraja italiana de 40, normalmente de a cuatro en parejas: 10 cartas cada uno. Se hacen bazas para llevarse ‖ Baralho italiano de 40, geralmente em quatro em duplas: 10 cartas cada. Fazem-se vazas para juntar
+Assi, Due, Tre e figure ‖ Aces, Twos, Threes and face cards ‖ Ases, Doses, Treses y figuras ‖ Ases, Dois, Três e figuras
+Le più forti: Tre, Due, Asso, poi Re, Cavallo, Fante. ‖ Strongest: Three, Two, Ace, then King, Knight, Jack. ‖ Las más fuertes: Tres, Dos, As, luego Rey, Caballo, Sota. ‖ As mais fortes: Três, Dois, Ás, depois Rei, Cavalo, Valete.
+2. Rispondere al seme ‖ 2. Following suit ‖ 2. Responder al palo ‖ 2. Seguir o naipe
+Chi apre gioca una carta; gli altri ‖ The leader plays a card; the others ‖ Quien abre juega una carta; los demás ‖ Quem abre joga uma carta; os outros
+devono rispondere al seme ‖ must follow suit ‖ deben responder al palo ‖ devem seguir o naipe
+, se possono. Non ci sono briscole: prende la carta più forte del seme di uscita. ‖ , if they can. There are no trumps: the strongest card of the suit led wins. ‖ , si pueden. No hay triunfos: se lleva la baza la carta más fuerte del palo de salida. ‖ , se puderem. Não há trunfos: vence a carta mais forte do naipe de saída.
+Le carte che non puoi giocare si spengono nella tua mano. ‖ Cards you cannot play are dimmed in your hand. ‖ Las cartas que no puedes jugar se apagan en tu mano. ‖ As cartas que você não pode jogar ficam apagadas na mão.
+vale 1 punto, ‖ is worth 1 point, ‖ vale 1 punto, ‖ vale 1 ponto,
+Tre, Due e figure ‖ Threes, Twos and face cards ‖ Treses, Doses y figuras ‖ Três, Dois e figuras
+1/3 di punto, l' ‖ 1/3 of a point, the ‖ 1/3 de punto, la ‖ 1/3 de ponto, a
+ultima presa ‖ last trick ‖ última baza ‖ última vaza
+1 punto: 11 punti a smazzata. ‖ 1 point: 11 points per hand. ‖ 1 punto: 11 puntos por mano. ‖ 1 ponto: 11 pontos por mão.
+Con gli ‖ With ‖ Con los ‖ Com os
+accusi ‖ declarations ‖ cantos ‖ acusos
+: napoletana (Asso, Due, Tre dello stesso seme) o tre/quattro Assi, Due o Tre danno punti in più. ‖ : napoletana (Ace, Two, Three of the same suit) or three/four Aces, Twos or Threes give extra points. ‖ : napolitana (As, Dos, Tres del mismo palo) o tres/cuatro Ases, Doses o Treses dan puntos extra. ‖ : napolitana (Ás, Dois, Três do mesmo naipe) ou três/quatro Ases, Dois ou Três dão pontos a mais.
+Asso 1 punto, Tre, Due e figure 1/3, l'ultima presa 1 punto. ‖ Ace 1 point, Threes, Twos and face cards 1/3, the last trick 1 point. ‖ As 1 punto, Treses, Doses y figuras 1/3, la última baza 1 punto. ‖ Ás 1 ponto, Três, Dois e figuras 1/3, a última vaza 1 ponto.
+Ora gioca il computer: guarda a che seme risponde. ‖ The computer is playing now: see which suit it follows. ‖ Ahora juega la computadora: mira a qué palo responde. ‖ Agora o computador joga: veja qual naipe ele segue.
+Rispondi al seme (le altre carte sono spente): se puoi prendere una presa che vale, fallo con la carta più bassa che basta. ‖ Follow suit (the other cards are dimmed): if you can win a trick worth points, do it with the lowest card that is enough. ‖ Responde al palo (las demás cartas están apagadas): si puedes llevarte una baza que vale, hazlo con la carta más baja que alcance. ‖ Siga o naipe (as outras cartas estão apagadas): se puder levar uma vaza que vale, faça com a carta mais baixa que basta.
+Apri dal seme in cui hai più carte, con una carta che vale poco: tieni Tre e Due per prendere gli Assi. ‖ Lead from your longest suit with a low card: keep Threes and Twos to capture the Aces. ‖ Abre del palo del que tienes más cartas, con una carta que vale poco: guarda Treses y Doses para llevarte los Ases. ‖ Abra pelo naipe em que tem mais cartas, com uma carta que vale pouco: guarde Três e Dois para pegar os Ases.
+Devi rispondere al seme ‖ You must follow suit ‖ Debes responder al palo ‖ Você precisa seguir o naipe
+Devi rispondere a {0} ‖ You must follow {0} ‖ Debes responder a {0} ‖ Você precisa seguir {0}
+nessuna briscola: si risponde al seme ‖ no trumps: follow suit ‖ sin triunfos: se responde al palo ‖ sem trunfos: segue-se o naipe
+si risponde a ‖ follow ‖ se responde a ‖ segue-se
+denari ‖ coins ‖ oros ‖ ouros
+coppe ‖ cups ‖ copas ‖ copas
+spade ‖ swords ‖ espadas ‖ espadas
+bastoni ‖ clubs ‖ bastos ‖ paus
+{0} accusa {1} ‖ {0} declares {1} ‖ {0} canta {1} ‖ {0} declara {1}
+{0} pesca {1} ‖ {0} draws {1} ‖ {0} roba {1} ‖ {0} compra {1}
+Prende {0} (ultima: +1) ‖ {0} takes (last trick: +1) ‖ Se la lleva {0} (última: +1) ‖ {0} leva (última: +1)
+Accusi ‖ Declarations ‖ Cantos ‖ Acusos
+· accusi {0} ‖ · declarations {0} ‖ · cantos {0} ‖ · acusos {0}
+Il Tressette si gioca in 2 o in 4 ‖ Tressette is played by 2 or 4 ‖ El Tressette se juega de a 2 o de a 4 ‖ O Tressette se joga em 2 ou em 4
+Primo Tressette ‖ First Tressette ‖ Primer Tressette ‖ Primeiro Tressette
+Vinci una partita di Tressette ‖ Win a game of Tressette ‖ Gana una partida de Tressette ‖ Vença uma partida de Tressette
+Napoletana ‖ Napoletana ‖ Napolitana ‖ Napolitana
+Tressette: accusa una napoletana (Asso, Due e Tre dello stesso seme) ‖ Tressette: declare a napoletana (Ace, Two and Three of the same suit) ‖ Tressette: canta una napolitana (As, Dos y Tres del mismo palo) ‖ Tressette: declare uma napolitana (Ás, Dois e Três do mesmo naipe)
+Tressette a due ‖ Two-player Tressette ‖ Tressette de a dos ‖ Tressette a dois
+2 (si pesca dal mazzo) ‖ 2 (draw from the deck) ‖ 2 (se roba del mazo) ‖ 2 (compra-se do baralho)
+31 punti ‖ 31 points ‖ 31 puntos ‖ 31 pontos
+Accusi (napoletana e tris o poker di Assi, Due o Tre) ‖ Declarations (napoletana and three or four Aces, Twos or Threes) ‖ Cantos (napolitana y tres o cuatro Ases, Doses o Treses) ‖ Acusos (napolitana e três ou quatro Ases, Dois ou Três)
+{0} e {1}/3 ‖ {0} and {1}/3 ‖ {0} y {1}/3 ‖ {0} e {1}/3
+punto ‖ point ‖ punto ‖ ponto
+punti ‖ points ‖ puntos ‖ pontos
+napoletana di {0} ‖ napoletana of {0} ‖ napolitana de {0} ‖ napolitana de {0}
+tre Assi ‖ three Aces ‖ tres Ases ‖ três Ases
+tre Due ‖ three Twos ‖ tres Doses ‖ três Dois
+tre Tre ‖ three Threes ‖ tres Treses ‖ três Três
+quattro Assi ‖ four Aces ‖ cuatro Ases ‖ quatro Ases
+quattro Due ‖ four Twos ‖ cuatro Doses ‖ quatro Dois
+quattro Tre ‖ four Threes ‖ cuatro Treses ‖ quatro Três
+Mazzo italiano da 40 carte (denari, coppe, spade, bastoni). In quattro a coppie (i compagni uno di fronte all'altro): 10 carte a testa, senza mazzo. ‖ Italian 40-card deck (coins, cups, swords, clubs). Four players in pairs (partners opposite each other): 10 cards each, no stock. ‖ Baraja italiana de 40 cartas (oros, copas, espadas, bastos). De a cuatro en parejas (los compañeros uno frente al otro): 10 cartas cada uno, sin mazo. ‖ Baralho italiano de 40 cartas (ouros, copas, espadas, paus). Em quatro em duplas (parceiros um de frente para o outro): 10 cartas cada, sem monte.
+Mazzo italiano da 40 carte (denari, coppe, spade, bastoni). In due: 10 carte a testa; dopo ogni presa ognuno pesca una carta dal mazzo (prima chi ha preso), finché il mazzo finisce. ‖ Italian 40-card deck (coins, cups, swords, clubs). Two players: 10 cards each; after each trick each player draws a card from the deck (the winner first), until the deck runs out. ‖ Baraja italiana de 40 cartas (oros, copas, espadas, bastos). De a dos: 10 cartas cada uno; después de cada baza cada uno roba una carta del mazo (primero quien la ganó), hasta que se acaba. ‖ Baralho italiano de 40 cartas (ouros, copas, espadas, paus). Em dois: 10 cartas cada; depois de cada vaza cada um compra uma carta do baralho (primeiro quem levou), até acabar.
+Chi apre gioca una carta; gli altri ‖ The leader plays a card; the others ‖ Quien abre juega una carta; los demás ‖ Quem abre joga uma carta; os outros
+se possono. Prende la carta più forte del ‖ if they can. The trick goes to the strongest card of the ‖ si pueden. Se lleva la baza la carta más fuerte del ‖ se puderem. Leva a vaza a carta mais forte do
+(non ci sono briscole). ‖ (there are no trumps). ‖ (no hay triunfos). ‖ (não há trunfos).
+Forza delle carte: ‖ Card strength: ‖ Fuerza de las cartas: ‖ Força das cartas:
+Tre, Due, Asso ‖ Three, Two, Ace ‖ Tres, Dos, As ‖ Três, Dois, Ás
+, Re, Cavallo, Fante, 7, 6, 5, 4. ‖ , King, Knight, Jack, 7, 6, 5, 4. ‖ , Rey, Caballo, Sota, 7, 6, 5, 4. ‖ , Rei, Cavalo, Valete, 7, 6, 5, 4.
+Punti: l' ‖ Points: the ‖ Puntos: el ‖ Pontos: o
+vale 1 punto; ‖ is worth 1 point; ‖ vale 1 punto; ‖ vale 1 ponto;
+valgono 1/3 di punto; le altre nulla. L' ‖ are worth 1/3 of a point; the others nothing. The ‖ valen 1/3 de punto; las demás nada. La ‖ valem 1/3 de ponto; as outras nada. A
+vale 1 punto. In tutto 11 punti a smazzata (i terzi si arrotondano per difetto). ‖ is worth 1 point. 11 points per hand in all (thirds are rounded down). ‖ vale 1 punto. En total 11 puntos por mano (los tercios se redondean hacia abajo). ‖ vale 1 ponto. No total 11 pontos por mão (os terços são arredondados para baixo).
+(si dichiarano a inizio smazzata): napoletana (Asso, Due e Tre dello stesso seme) 3 punti; tre Assi, Due o Tre 3 punti, tutti e quattro 4 punti. ‖ (declared at the start of the hand): napoletana (Ace, Two and Three of the same suit) 3 points; three Aces, Twos or Threes 3 points, all four 4 points. ‖ (se cantan al inicio de la mano): napolitana (As, Dos y Tres del mismo palo) 3 puntos; tres Ases, Doses o Treses 3 puntos, los cuatro 4 puntos. ‖ (declarados no início da mão): napolitana (Ás, Dois e Três do mesmo naipe) 3 pontos; três Ases, Dois ou Três 3 pontos, os quatro 4 pontos.
+punti. ‖ points. ‖ puntos. ‖ pontos.

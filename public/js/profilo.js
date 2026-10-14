@@ -128,7 +128,7 @@
   }
 
   /* ---------- Tornei a eliminazione ---------- */
-  const TOUR_GAMES = { burraco: '🃏 Burraco', scala40: '🂡 Scala 40', canasta: '🎴 Canasta', scopa: '🧹 Scopa', briscola: '🍷 Briscola' };
+  const TOUR_GAMES = { burraco: '🃏 Burraco', scala40: '🂡 Scala 40', canasta: '🎴 Canasta', scopa: '🧹 Scopa', briscola: '🍷 Briscola', tressette: '🂱 Tressette' };
   const roundName = (i, total) => (total - i === 1 ? 'Finale' : total - i === 2 ? 'Semifinali' : total - i === 3 ? 'Quarti' : 'Ottavi');
 
   async function tournamentsModal(openId) {

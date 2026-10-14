@@ -9,7 +9,7 @@
  *   champion(token)      → premia il vincitore
  */
 const SIZES = [4, 8, 16];
-const GAMES = ['burraco', 'scala40', 'canasta', 'scopa', 'briscola'];
+const GAMES = ['burraco', 'scala40', 'canasta', 'scopa', 'briscola', 'tressette'];
 const BOT_NAMES = ['Nonna Pina', 'Zio Gino', 'Carmela', 'Totò', 'Rosetta', 'Peppino', 'Ninetta', 'Gegè', 'Don Ciccio', 'Assunta', 'Pasquale', 'Filomena', 'Gennaro', 'Concetta', 'Salvatore', 'Immacolata'];
 
 module.exports = function createTournaments({ tournaments, nickOf, openMatch, simulate, notify, champion }) {

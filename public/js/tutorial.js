@@ -62,6 +62,14 @@
          <p>Chi prende pesca per primo e apre il giro dopo.</p>` },
       { t: 'Consigli', h: `<p>Non sprecare le briscole per prese senza punti; se l'avversario apre con un carico (Asso o Tre) e hai una briscola piccola, prendilo!</p>` },
     ] },
+    tressette: { name: '🂱 Tressette', slides: [
+      { t: 'Lo scopo', h: `<p>Carte italiane da 40, di solito in quattro a coppie: 10 carte a testa. Si fanno prese per raccogliere <b>Assi, Due, Tre e figure</b>.</p>
+         <div class="tutcards">${it(3, 'c')}${it(2, 'c')}${it(1, 'c')}${it(10, 'c')}</div><p class="muted small">Le più forti: Tre, Due, Asso, poi Re, Cavallo, Fante.</p>` },
+      { t: 'Rispondere al seme', h: `<p>Chi apre gioca una carta; gli altri <b>devono rispondere al seme</b>, se possono. Non ci sono briscole: prende la carta più forte del seme di uscita.</p>
+         <p class="muted small">Le carte che non puoi giocare si spengono nella tua mano.</p>` },
+      { t: 'I punti', h: `<p>L'<b>Asso</b> vale 1 punto, <b>Tre, Due e figure</b> 1/3 di punto, l'<b>ultima presa</b> 1 punto: 11 punti a smazzata.</p>
+         <p>Con gli <b>accusi</b>: napoletana (Asso, Due, Tre dello stesso seme) o tre/quattro Assi, Due o Tre danno punti in più.</p>` },
+    ] },
   };
 
   function tutorialModal(i = 0, game) {
@@ -99,6 +107,12 @@
 
   /** Allenatore di Scopa e Briscola */
   function coachTipPresa(g) {
+    if (g.game === 'tressette') {
+      if (g.phase === 'handEnd') return 'Asso 1 punto, Tre, Due e figure 1/3, l\'ultima presa 1 punto.';
+      if (g.turn !== g.you) return 'Ora gioca il computer: guarda a che seme risponde.';
+      return g.trick && g.trick.length ? 'Rispondi al seme (le altre carte sono spente): se puoi prendere una presa che vale, fallo con la carta più bassa che basta.'
+        : 'Apri dal seme in cui hai più carte, con una carta che vale poco: tieni Tre e Due per prendere gli Assi.';
+    }
     const scopa = g.game === 'scopa';
     if (g.phase === 'handEnd') return scopa ? 'Si contano carte, denari, settebello, primiera e scope.' : 'Si contano i punti delle carte prese: servono più di 60.';
     if (g.turn !== g.you) return 'Ora gioca il computer: guarda cosa sceglie.';

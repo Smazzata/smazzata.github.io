@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const MODULES = ['shared/rules', 'shared/melds', 'shared/scala40', 'shared/canasta', 'shared/scopa', 'shared/briscola', 'server/engine', 'server/bot', 'server/scala40', 'server/scala40-bot', 'server/canasta', 'server/canasta-bot', 'server/scopa', 'server/scopa-bot', 'server/briscola', 'server/briscola-bot'];
+const MODULES = ['shared/rules', 'shared/melds', 'shared/scala40', 'shared/canasta', 'shared/scopa', 'shared/briscola', 'shared/tressette', 'server/engine', 'server/bot', 'server/scala40', 'server/scala40-bot', 'server/canasta', 'server/canasta-bot', 'server/scopa', 'server/scopa-bot', 'server/briscola', 'server/briscola-bot', 'server/tressette', 'server/tressette-bot'];
 
 function bundle() {
   const defs = MODULES.map((name) => {
@@ -43,6 +43,7 @@ function bundle() {
     canasta: { E: load('server/canasta'), Bot: load('server/canasta-bot') },
     scopa: { E: load('server/scopa'), Bot: load('server/scopa-bot') },
     briscola: { E: load('server/briscola'), Bot: load('server/briscola-bot') },
+    tressette: { E: load('server/tressette'), Bot: load('server/tressette-bot') },
   };
 })();
 `;
