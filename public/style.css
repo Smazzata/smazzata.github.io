@@ -437,3 +437,10 @@ body[data-theme="notte"] .rules-table td, body[data-theme="notte"] .rules-table 
 body[data-theme="notte"] .log div { border-color: #333; }
 body[data-theme="notte"] .log .chat { color: #9cc7ff; }
 body[data-theme="notte"] .modal-box input, body[data-theme="notte"] .modal-box select { background: #2a312e; color: #eee; border-color: #444; }
+
+/* ---------- Connessione persa / giocatori offline ---------- */
+.offline { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 6px; font-size: 13px; font-weight: 600; }
+.offline .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; animation: spin .9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.game.offline-lock { pointer-events: none; filter: grayscale(.5) brightness(.8); }
+.seatchip.offline { opacity: .6; }

@@ -36,7 +36,7 @@ function player(name) {
     while (Date.now() < end) { if (p.state && fn(p.state)) return p.state; await wait(25); }
     throw new Error(`${name}: tempo scaduto aspettando ${what}`);
   };
-  p.hello = () => new Promise((res) => { sock.emit('hello', { name }); sock.once('welcome', res); });
+  p.hello = (token) => new Promise((res) => { sock.emit('hello', { name, token }); sock.once('welcome', (w) => { p.token = w.token; res(w); }); });
   return p;
 }
 
@@ -81,6 +81,21 @@ const step = (t) => console.log('✓ ' + t);
     await B.until((s) => s.game, 'inizio partita');
     await A.until((s) => s.game && s.game.log.some((l) => l.includes('Tempo scaduto')), 'turno automatico per tempo scaduto', 30000);
     step('timer del turno: allo scadere pesca e scarta in automatico');
+
+    // riconnessione: Bruno cade e rientra con lo stesso token, ritrovando posto e carte
+    const bSeat = B.state.game.you;
+    B.sock.close();
+    await A.until((s) => s.room.seats[bSeat] && s.room.seats[bSeat].connected === false, 'Bruno offline');
+    const tokenB = B.token;
+    const B2 = player('Bruno');
+    await B2.hello(tokenB);
+    const back = await B2.until((s) => s.game, 'rientro di Bruno');
+    assert.strictEqual(back.game.you, bSeat, 'stesso posto dopo la riconnessione');
+    assert(back.game.hand.length > 0, 'carte ritrovate');
+    await A.until((s) => s.room.seats[bSeat].connected === true, 'Bruno di nuovo online');
+    Object.assign(B, { sock: B2.sock, state: B2.state, call: B2.call, until: B2.until });
+    B2.sock.on('state', (st) => { B.state = st; });
+    step('riconnessione: stesso posto e stesse carte, gli altri vedono offline/online');
 
     // si gioca da soli (timer + bot) fino a fine partita; tra una smazzata e l'altra si dà il "pronto"
     const end = Date.now() + 120000;

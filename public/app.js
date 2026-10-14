@@ -98,10 +98,16 @@
   /* ================= Connessione ================= */
   const socket = io();
   socket.on('connect', () => {
+    if (S.lostConnection) toast('✓ Riconnesso');
+    S.lostConnection = false;
     S.connected = true;
     socket.emit('hello', { token: S.token, name: S.name });
   });
-  socket.on('disconnect', () => { S.connected = false; render(); });
+  socket.on('disconnect', () => { S.connected = false; S.lostConnection = true; render(); });
+  // tornando sull'app dopo un periodo in background ci si ricollega subito
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && !socket.connected) socket.connect();
+  });
   socket.on('welcome', ({ token, name }) => {
     S.token = token;
     store.set('bur_token', token);
@@ -163,10 +169,12 @@
       if (prev && game.turn === game.you && game.phase === 'draw' && (prev.turn !== game.you || prev.phase === 'handEnd')) {
         if (navigator.vibrate) navigator.vibrate(60);
         Sound.play('turn');
+        notify('Burraco: tocca a te!', `Tavolo ${room.code} · ${lastMove(game)}`, 'turn');
       }
       if (game.phase === 'handEnd') recordStats(room, game);
       if (game.phase === 'handEnd' && (!prev || prev.phase !== 'handEnd' || prev.handNo !== game.handNo)) {
         setTimeout(showResult, 900);
+        if (prev) notify('Burraco: smazzata finita', game.over ? 'La partita è terminata: guarda chi ha vinto!' : 'Guarda il punteggio e preparati alla prossima.', 'hand');
         const mine = game.handResult && game.handResult.teams.find((t) => t.members.includes(game.you));
         const best = game.handResult && Math.max(...game.handResult.teams.map((t) => t.total));
         if (mine && mine.total === best) setTimeout(() => Sound.play('win'), 500);
@@ -180,6 +188,23 @@
       if (S.modalKind === 'result') closeModal();
     }
     render();
+  }
+
+  /* ---------- Notifiche di sistema quando la pagina è in secondo piano ---------- */
+  const canNotify = 'Notification' in window && 'serviceWorker' in navigator && window.isSecureContext;
+  let swReg = null;
+  if ('serviceWorker' in navigator && window.isSecureContext) {
+    navigator.serviceWorker.register('sw.js').then((r) => { swReg = r; }).catch(() => {});
+  }
+  async function notify(title, body, tag) {
+    if (!S.prefs.notify || !canNotify || Notification.permission !== 'granted' || document.visibilityState === 'visible') return;
+    const opts = { body, tag, icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', renotify: true, vibrate: [120, 60, 120] };
+    try {
+      const reg = swReg || (await navigator.serviceWorker.ready);
+      await reg.showNotification(title, opts);
+    } catch (e) {
+      try { new Notification(title, opts); } catch (e2) { /* notifiche non disponibili */ }
+    }
   }
 
   /* ---------- Schermo sempre acceso durante la partita ---------- */
@@ -388,6 +413,10 @@
       <div class="row">${opt('back', 'rosso', '<i class="sw back-rosso"></i>Rosso')}${opt('back', 'blu', '<i class="sw back-blu"></i>Blu')}${opt('back', 'verde', '<i class="sw back-verde"></i>Verde')}${opt('back', 'nero', '<i class="sw back-nero"></i>Nero')}</div>
       <h4>Carte</h4>
       <div class="row">${opt('big', false, 'Normali')}${opt('big', true, 'Grandi')}</div>
+      <h4>Notifiche "tocca a te"</h4>
+      ${canNotify ? `<div class="row">${opt('notify', true, '🔔 Attive')}${opt('notify', false, '🔕 Disattivate')}</div>
+        <p class="muted small">Arrivano quando il gioco è aperto in secondo piano.${typeof Notification !== 'undefined' && Notification.permission === 'denied' ? ' <b>Il browser le ha bloccate: riattivale dalle impostazioni del sito.</b>' : ''}</p>`
+        : '<p class="muted small">Su questo dispositivo o browser le notifiche non sono disponibili.</p>'}
       <h4>Suoni</h4>
       <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
       ${S.room && S.room.isHost ? `<h4>Tempo per turno</h4>${turnTimeHTML(S.room.turnTime)}` : ''}
@@ -448,7 +477,11 @@
       app.innerHTML = gameHTML();
       afterGameRender();
     }
-    if (!S.connected) app.insertAdjacentHTML('afterbegin', '<div class="offline">Connessione al server…</div>');
+    if (!S.connected) {
+      app.insertAdjacentHTML('afterbegin', `<div class="offline"><span class="spin"></span>${S.lostConnection ? '📡 Connessione persa: mi ricollego…' : 'Connessione al server…'}</div>`);
+      const gm = $('.game');
+      if (gm) gm.classList.add('offline-lock');
+    }
   }
 
   const APK_URL = 'https://github.com/simonemuliello010500-web/BurracoByMSF/releases/latest/download/Burraco.apk';
@@ -672,10 +705,12 @@
     const partner = myTeam && myTeam.members.includes(seat);
     const turn = g.turn === seat && g.phase !== 'handEnd';
     const fan = Array.from({ length: Math.min(p.handCount, 7) }, (_, i) => backHTML('tiny', `style="--i:${i}"`)).join('');
-    return `<div class="seatchip pos-${pos} ${turn ? 'turn' : ''} ${partner ? 'partner' : ''}" data-seat="${seat}">
+    const rs = S.room && S.room.seats[seat];
+    const off = rs && !rs.isBot && !rs.connected;
+    return `<div class="seatchip pos-${pos} ${turn ? 'turn' : ''} ${partner ? 'partner' : ''} ${off ? 'offline' : ''}" data-seat="${seat}">
       ${avatarHTML(p.name, seat, p.isBot)}
       <div class="sinfo"><b>${esc(p.name)}</b>
-        <span class="smeta">${partner ? 'compagno · ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` · ${g.cfg.pozzettoName} ✓` : ''}</span></div>
+        <span class="smeta">${off ? '📴 offline · ' : ''}${partner ? 'compagno · ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` · ${g.cfg.pozzettoName} ✓` : ''}</span></div>
       <div class="minifan">${fan}</div>
       ${turn ? (S.turnEnd ? '<span class="thinking cdchip" data-cd></span>' : '<span class="thinking"><i></i><i></i><i></i></span>') : ''}
     </div>`;
@@ -1109,6 +1144,12 @@
       settingsModal();
       if (S.screen === 'game') render();
       if (key === 'sound' && val) { Sound.unlock(); Sound.play('turn'); }
+      if (key === 'notify' && val && canNotify && Notification.permission !== 'granted') {
+        Notification.requestPermission().then((p) => {
+          if (p !== 'granted') { S.prefs.notify = false; applyPrefs(); toast('Notifiche non consentite dal browser', true); }
+          settingsModal();
+        });
+      }
     },
     preset(el) {
       const p = presetById(el.dataset.id);
