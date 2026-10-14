@@ -589,6 +589,32 @@ const step = (t) => console.log('✓ ' + t);
     }
     step('Scopa e Briscola: una smazzata ciascuna contro il computer');
 
+    // torneo da 4: iscrizione, riempimento con il computer, avviso della partita, resa, avanzamento fino al campione
+    const TT = player('Tornista'); await TT.hello(); { const rt = await TT.call('setNick', { nick: 'Tornista' }); assert(rt.ok, 'nickname: ' + rt.error); }
+    TT.match = null;
+    TT.sock.on('tournamentMatch', (x) => { TT.match = x; });
+    const tc = await TT.call('tournamentCreate', { name: 'Coppa di prova', game: 'briscola', size: 4 });
+    assert(tc.ok && tc.id, 'torneo creato');
+    assert(!(await TT.call('tournamentStart', { id: tc.id })).ok, 'servono 4 iscritti');
+    assert((await TT.call('tournamentFill', { id: tc.id })).ok);
+    assert((await TT.call('tournamentStart', { id: tc.id })).ok);
+    const mEnd = Date.now() + 5000;
+    while (!TT.match && Date.now() < mEnd) await wait(20);
+    assert(TT.match && TT.match.code, 'avviso: la tua partita è pronta');
+    assert((await TT.call('joinRoom', { code: TT.match.code })).ok);
+    const tg = await TT.until((st) => st.game, 'partita del torneo');
+    assert(tg.room.tournament && tg.room.tournament.id === tc.id, 'tavolo del torneo');
+    assert((await TT.call('surrender')).ok);
+    await TT.until((st) => st.game && st.game.over, 'partita finita');
+    assert(!(await TT.call('ready')).ok, 'niente rivincita nei tornei');
+    const tEnd = Date.now() + 15000;
+    let tl;
+    do { await wait(100); tl = (await TT.call('tournaments')).list.find((x) => x.id === tc.id); } while (tl.status !== 'finito' && Date.now() < tEnd);
+    assert(tl.status === 'finito' && tl.champion != null && !tl.players[tl.champion].me, 'il torneo arriva al campione (non chi si è arreso)');
+    assert(tl.rounds.length === 2, 'semifinali e finale');
+    TT.sock.close();
+    step('torneo: iscrizioni, computer, avviso della partita, resa, avanzamento fino al campione');
+
     A.sock.close(); B.sock.close();
     console.log('\nProva multigiocatore: tutto OK');
   } finally {

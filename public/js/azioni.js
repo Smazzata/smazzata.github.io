@@ -160,6 +160,18 @@
     roomRules() { rulesModal(S.room.rules); },
     daily() { if (!requireName()) return; dailyModal(); },
     replay() { openReplay(); },
+    tournaments() { if (!requireName()) return; tournamentsModal(null); },
+    tourBack(el) { emit('leaveRoom'); S.screen = 'home'; tournamentsModal(el.dataset.id); },
+    tourOpen(el) { tournamentsModal(el.dataset.id || null); },
+    async tourJoin(el) { const r = await emit('tournamentJoin', { id: el.dataset.id }); if (r.ok) toast('Iscritto! Ti avvisiamo quando tocca a te'); },
+    async tourLeave(el) { if (!confirm('Sei sicuro?')) return; const r = await emit('tournamentLeave', { id: el.dataset.id }); if (r.ok) tournamentsModal(null); },
+    tourFill(el) { emit('tournamentFill', { id: el.dataset.id }); },
+    tourStart(el) { emit('tournamentStart', { id: el.dataset.id }); },
+    tourPlay(el) { closeModal(); S.tourMatch = null; joinRoom(el.dataset.code); },
+    tourForfeit(el) {
+      if (!confirm(`Assegnare la vittoria a tavolino a ${el.textContent}?`)) return;
+      emit('tournamentForfeit', { id: el.dataset.id, round: el.dataset.r, index: el.dataset.i, side: el.dataset.side });
+    },
     scopaTake(el) { closeModal(); act('play', { cardId: Number(el.dataset.card), take: el.dataset.take.split(',').map(Number) }); },
     appUpdateLater() { store.set('bur_apk_later', S.appUpdate.n); S.appUpdate.dismissed = true; render(); },
     playerMenu(el) { playerMenu(el.dataset.nick); },

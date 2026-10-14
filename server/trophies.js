@@ -30,6 +30,7 @@ const LIST = [
   { id: 's40_apertura', e: '⚡', name: 'Apertura lampo', desc: 'Scala 40: apri al tuo primo turno' },
   { id: 's40_mano', e: '🎩', name: 'Chiusura in mano', desc: 'Scala 40: apri e chiudi nello stesso turno' },
   { id: 's40_jolly', e: '🃏', name: 'Ladro di jolly', desc: 'Scala 40: prendi un jolly dal tavolo' },
+  { id: 'torneo', e: '🎖️', name: 'Campione di torneo', desc: 'Vinci un torneo a eliminazione' },
   { id: 'diplomato', e: '🎓', name: 'Diplomato', desc: 'Finisci la partita di allenamento' },
 ];
 const BY_ID = new Map(LIST.map((t) => [t.id, t]));

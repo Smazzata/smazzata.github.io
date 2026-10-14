@@ -78,7 +78,8 @@
         ${!OFFLINE && store.get('bur_lastroom', '') ? `<div class="row" style="margin-top:8px"><button class="btn primary grow" data-act="rejoin">↩ Torna al tavolo ${esc(store.get('bur_lastroom', ''))}</button></div>` : ''}
         ${OFFLINE ? '<div class="row" style="margin-top:8px"><button class="btn grow" data-act="tutorial">🎓 Impara a giocare</button></div>'
         : `<div class="row" style="margin-top:8px"><button class="btn grow" data-act="quickMenu">⚡ Gioca subito</button><button class="btn grow" data-act="tutorial">🎓 Impara a giocare</button></div>
-        <div class="row" style="margin-top:8px"><button class="btn grow dailybtn" data-act="daily">📅 Sfida del giorno</button></div>
+        <div class="row" style="margin-top:8px"><button class="btn grow dailybtn" data-act="daily">📅 Sfida del giorno</button><button class="btn grow tourbtn" data-act="tournaments">🏆 Tornei</button></div>
+        ${S.tourMatch && !S.room ? `<div class="tourready">🏆 ${esc(S.tourMatch.text)} <button class="btn small primary" data-act="tourPlay" data-code="${esc(S.tourMatch.code)}">▶ Gioca</button></div>` : ''}
         <div class="row" style="margin-top:10px">
           <input type="text" id="joinCode" class="grow codein" maxlength="4" placeholder="Codice tavolo" value="${esc(S.pendingJoin)}">
           <button class="btn" data-act="join">Entra</button>

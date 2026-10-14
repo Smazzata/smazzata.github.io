@@ -16,6 +16,7 @@ const GE = (room) => Games.of(room).E;
 const GBot = (room) => Games.of(room).Bot;
 const createPush = require('./push');
 const createLeagues = require('./leagues');
+const createTournaments = require('./tournaments');
 const { openStore } = require('./store');
 const Rules = require('../shared/rules');
 const createSocial = require('./social');
@@ -157,6 +158,53 @@ const daily = new Map();
 const leagues = new Map();
 const League = createLeagues({ leagues, nickOf: (t) => (sessions.get(t) || {}).nick });
 
+/* ---------- Tornei a eliminazione ---------- */
+const tournaments = new Map();
+/** regole "brevi" per le partite dei tornei (uno contro uno) */
+function tournamentRules(game) {
+  const short = {
+    burraco: { ...Rules.PRESETS[0].rules, players: 2, target: 1005 },
+    scala40: { game: 'scala40', players: 2 }, canasta: { game: 'canasta', players: 2, target: 2000 },
+    scopa: { game: 'scopa', players: 2, target: 11 }, briscola: { game: 'briscola', players: 2, target: 2 },
+  }[game];
+  return Games.of(short).normalize(short);
+}
+const Tour = createTournaments({
+  tournaments,
+  nickOf: (t) => (sessions.get(t) || {}).nick,
+  openMatch: (t, m) => {
+    const seat = (p) => (p.bot ? { isBot: true, name: p.name } : { token: p.token, name: (sessions.get(p.token) || {}).nick || p.name, avatar: (sessions.get(p.token) || {}).avatar || null });
+    const room = {
+      code: newCode(), rules: tournamentRules(t.game), n: 2, hostToken: (m.a.bot ? m.b : m.a).token,
+      seats: [seat(m.a), seat(m.b)], game: null, ready: new Set(), botTimer: null, botMemo: {}, botLevel: 'normale',
+      tournament: { id: t.id, name: t.name, round: m.round, index: m.index },
+    };
+    rooms.set(room.code, room);
+    for (const x of room.seats) if (x && !x.isBot) pushMyGames(x.token);
+    return room.code;
+  },
+  simulate: (t, A, B) => {
+    const rules = tournamentRules(t.game);
+    const G = Games.of(rules);
+    const g = G.E.createGame({ rules, players: [{ name: A.name, isBot: true }, { name: B.name, isBot: true }] });
+    let guard = 0;
+    while (!g.over && guard++ < 20000) {
+      if (g.phase === 'handEnd') { G.E.nextHand(g); continue; }
+      const s = g.turn;
+      try { G.E.apply(g, s, G.Bot.nextAction(g, s, { level: 'normale' })); } catch (e) { break; }
+    }
+    return g.over ? (g.winners.includes(0) ? 'a' : 'b') : (Math.random() < 0.5 ? 'a' : 'b');
+  },
+  notify: (token, text, code) => {
+    const socks = socketsOf(token);
+    if (socks.length) for (const s of socks) { s.emit('notice', { text }); if (code) s.emit('tournamentMatch', { code, text }); }
+    else push.send(token, { title: 'Burraco: torneo 🏆', body: text, tag: 'torneo', url: code ? `${HOME_URL}?t=${code}` : HOME_URL }).catch(() => {});
+  },
+  champion: (token) => awardTrophies(token, '', ['torneo']),
+});
+/** un torneo è cambiato: chi ha la finestra aperta la aggiorna */
+const tournamentsChanged = () => { io.emit('tournamentsChanged'); scheduleSave(); };
+
 /** Assegna trofei a un giocatore (se non li ha già) e lo avvisa */
 function awardTrophies(token, name, ids) {
   const e = { ...STATS0, ...(leaderboard.get(token) || {}) };
@@ -220,6 +268,7 @@ function roomInfo(room) {
     turnTime: room.turnTime || 0,
     tutorial: !!room.tutorial,
     slow: !!room.slow,
+    tournament: room.tournament ? { id: room.tournament.id, name: room.tournament.name, round: room.tournament.round } : null,
     daily: room.daily ? { date: room.daily, title: Daily.challenge(room.daily).title } : null,
     quick: room.quick || 0,
     series: room.series || null,
@@ -538,6 +587,10 @@ function recordLeaderboard(room) {
       for (const sock of io.sockets.sockets.values()) if (sock.data.token === s.token) sock.emit('trophy', list);
     }
   });
+  if (gameEnds && room.tournament) {
+    const tr = room.tournament;
+    setTimeout(() => { Tour.matchDone(tr.id, tr.round, tr.index, g.winners.includes(0) ? 'a' : 'b'); tournamentsChanged(); }, 0);
+  }
   if (gameEnds && !room.tutorial) {
     const players = room.seats.map((s, seat) => (s && !s.isBot && s.token ? { token: s.token, name: s.name, won: g.winners.includes(seat) } : null)).filter(Boolean);
     for (const t of League.recordGame(players)) awardTrophies(t, '', ['campione_lega']);
@@ -722,6 +775,7 @@ function joinRoom(socket, room) {
   socket.data.room = room.code;
   sess.room = room.code;
   if (room.quick && !room.game && room.seats.every(Boolean)) { startGame(room); return; }
+  if (room.tournament && !room.game && room.seats.every((x) => x && (x.isBot || isConnected(x.token)))) { startGame(room); return; }
   broadcast(room);
 }
 
@@ -1102,6 +1156,7 @@ io.on('connection', (socket) => {
     requireHost(socket, room);
     if (!room.game) throw new E.GameError('Nessuna partita in corso');
     if (room.daily) throw new E.GameError('Non disponibile nella sfida del giorno');
+    if (room.tournament) throw new E.GameError('Nei tornei la partita non si può annullare: puoi arrenderti');
     clearTimeout(room.botTimer); room.botTimer = null;
     room.game = null;
     room.ready = new Set();
@@ -1143,8 +1198,21 @@ io.on('connection', (socket) => {
 
   socket.on('myGames', handler(() => ({ list: myGames(socket.data.token) })));
 
-  // Campionati tra amici
   const myNick = () => { const s = sessions.get(socket.data.token); if (!s || !s.nick) throw new E.GameError('Scegli prima il tuo nickname'); return s; };
+
+  // Tornei a eliminazione
+  const tourCall = (fn) => { try { const r = fn(); tournamentsChanged(); return r; } catch (e) { if (e instanceof E.GameError) throw e; throw new E.GameError(e.message); } };
+  socket.on('tournaments', handler(() => ({ list: Tour.list(socket.data.token) })));
+  socket.on('tournamentCreate', handler(({ name, game, size }) => { myNick(); return { id: tourCall(() => Tour.create(socket.data.token, { name, game, size })) }; }));
+  socket.on('tournamentJoin', handler(({ id }) => { myNick(); tourCall(() => Tour.join(Tour.get(id), socket.data.token)); }));
+  socket.on('tournamentLeave', handler(({ id }) => { tourCall(() => Tour.leave(Tour.get(id), socket.data.token)); }));
+  socket.on('tournamentFill', handler(({ id }) => { tourCall(() => Tour.fillBots(Tour.get(id), socket.data.token)); }));
+  socket.on('tournamentStart', handler(({ id }) => { tourCall(() => Tour.start(Tour.get(id), socket.data.token)); }));
+  socket.on('tournamentForfeit', handler(({ id, round, index, side }) => {
+    tourCall(() => Tour.forfeit(Tour.get(id), socket.data.token, Number(round), Number(index), side === 'b' ? 'b' : 'a'));
+  }));
+
+  // Campionati tra amici
   const leagueCall = (fn) => { try { return fn(); } catch (e) { if (e instanceof E.GameError) throw e; throw new E.GameError(e.message); } };
   const tokenOfNick = (nick) => { const x = [...sessions.entries()].find(([, v]) => v.nick && v.nick.toLowerCase() === String(nick || '').toLowerCase()); return x && x[0]; };
   socket.on('leagues', handler(() => {
@@ -1217,6 +1285,7 @@ io.on('connection', (socket) => {
     const g = room.game;
     if (!g || g.phase !== 'handEnd') throw new E.GameError('Nessuna smazzata da chiudere');
     if (room.daily) throw new E.GameError('La sfida del giorno è una sola smazzata: riprova domani!');
+    if (room.tournament && g.over) throw new E.GameError('La partita del torneo è finita: guarda il tabellone in 🏆 Tornei');
     const seat = seatOfToken(room, socket.data.token);
     if (seat < 0) throw new E.GameError('Gli spettatori non partecipano');
     room.ready.add(seat);
@@ -1371,9 +1440,10 @@ function saveNow() {
       reports,
       daily: [...daily].map(([d, m]) => [d, m]),
       leagues: [...leagues.values()],
+      tournaments: [...tournaments.values()],
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
-        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series, daily: r.daily, seed: r.seed, slow: r.slow, lastActionAt: r.lastActionAt,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series, daily: r.daily, seed: r.seed, slow: r.slow, lastActionAt: r.lastActionAt, tournament: r.tournament,
       })),
     };
     store.save(data);
@@ -1401,6 +1471,7 @@ function loadSaved() {
     reports = data.reports || [];
     for (const [d, m] of data.daily || []) daily.set(d, m);
     for (const lg of data.leagues || []) leagues.set(lg.id, lg);
+    for (const t of data.tournaments || []) tournaments.set(t.id, t);
     social.rebuildIndexes();
     for (const r of data.rooms || []) {
       rooms.set(r.code, { ...r, ready: new Set(r.ready || []), botTimer: null, botMemo: {}, botMemoTurn: -1 });

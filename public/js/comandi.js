@@ -255,6 +255,10 @@
       pwform: async () => { const r = await emit('setPassword', { password: $('#pwin').value }); if (r.ok) { toast('Password salvata'); profileModal(); } },
       codeform: async () => { const r = await emit('importProfile', { code: $('#codein').value }); if (r.ok) adoptProfile(r.token, r.nick); },
       loginform: async () => { const r = await emit('login', { nick: $('#lnick').value, password: $('#lpw').value }); if (r.ok) adoptProfile(r.token, r.nick); },
+      tourform: async () => {
+        const r = await emit('tournamentCreate', { name: $('#tourname').value, game: $('#tourgame').value, size: Number($('#toursize').value) });
+        if (r.ok) { toast('Torneo creato: invita gli amici a iscriversi!'); tournamentsModal(r.id); }
+      },
       reportPlayerForm: async (form) => {
         const per = document.querySelector('input[name=rpreason]:checked');
         const r = await emit('reportPlayer', { nick: (form || $('#reportPlayerForm')).dataset.nick, reason: per ? per.value : 'altro', text: $('#rptext').value });

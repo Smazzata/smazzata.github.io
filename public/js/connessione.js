@@ -46,6 +46,14 @@
   });
   // partite con calma: elenco per la schermata iniziale e avvisi "tocca a te" dagli altri tavoli
   socket.on('notice', ({ text }) => toast(text));
+  // tornei: la finestra aperta si aggiorna; quando tocca a me compare l'avviso per andare al tavolo
+  socket.on('tournamentsChanged', () => { if (S.modalKind === 'tournaments') tournamentsModal(); });
+  socket.on('tournamentMatch', ({ code, text }) => {
+    S.tourMatch = { code, text };
+    Sound.play('turn');
+    notify('Burraco: torneo 🏆', text, 'torneo');
+    if (S.screen === 'home') render();
+  });
   socket.on('myGames', (list) => {
     S.myGames = list;
     if (S.screen === 'home') render();

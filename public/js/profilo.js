@@ -127,6 +127,50 @@
         <label class="small"><input type="radio" name="lgperiod" value="mese"> Mensile</label><button class="btn small primary grow">Crea</button></div></form></div>`);
   }
 
+  /* ---------- Tornei a eliminazione ---------- */
+  const TOUR_GAMES = { burraco: '🃏 Burraco', scala40: '🂡 Scala 40', canasta: '🎴 Canasta', scopa: '🧹 Scopa', briscola: '🍷 Briscola' };
+  const roundName = (i, total) => (total - i === 1 ? 'Finale' : total - i === 2 ? 'Semifinali' : total - i === 3 ? 'Quarti' : 'Ottavi');
+
+  async function tournamentsModal(openId) {
+    if (openId !== undefined) S.tourOpen = openId;
+    const r = await emit('tournaments');
+    if (!r.ok) return;
+    const t = S.tourOpen && r.list.find((x) => x.id === S.tourOpen);
+    if (t) { tournamentDetail(t); return; }
+    const card = (x) => `<button class="league tourcard" data-act="tourOpen" data-id="${x.id}"><span class="lghead"><b>${esc(x.name)}</b>
+      <span class="muted small">${TOUR_GAMES[x.game]} · ${x.players.length}/${x.size} · ${x.status === 'iscrizioni' ? '📝 iscrizioni aperte' : x.status === 'in corso' ? '▶ in corso' : '🏁 finito'}${x.joined ? ' · ci sei' : ''}</span></span></button>`;
+    openModal('tournaments', `<div class="result"><h2>🏆 Tornei</h2>
+      <p class="muted small">A eliminazione diretta, partite uno contro uno in versione breve. Quando tocca a te ti avvisiamo.</p>
+      ${r.list.length ? r.list.map(card).join('') : '<p class="muted">Nessun torneo in corso: creane uno!</p>'}
+      <h3>Nuovo torneo</h3>
+      <form id="tourform"><div class="row"><input id="tourname" class="grow" maxlength="30" placeholder="Es. Coppa del venerdì"></div>
+        <div class="row" style="margin-top:6px"><select id="tourgame" class="grow">${Object.entries(TOUR_GAMES).map(([id, n]) => `<option value="${id}">${n}</option>`).join('')}</select>
+        <select id="toursize">${[4, 8, 16].map((n) => `<option value="${n}" ${n === 8 ? 'selected' : ''}>${n} giocatori</option>`).join('')}</select></div>
+        <div class="row" style="margin-top:6px"><button class="btn primary grow">Crea il torneo</button></div></form></div>`);
+  }
+
+  function tournamentDetail(t) {
+    const pn = (i) => (i == null ? '?' : `${t.players[i].bot ? '🤖 ' : ''}${esc(t.players[i].name)}${t.players[i].me ? ' (tu)' : ''}`);
+    const me = t.players.findIndex((p) => p.me);
+    const bracket = t.rounds.map((round, ri) => `<div class="tround"><h4>${roundName(ri, Math.log2(t.size))}</h4>${round.map((m, mi) => {
+      const mine = me >= 0 && (m.a === me || m.b === me) && m.winner == null;
+      return `<div class="tmatch ${mine ? 'mine' : ''}">
+        <span class="${m.winner === m.a ? 'tw' : m.winner != null ? 'tl' : ''}">${pn(m.a)}</span>
+        <span class="${m.winner === m.b ? 'tw' : m.winner != null ? 'tl' : ''}">${pn(m.b)}</span>
+        ${mine && m.room ? `<button class="btn small primary" data-act="tourPlay" data-code="${esc(m.room)}">▶ Vai al tavolo</button>` : ''}
+        ${t.mine && m.winner == null && m.room ? `<span class="muted small">a tavolino: <a href="#" data-act="tourForfeit" data-id="${t.id}" data-r="${ri}" data-i="${mi}" data-side="a">${pn(m.a)}</a> · <a href="#" data-act="tourForfeit" data-id="${t.id}" data-r="${ri}" data-i="${mi}" data-side="b">${pn(m.b)}</a></span>` : ''}
+      </div>`;
+    }).join('')}</div>`).join('');
+    openModal('tournaments', `<div class="result"><button class="btn small" data-act="tourOpen" data-id="">← Tornei</button>
+      <h2>🏆 ${esc(t.name)}</h2><p class="muted">${TOUR_GAMES[t.game]} · ${t.size} giocatori · organizza ${esc(t.owner)}</p>
+      ${t.champion != null ? `<div class="winner">🏆 Campione: ${pn(t.champion)}!</div>` : ''}
+      ${t.status === 'iscrizioni' ? `<h3>Iscritti (${t.players.length}/${t.size})</h3><p>${t.players.map((p, i) => pn(i)).join(' · ')}</p>
+        <div class="row">${t.joined ? `<button class="btn small" data-act="tourLeave" data-id="${t.id}">${t.mine ? 'Annulla il torneo' : 'Ritirati'}</button>` : `<button class="btn primary" data-act="tourJoin" data-id="${t.id}">Iscriviti</button>`}
+        ${t.mine && t.players.length < t.size ? `<button class="btn small" data-act="tourFill" data-id="${t.id}">🤖 Riempi con il computer</button>` : ''}
+        ${t.mine && t.players.length === t.size ? `<button class="btn primary" data-act="tourStart" data-id="${t.id}">▶ Inizia il torneo</button>` : ''}</div>` : ''}
+      ${t.rounds.length ? `<h3>Tabellone</h3><div class="bracket">${bracket}</div>` : ''}</div>`);
+  }
+
   /** Menu di un giocatore (toccando il suo nome al tavolo o in chat): amicizia, blocco, segnalazione */
   function playerMenu(nick) {
     if (!nick || !S.social || !S.social.nick || nick === S.social.nick) return;

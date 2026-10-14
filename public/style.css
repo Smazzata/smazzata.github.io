@@ -788,3 +788,17 @@ label.radio { display: block; padding: 6px 2px; font-size: 14px; }
 .presa .ptrick .tc.win .card { box-shadow: 0 0 0 3px #ffd34d, 0 0 12px rgba(255,211,77,.9); }
 .presa .empty { color: var(--muted); font-size: 13px; align-self: center; }
 .takeopt { display: flex; gap: 4px; align-items: center; padding: 8px; border-radius: 12px; border: 1px solid #e3ddcc; margin: 6px 0; width: 100%; background: #fff; cursor: pointer; --cw: 40px; }
+
+/* tornei */
+.tourbtn { background: linear-gradient(180deg, #8e44ad, #6c3483); color: #fff; border-color: transparent; }
+.tourcard { width: 100%; padding: 0; text-align: left; cursor: pointer; background: transparent; font: inherit; color: inherit; }
+.tourready { margin-top: 8px; padding: 8px 10px; border-radius: 12px; background: rgba(142,68,173,.25); border: 1px solid rgba(142,68,173,.6); font-size: 13px; display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.bracket { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; }
+.tround { min-width: 150px; display: flex; flex-direction: column; justify-content: space-around; gap: 8px; }
+.tround h4 { margin: 0 0 2px; }
+.tmatch { border: 1px solid #e3ddcc; border-radius: 10px; padding: 6px 8px; display: flex; flex-direction: column; gap: 3px; font-size: 13px; background: #fff; }
+.tmatch.mine { border-color: #8e44ad; box-shadow: 0 0 0 2px rgba(142,68,173,.25); }
+.tmatch .tw { font-weight: 800; color: #155d3a; }
+.tmatch .tw::after { content: ' ✓'; }
+.tmatch .tl { color: #999; text-decoration: line-through; }
+body[data-theme="notte"] .tmatch { background: #2a302e; border-color: #3a413e; }

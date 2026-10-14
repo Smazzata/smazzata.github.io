@@ -215,6 +215,25 @@ const HELPERS = `
     await shot('04c-scopa-fine-smazzata');
     step(`Scopa: smazzata giocata toccando (${sco.plays} giocate)`);
 
+    // 5d. torneo: creazione, riempimento con il computer, avvio, tabellone con «Vai al tavolo»
+    const tour = await cdp.run(`
+      __tap('[data-act="leave"]'); await __W(400);
+      if (document.querySelector('[data-act="leaveNow"]')) { __tap('[data-act="leaveNow"]'); await __W(800); }
+      if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); __tap('[data-act="leave"]'); await __W(800); }
+      __tap('[data-act="tournaments"]'); await __W(700);
+      document.querySelector('#tourname').value = 'Coppa del robot';
+      document.querySelector('#toursize').value = '4';
+      document.querySelector('#tourform button').click(); await __W(900);
+      const waitFor = async (sel) => { for (let i = 0; i < 40 && !document.querySelector(sel); i++) await __W(150); return document.querySelector(sel); };
+      __tap(await waitFor('[data-act="tourFill"]'));
+      __tap(await waitFor('[data-act="tourStart"]'));
+      await waitFor('[data-act="tourPlay"]');
+      return { bracket: !!document.querySelector('.bracket'), play: !!document.querySelector('[data-act="tourPlay"]') };`);
+    await shot('05-torneo');
+    if (!tour.bracket || !tour.play) throw new Error('torneo: ' + JSON.stringify(tour));
+    step('torneo: creato, riempito con il computer, avviato, tabellone con «Vai al tavolo»');
+    await cdp.run(`document.querySelector('.modal-close').click(); return true;`);
+
     // 6. gioco senza internet
     const off = await cdp.run(`
       location.href = '/?offline=1'; return true;`).catch(() => true);

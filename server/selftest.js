@@ -159,6 +159,38 @@ function presaTests() {
   console.log(`Scopa e Briscola: prese, punti e ${hands} smazzate simulate OK`);
 }
 
+/** Tornei: tabellone, partite tra computer simulate, avanzamento fino al campione */
+function tournamentTests() {
+  const tournaments = new Map();
+  const opened = [], notes = [], champs = [];
+  const T = require('./tournaments')({
+    tournaments, nickOf: (t) => ({ a: 'Anna', b: 'Bruno' }[t]),
+    openMatch: (t, m) => { opened.push(m); return 'R' + opened.length; },
+    simulate: () => 'a', notify: (tok, text) => notes.push(text), champion: (tok) => champs.push(tok),
+  });
+  const id = T.create('a', { name: 'Coppa', game: 'scopa', size: 8 });
+  const t = T.get(id);
+  T.join(t, 'b');
+  assert.throws(() => T.start(t, 'a'), /Servono 8/);
+  T.fillBots(t, 'a');
+  assert.strictEqual(t.players.length, 8);
+  T.start(t, 'a');
+  // primo turno: 4 partite; quelle con un umano aprono un tavolo, le altre si simulano
+  const humans = t.rounds[0].filter((m) => !t.players[m.a].bot || !t.players[m.b].bot);
+  assert.strictEqual(opened.length, humans.length, 'tavoli solo per le partite con umani');
+  for (const m of humans) T.matchDone(id, 0, t.rounds[0].indexOf(m), 'a');
+  // si va avanti da soli fino alla finale (le partite tra computer si simulano)
+  let guard = 0;
+  while (t.status === 'in corso' && guard++ < 10) {
+    const r = t.rounds.length - 1;
+    t.rounds[r].forEach((m, i) => { if (m.winner == null) T.matchDone(id, r, i, 'b'); });
+  }
+  assert.strictEqual(t.status, 'finito');
+  assert.strictEqual(t.rounds.length, 3, '8 giocatori: quarti, semifinali, finale');
+  assert(t.champion != null && notes.some((x) => /è finito/.test(x)), 'campione e avviso');
+  console.log('tornei: tabellone, partite simulate e campione OK');
+}
+
 function storeTests() {
   const fs = require('fs');
   const os = require('os');
@@ -344,6 +376,7 @@ storeTests();
 scala40Tests();
 canastaTests();
 presaTests();
+tournamentTests();
 filesTests();
 // TEST_RAPIDO=1 (npm run test:rapido): meno partite simulate, per le verifiche durante il lavoro.
 // Le prove su GitHub usano sempre la versione completa.
