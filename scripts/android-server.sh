@@ -193,6 +193,7 @@ while true; do
       echo "  $url"
       echo "  Link fisso per tutti:"
       echo "  https://simonemuliello010500-web.github.io/BurracoByMSF/"
+      [ -f "$DIR/data/admin-key.txt" ] && echo "  Stato del server (solo per te): $url/stato?k=$(cat "$DIR/data/admin-key.txt")"
       echo "=============================================="
       echo ""
     fi

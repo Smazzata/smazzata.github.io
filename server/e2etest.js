@@ -45,6 +45,13 @@ const step = (t) => console.log('✓ ' + t);
 (async () => {
   const server = await startServer();
   try {
+    // pagina di stato: solo con la chiave
+    const key = fs.readFileSync(path.join(dataDir, 'admin-key.txt'), 'utf8').trim();
+    assert.strictEqual((await fetch(`${URL}/stato`)).status, 403, 'senza chiave: accesso negato');
+    const stato = await (await fetch(`${URL}/stato.json?k=${key}`)).json();
+    assert(typeof stato.connessi === 'number' && Array.isArray(stato.tavoli), 'dati di stato');
+    step('pagina di stato protetta da chiave');
+
     const A = player('Anna'), B = player('Bruno');
     await A.hello(); await B.hello();
 

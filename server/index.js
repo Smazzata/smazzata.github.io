@@ -18,6 +18,35 @@ const BOT_SPEEDS = { lenta: BOT_DELAY * 1.9, normale: BOT_DELAY, veloce: BOT_DEL
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
 const DATA_FILE = path.join(DATA_DIR, 'stato.json');
 
+/* ---------- Ultimi errori (per la pagina di stato) ---------- */
+const recentErrors = [];
+const origError = console.error.bind(console);
+console.error = (...args) => {
+  recentErrors.push({ at: Date.now(), text: args.map((a) => (a && a.stack) || String(a)).join(' ').slice(0, 500) });
+  if (recentErrors.length > 30) recentErrors.shift();
+  origError(...args);
+};
+const startedAt = Date.now();
+
+/* chiave della pagina di stato: generata al primo avvio e salvata accanto ai dati */
+function adminKey() {
+  const f = path.join(DATA_DIR, 'admin-key.txt');
+  try { return fs.readFileSync(f, 'utf8').trim(); } catch (e) { /* da creare */ }
+  const k = crypto.randomBytes(9).toString('base64url');
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  fs.writeFileSync(f, k);
+  return k;
+}
+const ADMIN_KEY = process.env.ADMIN_KEY || adminKey();
+
+function gitVersion() {
+  try {
+    const head = fs.readFileSync(path.join(__dirname, '..', '.git', 'HEAD'), 'utf8').trim();
+    const ref = head.startsWith('ref:') ? fs.readFileSync(path.join(__dirname, '..', '.git', head.slice(5).trim()), 'utf8').trim() : head;
+    return ref.slice(0, 7);
+  } catch (e) { return 'sconosciuta'; }
+}
+
 const app = express();
 // usato dalla pagina d'ingresso su GitHub Pages per sapere se il server è acceso
 app.get('/health', (req, res) => {
@@ -25,6 +54,50 @@ app.get('/health', (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json({ ok: true, tavoli: rooms.size });
 });
+/* ---------- Pagina di stato (solo con la chiave) ---------- */
+function statusData() {
+  const online = new Set([...io.sockets.sockets.values()].map((so) => so.data.token).filter(Boolean));
+  return {
+    acceso_da_min: Math.round((Date.now() - startedAt) / 60000),
+    versione: gitVersion(),
+    memoria_mb: Math.round(process.memoryUsage().rss / 1048576),
+    connessi: online.size,
+    profili: [...sessions.values()].filter((x) => x.nick).length,
+    tavoli: [...rooms.values()].map((r) => ({
+      codice: r.code,
+      regole: Rules.matchPreset(r.rules) || 'personalizzate',
+      giocatori: r.seats.map((x) => (x ? `${x.name}${x.isBot ? ' 🤖' : isConnected(x.token) ? ' 🟢' : ' ⚪'}` : '—')),
+      fase: !r.game ? 'in attesa' : r.game.over ? 'partita finita' : r.game.phase === 'handEnd' ? `fine smazzata ${r.game.handNo}` : `smazzata ${r.game.handNo}`,
+      punteggi: r.game ? r.game.scores : null,
+    })),
+    errori: recentErrors.slice().reverse().map((e) => ({ quando: new Date(e.at).toLocaleString('it-IT'), testo: e.text })),
+  };
+}
+
+app.get('/stato.json', (req, res) => {
+  if (req.query.k !== ADMIN_KEY) return res.status(403).json({ errore: 'chiave mancante o sbagliata' });
+  res.set('Cache-Control', 'no-store').json(statusData());
+});
+
+app.get('/stato', (req, res) => {
+  if (req.query.k !== ADMIN_KEY) return res.status(403).send('Accesso negato');
+  const d = statusData();
+  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  res.set('Cache-Control', 'no-store').send(`<!doctype html><html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="10"><title>Stato Burraco</title>
+<style>body{font-family:system-ui,sans-serif;background:#0f5132;color:#fff;margin:0;padding:16px}h1{margin:0 0 12px}
+.box{background:rgba(0,0,0,.25);border-radius:12px;padding:12px;margin:10px 0}.k{display:inline-block;margin:4px 14px 4px 0}
+.k b{display:block;font-size:22px;color:#f2c14e}table{width:100%;border-collapse:collapse;font-size:14px}td,th{text-align:left;padding:5px;border-bottom:1px solid rgba(255,255,255,.15)}
+pre{white-space:pre-wrap;font-size:12px;margin:4px 0;color:#ffd7d7}.m{color:#bcd6c8;font-size:12px}</style></head><body>
+<h1>🃏 Stato del server</h1>
+<div class="box"><span class="k">Acceso da<b>${d.acceso_da_min} min</b></span><span class="k">Connessi<b>${d.connessi}</b></span>
+<span class="k">Profili<b>${d.profili}</b></span><span class="k">Tavoli<b>${d.tavoli.length}</b></span><span class="k">Memoria<b>${d.memoria_mb} MB</b></span>
+<span class="k">Versione<b>${esc(d.versione)}</b></span></div>
+<div class="box"><b>Tavoli</b>${d.tavoli.length ? `<table><tr><th>Codice</th><th>Fase</th><th>Giocatori</th><th>Regole</th></tr>${d.tavoli.map((t) => `<tr><td>${esc(t.codice)}</td><td>${esc(t.fase)}</td><td>${t.giocatori.map(esc).join(', ')}</td><td>${esc(t.regole)}</td></tr>`).join('')}</table>` : '<p class="m">Nessun tavolo aperto.</p>'}</div>
+<div class="box"><b>Ultimi errori</b>${d.errori.length ? d.errori.map((e) => `<pre>${esc(e.quando)} — ${esc(e.testo)}</pre>`).join('') : '<p class="m">Nessun errore 🎉</p>'}</div>
+<p class="m">La pagina si aggiorna ogni 10 secondi. 🟢 online · ⚪ offline · 🤖 computer</p></body></html>`);
+});
+
 app.get('/vendor/qrcode.js', (req, res) => res.sendFile(require.resolve('qrcode-generator')));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/shared', express.static(path.join(__dirname, '..', 'shared')));
@@ -610,5 +683,6 @@ server.listen(PORT, () => {
   const nets = require('os').networkInterfaces();
   const ips = Object.values(nets).flat().filter((i) => i && i.family === 'IPv4' && !i.internal).map((i) => i.address);
   console.log(`Burraco in ascolto su http://localhost:${PORT}`);
+  console.log(`  pagina di stato (solo per te): /stato?k=${ADMIN_KEY}`);
   for (const ip of ips) console.log(`  dalla rete locale (smartphone): http://${ip}:${PORT}`);
 });
