@@ -1,6 +1,6 @@
 'use strict';
 /*
- * Server di Burraco Online: pagine, Socket.IO e collegamento dei moduli.
+ * Server di Smazzata (Burraco Online): pagine, Socket.IO e collegamento dei moduli.
  *   config.js            impostazioni          contesto.js        stato condiviso tra i moduli
  *   admin.js             pagina di stato       archivio.js        salvataggio e ripristino
  *   tavoli.js            tavoli e posti        turni.js           timer, computer, reazioni

@@ -147,7 +147,7 @@ function slowRoomUpdates(room) {
   const others = room.seats.filter((x, i) => x && i !== g.turn).map((x) => x.name.replace(/ \(bot\)$/, ''));
   const text = `Tocca a te nella partita con ${others.join(', ')}`;
   if (socks.length) for (const x of socks) x.emit('yourTurn', { code: room.code, text });
-  else ctx.push.send(s.token, { title: 'Burraco: tocca a te 🐢', body: text, tag: 'turn-' + room.code, url: `${HOME_URL}?t=${room.code}` }).catch(() => {});
+  else ctx.push.send(s.token, { title: 'Smazzata: tocca a te 🐢', body: text, tag: 'turn-' + room.code, url: `${HOME_URL}?t=${room.code}` }).catch(() => {});
 }
 
 /**

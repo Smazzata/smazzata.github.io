@@ -264,3 +264,4 @@ Scrivi un messaggio ‖ Write a message ‖ Escribe un mensaje ‖ Escreva uma m
 Tocca un gioco per attaccare le carte selezionate ‖ Tap a meld to lay off the selected cards ‖ Toca una combinación para añadir las cartas seleccionadas ‖ Toque num jogo para encaixar as cartas selecionadas
 Tocca un gioco per vederlo intero ‖ Tap a meld to see it in full ‖ Toca una combinación para verla entera ‖ Toque num jogo para vê-lo inteiro
 Tocca per vedere i giochi in grande ‖ Tap to see the melds enlarged ‖ Toca para ver las combinaciones en grande ‖ Toque para ver os jogos em tamanho grande
+Gioca a carte con me su Smazzata! Codice tavolo {0} ‖ Play cards with me on Smazzata! Table code {0} ‖ ¡Juega a las cartas conmigo en Smazzata! Código de mesa {0} ‖ Jogue cartas comigo no Smazzata! Código da mesa {0}

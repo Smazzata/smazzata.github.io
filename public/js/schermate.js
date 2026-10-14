@@ -56,7 +56,7 @@
     const fan = [{ r: 1, s: 'S' }, { r: 13, s: 'H' }, { r: 0, s: 'J' }, { r: 2, s: 'D' }, { r: 7, s: 'C' }]
       .map((c, i) => cardHTML({ ...c, id: -1 - i }, 'logo-card', `style="--i:${i - 2}"`)).join('');
     return `<div class="page">
-      <div class="logo"><div class="logo-fan">${fan}</div><h1>Burraco</h1>
+      <div class="logo"><div class="logo-fan">${fan}</div><h1>Smazzata</h1>
         <div class="muted">Gioca con gli amici o contro il computer</div></div>
       ${S.appUpdate && !S.appUpdate.dismissed ? `<div class="apkbanner update">
         <img src="icons/icon-192.png" alt=""><span><b>📲 Nuova versione dell'app</b><br>Scaricala e installala sopra quella che hai: profilo e partite restano.</span>

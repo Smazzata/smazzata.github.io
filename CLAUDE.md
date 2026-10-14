@@ -1,4 +1,7 @@
-# Burraco Online — guida per Claude Code
+# Smazzata (ex Burraco Online) — guida per Claude Code
+
+Nome dell'app: **Smazzata** (giochi di carte: Burraco, Scala 40, Canasta, Scopa, Briscola). Il nome del progetto su GitHub resta
+`BurracoByMSF`: da lui dipendono l'indirizzo fisso della pagina d'ingresso e il link degli aggiornamenti dell'APK, non cambiarlo.
 
 Giochi: **Burraco**, **Scala 40**, **Canasta** e i giochi a prese con carte italiane **Scopa** e **Briscola**
 (`shared/<gioco>.js` regole condivise, `server/<gioco>.js` motore, `server/<gioco>-bot.js` computer). Le carte italiane

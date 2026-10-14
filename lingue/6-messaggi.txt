@@ -68,7 +68,7 @@ Nessuna richiesta da questo giocatore ‖ No request from this player ‖ Ningun
 Non puoi bloccare te stesso ‖ You cannot block yourself ‖ No puedes bloquearte a ti mismo ‖ Você não pode bloquear a si mesmo
 Puoi invitare solo i tuoi amici ‖ You can only invite your friends ‖ Solo puedes invitar a tus amigos ‖ Você só pode convidar seus amigos
 Entra prima in un tavolo ‖ Join a table first ‖ Entra primero en una mesa ‖ Entre numa mesa primeiro
-Burraco: invito 🎴 ‖ Burraco: invitation 🎴 ‖ Burraco: invitación 🎴 ‖ Burraco: convite 🎴
+Smazzata: invito 🎴 ‖ Smazzata: invitation 🎴 ‖ Smazzata: invitación 🎴 ‖ Smazzata: convite 🎴
 {0} non è online ‖ {0} is not online ‖ {0} no está conectado ‖ {0} não está online
 Scala reale A-A ‖ Royal run A-A ‖ Escalera real A-A ‖ Sequência real A-A
 Scala completa ‖ Complete run ‖ Escalera completa ‖ Sequência completa

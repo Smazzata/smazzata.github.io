@@ -292,7 +292,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if (!room) fail('Entra prima in un tavolo');
       if (!isConnected(other)) {
         // amico non collegato: se ha attivato le notifiche gli arriva comunque l'invito
-        if (notifyOffline && notifyOffline(other, { title: 'Burraco: invito 🎴', body: `${s.nick} ti invita al tavolo ${room.code}`, tag: 'invite-' + room.code, code: room.code })) return { sent: 0, pushed: true };
+        if (notifyOffline && notifyOffline(other, { title: 'Smazzata: invito 🎴', body: `${s.nick} ti invita al tavolo ${room.code}`, tag: 'invite-' + room.code, code: room.code })) return { sent: 0, pushed: true };
         fail(`${nickOf(other)} non è online`);
       }
       let sent = 0;

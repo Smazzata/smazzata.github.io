@@ -149,7 +149,7 @@
       S.screen = 'home';
     },
     share() {
-      if (navigator.share) navigator.share({ title: 'Burraco', text: `Gioca a Burraco con me! Codice tavolo ${S.room.code}`, url: inviteLink() }).catch(() => {});
+      if (navigator.share) navigator.share({ title: 'Smazzata', text: t(`Gioca a carte con me su Smazzata! Codice tavolo ${S.room.code}`), url: inviteLink() }).catch(() => {});
       else copyLink();
     },
     copy: copyLink,

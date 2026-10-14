@@ -13,9 +13,9 @@ Campionato creato: aggiungi i tuoi amici! ‖ League created: add your friends! 
 Grazie! Segnalazione inviata 🙏 ‖ Thanks! Report sent 🙏 ‖ ¡Gracias! Informe enviado 🙏 ‖ Obrigado! Relato enviado 🙏
 🎵 Musica condivisa con il tavolo ‖ 🎵 Music shared with the table ‖ 🎵 Música compartida con la mesa ‖ 🎵 Música compartilhada com a mesa
 ✓ Riconnesso ‖ ✓ Reconnected ‖ ✓ Reconectado ‖ ✓ Reconectado
-Burraco: torneo 🏆 ‖ Burraco: tournament 🏆 ‖ Burraco: torneo 🏆 ‖ Burraco: torneio 🏆
-Burraco: tocca a te 🐢 ‖ Burraco: your turn 🐢 ‖ Burraco: te toca 🐢 ‖ Burraco: sua vez 🐢
-Burraco: invito ‖ Burraco: invitation ‖ Burraco: invitación ‖ Burraco: convite
+Smazzata: torneo 🏆 ‖ Smazzata: tournament 🏆 ‖ Smazzata: torneo 🏆 ‖ Smazzata: torneio 🏆
+Smazzata: tocca a te 🐢 ‖ Smazzata: your turn 🐢 ‖ Smazzata: te toca 🐢 ‖ Smazzata: sua vez 🐢
+Smazzata: invito ‖ Smazzata: invitation ‖ Smazzata: invitación ‖ Smazzata: convite
 {0} ti invita al tavolo {1} ‖ {0} invites you to table {1} ‖ {0} te invita a la mesa {1} ‖ {0} convida você para a mesa {1}
 La partita è già iniziata: potrai entrare solo se si libera un posto. ‖ The game has already started: you can join only if a seat frees up. ‖ La partida ya empezó: solo podrás entrar si se libera un puesto. ‖ A partida já começou: você só poderá entrar se um lugar ficar livre.
 🎴 Invito ‖ 🎴 Invitation ‖ 🎴 Invitación ‖ 🎴 Convite
@@ -24,12 +24,12 @@ Sei salito di livello! ‖ You levelled up! ‖ ¡Subiste de nivel! ‖ Você su
 Continua così: {2} punti esperienza al prossimo ‖ Keep it up: {2} experience points to the next ‖ Sigue así: {2} puntos de experiencia para el siguiente ‖ Continue assim: {2} pontos de experiência para o próximo
 Trofeo sbloccato! ‖ Trophy unlocked! ‖ ¡Trofeo desbloqueado! ‖ Troféu desbloqueado!
 🎵 {0} ha avviato la musica: tocca 🎵 per ascoltarla ‖ 🎵 {0} started the music: tap 🎵 to listen ‖ 🎵 {0} puso música: toca 🎵 para escucharla ‖ 🎵 {0} iniciou a música: toque 🎵 para ouvir
-Burraco: tocca a te! ‖ Burraco: your turn! ‖ Burraco: ¡te toca! ‖ Burraco: sua vez!
+Smazzata: tocca a te! ‖ Smazzata: your turn! ‖ Smazzata: ¡te toca! ‖ Smazzata: sua vez!
 Tavolo {0} · {1} ‖ Table {0} · {1} ‖ Mesa {0} · {1} ‖ Mesa {0} · {1}
-Burraco: smazzata finita ‖ Burraco: hand over ‖ Burraco: mano terminada ‖ Burraco: mão encerrada
+Smazzata: smazzata finita ‖ Smazzata: hand over ‖ Smazzata: mano terminada ‖ Smazzata: mão encerrada
 La partita è terminata: guarda chi ha vinto! ‖ The game is over: see who won! ‖ La partida terminó: ¡mira quién ganó! ‖ A partida terminou: veja quem venceu!
 Guarda il punteggio e preparati alla prossima. ‖ Check the score and get ready for the next one. ‖ Mira la puntuación y prepárate para la siguiente. ‖ Veja a pontuação e prepare-se para a próxima.
-● Tocca a te · Burraco ‖ ● Your turn · Burraco ‖ ● Te toca · Burraco ‖ ● Sua vez · Burraco
+● Tocca a te · Smazzata ‖ ● Your turn · Smazzata ‖ ● Te toca · Smazzata ‖ ● Sua vez · Smazzata
 📡 Connessione persa: mi ricollego… ‖ 📡 Connection lost: reconnecting… ‖ 📡 Conexión perdida: reconectando… ‖ 📡 Conexão perdida: reconectando…
 Connessione al server… ‖ Connecting to the server… ‖ Conectando con el servidor… ‖ Conectando ao servidor…
 📲 È disponibile un aggiornamento dell'app ‖ 📲 An app update is available ‖ 📲 Hay una actualización de la app ‖ 📲 Há uma atualização do app

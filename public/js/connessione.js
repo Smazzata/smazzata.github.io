@@ -51,7 +51,7 @@
   socket.on('tournamentMatch', ({ code, text }) => {
     S.tourMatch = { code, text };
     Sound.play('turn');
-    notify('Burraco: torneo 🏆', text, 'torneo');
+    notify('Smazzata: torneo 🏆', text, 'torneo');
     if (S.screen === 'home') render();
   });
   socket.on('myGames', (list) => {
@@ -61,7 +61,7 @@
   socket.on('yourTurn', ({ code, text }) => {
     Sound.play('turn');
     if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
-    notify('Burraco: tocca a te 🐢', text, 'slow-' + code);
+    notify('Smazzata: tocca a te 🐢', text, 'slow-' + code);
     toast(`🐢 ${text}`);
   });
   socket.on('social', (soc) => {
@@ -73,7 +73,7 @@
   socket.on('invite', ({ from, code, started }) => {
     Sound.play('turn');
     if (navigator.vibrate) navigator.vibrate([80, 60, 80]);
-    notify('Burraco: invito', `${from} ti invita al tavolo ${code}`, 'invite');
+    notify('Smazzata: invito', `${from} ti invita al tavolo ${code}`, 'invite');
     openModal('invite', `<div class="result" style="text-align:center"><h2>🎴 Invito</h2>
       <p><b>${esc(from)}</b> ti invita al suo tavolo <b>${esc(code)}</b>.</p>
       ${started ? '<p class="muted">La partita è già iniziata: potrai entrare solo se si libera un posto.</p>' : ''}
@@ -209,12 +209,12 @@
       if (prev && game.turn === game.you && game.phase === 'draw' && (prev.turn !== game.you || prev.phase === 'handEnd')) {
         if (navigator.vibrate) navigator.vibrate(60);
         Sound.play('turn');
-        notify('Burraco: tocca a te!', `Tavolo ${room.code} · ${lastMove(game)}`, 'turn');
+        notify('Smazzata: tocca a te!', `Tavolo ${room.code} · ${lastMove(game)}`, 'turn');
       }
       if (game.phase === 'handEnd') recordStats(room, game);
       if (game.phase === 'handEnd' && (!prev || prev.phase !== 'handEnd' || prev.handNo !== game.handNo)) {
         setTimeout(showResult, 900);
-        if (prev) notify('Burraco: smazzata finita', game.over ? 'La partita è terminata: guarda chi ha vinto!' : 'Guarda il punteggio e preparati alla prossima.', 'hand');
+        if (prev) notify('Smazzata: smazzata finita', game.over ? 'La partita è terminata: guarda chi ha vinto!' : 'Guarda il punteggio e preparati alla prossima.', 'hand');
         const mine = game.handResult && game.handResult.teams.find((t) => t.members.includes(game.you));
         const best = game.handResult && Math.max(...game.handResult.teams.map((t) => t.total));
         if (mine && mine.total === best) setTimeout(() => Sound.play('win'), 500);
@@ -222,9 +222,9 @@
         if (game.over && room.series && room.series.champion && room.series.champion.includes(game.you)) setTimeout(() => confetti(260, 4500), 1500);
       } else if (game.phase !== 'handEnd' && S.modalKind === 'result') closeModal();
       else if (S.modalKind === 'result') showResult();
-      document.title = game.turn === game.you && game.phase !== 'handEnd' ? '● Tocca a te · Burraco' : 'Burraco Online';
+      document.title = game.turn === game.you && game.phase !== 'handEnd' ? '● Tocca a te · Smazzata' : 'Smazzata';
     } else {
-      document.title = 'Burraco Online';
+      document.title = 'Smazzata';
       keepScreenOn(false);
       if (S.modalKind === 'result') closeModal();
     }
