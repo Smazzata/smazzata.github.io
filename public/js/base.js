@@ -45,7 +45,7 @@
   /** giochi a prese (carte italiane): Scopa e Briscola */
   const isPresaGame = () => !!(S.game && S.game.presa);
 
-  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche', melds: 'colonna', lang: 'auto' };
+  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche', melds: 'colonna', lang: 'auto', text: 'normale', contrast: false, anim: true, speak: false };
   const S = {
     token: store.get('bur_token', null),
     name: store.get('bur_name', ''),
@@ -137,6 +137,10 @@
     document.body.classList.toggle('bigcards', !!S.prefs.big);
     // giochi calati in colonna (carte una sotto l'altra): più grandi sul telefono
     document.body.classList.toggle('vmelds', (S.prefs.melds || 'colonna') === 'colonna');
+    // accessibilità: testo più grande, alto contrasto, niente animazioni
+    document.body.dataset.text = S.prefs.text || 'normale';
+    document.body.classList.toggle('contrast', !!S.prefs.contrast);
+    document.body.classList.toggle('noanim', S.prefs.anim === false);
     store.set('bur_prefs', S.prefs);
   }
   applyPrefs();

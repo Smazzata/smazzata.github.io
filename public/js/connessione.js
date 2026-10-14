@@ -172,8 +172,24 @@
     });
   }
 
+  /** Lettura ad alta voce delle mosse (accessibilità): solo le righe nuove della cronaca, al massimo due alla volta */
+  let lastSpoken = null; // ultima riga della cronaca già letta
+  function speakNewMoves(game) {
+    const lines = (game && game.log) || [];
+    if (!S.prefs.speak || !('speechSynthesis' in window)) { lastSpoken = lines[lines.length - 1] || null; return; }
+    const from = lastSpoken == null ? lines.length : lines.lastIndexOf(lastSpoken) + 1;
+    for (const l of lines.slice(Math.max(from, lines.length - 2))) {
+      const u = new SpeechSynthesisUtterance(t(l).replace(/[♠♥♦♣]/g, (m) => ({ '♠': ' picche', '♥': ' cuori', '♦': ' quadri', '♣': ' fiori' }[m])));
+      u.lang = LOCALE;
+      u.rate = 1.05;
+      window.speechSynthesis.speak(u);
+    }
+    lastSpoken = lines[lines.length - 1] || null;
+  }
+
   function onState(room, game) {
     const prev = S.game;
+    speakNewMoves(game);
     const prevMusic = S.room && S.room.music;
     if (room && room.music && (!prevMusic || prevMusic.at !== room.music.at)) {
       if (prevMusic !== undefined && !room.isHost) { S.musicUnseen = true; toast(`🎵 ${room.music.by} ha avviato la musica: tocca 🎵 per ascoltarla`); }

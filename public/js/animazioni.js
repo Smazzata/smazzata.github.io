@@ -7,6 +7,7 @@
   function rectOf(el) { return el && el.getBoundingClientRect(); }
 
   function fly(fromEl, toEl, html, { delay = 0, dur = 420 } = {}) {
+    if (S.prefs.anim === false) return; // animazioni disattivate (accessibilità)
     const a = rectOf(fromEl), b = rectOf(toEl);
     if (!a || !b || !a.width || !b.width) return;
     const el = document.createElement('div');

@@ -210,3 +210,13 @@ Lingua · Language ‖ Language ‖ Idioma ‖ Idioma
 Mescolo le carte… ‖ Shuffling the cards… ‖ Barajando las cartas… ‖ Embaralhando as cartas…
 Sto cercando il tavolo da gioco… ‖ Looking for the game table… ‖ Buscando la mesa de juego… ‖ Procurando a mesa de jogo…
 Burraco · Scala 40 · Canasta · Scopa · Briscola ‖ Burraco · Scala 40 · Canasta · Scopa · Briscola ‖ Burraco · Scala 40 · Canasta · Escoba · Brisca ‖ Burraco · Scala 40 · Canastra · Escopa · Bisca
+Leggibilità ‖ Readability ‖ Legibilidad ‖ Legibilidade
+Testo normale ‖ Normal text ‖ Texto normal ‖ Texto normal
+Testo grande ‖ Large text ‖ Texto grande ‖ Texto grande
+Testo molto grande ‖ Extra-large text ‖ Texto muy grande ‖ Texto muito grande
+Contrasto normale ‖ Normal contrast ‖ Contraste normal ‖ Contraste normal
+◐ Alto contrasto ‖ ◐ High contrast ‖ ◐ Alto contraste ‖ ◐ Alto contraste
+✨ Animazioni ‖ ✨ Animations ‖ ✨ Animaciones ‖ ✨ Animações
+Senza animazioni ‖ No animations ‖ Sin animaciones ‖ Sem animações
+🔈 Mosse in silenzio ‖ 🔈 Moves in silence ‖ 🔈 Jugadas en silencio ‖ 🔈 Jogadas em silêncio
+🗣️ Leggi le mosse ad alta voce ‖ 🗣️ Read moves aloud ‖ 🗣️ Leer las jugadas en voz alta ‖ 🗣️ Ler as jogadas em voz alta

@@ -928,3 +928,23 @@ body[data-back="notte"] { --back-1: #0b1d3a; --back-2: #2a3f7a; }
 body[data-back="smeraldo"] { --back-1: #0d5c3a; --back-2: #2bb673; }
 .back-oro { background: linear-gradient(135deg, #b8860b, #f2c14e); } .back-notte { background: linear-gradient(135deg, #0b1d3a, #2a3f7a); } .back-smeraldo { background: linear-gradient(135deg, #0d5c3a, #2bb673); }
 .swatch.locked { font-size: 11px; padding: 3px 7px; }
+
+/* ---------- Accessibilità ---------- */
+/* testo più grande: finestre, pagine e barre (le carte hanno già l'opzione «Carte grandi») */
+body[data-text="grande"] .modal-content, body[data-text="grande"] .page { zoom: 1.15; }
+body[data-text="enorme"] .modal-content, body[data-text="enorme"] .page { zoom: 1.32; }
+body[data-text="grande"] .statusbar, body[data-text="grande"] .ticker, body[data-text="grande"] .recap { font-size: 15px; }
+body[data-text="enorme"] .statusbar, body[data-text="enorme"] .ticker, body[data-text="enorme"] .recap { font-size: 17px; }
+body[data-text="grande"] .seatchip .sinfo b { font-size: 15px; }
+body[data-text="enorme"] .seatchip .sinfo b { font-size: 17px; }
+/* alto contrasto: tavolo scuro uniforme, testi bianchi, bordi netti, carte selezionate ben visibili */
+body.contrast .game { --muted: #ffffff; }
+body.contrast .game, body.contrast .felt { background: #000 !important; }
+body.contrast .teamzone, body.contrast .center .pile, body.contrast .presa, body.contrast .seatchip, body.contrast .statusbar { background: #111 !important; border: 2px solid #fff !important; color: #fff; }
+body.contrast .card { border: 2px solid #000 !important; box-shadow: 0 0 0 2px #fff !important; }
+body.contrast .card.red { color: #b00000; }
+body.contrast #hand .card.sel { box-shadow: 0 0 0 4px #ffeb3b, 0 0 0 6px #000 !important; }
+body.contrast .game .muted { color: #fff !important; }
+body.contrast .btn.primary { background: #ffeb3b !important; color: #000 !important; }
+/* niente animazioni */
+body.noanim *, body.noanim *::before, body.noanim *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
