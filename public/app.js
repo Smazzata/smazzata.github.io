@@ -291,13 +291,14 @@
   const rankName = (r) => ({ 1: 'A', 11: 'J', 12: 'Q', 13: 'K' }[r] || String(r));
   const isWild = (c) => c.r === 0 || c.r === 2;
 
+  const SUIT_NAME = { S: 'picche', H: 'cuori', D: 'quadri', C: 'fiori' };
   function cardHTML(c, cls = '', attrs = '') {
     if (c.r === 0) {
-      return `<div class="card joker ${cls}" data-card="${c.id}" ${attrs}><span class="ix">J<br>O<br>L<br>L<br>Y</span><span class="jk">★</span></div>`;
+      return `<div class="card joker ${cls}" data-card="${c.id}" aria-label="Jolly" ${attrs}><span class="ix">J<br>O<br>L<br>L<br>Y</span><span class="jk">★</span></div>`;
     }
     const red = c.s === 'H' || c.s === 'D';
     const face = c.r >= 11 ? `<span class="face">${rankName(c.r)}<i>${SUIT[c.s]}</i></span>` : `<span class="pip">${SUIT[c.s]}</span>`;
-    return `<div class="card ${red ? 'red' : 'black'} ${c.r === 2 ? 'two' : ''} ${cls}" data-card="${c.id}" ${attrs}>
+    return `<div class="card ${red ? 'red' : 'black'} ${c.r === 2 ? 'two' : ''} ${cls}" data-card="${c.id}" aria-label="${rankName(c.r)} di ${SUIT_NAME[c.s]}" ${attrs}>
       <span class="ix">${rankName(c.r)}<i>${SUIT[c.s]}</i></span>${face}<span class="ix br">${rankName(c.r)}<i>${SUIT[c.s]}</i></span></div>`;
   }
   const backHTML = (cls = '', attrs = '') => `<div class="card back ${cls}" ${attrs}></div>`;
@@ -887,7 +888,7 @@
         // in modalità compatta si vedono solo le prime 2 carte e l'ultima
         const mid = m.cards.length >= 5 && i >= 2 && i < m.cards.length - 1;
         const more = mid && i === 2 ? `<span class="more">+${m.cards.length - 3}</span>` : '';
-        return more + cardHTML(c, `mini ${m.wild[i] ? 'wildmark' : ''} ${mid ? 'mid' : ''}`);
+        return more + cardHTML(c, `mini ${m.wild[i] ? 'wildmark' : 'natural'} ${mid ? 'mid' : ''}`);
       }).join('')}
       ${m.kind ? `<span class="tag">${short}</span>` : `<span class="cnt">${m.length}</span>`}</div>`;
   }
@@ -955,7 +956,7 @@
     return `<div class="seatchip pos-${pos} ${turn ? 'turn' : ''} ${partner ? 'partner' : ''} ${off ? 'offline' : ''}" data-seat="${seat}">
       ${avatarHTML(p.name, seat, p.isBot, rs && rs.avatar)}
       <div class="sinfo"><b>${esc(p.name)}</b>
-        <span class="smeta">${off ? '📴 offline · ' : ''}${partner ? 'compagno · ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` · ${g.cfg.pozzettoName} ✓` : ''}</span></div>
+        <span class="smeta">${off ? '📴 ' : ''}${partner ? '<span title="compagno">🤝</span> ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` <span class="pz-ok" title="${g.cfg.pozzettoName} preso">✓ ${g.cfg.pozzettoName}</span>` : ''}</span></div>
       <div class="minifan">${fan}</div>
       ${turn ? (S.turnEnd ? '<span class="thinking cdchip" data-cd></span>' : '<span class="thinking"><i></i><i></i><i></i></span>') : ''}
     </div>`;
@@ -1029,7 +1030,7 @@
 
     return `<div class="game ${myTurn ? 'myturn' : ''}">
       <div class="topbar">
-        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}Tavolo <b>${esc(r.code)}</b> · Smazzata ${g.handNo} · a ${g.cfg.target}</span>
+        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}<b>${esc(r.code)}</b> · <span title="Smazzata ${g.handNo}, si vince a ${g.cfg.target}">smazzata ${g.handNo}</span></span>
         <button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
         <button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>
         <button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>
@@ -1100,7 +1101,20 @@
     felt.style.removeProperty('--mw');
     felt.style.removeProperty('--pw');
     const fits = () => felt.scrollHeight <= felt.clientHeight + 1;
-    if (fits()) return;
+    if (fits()) {
+      // c'è spazio libero: carte delle combinazioni e del tallone più grandi (fino a un limite)
+      const cs0 = getComputedStyle(felt);
+      let mw0 = parseFloat(cs0.getPropertyValue('--mw')) || 30;
+      let pw0 = parseFloat(cs0.getPropertyValue('--pw')) || 42;
+      const maxMw = mw0 * 1.45;
+      while (mw0 + 2 <= maxMw) {
+        felt.style.setProperty('--mw', `${mw0 + 2}px`);
+        felt.style.setProperty('--pw', `${Math.min(pw0 + 2, 72)}px`);
+        if (!fits()) { felt.style.setProperty('--mw', `${mw0}px`); felt.style.setProperty('--pw', `${pw0}px`); break; }
+        mw0 += 2; pw0 = Math.min(pw0 + 2, 72);
+      }
+      return;
+    }
     const cs = getComputedStyle(felt);
     let mw = parseFloat(cs.getPropertyValue('--mw')) || 30;
     let pw = parseFloat(cs.getPropertyValue('--pw')) || 42;
@@ -1859,7 +1873,7 @@
     openModal('meld', `<div class="meldview">
       <h3>${what} · ${m.length} carte</h3>
       <p class="muted">${owner}${m.kind ? ` · <b>${esc(m.label)}</b>` : ''}${m.wild.some(Boolean) ? ' · bordo viola = matta' : ''}</p>
-      <div class="mvcards">${m.cards.map((c, i) => cardHTML(c, m.wild[i] ? 'wildmark' : '')).join('')}</div>
+      <div class="mvcards">${m.cards.map((c, i) => cardHTML(c, m.wild[i] ? 'wildmark' : 'natural')).join('')}</div>
     </div>`);
   }
 

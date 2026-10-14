@@ -167,6 +167,8 @@ details.custom summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
 }
 .card .face i { font-style: normal; font-size: calc(var(--cw) * .3); }
 .card.two { background: linear-gradient(160deg, #fff, #f6f0ff 60%, #ebe2fb); }
+/* nelle combinazioni il 2 al suo posto naturale è una carta normale */
+.card.two.natural { background: linear-gradient(160deg, #fff, var(--paper) 55%, var(--paper-2)); }
 .card.joker { background: linear-gradient(150deg, #fff7d1, #ffe08a 60%, #f6c74f); color: #7a3e00; }
 .card.joker .ix { font-size: calc(var(--cw) * .15); letter-spacing: 0; line-height: 1.02; }
 .card.joker .jk { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: calc(var(--cw) * .55); padding-left: calc(var(--cw) * .12); }
@@ -212,7 +214,8 @@ details.custom summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
 .seats-row.n4 .seatchip.pos-top { margin-top: -2px; }
 .seatchip .sinfo { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
 .seatchip .sinfo b { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 84px; }
-.seatchip .smeta { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.seatchip .smeta { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.seatchip .smeta .pz-ok { display: block; color: var(--gold); font-weight: 600; }
 .seatchip.partner { background: rgba(242,193,78,.12); }
 .seatchip.turn { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(242,193,78,.18), 0 0 18px rgba(242,193,78,.35); }
 .seatchip .minifan { display: none; position: relative; width: 40px; height: 22px; }
