@@ -114,6 +114,9 @@
     start() { emit('start'); },
     roomRules() { rulesModal(S.room.rules); },
     daily() { if (!requireName()) return; dailyModal(); },
+    replay() { openReplay(); },
+    rpGo(el) { if (RP.timer) { clearInterval(RP.timer); RP.timer = null; } replayGo(el.dataset.to); },
+    rpPlay() { replayPlay(); },
     openSlow(el) { joinRoom(el.dataset.code); },
     setSlow(el) { emit('setSlow', { on: el.dataset.val === '1' }); },
     abandon() {

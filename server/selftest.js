@@ -104,6 +104,11 @@ function simulate(label, rules, n, games = 3) {
       if (g.phase === 'handEnd') {
         hands++;
         if (g.handResult.reason === 'close') closes++;
+        // moviola: rigiocando le mosse registrate si arriva allo stesso risultato
+        const h = JSON.parse(JSON.stringify(g.lastReplay.start));
+        Object.assign(h, { log: [], events: [], history: [] });
+        for (const x of g.lastReplay.actions) E.apply(h, x.s, x.a);
+        assert.deepStrictEqual(h.handResult.teams.map((t) => t.total), g.handResult.teams.map((t) => t.total), `moviola diversa (${variantId})`);
         E.nextHand(g);
         continue;
       }

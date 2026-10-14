@@ -215,6 +215,11 @@ const step = (t) => console.log('✓ ' + t);
     }
     step(`partita finita dopo ${A.state.game.handNo} smazzate`);
 
+    // moviola: l'ultima smazzata finita, con le mosse che rigiocate portano allo stesso risultato
+    const rp = await A.call('replay');
+    assert(rp.ok && rp.replay.actions.length > 10 && rp.replay.start.players.every((p) => p.hand.length > 0), 'moviola disponibile');
+    assert(A.state.game.hasReplay, "il client sa che c'è una moviola");
+
     // classifica: entrambi gli umani hanno una partita giocata
     const lb = await A.call('leaderboard');
     assert(lb.ok && lb.list.length === 2 && lb.list.every((e) => e.games === 1), 'classifica aggiornata');
@@ -316,6 +321,7 @@ const step = (t) => console.log('✓ ' + t);
       await wait(20);
     }
     assert(!(await Dd.call('ready')).ok, 'la sfida è una sola smazzata');
+    assert(!(await Dd.call('replay')).ok, 'niente moviola nella sfida del giorno (rivelerebbe il mazzo)');
     const after = await Dd.call('daily');
     assert(after.mine && after.mine.score != null && after.myPos === 1 && after.top[0].name === 'Dora', 'punteggio nella classifica del giorno');
     // stesse carte per tutti: un secondo giocatore riceve la stessa mano iniziale

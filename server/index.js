@@ -1025,6 +1025,17 @@ io.on('connection', (socket) => {
 
   socket.on('myGames', handler(() => ({ list: myGames(socket.data.token) })));
 
+  // Moviola: l'ultima smazzata finita, con le carte di tutti (mai nella sfida del giorno: rivelerebbe il mazzo)
+  socket.on('replay', handler(() => {
+    const room = getRoom(socket);
+    const seat = seatOfToken(room, socket.data.token);
+    if (seat < 0) throw new E.GameError('Solo chi gioca può rivedere la smazzata');
+    if (room.daily) throw new E.GameError('Nella sfida del giorno la moviola non è disponibile');
+    const g = room.game;
+    if (!g || !g.lastReplay) throw new E.GameError('Nessuna smazzata da rivedere');
+    return { replay: g.lastReplay, you: seat };
+  }));
+
   // Notifiche push (anche a gioco chiuso)
   socket.on('pushKey', handler(() => ({ key: push.publicKey })));
   socket.on('pushSubscribe', handler(({ sub }) => {

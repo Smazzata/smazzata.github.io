@@ -145,6 +145,11 @@
           if (g.turn !== 0 || g.phase === 'handEnd') throw new Error('Il suggerimento è disponibile solo nel tuo turno');
           return { hint: Bot().nextAction(JSON.parse(JSON.stringify(g)), 0, { level: 'difficile' }) };
         }
+        case 'replay': {
+          const g = requireRoom().game;
+          if (!g || !g.lastReplay) throw new Error('Nessuna smazzata da rivedere');
+          return { replay: g.lastReplay, you: 0 };
+        }
         case 'ready': {
           const g = requireRoom().game;
           if (!g || g.phase !== 'handEnd') throw new Error('Nessuna smazzata da chiudere');
@@ -184,5 +189,5 @@
     return sock;
   }
 
-  self.LocalServer = { createSocket };
+  self.LocalServer = { createSocket, loadEngine };
 })();

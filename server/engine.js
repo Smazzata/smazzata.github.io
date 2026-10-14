@@ -154,6 +154,8 @@ function startHand(g) {
   g.partnershipFormed = n !== 3;
   g.lastEvent = null;
   addLog(g, `— Smazzata ${g.handNo}: distribuisce ${g.players[g.dealer].name}`);
+  // moviola: situazione dopo la distribuzione + tutte le mosse della smazzata (segreta fino alla fine)
+  g.replay = { start: replayStart(g), actions: [] };
 }
 
 /* ---------------- Utility di stato ---------------- */
@@ -507,6 +509,9 @@ function endHand(g, reason, closerSeat = null) {
     hands: g.players.map((p) => p.hand),
   };
   g.history.push({ handNo: g.handNo, teams: results.map((r) => ({ members: r.members, total: r.total })) });
+  // la smazzata è finita: la moviola diventa consultabile
+  g.lastReplay = g.replay ? { handNo: g.handNo, ...g.replay } : null;
+  g.replay = null;
   addLog(g, reason === 'close' ? 'Smazzata chiusa.' : 'Smazzata terminata (tallone esaurito).');
   const max = Math.max(...g.scores);
   if (max >= cfg.target) {
@@ -522,11 +527,19 @@ function nextHand(g) {
   startHand(g);
 }
 
+/** Copia della partita da cui ripartire per rivedere la smazzata (senza cronache e moviole) */
+function replayStart(g) {
+  const { replay, lastReplay, history, log, events, handResult, snapshot, ...rest } = g;
+  return JSON.parse(JSON.stringify(rest));
+}
+
 /* ---------------- Dispatcher transazionale ---------------- */
 
 function apply(g, seat, action) {
   const backup = JSON.stringify(g);
   try {
+    // la mossa entra nella moviola (se poi è rifiutata, il ripristino la toglie)
+    if (g.replay) g.replay.actions.push({ s: seat, a: action });
     switch (action.type) {
       case 'draw': draw(g, seat); break;
       case 'takePile': takePile(g, seat, action); break;
@@ -579,7 +592,7 @@ function viewFor(g, seat) {
     scores: g.scores, history: g.history.slice(-30),
     handResult: g.handResult, over: g.over, winners: g.winners,
     partnershipFormed: g.partnershipFormed,
-    log: g.log.slice(-25), lastEvent: g.lastEvent, events: g.events || [],
+    log: g.log.slice(-25), lastEvent: g.lastEvent, events: g.events || [], hasReplay: !!g.lastReplay,
   };
 }
 
