@@ -599,7 +599,7 @@
     const so = S.social || { friends: [], reqIn: [], reqOut: [] };
     const inRoom = S.room && S.room.code;
     const friend = (f) => `<div class="friend">${avatarHTML(f.nick, 0, false, f.avatar || { e: f.nick.charAt(0).toUpperCase(), c: '#9e9e9e' })}<span class="dot ${f.online ? '' : 'off'}"></span>
-      <span class="grow"><b>${esc(f.nick)}</b><br><span class="muted small">${f.online ? (f.room ? (f.room === inRoom ? 'al tuo tavolo' : f.playing ? 'sta giocando' : 'in un tavolo') : 'online') : 'offline'}</span></span>
+      <span class="grow" data-act="playerCard" data-nick="${esc(f.nick)}" style="cursor:pointer"><b>${esc(f.nick)}</b> <span class="muted small">›</span><br><span class="muted small">${f.online ? (f.room ? (f.room === inRoom ? 'al tuo tavolo' : f.playing ? 'sta giocando' : 'in un tavolo') : 'online') : 'offline'}</span></span>
       ${inRoom && f.online && f.room !== inRoom ? `<button class="btn small primary" data-act="invite" data-nick="${esc(f.nick)}">Invita</button>` : ''}
       <button class="btn small ghost dark" data-act="unfriend" data-nick="${esc(f.nick)}" title="Rimuovi">✕</button></div>`;
     openModal('friends', `<h2>👥 Amici</h2>
@@ -1106,7 +1106,39 @@
     store.set('bur_stats_seen', seen.concat(key).slice(-100));
   }
 
-  function statsModal() {
+  const PRESET_NAMES = { classico: 'Classico', reale: 'Reale', aberto: 'Aberto', fechado: 'Fechado', personalizzate: 'Personalizzate' };
+  const fmtDate = (t) => new Date(t).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+
+  function statsTable(st) {
+    const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
+    const row = (l, v) => `<tr><td>${l}</td><td><b>${v}</b></td></tr>`;
+    return `<table>
+      ${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
+      ${row('Smazzate giocate', st.hands)}${row('Smazzate vinte', `${st.handsWon} (${pct(st.handsWon, st.hands)})`)}
+      ${row('Burraco fatti', st.burraco)}${row('Chiusure', st.closures)}
+      ${row('Miglior smazzata', st.bestHand == null ? '—' : st.bestHand)}${row('Media punti a smazzata', st.avgHand == null ? '—' : st.avgHand)}
+    </table>`;
+  }
+
+  function historyHTML(list) {
+    if (!list.length) return '<p class="muted">Nessuna partita completata.</p>';
+    return list.map((h) => `<div class="hist ${h.won ? 'won' : 'lost'}">
+      <span class="hres">${h.won ? '🏆' : '—'}</span>
+      <span class="grow"><b>${h.won ? 'Vinta' : 'Persa'}</b> · ${fmtDate(h.at)} · ${PRESET_NAMES[h.preset] || h.preset}${h.hands ? ` · ${h.hands} smazzate` : ''}<br>
+      <span class="muted small">${h.teams.map((t) => `${t.mine ? '<b>' : ''}${t.names.map(esc).join(' & ')} ${t.score}${t.mine ? '</b>' : ''}`).join(' · ')}</span></span></div>`).join('');
+  }
+
+  async function statsModal() {
+    if (!S.social || !S.social.nick) { localStatsModal(); return; }
+    const r = await emit('myStats');
+    if (!r.ok) return;
+    openModal('stats', `<div class="result"><h2>📊 Le tue statistiche</h2>
+      ${r.stats ? statsTable(r.stats) : '<p class="muted">Gioca la tua prima smazzata per vedere le statistiche.</p>'}
+      <h3>Ultime partite</h3>${historyHTML(r.history)}
+      <p class="muted small">Le statistiche sono salvate sul server: ti seguono anche se cambi dispositivo.</p></div>`);
+  }
+
+  function localStatsModal() {
     const st = loadStats();
     const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
     const row = (l, v) => `<tr><td>${l}</td><td><b>${v}</b></td></tr>`;
@@ -1401,6 +1433,17 @@
       if (r.ok) { S.nickDraft = null; S.nickCheck = null; toast(`Benvenuto, ${r.nick}!`); render(); }
     },
     profile: profileModal,
+    async playerCard(el) {
+      const r = await emit('playerCard', { nick: el.dataset.nick });
+      if (!r.ok) return;
+      const t = r.together;
+      openModal('card', `<div class="result">
+        <button class="btn small" data-act="friends">← Amici</button>
+        <div class="cardhead">${avatarHTML(r.nick, 0, false, r.avatar || { e: r.nick.charAt(0).toUpperCase(), c: '#9e9e9e' })}<h2>${esc(r.nick)}</h2></div>
+        <h3>Insieme</h3>
+        ${t.games ? `<p>${t.games} partite insieme: ${t.asPartners} in coppia (${t.winsTogether} vinte), ${t.games - t.asPartners} da avversari (tu ne hai vinte ${t.winsAgainst}).</p>${historyHTML(t.recent.map((h) => ({ ...h, preset: '', hands: 0 })))}` : '<p class="muted">Non avete ancora finito una partita insieme.</p>'}
+        <h3>Statistiche</h3>${r.stats ? statsTable(r.stats) : '<p class="muted">Nessuna partita completata.</p>'}</div>`);
+    },
     async pickAvatar(el) { const r = await emit('setAvatar', { e: el.dataset.e, c: el.dataset.c }); if (r.ok) profileModal(); },
     reactPicker() {
       S.reactOpen = !S.reactOpen;
@@ -1429,11 +1472,13 @@
     friendNo(el) { emit('friendRespond', { nick: el.dataset.nick, accept: false }); },
     unfriend(el) { if (confirm(`Rimuovere ${el.dataset.nick}?`)) emit('friendRemove', { nick: el.dataset.nick }); },
     toggleTheme() { S.prefs.theme = S.prefs.theme === 'scuro' ? 'chiaro' : 'scuro'; applyPrefs(); render(); },
-    async leaders() {
-      const r = await emit('leaderboard');
+    async leaders(el) {
+      const friends = !!(el && el.dataset && el.dataset.friends);
+      const r = await emit('leaderboard', { friends });
       if (!r.ok) return;
+      const tabs = `<div class="row tabs"><button class="swatch ${friends ? '' : 'on'}" data-act="leaders">Tutti</button><button class="swatch ${friends ? 'on' : ''}" data-act="leaders" data-friends="1">Solo amici</button></div>`;
       const rows = r.list.map((e, i) => `<tr class="${e.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][i] || i + 1}</td><td style="text-align:left">${esc(e.name)}${e.me ? ' (tu)' : ''}</td><td>${e.wins}/${e.games}</td><td>${Math.round((e.wins / e.games) * 100)}%</td><td>${e.burraco}</td></tr>`).join('');
-      openModal('leaders', `<div class="result"><h2>🏆 Classifica</h2>
+      openModal('leaders', `<div class="result"><h2>🏆 Classifica</h2>${tabs}
         ${rows ? `<table><tr><th></th><th style="text-align:left">Giocatore</th><th>Vinte</th><th>%</th><th>Burraco</th></tr>${rows}</table>` : '<p class="muted">Ancora nessuna partita completata. La classifica conta le partite finite tra giocatori umani (anche contro il computer).</p>'}
         <p class="muted small">Classifica di tutti i giocatori di questo server.</p></div>`);
     },

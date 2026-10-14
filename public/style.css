@@ -482,3 +482,13 @@ body[data-theme="notte"] .modal-box .nickstatus .ko { color: #ff8a80; }
 .reaction { position: fixed; z-index: 92; font-size: 38px; transform: translate(-50%, -50%); pointer-events: none; animation: reactUp 2.4s ease-out forwards; filter: drop-shadow(0 4px 8px rgba(0,0,0,.4)); }
 @keyframes reactUp { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.4); } 12% { opacity: 1; transform: translate(-50%, -60%) scale(1.2); } 25% { transform: translate(-50%, -70%) scale(1); } 85% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -190%) scale(1); } }
 body[data-theme="notte"] .avopt.on { background: #4a3f1e; }
+
+/* ---------- Storico, scheda amico, classifica amici ---------- */
+.hist { display: flex; gap: 8px; align-items: flex-start; padding: 7px 0; border-bottom: 1px solid #e3ddcc; font-size: 14px; }
+.hist .hres { font-size: 18px; width: 24px; text-align: center; }
+.hist.lost .hres { color: #999; }
+.cardhead { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.cardhead h2 { margin: 0; }
+.cardhead .avatar { width: 48px; height: 48px; font-size: 26px; }
+.tabs { margin-bottom: 8px; }
+body[data-theme="notte"] .hist { border-color: #3a413e; }

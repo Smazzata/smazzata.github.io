@@ -186,6 +186,20 @@ const step = (t) => console.log('✓ ' + t);
     assert.strictEqual(lb.list.reduce((n, e) => n + e.wins, 0) >= 1, true);
     step('classifica aggiornata a fine partita');
 
+    // statistiche sul server, storico, scheda dell'amico, classifica solo amici
+    const ms = await A.call('myStats');
+    assert(ms.ok && ms.stats.games === 1 && ms.stats.hands >= 1 && ms.history.length === 1, 'statistiche e storico di Anna');
+    assert(ms.history[0].teams.some((t) => t.mine), 'nello storico è segnata la propria squadra');
+    const card = await A.call('playerCard', { nick: 'Bruno' });
+    assert(card.ok && card.together.games === 1 && card.stats.games === 1, 'scheda di Bruno con la partita giocata insieme');
+    assert.strictEqual(card.together.asPartners, 0, 'Anna e Bruno erano avversari');
+    const D2 = player('Estraneo'); await D2.hello(); assert((await D2.call('setNick', { nick: 'Estraneo' })).ok);
+    assert(!(await D2.call('playerCard', { nick: 'Anna' })).ok, 'scheda visibile solo agli amici');
+    const lf = await A.call('leaderboard', { friends: true });
+    assert(lf.ok && lf.list.length === 2, 'classifica tra amici');
+    D2.sock.close();
+    step('statistiche sul server, storico partite, scheda amico e classifica tra amici');
+
     // rivincita: serve il voto di tutti gli umani
     const seatsBefore = A.state.game.players.map((p) => p.name);
     assert((await A.call('ready')).ok);

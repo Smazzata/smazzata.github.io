@@ -248,21 +248,57 @@ function scheduleBot(room) {
 }
 
 /** A fine partita aggiorna la classifica una sola volta per partita */
+const STATS0 = { games: 0, wins: 0, points: 0, burraco: 0, hands: 0, handsWon: 0, closures: 0, bestHand: null, handPoints: 0, history: [] };
+
+/**
+ * Statistiche dei giocatori sul server: aggiornate a ogni fine smazzata e a fine partita
+ * (una sola volta ciascuna), con lo storico delle ultime 20 partite.
+ */
 function recordLeaderboard(room) {
   const g = room.game;
-  if (!g || !g.over || room.recordedGame === room.gameSeq) return;
-  room.recordedGame = room.gameSeq;
+  if (!g || g.phase !== 'handEnd' || !g.handResult) return;
+  const handKey = `${room.gameSeq}:${g.handNo}`;
+  const hr = g.handResult;
   room.seats.forEach((s, seat) => {
     if (!s || s.isBot || !s.token) return;
-    const e = leaderboard.get(s.token) || { name: s.name, games: 0, wins: 0, points: 0, burraco: 0 };
+    const e = { ...STATS0, ...(leaderboard.get(s.token) || {}) };
     e.name = s.name;
-    e.games++;
-    if (g.winners.includes(seat)) e.wins++;
-    e.points += g.scores[seat];
-    const team = g.teams.find((t) => t.members.includes(seat));
-    if (team) e.burraco += team.melds.filter((m) => m.length >= 7).length;
+    if (room.recordedHand !== handKey) {
+      const mine = hr.teams.find((t) => t.members.includes(seat));
+      if (mine) {
+        e.hands++;
+        if (mine.total === Math.max(...hr.teams.map((t) => t.total))) e.handsWon++;
+        e.burraco += mine.burraco.length;
+        e.handPoints += mine.total;
+        e.bestHand = e.bestHand == null ? mine.total : Math.max(e.bestHand, mine.total);
+      }
+      if (hr.reason === 'close' && hr.closer === seat) e.closures++;
+    }
+    if (g.over && room.recordedGame !== room.gameSeq) {
+      e.games++;
+      if (g.winners.includes(seat)) e.wins++;
+      e.points += g.scores[seat];
+      const team = g.teams.find((t) => t.members.includes(seat));
+      e.history = [{
+        at: Date.now(), preset: Rules.matchPreset(room.rules) || 'personalizzate', won: g.winners.includes(seat),
+        hands: g.history.length,
+        teams: g.teams.map((t) => ({ names: t.members.map((x) => room.seats[x].name), score: g.scores[t.members[0]], mine: t === team })),
+        tokens: room.seats.filter((x) => x && !x.isBot && x.token).map((x) => x.token),
+      }, ...(e.history || [])].slice(0, 20);
+    }
     leaderboard.set(s.token, e);
   });
+  room.recordedHand = handKey;
+  if (g.over) room.recordedGame = room.gameSeq;
+}
+
+/** Statistiche pubblicabili di un giocatore (senza token) */
+function publicStats(e) {
+  return {
+    name: e.name, games: e.games, wins: e.wins, points: e.points, burraco: e.burraco, hands: e.hands || 0,
+    handsWon: e.handsWon || 0, closures: e.closures || 0, bestHand: e.bestHand == null ? null : e.bestHand,
+    avgHand: e.hands ? Math.round((e.handPoints || 0) / e.hands) : null,
+  };
 }
 
 function afterAction(room) {
@@ -508,14 +544,54 @@ io.on('connection', (socket) => {
     broadcast(room);
   }));
 
-  socket.on('leaderboard', handler(() => {
+  socket.on('leaderboard', handler(({ friends } = {}) => {
     const me = socket.data.token;
+    const mine = sessions.get(me) || {};
+    const allowed = friends ? new Set([me, ...(mine.friends || [])]) : null;
     const list = [...leaderboard.entries()]
+      .filter(([token]) => !allowed || allowed.has(token))
       .map(([token, e]) => ({ name: e.name, games: e.games, wins: e.wins, points: e.points, burraco: e.burraco, me: token === me }))
       .filter((e) => e.games > 0)
       .sort((a, b) => b.wins - a.wins || (b.wins / b.games) - (a.wins / a.games) || b.points - a.points)
       .slice(0, 30);
     return { list };
+  }));
+
+  // Le mie statistiche e il mio storico
+  socket.on('myStats', handler(() => {
+    const e = leaderboard.get(socket.data.token);
+    if (!e) return { stats: null, history: [] };
+    return {
+      stats: publicStats(e),
+      history: (e.history || []).map((h) => ({ at: h.at, preset: h.preset, won: h.won, hands: h.hands, teams: h.teams })),
+    };
+  }));
+
+  // Scheda di un amico: le sue statistiche e le partite giocate insieme
+  socket.on('playerCard', handler(({ nick }) => {
+    const me = socket.data.token;
+    const mine = sessions.get(me) || {};
+    const other = [...sessions.entries()].find(([, x]) => x.nick && x.nick.toLowerCase() === String(nick || '').toLowerCase());
+    if (!other) throw new E.GameError('Giocatore non trovato');
+    const [token, sess] = other;
+    if (token !== me && !(mine.friends || []).includes(token)) throw new E.GameError('Puoi vedere solo la scheda dei tuoi amici');
+    const e = leaderboard.get(token);
+    const shared = ((leaderboard.get(me) || {}).history || []).filter((h) => (h.tokens || []).includes(token));
+    const sameTeam = (h) => {
+      const myTeam = h.teams.find((t) => t.mine);
+      return myTeam && myTeam.names.includes(sess.nick);
+    };
+    return {
+      nick: sess.nick, avatar: sess.avatar || null,
+      stats: e ? publicStats(e) : null,
+      together: {
+        games: shared.length,
+        asPartners: shared.filter(sameTeam).length,
+        winsTogether: shared.filter((h) => sameTeam(h) && h.won).length,
+        winsAgainst: shared.filter((h) => !sameTeam(h) && h.won).length,
+        recent: shared.slice(0, 5).map((h) => ({ at: h.at, won: h.won, partner: sameTeam(h), teams: h.teams })),
+      },
+    };
   }));
 
   socket.on('setBotLevel', handler(({ level }) => {
