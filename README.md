@@ -49,3 +49,14 @@ pkg install -y git && git clone https://github.com/simonemuliello010500-web/Burr
 Con `--install-boot` (app Termux:Boot) il server riparte da solo quando il telefono si riaccende.
 In alternativa va bene qualsiasi hosting Node.js con WebSocket: comando di avvio `npm start`.
 Le partite vengono salvate in `data/stato.json` (cartella configurabile con `DATA_DIR`): dopo un riavvio o un aggiornamento i tavoli riprendono da dove erano.
+
+## Link fisso e app Android
+
+- **Link per tutti**: https://simonemuliello010500-web.github.io/BurracoByMSF/ — pagina d'ingresso (cartella `launcher/`,
+  pubblicata da `.github/workflows/pages.yml`) che legge l'indirizzo attuale del server dal ramo `indirizzo`
+  (file `server.json`, scritto dallo script Android) e porta al tavolo. Su iPhone si aggiunge alla schermata Home.
+- **App Android**: https://github.com/simonemuliello010500-web/BurracoByMSF/releases/latest/download/Burraco.apk —
+  guscio Capacitor (`android-app/`) che apre la pagina d'ingresso; lo costruisce e pubblica `.github/workflows/apk.yml`.
+  Va ricostruito solo se cambia `android-app/`: gli aggiornamenti del gioco arrivano dal server.
+- Lo script Android pubblica l'indirizzo se trova il token in `~/.burraco-github-token`
+  (`bash ~/burraco/scripts/android-server.sh --set-token`; token GitHub "fine-grained" con permesso Contents su questo repository).
