@@ -359,3 +359,10 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .ico:active { background: rgba(255,255,255,.3); }
 .ico.wideico { font-size: 12px; font-weight: 600; white-space: nowrap; }
 .statusbar .btn.small { padding: 5px 9px; }
+
+/* ---------- Riquadro con tutte le carte di un gioco ---------- */
+.meld[data-mid] { cursor: pointer; }
+.meldview h3 { margin: 0 0 2px; }
+.meldview .mvcards { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; justify-content: center; }
+.meldview .mvcards .card { --cw: 52px; }
+@media (min-width: 760px) { .meldview .mvcards .card { --cw: 66px; } }

@@ -475,7 +475,7 @@
 
   function meldHTML(m, mine, preview) {
     const short = { clean: 'Pulito', dirty: 'Sporco', semi: 'Semi', real13: '+500', real14: '+1000' }[m.kind] || '';
-    const attrs = mine ? `data-meld="${m.id}" data-drop="meld"` : '';
+    const attrs = `data-mid="${m.id}"` + (mine ? ` data-meld="${m.id}" data-drop="meld"` : '');
     const can = preview && preview.canAdd.has(m.id) ? 'can-add' : '';
     const hint = S.hint && S.hint.meldId === m.id ? 'hinted' : '';
     return `<div class="meld ${m.kind ? 'burraco ' + m.kind : ''} ${S.flashMeld === m.id ? 'flash' : ''} ${m.type === 'set' ? 'set' : ''} ${can} ${hint}" ${attrs} title="${esc(m.label || '')}">
@@ -1154,17 +1154,35 @@
       render();
       return;
     }
-    const meld = e.target.closest('[data-meld]');
-    if (meld && g && g.turn === g.you) {
-      const meldId = Number(meld.dataset.meld);
-      if (g.phase === 'play') {
-        if (!S.selected.size) return toast('Seleziona prima le carte da attaccare');
-        act('add', { meldId, cardIds: selectedIds() });
-      } else if (g.phase === 'draw' && g.cfg.pile === 'closed') {
-        act('takePile', { meldId, cardIds: selectedIds() });
-      }
+    const meld = e.target.closest('[data-mid]');
+    if (meld && g) {
+      const meldId = Number(meld.dataset.mid);
+      const mine = meld.hasAttribute('data-meld');
+      const myTurn = g.turn === g.you;
+      // con carte selezionate nel proprio turno si attacca; altrimenti si mostrano tutte le carte del gioco
+      if (mine && myTurn && g.phase === 'play' && S.selected.size) act('add', { meldId, cardIds: selectedIds() });
+      else if (mine && myTurn && g.phase === 'draw' && g.cfg.pile === 'closed') act('takePile', { meldId, cardIds: selectedIds() });
+      else showMeld(meldId);
     }
   });
+
+  /** Riquadro con tutte le carte di una combinazione (utile quando il tavolo è compattato) */
+  function showMeld(meldId) {
+    const g = S.game;
+    const team = g.teams.find((t) => t.melds.some((m) => m.id === meldId));
+    if (!team) return;
+    const m = team.melds.find((x) => x.id === meldId);
+    const nat = m.cards.find((c) => !M.isWild(c));
+    const what = m.type === 'seq'
+      ? `Scala di ${nat ? SUIT[nat.s] : ''}`
+      : `Tris di ${nat ? rankName(nat.r) : ''}`;
+    const owner = team.members.includes(g.you) ? 'La tua squadra' : esc(teamName(g, team));
+    openModal('meld', `<div class="meldview">
+      <h3>${what} · ${m.length} carte</h3>
+      <p class="muted">${owner}${m.kind ? ` · <b>${esc(m.label)}</b>` : ''}${m.wild.some(Boolean) ? ' · bordo viola = matta' : ''}</p>
+      <div class="mvcards">${m.cards.map((c, i) => cardHTML(c, m.wild[i] ? 'wildmark' : '')).join('')}</div>
+    </div>`);
+  }
 
   document.addEventListener('scroll', (e) => {
     if (e.target && e.target.id === 'felt') S.feltScroll = e.target.scrollTop;
