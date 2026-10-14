@@ -16,6 +16,12 @@ const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
 const DATA_FILE = path.join(DATA_DIR, 'stato.json');
 
 const app = express();
+// usato dalla pagina d'ingresso su GitHub Pages per sapere se il server è acceso
+app.get('/health', (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Cache-Control', 'no-store');
+  res.json({ ok: true, tavoli: rooms.size });
+});
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/shared', express.static(path.join(__dirname, '..', 'shared')));
 const server = http.createServer(app);

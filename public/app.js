@@ -839,7 +839,12 @@
     return r;
   }
 
-  function inviteLink() { return `${location.origin}/?t=${S.room.code}`; }
+  // dietro il tunnel l'indirizzo cambia: gli inviti passano dalla pagina d'ingresso fissa
+  const HOME_URL = 'https://simonemuliello010500-web.github.io/BurracoByMSF/';
+  function inviteLink() {
+    const base = /\.trycloudflare\.com$/.test(location.hostname) ? HOME_URL : `${location.origin}/`;
+    return `${base}?t=${S.room.code}`;
+  }
 
   async function copyLink() {
     try { await navigator.clipboard.writeText(inviteLink()); toast('Link copiato'); }

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f5132">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Burraco">
+  <title>Burraco Online</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <style>
+    :root { --felt-1: #1f7a4d; --felt-2: #0f5132; --felt-3: #072d1c; --gold: #f2c14e; --muted: #bcd6c8; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      background: radial-gradient(ellipse at 50% 35%, var(--felt-1), var(--felt-2) 55%, var(--felt-3));
+      color: #fff; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px 16px;
+    }
+    main { max-width: 380px; width: 100%; }
+    img.logo { width: 120px; height: 120px; border-radius: 26px; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+    h1 { font-family: Georgia, "Times New Roman", serif; font-size: 40px; margin: 16px 0 6px; }
+    p { color: var(--muted); line-height: 1.45; }
+    .spinner { width: 34px; height: 34px; margin: 18px auto 0; border-radius: 50%; border: 4px solid rgba(255,255,255,.2); border-top-color: var(--gold); animation: spin 0.9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn { display: inline-block; margin-top: 16px; padding: 12px 22px; border: 0; border-radius: 12px; background: linear-gradient(180deg, #ffd56b, #d9a326); color: #1b1b1b; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
+    .hidden { display: none; }
+    .tip { margin-top: 28px; font-size: 13px; background: rgba(0,0,0,.22); border-radius: 12px; padding: 10px 12px; text-align: left; }
+  </style>
+</head>
+<body>
+  <main>
+    <img class="logo" src="icons/icon-512.png" alt="">
+    <h1>Burraco</h1>
+    <p id="msg">Sto cercando il tavolo da gioco…</p>
+    <div class="spinner" id="spin"></div>
+    <button class="btn hidden" id="retry">Riprova</button>
+    <div class="tip hidden" id="tip">
+      <b>Consiglio:</b> aggiungi questa pagina alla schermata Home (su iPhone: Condividi → <i>Aggiungi alla schermata Home</i>)
+      per aprire Burraco come un'app.
+    </div>
+  </main>
+  <script>
+    // Il server gira su un telefono con un tunnel il cui indirizzo cambia: il telefono lo pubblica
+    // nel ramo "indirizzo" del repository e questa pagina (indirizzo fisso) ci porta i giocatori.
+    const OWNER = 'simonemuliello010500-web';
+    const REPO = 'BurracoByMSF';
+    const BRANCH = 'indirizzo';
+    const $ = (id) => document.getElementById(id);
+
+    function withTimeout(ms) {
+      const c = new AbortController();
+      setTimeout(() => c.abort(), ms);
+      return c.signal;
+    }
+
+    async function serverUrl() {
+      try {
+        const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/server.json?ref=${BRANCH}`, {
+          headers: { Accept: 'application/vnd.github.raw+json' }, cache: 'no-store', signal: withTimeout(8000),
+        });
+        if (r.ok) return (await r.json()).url;
+      } catch (e) { /* si prova con il file grezzo */ }
+      const r = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/server.json?t=${Date.now()}`, { cache: 'no-store', signal: withTimeout(8000) });
+      if (!r.ok) throw new Error('indirizzo non pubblicato');
+      return (await r.json()).url;
+    }
+
+    function fail(text) {
+      $('spin').classList.add('hidden');
+      $('msg').innerHTML = text;
+      $('retry').classList.remove('hidden');
+    }
+
+    async function go() {
+      $('retry').classList.add('hidden');
+      $('spin').classList.remove('hidden');
+      $('msg').textContent = 'Sto cercando il tavolo da gioco…';
+      let url;
+      try { url = String(await serverUrl()).replace(/\/+$/, ''); }
+      catch (e) { return fail('Non trovo l\'indirizzo del server.<br>Controlla la connessione e riprova.'); }
+      if (!/^https:\/\//.test(url)) return fail('Indirizzo del server non valido.');
+      try {
+        const h = await fetch(url + '/health', { cache: 'no-store', signal: withTimeout(9000) });
+        if (!h.ok) throw new Error('server non pronto');
+      } catch (e) {
+        return fail('Il server di gioco al momento è <b>spento</b> o si sta riavviando.<br>Riprova tra qualche minuto.');
+      }
+      $('msg').textContent = 'Trovato! Entro al tavolo…';
+      location.replace(url + '/' + location.search + location.hash);
+    }
+
+    $('retry').addEventListener('click', go);
+    if (/iphone|ipad/i.test(navigator.userAgent) && !navigator.standalone) $('tip').classList.remove('hidden');
+    go();
+  </script>
+</body>
+</html>
