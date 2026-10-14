@@ -179,6 +179,23 @@
     setTimeout(() => b.remove(), 2400);
     if (seat !== g.you) Sound.play('select');
   });
+  // livello del giocatore: si aggiorna a fine smazzata; quando sale, festa
+  socket.on('progress', (p) => {
+    S.progress = p;
+    if (p.up) {
+      const b = document.createElement('div');
+      b.className = 'trophytoast level';
+      b.innerHTML = `<i><span class="lvl big">${p.level}</span></i><div><small>Sei salito di livello!</small><b>Livello ${p.level}</b><span>Continua così: ${p.need - p.into} punti esperienza al prossimo</span></div>`;
+      setTimeout(() => {
+        document.body.appendChild(b);
+        Sound.play('turn');
+        confetti(70, 1600);
+        setTimeout(() => b.remove(), 3600);
+      }, trophyQueue.length ? 3800 * trophyQueue.length : 0);
+    }
+    if (S.screen === 'home') render();
+  });
+
   // trofei sbloccati: uno alla volta, con un piccolo festeggiamento
   const trophyQueue = [];
   socket.on('trophy', (list) => {
@@ -768,7 +785,7 @@
             Amici, classifica e partite online tornano quando sei collegato.
             <div class="row" style="margin-top:6px"><button class="btn small" data-act="goOnline">🔄 Riprova online</button></div></div>`
         : S.social && S.social.nick
-          ? `<div class="hello"><span class="row">${avatarHTML(S.social.nick, 0, false, S.social.avatar || { e: S.social.nick.charAt(0).toUpperCase(), c: '#f2c14e' })}<span>Ciao, <b>${esc(S.social.nick)}</b>!</span></span>
+          ? `<div class="hello"><span class="row">${avatarHTML(S.social.nick, 0, false, S.social.avatar || { e: S.social.nick.charAt(0).toUpperCase(), c: '#f2c14e' })}<span>Ciao, <b>${esc(S.social.nick)}</b>!${S.progress ? `<span class="lvlline">${lvlHTML(S.progress.level)} <em class="xpbar" title="${S.progress.into}/${S.progress.need} punti esperienza"><u style="width:${Math.round((S.progress.into / S.progress.need) * 100)}%"></u></em></span>` : ''}</span></span>
               <span class="row"><button class="btn small" data-act="profile">👤 Profilo</button>
               <button class="btn small" data-act="friends">👥 Amici${S.social.reqIn.length ? ` <span class="pill">${S.social.reqIn.length}</span>` : ''}</button></span></div>`
           : `<label class="field"><span>Scegli il tuo nickname</span>
@@ -821,6 +838,8 @@
     </div>`;
   }
 
+  const lvlHTML = (lv) => (lv ? `<span class="lvl" title="Livello ${lv}">${lv}</span>` : '');
+
   const SEAT_COLORS = ['#f2c14e', '#64b5f6', '#ef7d7d', '#81c784'];
   function avatarHTML(name, seat, isBot, av) {
     if (av && !isBot) return `<span class="avatar emo" style="--c:${esc(av.c)}">${esc(av.e)}</span>`;
@@ -841,7 +860,7 @@
       const team = r.n === 4 ? `<span class="teamtag">Coppia ${i % 2 === 0 ? 'A' : 'B'}</span>` : '';
       return `<div class="seat">
         <div class="who">${s ? avatarHTML(s.name, i, s.isBot, s.avatar) : '<span class="avatar empty">?</span>'}
-        <div>${s ? `<b>${esc(s.name)}</b>${me ? ' <span class="badge">tu</span>' : ''}${i === r.host ? ' <span class="badge">host</span>' : ''}${s.connected ? '' : ' <span class="muted">(offline)</span>'}` : '<span class="muted">Posto libero</span>'}<br>${team}</div>
+        <div>${s ? `<b>${esc(s.name)}</b> ${lvlHTML(s.level)}${me ? ' <span class="badge">tu</span>' : ''}${i === r.host ? ' <span class="badge">host</span>' : ''}${s.connected ? '' : ' <span class="muted">(offline)</span>'}` : '<span class="muted">Posto libero</span>'}<br>${team}</div>
         </div>${right}</div>`;
     }).join('');
     const full = r.seats.every(Boolean);
@@ -1043,7 +1062,7 @@
     const off = rs && !rs.isBot && !rs.connected;
     return `<div class="seatchip pos-${pos} ${turn ? 'turn' : ''} ${partner ? 'partner' : ''} ${off ? 'offline' : ''}" data-seat="${seat}">
       ${avatarHTML(p.name, seat, p.isBot, rs && rs.avatar)}
-      <div class="sinfo"><b>${esc(p.name)}</b>
+      <div class="sinfo"><b>${esc(p.name)} ${lvlHTML(rs && rs.level)}</b>
         <span class="smeta">${off ? '📴 ' : ''}${partner ? '<span title="compagno">🤝</span> ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` <span class="pz-ok" title="${g.cfg.pozzettoName} preso">✓ ${g.cfg.pozzettoName}</span>` : ''}</span></div>
       <div class="minifan">${fan}</div>
       ${turn ? (S.turnEnd ? '<span class="thinking cdchip" data-cd></span>' : '<span class="thinking"><i></i><i></i><i></i></span>') : ''}
@@ -1360,6 +1379,9 @@
     const r = await emit('myStats');
     if (!r.ok) return;
     openModal('stats', `<div class="result"><h2>📊 Le tue statistiche</h2>
+      ${r.level ? `<div class="lvlbox">${lvlHTML(r.level.level)}<div><b>Livello ${r.level.level}</b>
+        <em class="xpbar"><u style="width:${Math.round((r.level.into / r.level.need) * 100)}%"></u></em>
+        <span class="muted small">${r.level.into}/${r.level.need} punti esperienza al livello ${r.level.level + 1} · partite, vittorie, burraco, chiusure e trofei fanno salire</span></div></div>` : ''}
       ${r.stats ? statsTable(r.stats) : '<p class="muted">Gioca la tua prima smazzata per vedere le statistiche.</p>'}
       ${r.trophies ? trophiesHTML(r.trophies) : ''}
       <h3>Ultime partite</h3>${historyHTML(r.history)}
@@ -1746,7 +1768,7 @@
       const t = r.together;
       openModal('card', `<div class="result">
         <button class="btn small" data-act="friends">← Amici</button>
-        <div class="cardhead">${avatarHTML(r.nick, 0, false, r.avatar || { e: r.nick.charAt(0).toUpperCase(), c: '#9e9e9e' })}<h2>${esc(r.nick)}</h2></div>
+        <div class="cardhead">${avatarHTML(r.nick, 0, false, r.avatar || { e: r.nick.charAt(0).toUpperCase(), c: '#9e9e9e' })}<h2>${esc(r.nick)} ${lvlHTML(r.level)}</h2></div>
         <h3>Insieme</h3>
         ${t.games ? `<p>${t.games} partite insieme: ${t.asPartners} in coppia (${t.winsTogether} vinte), ${t.games - t.asPartners} da avversari (tu ne hai vinte ${t.winsAgainst}).</p>${historyHTML(t.recent.map((h) => ({ ...h, preset: '', hands: 0 })))}` : '<p class="muted">Non avete ancora finito una partita insieme.</p>'}
         <h3>Statistiche</h3>${r.stats ? statsTable(r.stats) : '<p class="muted">Nessuna partita completata.</p>'}
@@ -1793,7 +1815,7 @@
       const r = await emit('leaderboard', { friends });
       if (!r.ok) return;
       const tabs = `<div class="row tabs"><button class="swatch ${friends ? '' : 'on'}" data-act="leaders">Tutti</button><button class="swatch ${friends ? 'on' : ''}" data-act="leaders" data-friends="1">Solo amici</button></div>`;
-      const rows = r.list.map((e, i) => `<tr class="${e.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][i] || i + 1}</td><td style="text-align:left">${esc(e.name)}${e.me ? ' (tu)' : ''}</td><td>${e.wins}/${e.games}</td><td>${Math.round((e.wins / e.games) * 100)}%</td><td>${e.burraco}</td></tr>`).join('');
+      const rows = r.list.map((e, i) => `<tr class="${e.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][i] || i + 1}</td><td style="text-align:left">${esc(e.name)} ${lvlHTML(e.level)}${e.me ? ' (tu)' : ''}</td><td>${e.wins}/${e.games}</td><td>${Math.round((e.wins / e.games) * 100)}%</td><td>${e.burraco}</td></tr>`).join('');
       openModal('leaders', `<div class="result"><h2>🏆 Classifica</h2>${tabs}
         ${rows ? `<table><tr><th></th><th style="text-align:left">Giocatore</th><th>Vinte</th><th>%</th><th>Burraco</th></tr>${rows}</table>` : '<p class="muted">Ancora nessuna partita completata. La classifica conta le partite finite tra giocatori umani (anche contro il computer).</p>'}
         <p class="muted small">Classifica di tutti i giocatori di questo server.</p></div>`);

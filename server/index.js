@@ -8,6 +8,7 @@ const { Server } = require('socket.io');
 const E = require('./engine');
 const Bot = require('./bot');
 const Trophies = require('./trophies');
+const Levels = require('./levels');
 const Rules = require('../shared/rules');
 const createSocial = require('./social');
 
@@ -178,7 +179,10 @@ function roomInfo(room) {
   return {
     code: room.code, host: room.seats.findIndex((s) => s && s.token === room.hostToken),
     rules: room.rules, n: room.n, preset: Rules.matchPreset(room.rules),
-    seats: room.seats.map((s) => (s ? { name: s.name, isBot: !!s.isBot, connected: s.isBot || isConnected(s.token), avatar: s.isBot ? null : s.avatar || null } : null)),
+    seats: room.seats.map((s) => (s ? {
+      name: s.name, isBot: !!s.isBot, connected: s.isBot || isConnected(s.token), avatar: s.isBot ? null : s.avatar || null,
+      level: s.isBot ? null : Levels.levelOf(leaderboard.get(s.token)).level,
+    } : null)),
     started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
     hints: !!room.hints && humanCount(room) <= 1, humans: humanCount(room),
     aids: room.aids !== false,
@@ -390,6 +394,7 @@ function recordLeaderboard(room) {
     if (!s || s.isBot || !s.token) return;
     const e = { ...STATS0, ...(leaderboard.get(s.token) || {}) };
     e.name = s.name;
+    const levelBefore = Levels.levelOf(e).level;
     const won = []; // trofei guadagnati con questa smazzata/partita
     if (room.recordedHand !== handKey) {
       const mine = hr.teams.find((t) => t.members.includes(seat));
@@ -428,6 +433,10 @@ function recordLeaderboard(room) {
     const fresh = [...new Set(won)].filter((id) => !e.trophies[id]);
     for (const id of fresh) e.trophies[id] = Date.now();
     leaderboard.set(s.token, e);
+    const lv = Levels.levelOf(e);
+    if (room.recordedHand !== handKey || gameEnds) {
+      for (const sock of io.sockets.sockets.values()) if (sock.data.token === s.token) sock.emit('progress', { ...lv, up: lv.level > levelBefore });
+    }
     if (fresh.length) {
       const list = fresh.map((id) => { const t = Trophies.BY_ID.get(id); return { id, e: t.e, name: t.name, desc: t.desc }; });
       for (const sock of io.sockets.sockets.values()) if (sock.data.token === s.token) sock.emit('trophy', list);
@@ -599,6 +608,7 @@ io.on('connection', (socket) => {
     if (sess.nick) sess.name = sess.nick; else if (name) sess.name = cleanName(name);
     socket.data.token = token;
     socket.emit('welcome', { token, name: sess.name, nick: sess.nick || null });
+    socket.emit('progress', Levels.levelOf(leaderboard.get(token)));
     social.push(token);
     social.pushFriends(token);
     if (sess.room && rooms.has(sess.room)) {
@@ -772,7 +782,7 @@ io.on('connection', (socket) => {
     const allowed = friends ? new Set([me, ...(mine.friends || [])]) : null;
     const list = [...leaderboard.entries()]
       .filter(([token]) => !allowed || allowed.has(token))
-      .map(([token, e]) => ({ name: e.name, games: e.games, wins: e.wins, points: e.points, burraco: e.burraco, me: token === me }))
+      .map(([token, e]) => ({ name: e.name, games: e.games, wins: e.wins, points: e.points, burraco: e.burraco, level: Levels.levelOf(e).level, me: token === me }))
       .filter((e) => e.games > 0)
       .sort((a, b) => b.wins - a.wins || (b.wins / b.games) - (a.wins / a.games) || b.points - a.points)
       .slice(0, 30);
@@ -782,9 +792,10 @@ io.on('connection', (socket) => {
   // Le mie statistiche e il mio storico
   socket.on('myStats', handler(() => {
     const e = leaderboard.get(socket.data.token);
-    if (!e) return { stats: null, history: [], trophies: Trophies.view(null) };
+    if (!e) return { stats: null, history: [], trophies: Trophies.view(null), level: Levels.levelOf(null) };
     return {
       stats: publicStats(e),
+      level: Levels.levelOf(e),
       trophies: Trophies.view(e),
       history: (e.history || []).map((h) => ({ at: h.at, preset: h.preset, won: h.won, hands: h.hands, teams: h.teams })),
     };
@@ -807,6 +818,7 @@ io.on('connection', (socket) => {
     return {
       nick: sess.nick, avatar: sess.avatar || null,
       stats: e ? publicStats(e) : null,
+      level: Levels.levelOf(e).level,
       trophies: Trophies.view(e).filter((t) => t.at).map(({ id, e: em, name, at }) => ({ id, e: em, name, at })),
       together: {
         games: shared.length,

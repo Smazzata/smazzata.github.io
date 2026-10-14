@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 /*
  * Prova multigiocatore end-to-end: avvia un server di prova, collega due giocatori
  * e verifica le funzioni del tavolo una dopo l'altra.  npm run e2e
@@ -31,6 +31,8 @@ function player(name) {
   sock.on('state', (st) => { p.state = st; });
   sock.on('chat', (m) => p.chats.push(m));
   p.trophies = [];
+  p.progress = [];
+  sock.on('progress', (x) => p.progress.push(x));
   sock.on('trophy', (list) => p.trophies.push(...list.map((t) => t.id)));
   p.call = (ev, data = {}) => new Promise((res) => sock.emit(ev, data, res));
   p.until = async (fn, what, ms = 20000) => {
@@ -232,6 +234,12 @@ const step = (t) => console.log('✓ ' + t);
     const lbw = lb.list.find((e) => e.me);
     if (lbw.wins) assert(ms.trophies.find((t) => t.id === 'prima_vittoria').at, 'prima vittoria');
     step(`trofei: ${A.trophies.join(', ')}`);
+    // livello: calcolato dalle statistiche, sale a fine partita, visibile al tavolo e in classifica
+    assert(ms.level && ms.level.level >= 2 && ms.level.xp > 100, `livello di Anna (${JSON.stringify(ms.level)})`);
+    assert(A.progress.some((x) => x.up), 'avviso di salita di livello');
+    assert(A.state.room.seats.every((x) => x.isBot ? x.level === null : x.level >= 1), 'livello accanto ai nomi al tavolo');
+    assert(lb.list.every((x) => x.level >= 1), 'livello in classifica');
+    step(`livello: Anna è al livello ${ms.level.level} (${ms.level.xp} punti esperienza)`);
     const card = await A.call('playerCard', { nick: 'Bruno' });
     assert(card.ok && card.together.games === 1 && card.stats.games === 1, 'scheda di Bruno con la partita giocata insieme');
     assert.strictEqual(card.together.asPartners, 0, 'Anna e Bruno erano avversari');
