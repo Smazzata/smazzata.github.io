@@ -249,6 +249,7 @@ const step = (t) => console.log('✓ ' + t);
     assert(ms.ok && ms.stats.games === 1 && ms.stats.hands >= 1 && ms.history.length === 1, 'statistiche e storico di Anna');
     assert(ms.history[0].teams.some((t) => t.mine), 'nello storico è segnata la propria squadra');
     assert(ms.byGame.burraco && ms.byGame.burraco.games === 1 && !ms.byGame.scala40, 'statistiche del Burraco separate');
+    assert(ms.timeline.length === 1 && ms.timeline[0].g === 'burraco' && ms.timeline[0].o.includes('Bruno'), 'cronologia per i grafici (con gli avversari)');
     // trofei: "Tra amici" (Anna e Bruno sono amici), avvisi in tempo reale, bacheca con l'avanzamento
     await A.until(() => A.trophies.includes('amici'), 'avviso del trofeo');
     const tAmici = ms.trophies.find((t) => t.id === 'amici');

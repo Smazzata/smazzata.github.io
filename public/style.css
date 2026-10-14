@@ -802,3 +802,20 @@ label.radio { display: block; padding: 6px 2px; font-size: 14px; }
 .tmatch .tw::after { content: ' ✓'; }
 .tmatch .tl { color: #999; text-decoration: line-through; }
 body[data-theme="notte"] .tmatch { background: #2a302e; border-color: #3a413e; }
+
+/* grafici delle statistiche */
+.chart { width: 100%; height: auto; display: block; }
+.chart .grid { stroke: rgba(0,0,0,.1); stroke-width: 1; }
+.chart .lbl { font-size: 9px; fill: #888; }
+.chart .trend { fill: none; stroke: #2e9d5c; stroke-width: 2.5; stroke-linejoin: round; }
+.chart circle.win { fill: #2e9d5c; } .chart circle.loss { fill: #d64545; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; vertical-align: middle; }
+.dot.win { background: #2e9d5c; } .dot.loss { background: #d64545; }
+.cbars { display: flex; flex-direction: column; gap: 6px; }
+.cbar { display: grid; grid-template-columns: 100px 1fr 46px; align-items: center; gap: 8px; font-size: 13px; }
+.cbar .ctrack { position: relative; height: 12px; border-radius: 99px; background: rgba(0,0,0,.08); overflow: hidden; }
+.cbar .ctrack i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; }
+.cbar .cn { background: rgba(46,157,92,.3); } .cbar .cw { background: #2e9d5c; }
+.cbar .cval { text-align: right; font-variant-numeric: tabular-nums; }
+body[data-theme="notte"] .chart .grid { stroke: rgba(255,255,255,.12); }
+body[data-theme="notte"] .cbar .ctrack { background: rgba(255,255,255,.1); }

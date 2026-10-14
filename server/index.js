@@ -572,6 +572,9 @@ function recordLeaderboard(room) {
         teams: g.teams.map((t) => ({ names: t.members.map((x) => room.seats[x].name), score: g.scores[t.members[0]], mine: t === team })),
         tokens: room.seats.filter((x) => x && !x.isBot && x.token).map((x) => x.token),
       }, ...(e.history || [])].slice(0, 20);
+      // cronologia compatta per i grafici: data, gioco, vinta, avversari (le ultime 200 partite)
+      const rivals = g.teams.filter((t) => t !== team).flatMap((t) => t.members.map((x) => room.seats[x].name.replace(/ \(bot\)$/, '')));
+      e.timeline = [...(e.timeline || []), { at: Date.now(), g: gid, w: g.winners.includes(seat) ? 1 : 0, o: rivals }].slice(-200);
     }
     won.push(...Trophies.fromStats(e));
     e.trophies = { ...(e.trophies || {}) };
@@ -1050,6 +1053,7 @@ io.on('connection', (socket) => {
     return {
       stats: publicStats(e),
       byGame: statsByGame(e),
+      timeline: e.timeline || [],
       level: Levels.levelOf(e),
       trophies: Trophies.view(e),
       history: (e.history || []).map((h) => ({ at: h.at, game: h.game || 'burraco', preset: h.preset, won: h.won, hands: h.hands, teams: h.teams })),

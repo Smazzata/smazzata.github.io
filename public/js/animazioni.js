@@ -162,6 +162,39 @@
       <span class="muted small">${h.teams.map((t) => `${t.mine ? '<b>' : ''}${t.names.map(esc).join(' & ')} ${t.score}${t.mine ? '</b>' : ''}`).join(' · ')}</span></span></div>`).join('');
   }
 
+  /** Grafici delle statistiche: andamento delle vittorie, vittorie per gioco, avversari */
+  function chartsHTML(tl) {
+    if (tl.length < 2) return '';
+    const last = tl.slice(-40);
+    // andamento: percentuale di vittorie cumulata, partita dopo partita
+    const W = 320, H = 120, P = 18;
+    let won = tl.length - last.length ? tl.slice(0, tl.length - last.length).filter((x) => x.w).length : 0;
+    let played = tl.length - last.length;
+    const pts = last.map((x, i) => { played++; won += x.w; return { x: P + (i * (W - 2 * P)) / Math.max(1, last.length - 1), y: H - P - ((won / played) * (H - 2 * P)), w: x.w }; });
+    const path = pts.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    const pct = Math.round((won / played) * 100);
+    const line = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Andamento delle vittorie: ${pct}%">
+      ${[0, 50, 100].map((v) => { const y = H - P - (v / 100) * (H - 2 * P); return `<line x1="${P}" x2="${W - P}" y1="${y}" y2="${y}" class="grid"/><text x="2" y="${y + 3}" class="lbl">${v}%</text>`; }).join('')}
+      <path d="${path}" class="trend"/>
+      ${pts.map((p) => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" class="${p.w ? 'win' : 'loss'}"/>`).join('')}</svg>`;
+    // vittorie per gioco
+    const names = { burraco: '🃏 Burraco', scala40: '🂡 Scala 40', canasta: '🎴 Canasta', scopa: '🧹 Scopa', briscola: '🍷 Briscola' };
+    const per = {};
+    for (const x of tl) { per[x.g] = per[x.g] || { n: 0, w: 0 }; per[x.g].n++; per[x.g].w += x.w; }
+    const maxN = Math.max(...Object.values(per).map((v) => v.n));
+    const bars = Object.entries(per).sort((a, b) => b[1].n - a[1].n).map(([gid, v]) => `<div class="cbar"><span class="cname">${names[gid] || gid}</span>
+      <span class="ctrack"><i class="cn" style="width:${(v.n / maxN) * 100}%"></i><i class="cw" style="width:${(v.w / maxN) * 100}%"></i></span><span class="cval">${v.w}/${v.n}</span></div>`).join('');
+    // avversari più frequenti
+    const opp = {};
+    for (const x of tl) for (const o of x.o || []) { opp[o] = opp[o] || { n: 0, w: 0 }; opp[o].n++; opp[o].w += x.w; }
+    const rows = Object.entries(opp).sort((a, b) => b[1].n - a[1].n).slice(0, 6)
+      .map(([o, v]) => `<tr><td style="text-align:left">${esc(o)}</td><td>${v.n}</td><td><b>${Math.round((v.w / v.n) * 100)}%</b></td></tr>`).join('');
+    return `<h3>📈 Andamento <span class="muted small">ultime ${last.length} partite · ${pct}% vinte in tutto</span></h3>${line}
+      <p class="muted small"><span class="dot win"></span> vinta <span class="dot loss"></span> persa · la linea è la percentuale di vittorie</p>
+      <h3>🎮 Per gioco <span class="muted small">vinte / giocate</span></h3><div class="cbars">${bars}</div>
+      ${rows ? `<h3>⚔️ Contro chi</h3><table><tr><th style="text-align:left">Avversario</th><th>Partite</th><th>Le vinci</th></tr>${rows}</table>` : ''}`;
+  }
+
   /** Statistiche divise per gioco (una tabella per gioco giocato) */
   function byGameHTML(byGame, total) {
     const games = Object.entries(byGame || {});
@@ -178,6 +211,7 @@
       ${r.level ? `<div class="lvlbox">${lvlHTML(r.level.level)}<div><b>Livello ${r.level.level}</b>
         <em class="xpbar"><u style="width:${Math.round((r.level.into / r.level.need) * 100)}%"></u></em>
         <span class="muted small">${r.level.into}/${r.level.need} punti esperienza al livello ${r.level.level + 1} · partite, vittorie, burraco, chiusure e trofei fanno salire</span></div></div>` : ''}
+      ${chartsHTML(r.timeline || [])}
       ${byGameHTML(r.byGame, r.stats)}
       ${r.trophies ? trophiesHTML(r.trophies) : ''}
       <h3>Ultime partite</h3>${historyHTML(r.history)}
