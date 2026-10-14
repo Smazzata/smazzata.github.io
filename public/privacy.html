@@ -41,7 +41,10 @@
     <tr><td>Password (solo se la imposti)</td><td>Per recuperare il profilo. Non è mai salvata in chiaro: ne teniamo solo un'impronta irreversibile (scrypt).</td></tr>
     <tr><td>Amici, richieste di amicizia, giocatori bloccati</td><td>Per le funzioni Amici e Inviti.</td></tr>
     <tr><td>Statistiche, storico delle ultime 20 partite, classifica</td><td>Per mostrarti come vai e per la classifica.</td></tr>
-    <tr><td>Tavoli e partite in corso</td><td>Per far riprendere le partite dopo un riavvio del server.</td></tr>
+    <tr><td>Tavoli e partite in corso (anche le partite "con calma", fino a 14 giorni senza mosse)</td><td>Per far riprendere le partite dopo un riavvio del server e per giocare con calma.</td></tr>
+    <tr><td>Trofei e livello</td><td>Si ricavano dalle tue partite e si vedono nel profilo e nella scheda per gli amici.</td></tr>
+    <tr><td>Risultati della sfida del giorno (ultimi 7 giorni)</td><td>Per la classifica del giorno e per consentire un solo tentativo.</td></tr>
+    <tr><td>Iscrizione alle notifiche (solo se le attivi)</td><td>Un indirizzo tecnico fornito dal tuo browser per avvisarti quando tocca a te o quando un amico ti invita, anche a gioco chiuso. Si cancella disattivando le notifiche o eliminando il profilo.</td></tr>
     <tr><td>Segnalazioni che invii con 🐞</td><td>Per correggere i problemi. Contengono il tuo testo, la situazione del tavolo (senza le carte degli altri), il tipo di dispositivo e browser e la dimensione dello schermo.</td></tr>
   </table>
   <p><b>Non salviamo</b>: i messaggi della chat (passano solo agli altri giocatori del tavolo), il tuo indirizzo IP (lo usiamo per pochi minuti solo per limitare i tentativi di accesso sbagliati), contatti o altri dati del telefono.</p>
@@ -62,6 +65,7 @@
     <li>Il server gira su un dispositivo del gestore. Il collegamento passa attraverso <b>Cloudflare</b>, che rende raggiungibile il server da internet.</li>
     <li>La pagina d'ingresso e l'app Android sono ospitate su <b>GitHub</b>.</li>
     <li>Ogni 6 ore viene fatto un <b>backup cifrato</b> dei dati del server su GitHub (restano quelli degli ultimi 7 giorni): senza la frase segreta del gestore è illeggibile.</li>
+    <li>Le <b>notifiche push</b> passano dal servizio di notifiche del tuo browser (per esempio Google per Chrome, Mozilla per Firefox, Apple per Safari), che riceve solo il testo della notifica.</li>
     <li>La <b>musica</b> si ascolta su Spotify, con il tuo account: vale la privacy di Spotify.</li>
   </ul>
 
@@ -70,7 +74,7 @@
 
   <h2>Cancellare i dati</h2>
   <ul>
-    <li><b>Profilo → Elimina il mio profilo</b> libera il nickname e cancella codice, password, avatar, amicizie, blocchi, statistiche e posto in classifica.</li>
+    <li><b>Profilo → Elimina il mio profilo</b> libera il nickname e cancella codice, password, avatar, amicizie, blocchi, statistiche, trofei, posto in classifica e iscrizioni alle notifiche.</li>
     <li>Le copie nei backup scompaiono da sole entro 7 giorni.</li>
     <li>Per qualsiasi richiesta (per esempio cancellare una segnalazione) scrivi al gestore con <b>🐞 Segnala un problema</b>.</li>
   </ul>

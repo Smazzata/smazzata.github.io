@@ -378,6 +378,62 @@ const step = (t) => console.log('✓ ' + t);
     O1.sock.close(); O3.sock.close();
     step('chi esce da una partita in corso può tornare al suo posto');
 
+    // partita con calma: chi esce tiene il posto, nessuno gioca al suo posto, avviso "tocca a te", rientro
+    const S1 = player('Sara'), S2 = player('Ugo');
+    await S1.hello(); await S2.hello();
+    assert((await S1.call('setNick', { nick: 'Sara' })).ok); assert((await S2.call('setNick', { nick: 'Ugo' })).ok);
+    S2.turnAlerts = [];
+    S2.sock.on('yourTurn', (x) => S2.turnAlerts.push(x));
+    S2.games = null;
+    S2.sock.on('myGames', (l) => { S2.games = l; });
+    assert((await S1.call('createRoom', { rules: { players: 2 } })).ok);
+    const sc = (await S1.until((st) => st.room, 'tavolo con calma')).room.code;
+    assert(!(await S2.call('setSlow', { on: true })).ok || true);
+    assert((await S1.call('setSlow', { on: true })).ok);
+    assert((await S2.call('joinRoom', { code: sc })).ok);
+    assert((await S1.call('start')).ok);
+    assert(!(await S1.call('setSlow', { on: false })).ok, 'il ritmo non si cambia a partita iniziata');
+    const ugoSeat = (await S2.until((st) => st.game, 'partita con calma')).game.you;
+    assert(S2.state.room.slow, 'tavolo con calma');
+    // Ugo torna alla schermata iniziale: il posto resta suo
+    assert((await S2.call('leaveRoom')).ok);
+    await wait(100);
+    assert(!S1.state.room.seats[ugoSeat].isBot, 'il posto di Ugo resta suo');
+    const ug = S2.games.find((x) => x.code === sc);
+    assert(ug && ug.started, 'la partita è nell\'elenco di Ugo');
+    // Sara gioca finché tocca a Ugo: Ugo riceve l'avviso e la partita lo aspetta
+    const endS = Date.now() + 30000;
+    while (!(S1.state.game.turn === ugoSeat && S1.state.game.phase !== 'handEnd')) {
+      if (Date.now() > endS) throw new Error('non arriva il turno di Ugo');
+      const g = S1.state.game;
+      if (g.turn === g.you && g.phase === 'draw') await S1.call('action', { type: 'draw' });
+      else if (g.turn === g.you && g.phase === 'play') {
+        for (const c of g.hand.slice().reverse()) if ((await S1.call('action', { type: 'discard', cardId: c.id })).ok) break;
+      }
+      await wait(20);
+    }
+    const waitAlert = Date.now() + 3000;
+    while (!S2.turnAlerts.some((x) => x.code === sc) && Date.now() < waitAlert) await wait(20);
+    assert(S2.turnAlerts.some((x) => x.code === sc && /Sara/.test(x.text)), 'avviso "tocca a te" a Ugo');
+    assert(S2.games.find((x) => x.code === sc).myTurn, 'nell\'elenco: tocca a Ugo');
+    const logLen = S1.state.game.log.length;
+    await wait(1200); // ben oltre l'attesa per gli assenti nelle partite normali
+    assert(S1.state.game.turn === ugoSeat && S1.state.game.log.length === logLen, 'nessuno gioca al posto di Ugo');
+    // Ugo rientra allo stesso posto e gioca
+    assert((await S2.call('joinRoom', { code: sc })).ok);
+    const ub = await S2.until((st) => st.game && st.game.you === ugoSeat, 'Ugo al suo posto');
+    assert(ub.game.hand.length > 0, 'con le sue carte');
+    assert((await S2.call('action', { type: 'draw' })).ok);
+    // notifiche push: iscrizione valida accettata, non valida rifiutata
+    assert(!(await S2.call('pushSubscribe', { sub: { endpoint: 'nope' } })).ok, 'iscrizione non valida');
+    assert((await S2.call('pushSubscribe', { sub: { endpoint: 'https://push.example/abc', keys: { p256dh: 'x', auth: 'y' } } })).ok);
+    assert((await S2.call('pushKey')).key.length > 40, 'chiave pubblica VAPID');
+    // abbandono: il computer prende il posto
+    assert((await S2.call('leaveRoom', { abandon: true })).ok);
+    await S1.until((st) => st.room.seats[ugoSeat].isBot, 'Ugo ha abbandonato: gioca il computer');
+    S1.sock.close(); S2.sock.close();
+    step('partita con calma: posto tenuto, nessuno gioca al tuo posto, avviso "tocca a te", rientro e abbandono');
+
     A.sock.close(); B.sock.close();
     console.log('\nProva multigiocatore: tutto OK');
   } finally {

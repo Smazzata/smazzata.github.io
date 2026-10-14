@@ -16,7 +16,7 @@ const RESERVED = new Set(['admin', 'host', 'bot', 'computer', 'burraco', 'tu', '
 const AVATAR_EMOJI = ['😀', '😎', '🤠', '🥳', '😇', '🤓', '🧐', '😺', '🐶', '🦊', '🐻', '🐼', '🐸', '🦁', '🐯', '🐵', '🦄', '🐙', '🦉', '🐢', '🌻', '🍀', '⭐', '🔥', '♠️', '♥️', '♦️', '♣️'];
 const AVATAR_COLORS = ['#f2c14e', '#64b5f6', '#ef7d7d', '#81c784', '#ba68c8', '#ffb74d', '#4dd0e1', '#e0e0e0'];
 
-module.exports = function createSocial({ io, sessions, isConnected, roomOfToken, renamePlayer, onDelete }) {
+module.exports = function createSocial({ io, sessions, isConnected, roomOfToken, renamePlayer, onDelete, notifyOffline }) {
   const nickIndex = new Map(); // nick in minuscolo → token
   const codeIndex = new Map(); // codice personale → token
   const attempts = new Map(); // limite tentativi di accesso: chiave → { n, until }
@@ -290,7 +290,11 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if (!s.friends.includes(other)) fail('Puoi invitare solo i tuoi amici');
       const room = roomOfToken(token);
       if (!room) fail('Entra prima in un tavolo');
-      if (!isConnected(other)) fail(`${nickOf(other)} non è online`);
+      if (!isConnected(other)) {
+        // amico non collegato: se ha attivato le notifiche gli arriva comunque l'invito
+        if (notifyOffline && notifyOffline(other, { title: 'Burraco: invito 🎴', body: `${s.nick} ti invita al tavolo ${room.code}`, tag: 'invite-' + room.code, code: room.code })) return { sent: 0, pushed: true };
+        fail(`${nickOf(other)} non è online`);
+      }
       let sent = 0;
       for (const so of io.sockets.sockets.values()) {
         if (so.data.token === other) { so.emit('invite', { from: s.nick, code: room.code, started: !!room.game }); sent++; }

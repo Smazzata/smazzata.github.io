@@ -10,6 +10,7 @@ const Bot = require('./bot');
 const Trophies = require('./trophies');
 const Levels = require('./levels');
 const Daily = require('./daily');
+const createPush = require('./push');
 const Rules = require('../shared/rules');
 const createSocial = require('./social');
 
@@ -53,6 +54,8 @@ function adminKey() {
   return k;
 }
 const ADMIN_KEY = process.env.ADMIN_KEY || adminKey();
+// pagina d'ingresso fissa: le notifiche aprono il gioco da qui (l'indirizzo del server cambia)
+const HOME_URL = process.env.HOME_URL || 'https://simonemuliello010500-web.github.io/BurracoByMSF/';
 
 function gitVersion() {
   try {
@@ -194,6 +197,7 @@ function roomInfo(room) {
     botLevel: room.botLevel || 'normale',
     turnTime: room.turnTime || 0,
     tutorial: !!room.tutorial,
+    slow: !!room.slow,
     daily: room.daily ? { date: room.daily, title: Daily.challenge(room.daily).title } : null,
     quick: room.quick || 0,
     series: room.series || null,
@@ -223,11 +227,59 @@ function broadcast(room) {
   }
   scheduleBot(room);
   scheduleSave();
+  if (room.slow) slowRoomUpdates(room);
+}
+
+/* ---------- Partite con calma: elenco delle mie partite e avvisi "tocca a te" ---------- */
+function socketsOf(token) {
+  return [...io.sockets.sockets.values()].filter((s) => s.data.token === token);
+}
+
+/** Le partite con calma in cui sono seduto (per la schermata iniziale) */
+function myGames(token) {
+  const out = [];
+  for (const room of rooms.values()) {
+    if (!room.slow) continue;
+    const seat = seatOfToken(room, token);
+    if (seat < 0) continue;
+    const g = room.game;
+    const myTurn = !!g && !g.over && ((g.phase !== 'handEnd' && g.turn === seat) || (g.phase === 'handEnd' && !room.ready.has(seat)));
+    out.push({
+      code: room.code, started: !!g, over: !!(g && g.over), myTurn,
+      players: room.seats.map((x, i) => (x ? { name: x.name, isBot: !!x.isBot, me: i === seat } : null)),
+      handNo: g ? g.handNo : 0, scores: g ? g.teams.map((t) => g.scores[t.members[0]]) : [],
+      at: room.lastActionAt || 0,
+    });
+  }
+  return out.sort((a, b) => b.myTurn - a.myTurn || b.at - a.at);
+}
+
+function pushMyGames(token) {
+  const list = myGames(token);
+  for (const s of socketsOf(token)) s.emit('myGames', list);
+}
+
+function slowRoomUpdates(room) {
+  const g = room.game;
+  for (const x of room.seats) if (x && !x.isBot && x.token) pushMyGames(x.token);
+  if (!g || g.over || g.phase === 'handEnd') return;
+  const s = room.seats[g.turn];
+  if (!s || s.isBot || !s.token) return;
+  const key = `${room.gameSeq}:${g.handNo}:${room.turnCounter || 0}`;
+  if (room.notifiedKey === key) return;
+  const socks = socketsOf(s.token);
+  if (socks.some((x) => x.data.room === room.code)) return; // è già al tavolo: niente avviso (per ora)
+  room.notifiedKey = key;
+  const others = room.seats.filter((x, i) => x && i !== g.turn).map((x) => x.name.replace(/ \(bot\)$/, ''));
+  const text = `Tocca a te nella partita con ${others.join(', ')}`;
+  if (socks.length) for (const x of socks) x.emit('yourTurn', { code: room.code, text });
+  else push.send(s.token, { title: 'Burraco: tocca a te 🐢', body: text, tag: 'turn-' + room.code, url: `${HOME_URL}?t=${room.code}` }).catch(() => {});
 }
 
 /* ---------- Timer del turno: allo scadere si pesca e si scarta in automatico ---------- */
 function turnTimerKey(room) {
   const g = room.game;
+  if (room.slow) return null;
   if (!g || g.phase === 'handEnd' || !room.turnTime) return null;
   const s = room.seats[g.turn];
   if (!s || s.isBot) return null;
@@ -238,6 +290,7 @@ function turnTimerKey(room) {
 const ABSENT_MS = Number(process.env.ABSENT_MS || 45000) * TIMER_SCALE;
 
 function scheduleAbsent(room) {
+  if (room.slow) { clearTimeout(room.absentHandle); room.absentKey = null; return; } // con calma: la partita aspetta
   const g = room.game;
   const s = g && g.phase !== 'handEnd' && !g.over ? room.seats[g.turn] : null;
   const absent = s && !s.isBot && s.token && !isConnected(s.token);
@@ -536,6 +589,7 @@ function checkReady(room) {
 
 function afterAction(room) {
   const g = room.game;
+  room.lastActionAt = Date.now();
   recordLeaderboard(room);
   if (g && g.turn !== room.lastTurnSeat) {
     room.lastTurnSeat = g.turn;
@@ -545,7 +599,7 @@ function afterAction(room) {
   broadcast(room);
 }
 
-function leaveRoom(socket) {
+function leaveRoom(socket, abandon = false) {
   const code = socket.data.room;
   if (!code) return;
   const room = rooms.get(code);
@@ -554,6 +608,11 @@ function leaveRoom(socket) {
   const sess = sessions.get(socket.data.token);
   if (sess) sess.room = null;
   if (!room) return;
+  // partita con calma già iniziata: si torna alla schermata iniziale e il posto resta tuo
+  if (room.slow && room.game && !room.game.over && !abandon && seatOfToken(room, socket.data.token) >= 0) {
+    broadcast(room);
+    return;
+  }
   room.spectators = (room.spectators || []).filter((t) => t !== socket.data.token);
   const seat = seatOfToken(room, socket.data.token);
   if (seat >= 0 && !room.game) room.seats[seat] = null;
@@ -633,8 +692,21 @@ function cleanName(n) {
 
 const social = createSocial({
   io, sessions, isConnected: (t) => isConnected(t), roomOfToken, renamePlayer,
-  onDelete: (token) => { leaderboard.delete(token); scheduleSave(); },
+  // true se l'amico ha almeno un dispositivo iscritto alle notifiche (l'invio avviene in sottofondo)
+  notifyOffline: (token, { code, ...msg }) => {
+    const sess = sessions.get(token);
+    if (!sess || !sess.push || !sess.push.length) return false;
+    push.send(token, { ...msg, url: `${HOME_URL}?t=${code}` }).catch(() => {});
+    return true;
+  },
+  onDelete: (token) => {
+    leaderboard.delete(token);
+    const sess = sessions.get(token);
+    if (sess) sess.push = []; // niente più notifiche a quel dispositivo
+    scheduleSave();
+  },
 });
+const push = createPush({ dataDir: DATA_DIR, sessions, contact: HOME_URL });
 
 io.on('connection', (socket) => {
   const handler = (fn) => (data, cb) => {
@@ -656,6 +728,7 @@ io.on('connection', (socket) => {
     socket.data.token = token;
     socket.emit('welcome', { token, name: sess.name, nick: sess.nick || null });
     socket.emit('progress', Levels.levelOf(leaderboard.get(token)));
+    socket.emit('myGames', myGames(token));
     social.push(token);
     social.pushFriends(token);
     if (sess.room && rooms.has(sess.room)) {
@@ -754,8 +827,8 @@ io.on('connection', (socket) => {
     joinRoom(socket, room);
   }));
 
-  socket.on('leaveRoom', handler(() => {
-    leaveRoom(socket);
+  socket.on('leaveRoom', handler(({ abandon } = {}) => {
+    leaveRoom(socket, !!abandon);
     socket.emit('state', { room: null, game: null });
   }));
 
@@ -939,6 +1012,27 @@ io.on('connection', (socket) => {
     broadcast(room);
   }));
 
+  // Ritmo della partita: "con calma" = ognuno gioca quando può, il posto resta suo e la partita aspetta
+  socket.on('setSlow', handler(({ on }) => {
+    const room = getRoom(socket);
+    requireHost(socket, room);
+    if (room.game) throw new E.GameError('Il ritmo si sceglie prima di iniziare');
+    if (room.daily || room.tutorial) throw new E.GameError('Non disponibile per questa partita');
+    room.slow = !!on;
+    if (room.slow) room.turnTime = 0;
+    broadcast(room);
+  }));
+
+  socket.on('myGames', handler(() => ({ list: myGames(socket.data.token) })));
+
+  // Notifiche push (anche a gioco chiuso)
+  socket.on('pushKey', handler(() => ({ key: push.publicKey })));
+  socket.on('pushSubscribe', handler(({ sub }) => {
+    try { push.subscribe(socket.data.token, sub); } catch (e) { throw new E.GameError(e.message); }
+    scheduleSave();
+  }));
+  socket.on('pushUnsubscribe', handler(({ endpoint }) => { push.unsubscribe(socket.data.token, String(endpoint || '')); scheduleSave(); }));
+
   socket.on('setHints', handler(({ on }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
@@ -1058,6 +1152,10 @@ function startGame(room) {
 setInterval(() => {
   for (const room of rooms.values()) {
     const anyone = room.seats.some((s) => s && !s.isBot && isConnected(s.token));
+    if (room.slow && room.seats.some((s) => s && !s.isBot)) {
+      if (Date.now() - (room.lastActionAt || Date.now()) > 14 * 24 * 3600 * 1000) { clearTimeout(room.botTimer); rooms.delete(room.code); scheduleSave(); }
+      continue;
+    }
     if (anyone) room.idleSince = null;
     else if (!room.idleSince) room.idleSince = Date.now();
     else if (Date.now() - room.idleSince > 60 * 60 * 1000) {
@@ -1085,7 +1183,7 @@ function saveNow() {
       daily: [...daily].map(([d, m]) => [d, m]),
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
-        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series, daily: r.daily, seed: r.seed,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series, daily: r.daily, seed: r.seed, slow: r.slow, lastActionAt: r.lastActionAt,
       })),
     };
     fs.mkdirSync(DATA_DIR, { recursive: true });

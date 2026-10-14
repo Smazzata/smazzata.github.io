@@ -23,7 +23,9 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 Profili (nickname univoco, codice/QR, password facoltativa, avatar, eliminazione), amici (richieste, blocco, inviti, scheda con partite insieme),
 statistiche e storico sul server, classifica (tutti / amici), spettatori, Gioca subito (tavoli veloci), mini-torneo (al meglio di 3/5),
 tutorial "Impara a giocare" con partita di allenamento e allenatore, musica Spotify, timer del turno, rivincita, reazioni rapide,
-pagina di stato `/stato?k=CHIAVE` (chiave in `data/admin-key.txt`), backup cifrato nel ramo `backup` (`scripts/backup.js`).
+sfida del giorno (`server/daily.js`, mazzo con seme), partite "con calma" (posto tenuto, niente gioco automatico, avvisi),
+notifiche push Web Push (`server/push.js`, chiavi in `data/vapid.json`), trofei (`server/trophies.js`), livello (`server/levels.js`),
+gioco senza internet contro il computer, pagina di stato `/stato?k=CHIAVE` (chiave in `data/admin-key.txt`), backup cifrato nel ramo `backup` (`scripts/backup.js`).
 Computer: 3 livelli + apertura da vulnerabile con più combinazioni + pianificatore di chiusura (decisione media ~2 ms).
 
 ## Hosting e pubblicazione

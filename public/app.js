@@ -147,6 +147,18 @@
     }
     if (nick) { S.name = nick; if (!OFFLINE) store.set('bur_name', nick); } else if (!S.name && name !== 'Giocatore') S.name = name;
     if (S.pendingProfile) { const c = S.pendingProfile; S.pendingProfile = ''; askImport(c); }
+    enablePush();
+  });
+  // partite con calma: elenco per la schermata iniziale e avvisi "tocca a te" dagli altri tavoli
+  socket.on('myGames', (list) => {
+    S.myGames = list;
+    if (S.screen === 'home') render();
+  });
+  socket.on('yourTurn', ({ code, text }) => {
+    Sound.play('turn');
+    if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+    notify('Burraco: tocca a te 🐢', text, 'slow-' + code);
+    toast(`🐢 ${text}`);
   });
   socket.on('social', (soc) => {
     S.social = soc;
@@ -290,6 +302,30 @@
       if (S.modalKind === 'result') closeModal();
     }
     render();
+  }
+
+  /* ---------- Notifiche push: arrivano anche a gioco chiuso (dove il browser le supporta) ---------- */
+  const canPush = 'PushManager' in window && 'serviceWorker' in navigator && window.isSecureContext && !OFFLINE;
+  async function enablePush() {
+    if (!canPush || !S.prefs.notify || Notification.permission !== 'granted') return;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const k = await emit('pushKey');
+      if (!k.ok) return;
+      const raw = atob(k.key.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (k.key.length % 4)) % 4));
+      const appKey = Uint8Array.from(raw, (ch) => ch.charCodeAt(0));
+      let sub = await reg.pushManager.getSubscription();
+      if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: appKey });
+      socket.emit('pushSubscribe', { sub: sub.toJSON() }, () => {});
+    } catch (e) { /* notifiche push non disponibili su questo dispositivo */ }
+  }
+  async function disablePush() {
+    if (!canPush) return;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (sub) { socket.emit('pushUnsubscribe', { endpoint: sub.endpoint }, () => {}); await sub.unsubscribe(); }
+    } catch (e) { /* niente */ }
   }
 
   /* ---------- Notifiche di sistema quando la pagina è in secondo piano ---------- */
@@ -522,6 +558,7 @@
         : '<p class="muted small">Su questo dispositivo o browser le notifiche non sono disponibili.</p>'}
       <h4>Suoni</h4>
       <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
+      ${S.room && S.room.slow && S.game && !S.game.over && S.game.you >= 0 ? '<h4>Partita con calma</h4><button class="btn small danger" data-act="abandon">🏳️ Abbandona la partita</button>' : ''}
       <h4>Qualcosa non va?</h4><button class="btn small" data-act="report">🐞 Segnala un problema</button>
       ${S.room && S.room.isHost && (!S.game || S.game.over) ? `<h4>Torneo (si imposta tra una partita e l'altra)</h4>${seriesPickHTML(S.room.series && S.room.series.bestOf)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Aiuto: dove attaccare le carte</h4>${aidsHTML(S.room.aids !== false)}` : ''}
@@ -804,6 +841,10 @@
         </div>`}
         ${S.pendingJoin ? '<p class="muted">Sei stato invitato al tavolo: scrivi il tuo nome e premi Entra.</p>' : ''}
       </div>
+      ${!OFFLINE && S.myGames && S.myGames.length ? `<div class="panel"><h2>🐢 Le tue partite con calma</h2>
+        ${S.myGames.map((m) => `<button class="slowgame ${m.myTurn ? 'myturn' : ''}" data-act="openSlow" data-code="${esc(m.code)}">
+          <span class="who">${m.players.filter((x) => x && !x.me).map((x) => esc(x.name)).join(', ') || 'In attesa di giocatori'}</span>
+          <span class="meta">${m.myTurn ? '<b>Tocca a te!</b>' : m.over ? 'Partita finita' : m.started ? `Smazzata ${m.handNo} · ${m.scores.join(' – ')}` : 'In sala d’attesa'}${m.at ? ` · ${agoText(m.at)}` : ''}</span></button>`).join('')}</div>` : ''}
       ${IS_ANDROID && !IN_APP && !OFFLINE ? `<a class="apkbanner" href="${APK_URL}">
         <img src="icons/icon-192.png" alt=""><span><b>📱 Scarica l'app per Android</b><br>Installala e gioca a schermo intero</span></a>` : ''}
       <div class="panel">
@@ -837,6 +878,17 @@
         <p class="muted">Nel tavolo online potrai riempire i posti vuoti con giocatori del computer.</p>`}
       </div>
     </div>`;
+  }
+
+  /** "2 min fa", "3 ore fa", "ieri"… */
+  function agoText(t) {
+    const m = Math.round((Date.now() - t) / 60000);
+    if (m < 1) return 'adesso';
+    if (m < 60) return `${m} min fa`;
+    const h = Math.round(m / 60);
+    if (h < 24) return `${h} ${h === 1 ? 'ora' : 'ore'} fa`;
+    const d = Math.round(h / 24);
+    return d === 1 ? 'ieri' : `${d} giorni fa`;
   }
 
   const lvlHTML = (lv) => (lv ? `<span class="lvl" title="Livello ${lv}">${lv}</span>` : '');
@@ -889,6 +941,10 @@
         <div class="row" style="margin-top:8px"><button class="btn small" data-act="roomRules">📜 Leggi le regole</button>
         ${isHost ? '<button class="btn small" data-act="editRules">✏️ Modifica regole</button>' : ''}</div>
         ${isHost ? `<h2 style="margin-top:14px">Torneo</h2>${seriesPickHTML(r.series && r.series.bestOf)}` : r.series ? `<p>🏆 Torneo al meglio di ${r.series.bestOf}</p>` : ''}
+        ${isHost && !r.daily && !r.tutorial ? `<h2 style="margin-top:14px">Ritmo della partita</h2>
+          <div class="row"><button class="swatch ${r.slow ? '' : 'on'}" data-act="setSlow" data-val="0">⚡ Normale</button><button class="swatch ${r.slow ? 'on' : ''}" data-act="setSlow" data-val="1">🐢 Con calma</button></div>
+          <p class="muted small">Con calma: ognuno gioca il suo turno quando può, anche ore dopo. Puoi uscire quando vuoi: il posto resta tuo, la partita ti aspetta e ti avvisiamo quando tocca a te.</p>`
+          : r.slow ? '<p>🐢 <b>Partita con calma</b>: ognuno gioca quando può, ti avvisiamo quando tocca a te.</p>' : ''}
         ${isHost ? `<h2 style="margin-top:14px">Aiuto: dove attaccare le carte</h2>${aidsHTML(r.aids !== false)}` : ''}
         ${isHost ? `<h2 style="margin-top:14px">Tempo per turno</h2>${turnTimeHTML(r.turnTime)}
           <p class="muted small">Allo scadere il gioco pesca e scarta al posto del giocatore.</p>` : ''}
@@ -1141,7 +1197,7 @@
 
     return `<div class="game ${myTurn ? 'myturn' : ''}">
       <div class="topbar">
-        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : `<b>${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, si vince a ${g.cfg.target}">smazzata ${g.handNo}</span></span>
+        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : `<b>${r.slow ? '🐢 ' : ''}${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, si vince a ${g.cfg.target}">smazzata ${g.handNo}</span></span>
         <button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
         ${OFFLINE ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}
         <button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>
@@ -1662,10 +1718,10 @@
       if (key === 'sound' && val) { Sound.unlock(); Sound.play('turn'); }
       if (key === 'notify' && val && canNotify && Notification.permission !== 'granted') {
         Notification.requestPermission().then((p) => {
-          if (p !== 'granted') { S.prefs.notify = false; applyPrefs(); toast('Notifiche non consentite dal browser', true); }
+          if (p !== 'granted') { S.prefs.notify = false; applyPrefs(); toast('Notifiche non consentite dal browser', true); } else enablePush();
           settingsModal();
         });
-      }
+      } else if (key === 'notify') { if (val) enablePush(); else disablePush(); }
     },
     preset(el) {
       const p = presetById(el.dataset.id);
@@ -1680,7 +1736,9 @@
     create() { emit('createRoom', { rules: S.rules }); },
     createBots() { emit('createRoom', { rules: S.rules, vsBots: true }); },
     leave() {
-      if (S.game && !S.game.over && S.game.you >= 0) {
+      if (S.room && S.room.slow && S.game && !S.game.over && S.game.you >= 0) {
+        toast('🐢 La partita ti aspetta: la trovi nella schermata iniziale');
+      } else if (S.game && !S.game.over && S.game.you >= 0) {
         if (!confirm('Vuoi davvero uscire? Il computer giocherà al tuo posto: potrai tornare quando vuoi dalla schermata iniziale.')) return;
         store.set('bur_lastroom', S.room.code);
       }
@@ -1699,6 +1757,14 @@
     start() { emit('start'); },
     roomRules() { rulesModal(S.room.rules); },
     daily() { if (!requireName()) return; dailyModal(); },
+    openSlow(el) { joinRoom(el.dataset.code); },
+    setSlow(el) { emit('setSlow', { on: el.dataset.val === '1' }); },
+    abandon() {
+      if (!confirm('Abbandonare la partita? Il computer prenderà il tuo posto.')) return;
+      closeModal();
+      emit('leaveRoom', { abandon: true });
+      S.screen = 'home';
+    },
     dailyFromResult() { emit('leaveRoom'); S.screen = 'home'; dailyModal(); },
     dailyRules() { rulesModal(S.dailyRules, 'Regole della sfida di oggi'); },
     async startDaily() {
@@ -1833,7 +1899,7 @@
     async regenCode() { if (!confirm('Generare un nuovo codice? Il vecchio codice e il vecchio QR smetteranno di funzionare.')) return; const r = await emit('regenCode'); if (r.ok) profileModal(); },
     async importCode(el) { const r = await emit('importProfile', { code: el.dataset.code }); if (r.ok) adoptProfile(r.token, r.nick); },
     acceptInvite(el) { closeModal(); if (!requireName()) return; joinRoom(el.dataset.code); },
-    async invite(el) { const r = await emit('inviteFriend', { nick: el.dataset.nick }); if (r.ok) toast(`Invito inviato a ${el.dataset.nick}`); },
+    async invite(el) { const r = await emit('inviteFriend', { nick: el.dataset.nick }); if (r.ok) toast(r.pushed ? `${el.dataset.nick} non è online: gli arriva una notifica` : `Invito inviato a ${el.dataset.nick}`); },
     async block(el) {
       if (!confirm(`Bloccare ${el.dataset.nick}? Non potrà più mandarti richieste né inviti.`)) return;
       const r = await emit('blockPlayer', { nick: el.dataset.nick });
