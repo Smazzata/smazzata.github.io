@@ -90,5 +90,32 @@
     return analyzeSequence(cards, cfg) || analyzeSet(cards, cfg);
   }
 
-  return { isJoker, isTwo, isWild, analyzeSequence, analyzeSet, analyzeMeld };
+  /**
+   * Divide le carte in più combinazioni valide (fino a 3), per calarle insieme.
+   * Restituisce un array di analisi o null. Limitata a 15 carte per restare veloce.
+   */
+  function partitionMelds(cards, cfg, maxGroups = 3) {
+    const whole = analyzeMeld(cards, cfg);
+    if (whole) return [whole];
+    if (maxGroups < 2 || cards.length < 6 || cards.length > 15) return null;
+    const n = cards.length;
+    const first = cards[0];
+    const rest = cards.slice(1);
+    // sottoinsiemi che contengono la prima carta (evita di provare due volte la stessa divisione)
+    for (let mask = 0; mask < (1 << rest.length); mask++) {
+      let bits = 0;
+      for (let m = mask; m; m &= m - 1) bits++;
+      const size = bits + 1;
+      if (size < 3 || n - size < 3) continue;
+      const group = [first], other = [];
+      rest.forEach((c, i) => (mask & (1 << i) ? group.push(c) : other.push(c)));
+      const an = analyzeMeld(group, cfg);
+      if (!an) continue;
+      const tail = partitionMelds(other, cfg, maxGroups - 1);
+      if (tail) return [an, ...tail];
+    }
+    return null;
+  }
+
+  return { isJoker, isTwo, isWild, analyzeSequence, analyzeSet, analyzeMeld, partitionMelds };
 });

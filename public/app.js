@@ -278,7 +278,8 @@
 <li><b>Attaccare</b>: trascina le carte su una tua combinazione, oppure selezionale e tocca la combinazione.</li>
 <li><b>Scartare</b>: seleziona una carta e tocca il monte degli scarti, oppure trascinala sul monte, oppure fai doppio tocco sulla carta.</li>
 <li><b>Riordinare la mano</b>: trascina una carta in un altro punto della mano. Il pulsante ⇅ riordina per seme o per valore.</li>
-<li><b>Annulla</b> riporta il turno a subito dopo la pesca. Da ⚙️ puoi cambiare colore del tavolo, dorso delle carte, dimensione e suoni.</li>
+<li>Puoi calare <b>più combinazioni insieme</b>: selezionale tutte e tocca ＋. Le giocate fatte non si possono annullare.</li>
+<li>Da ⚙️ puoi cambiare colore del tavolo, dorso delle carte, dimensione e suoni. Giocando da solo contro il computer puoi attivare i <b>suggerimenti 💡</b>.</li>
 </ul>`;
 
   function rulesFormHTML(rules) {
@@ -321,7 +322,9 @@
       <div class="row">${opt('big', false, 'Normali')}${opt('big', true, 'Grandi')}</div>
       <h4>Suoni</h4>
       <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
-      ${S.room && S.room.isHost ? `<h4>Velocità del computer</h4>${botSpeedHTML(S.room.botSpeed)}` : ''}`);
+      ${S.room && S.room.isHost ? `<h4>Velocità del computer</h4>${botSpeedHTML(S.room.botSpeed)}` : ''}
+      ${S.room && S.room.isHost && S.room.humans <= 1 ? `<h4>Suggerimenti 💡 (solo contro il computer)</h4>
+        <div class="row"><button class="swatch ${S.room.hints ? 'on' : ''}" data-act="setHints" data-val="1">Attivi</button><button class="swatch ${S.room.hints ? '' : 'on'}" data-act="setHints" data-val="0">Disattivati</button></div>` : ''}`);
   }
 
   function botSpeedHTML(cur) {
@@ -469,12 +472,22 @@
     const cfg = meldCfg(g);
     for (const m of myTeam.melds) if (M.analyzeMeld(m.cards.concat(cards), cfg, m.type)) out.canAdd.add(m.id);
     if (cards.length >= 3) {
-      const an = M.analyzeMeld(cards, cfg);
-      let ok = !!an;
-      if (an && an.type === 'set' && g.cfg.rules.noDuplicateSets) {
-        ok = !myTeam.melds.some((m) => m.type === 'set' && m.cards.find((c) => !M.isWild(c)).r === an.rank);
+      const groups = M.partitionMelds(cards, cfg);
+      let ok = !!groups;
+      if (groups && g.cfg.rules.noDuplicateSets) {
+        const ranks = myTeam.melds.filter((m) => m.type === 'set').map((m) => m.cards.find((c) => !M.isWild(c)).r);
+        for (const an of groups.filter((x) => x.type === 'set')) { if (ranks.includes(an.rank)) ok = false; ranks.push(an.rank); }
       }
-      out.newMeld = { ok, label: an ? (an.type === 'seq' ? 'scala' : 'tris') : '' };
+      let label = groups ? (groups.length > 1 ? `${groups.length} giochi` : groups[0].type === 'seq' ? 'scala' : 'tris') : '';
+      // da vulnerabili, senza giochi calati, servono abbastanza punti già in questa calata
+      const vul = g.cfg.vulnerability;
+      const myScore = g.scores[g.you];
+      if (ok && vul && !myTeam.melds.length && myScore >= g.cfg.target * vul.ratio) {
+        const v = g.cfg.values;
+        const pts = cards.reduce((sum, c) => sum + (c.r === 0 ? v.joker : c.r === 2 ? v.two : c.r === 1 ? v.ace : c.r >= 8 ? v.high : v.low), 0);
+        if (pts < vul.min) { ok = false; label = `${pts}/${vul.min} punti`; }
+      }
+      out.newMeld = { ok, label };
     }
     return out;
   }
@@ -586,7 +599,7 @@
     // giochi delle squadre
     const preview = selectionPreview(g, myTeam);
     const nm = preview.newMeld;
-    const newSlotText = nm ? (nm.ok ? `✓ Cala<br>${nm.label}` : '✗ Non<br>valida') : '＋ Nuova<br>combinazione';
+    const newSlotText = nm ? (nm.ok ? `✓ Cala<br>${nm.label}` : nm.label.includes('punti') ? `✗ Servono<br>${nm.label}` : '✗ Non<br>valida') : '＋ Nuova<br>combinazione';
     const zone = (t) => {
       const mine = t === myTeam;
       const label = mine ? (t.members.length > 1 ? `Noi · ${esc(teamName(g, t))}` : 'I tuoi giochi') : esc(teamName(g, t));
@@ -607,8 +620,7 @@
     const sel = S.selected.size;
     let actions = '';
     if (g.phase === 'handEnd') actions = '<button class="btn primary small" data-act="result">Risultati</button>';
-    if (playing && g.canUndo) actions += '<button class="ico" data-act="undo" title="Annulla le giocate del turno">↶</button>';
-    if (myTurn) actions += '<button class="ico" data-act="hint" title="Suggerimento">💡</button>';
+    if (myTurn && r.hints) actions += '<button class="ico" data-act="hint" title="Suggerimento">💡</button>';
     if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';
     const sortLbl = S.sortMode === 'rank' ? '⇅ Valore' : S.sortMode === 'suit' ? '⇅ Seme' : '⇅ Ordina';
     actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;
@@ -975,6 +987,7 @@
       toast(`💡 ${text}`);
       render();
     },
+    setHints(el) { emit('setHints', { on: el.dataset.val === '1' }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     botSpeed(el) { emit('setBotSpeed', { speed: el.dataset.val }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
   };
 

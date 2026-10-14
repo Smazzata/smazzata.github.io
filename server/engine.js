@@ -30,7 +30,7 @@ function shuffle(a) {
   return a;
 }
 
-const { isJoker, isTwo, isWild, analyzeSequence, analyzeSet, analyzeMeld } = require('../shared/melds');
+const { isJoker, isTwo, isWild, analyzeSequence, analyzeSet, analyzeMeld, partitionMelds } = require('../shared/melds');
 
 function cardValue(c, v) {
   if (isJoker(c)) return v.joker;
@@ -289,18 +289,27 @@ function meld(g, seat, cardIds) {
   const p = g.players[seat];
   const team = teamOf(g, seat);
   const cards = takeFromHand(p, cardIds);
-  const an = analyzeMeld(cards, g.cfg);
-  if (!an) fail(g.cfg.allowSets ? 'Combinazione non valida (serve una scala o un tris di almeno 3 carte, max 1 matta)' : 'Combinazione non valida (servono scale di almeno 3 carte dello stesso seme, max 1 matta)');
-  if (an.type === 'set' && g.cfg.noDuplicateSets && team.melds.some((m) => m.type === 'set' && m.rank === an.rank)) {
-    fail('La tua squadra ha già un tris di quel valore: attacca le carte a quello');
+  // una o più combinazioni calate insieme (es. un tris e una scala selezionati in un colpo solo)
+  const groups = partitionMelds(cards, g.cfg);
+  if (!groups) fail(g.cfg.allowSets ? 'Combinazione non valida (serve una scala o un tris di almeno 3 carte, max 1 matta)' : 'Combinazione non valida (servono scale di almeno 3 carte dello stesso seme, max 1 matta)');
+  if (g.cfg.noDuplicateSets) {
+    const ranks = team.melds.filter((m) => m.type === 'set').map((m) => m.rank);
+    for (const an of groups.filter((x) => x.type === 'set')) {
+      if (ranks.includes(an.rank)) fail('La tua squadra ha già un tris di quel valore: attacca le carte a quello');
+      ranks.push(an.rank);
+    }
   }
+  requireVulnerabilityPoints(g, seat, cards);
   removeFromHand(p, cards);
-  const m = { id: ++g.meldSeq };
-  storeAnalysis(m, an);
-  team.melds.push(m);
+  let last = null;
+  for (const an of groups) {
+    last = { id: ++g.meldSeq };
+    storeAnalysis(last, an);
+    team.melds.push(last);
+  }
   if (!g.turnInfo.startHadMelds) g.turnInfo.newMeldPts += cards.reduce((s, c) => s + cardValue(c, g.cfg.values), 0);
-  addLog(g, `${p.name} cala ${cards.map(cardName).join(' ')}`);
-  setEvent(g, { type: 'meld', seat, meldId: m.id });
+  addLog(g, `${p.name} cala ${groups.map((an) => an.cards.map(cardName).join(' ')).join(' · ')}`);
+  setEvent(g, { type: 'meld', seat, meldId: last.id });
   postMeldCheck(g, seat);
 }
 
@@ -313,6 +322,7 @@ function addToMeld(g, seat, meldId, cardIds) {
   const cards = takeFromHand(p, cardIds);
   const an = analyzeMeld(m.cards.concat(cards), g.cfg, m.type);
   if (!an) fail('Quelle carte non si possono attaccare a questa combinazione');
+  requireVulnerabilityPoints(g, seat, cards);
   const wasBurraco = m.length >= 7;
   removeFromHand(p, cards);
   storeAnalysis(m, an);
@@ -323,13 +333,31 @@ function addToMeld(g, seat, meldId, cardIds) {
   postMeldCheck(g, seat);
 }
 
-function checkVulnerability(g, seat) {
+/**
+ * Da vulnerabili, senza giochi a inizio turno, ogni calata deve portare il turno ad almeno
+ * il minimo richiesto: così non si resta mai senza poter scartare (le giocate non si annullano).
+ */
+function requireVulnerabilityPoints(g, seat, cards) {
   const vul = g.cfg.vulnerability;
-  if (!vul || !g.turnInfo || g.turnInfo.startHadMelds || g.turnInfo.newMeldPts === 0) return;
-  const team = teamOf(g, seat);
-  if (teamScore(g, team) < g.cfg.target * vul.ratio) return;
-  if (g.turnInfo.newMeldPts < vul.min) {
-    fail(`Siete vulnerabili: la prima calata deve valere almeno ${vul.min} punti (ora ${g.turnInfo.newMeldPts}). Cala altro o premi Annulla.`);
+  if (!vul || !g.turnInfo || g.turnInfo.startHadMelds) return;
+  if (teamScore(g, teamOf(g, seat)) < g.cfg.target * vul.ratio) return;
+  const total = g.turnInfo.newMeldPts + cards.reduce((s, c) => s + cardValue(c, g.cfg.values), 0);
+  if (total < vul.min) {
+    fail(`Siete vulnerabili: la prima calata deve valere almeno ${vul.min} punti (questa ne vale ${total}). Seleziona più carte, anche più combinazioni insieme.`);
+  }
+}
+
+/** true se la squadra è vulnerabile e le calate di questo turno non bastano ancora per poter scartare */
+function vulnerabilityBlocked(g, seat) {
+  const vul = g.cfg.vulnerability;
+  if (!vul || !g.turnInfo || g.turnInfo.startHadMelds || g.turnInfo.newMeldPts === 0) return false;
+  if (teamScore(g, teamOf(g, seat)) < g.cfg.target * vul.ratio) return false;
+  return g.turnInfo.newMeldPts < vul.min;
+}
+
+function checkVulnerability(g, seat) {
+  if (vulnerabilityBlocked(g, seat)) {
+    fail(`Siete vulnerabili: la prima calata deve valere almeno ${g.cfg.vulnerability.min} punti (ora ${g.turnInfo.newMeldPts}). Cala altro per arrivarci.`);
   }
 }
 
@@ -424,7 +452,8 @@ function nextTurn(g) {
 
 function undo(g, seat) {
   assertTurn(g, seat, 'play');
-  if (!g.snapshot) fail('Niente da annullare');
+  // le giocate non si annullano: la vulnerabilità è controllata prima di calare
+  if (!g.snapshot || !vulnerabilityBlocked(g, seat)) fail('Le giocate fatte non si possono annullare');
   const snap = JSON.parse(g.snapshot);
   Object.assign(g, snap);
   if (snap.phase === 'draw') { g.snapshot = null; g.turnInfo = null; }
@@ -525,7 +554,7 @@ function viewFor(g, seat) {
     pozzetti: g.pozzetti.map((p) => p.length),
     turn: g.turn, phase: g.phase, lastTurn: g.lastTurn,
     mustDraw: g.pileTakeStreak >= 4 && g.stock.length > 0,
-    canUndo: !!g.snapshot && g.turn === seat && g.phase === 'play',
+    canUndo: false,
     singlePickId: g.turnInfo ? g.turnInfo.singlePickId : null,
     scores: g.scores, history: g.history,
     handResult: g.handResult, over: g.over, winners: g.winners,

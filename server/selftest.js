@@ -35,6 +35,22 @@ function unitTests() {
   assert(!E.analyzeMeld(full, cfg), 'A-A non ammessa nel classico senza matta');
   const semi = [c(3, 'H', 1), c(4, 'H', 2), c(5, 'H', 3), c(6, 'H', 4), c(7, 'H', 5), c(8, 'H', 6), c(9, 'H', 7), c(0, 'J', 8)];
   assert.strictEqual(E.meldKind(E.analyzeMeld(semi, cfg), cfg).kind, 'semi', 'semipulito');
+  // più combinazioni calate insieme
+  const M = require('../shared/melds');
+  const two = M.partitionMelds([c(7, 'H', 1), c(3, 'S', 2), c(7, 'S', 3), c(4, 'S', 4), c(7, 'C', 5), c(5, 'S', 6)], cfg);
+  assert(two && two.length === 2, 'tris + scala selezionati insieme');
+  assert(!M.partitionMelds([c(7, 'H', 1), c(3, 'S', 2), c(9, 'D', 3), c(4, 'S', 4), c(7, 'C', 5), c(5, 'S', 6)], cfg), 'divisione impossibile');
+
+  // vulnerabilità: una calata sotto i 75 punti viene rifiutata invece di bloccare il turno
+  const br = Rules.PRESETS.find((p) => p.id === 'aberto').rules;
+  const g = E.createGame({ rules: { ...br, players: 2 }, players: [{ name: 'A' }, { name: 'B', isBot: true }] });
+  g.scores = [2000, 0];
+  g.turn = 0; g.phase = 'draw';
+  g.players[0].hand = [c(3, 'H', 501), c(4, 'H', 502), c(5, 'H', 503), c(8, 'S', 504), c(9, 'S', 505), c(10, 'S', 506), c(11, 'S', 507), c(12, 'S', 508), c(13, 'S', 509), c(1, 'S', 510), c(6, 'D', 511)];
+  E.apply(g, 0, { type: 'draw' });
+  assert.throws(() => E.apply(g, 0, { type: 'meld', cardIds: [501, 502, 503] }), /vulnerabili/, 'calata da 15 punti rifiutata');
+  E.apply(g, 0, { type: 'meld', cardIds: [504, 505, 506, 507, 508, 509, 510] });
+  assert.strictEqual(g.teams[0].melds.length, 1, 'calata da 75 punti accettata');
   console.log('Test unitari OK');
 }
 

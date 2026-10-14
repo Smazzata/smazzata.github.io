@@ -49,7 +49,12 @@ function roomInfo(room) {
     rules: room.rules, n: room.n, preset: Rules.matchPreset(room.rules),
     seats: room.seats.map((s) => (s ? { name: s.name, isBot: !!s.isBot, connected: s.isBot || isConnected(s.token) } : null)),
     started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
+    hints: !!room.hints && humanCount(room) <= 1, humans: humanCount(room),
   };
+}
+
+function humanCount(room) {
+  return room.seats.filter((s) => s && !s.isBot).length;
 }
 
 function isConnected(token) {
@@ -316,9 +321,18 @@ io.on('connection', (socket) => {
     const room = getRoom(socket);
     const g = room.game;
     const seat = seatOfToken(room, socket.data.token);
+    if (humanCount(room) > 1 || !room.hints) throw new Error('I suggerimenti sono disponibili solo giocando da soli contro il computer');
     if (!g || g.turn !== seat || g.phase === 'handEnd') throw new Error('Il suggerimento è disponibile solo nel tuo turno');
     const hint = Bot.nextAction(JSON.parse(JSON.stringify(g)), seat, {});
     return { hint };
+  }));
+
+  socket.on('setHints', handler(({ on }) => {
+    const room = getRoom(socket);
+    requireHost(socket, room);
+    if (humanCount(room) > 1) throw new Error('In multiplayer i suggerimenti non sono disponibili');
+    room.hints = !!on;
+    broadcast(room);
   }));
 
   socket.on('setBotSpeed', handler(({ speed }) => {
@@ -417,7 +431,7 @@ function saveNow() {
       sessions: [...sessions],
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
-        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints,
       })),
     };
     fs.mkdirSync(DATA_DIR, { recursive: true });
