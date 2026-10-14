@@ -144,7 +144,7 @@ const HELPERS = `
     if (mv.frames < 10) throw new Error('moviola troppo corta');
     step(`moviola: ${mv.frames} fotogrammi`);
 
-    // 4. impostazioni: stili delle carte (anteprime) e coach
+    // 4. impostazioni: stili delle carte (anteprime)
     const st = await cdp.run(`
       document.querySelector('.modal-close').click(); await __W(300);
       __tap('[data-act="settings"]'); await __W(500);

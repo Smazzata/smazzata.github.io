@@ -39,20 +39,22 @@
       footer = `<button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Pronto ✓' : 'Prossima smazzata'}</button>
         ${waiting.length && imReady ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : ''}`;
     }
-    // riepilogo in alto: punti della smazzata in grande e barra verso la vittoria
+    // riepilogo in alto: il TOTALE della partita in grande, sotto i punti di questa smazzata e la barra verso il traguardo
     const best = Math.max(...hr.teams.map((t) => t.total));
+    const lead = Math.max(...hr.teams.map((t) => hr.scores[t.members[0]]));
     const pct = (v) => Math.max(0, Math.min(100, (v / g.cfg.target) * 100));
     const summary = hr.teams.map((t) => {
       const tot = hr.scores[t.members[0]];
       const names = t.members.map((x) => (x === g.you ? 'Tu' : g.players[x].name)).join(' & ');
-      return `<div class="rteam ${t.total === best ? 'win' : ''} ${t.members.includes(g.you) ? 'mine' : ''}">
-        <div class="rname">${t.total === best ? '★ ' : ''}${esc(names)}</div>
-        <div class="rpts ${t.total < 0 ? 'neg' : ''}" data-count="${t.total}" data-sign="1">${signed(t.total)}</div>
-        ${isS40Game()
-          ? `<div class="rbar pen"><i style="--from:${pct(t.total - tot)}%;--to:${pct(-tot)}%"></i></div>
-        <div class="rtot">penalità <b data-count="${-tot}">${-tot}</b> / ${g.cfg.target}</div></div>`
-          : `<div class="rbar"><i style="--from:${pct(tot - t.total)}%;--to:${pct(tot)}%"></i></div>
-        <div class="rtot"><b data-count="${tot}">${tot}</b> / ${g.cfg.target}</div></div>`}`;
+      const s40 = isS40Game();
+      return `<div class="rteam ${tot === lead ? 'win' : ''} ${t.members.includes(g.you) ? 'mine' : ''}">
+        <div class="rname">${esc(names)}</div>
+        <div class="rgrand ${s40 || tot < 0 ? 'neg' : ''}" data-count="${s40 ? -tot : tot}">${s40 ? -tot : tot}</div>
+        <div class="rlabel">${s40 ? 'penalità totale' : 'totale partita'}</div>
+        <div class="rhand ${t.total < 0 ? 'neg' : 'pos'}">${t.total === best ? '★ ' : ''}smazzata <b data-count="${t.total}" data-sign="1">${signed(t.total)}</b></div>
+        ${s40
+          ? `<div class="rbar pen"><i style="--from:${pct(t.total - tot)}%;--to:${pct(-tot)}%"></i></div><div class="rtot">eliminato a ${g.cfg.target}</div>`
+          : `<div class="rbar"><i style="--from:${pct(tot - t.total)}%;--to:${pct(tot)}%"></i></div><div class="rtot">si vince a ${g.cfg.target}</div>`}</div>`;
     }).join('');
     // righe del dettaglio: quelle tutte a zero non servono
     const detail = (label, key, extra) => (hr.teams.some((t) => t[key]) || (key === 'meldPts' && !isS40Game())
@@ -72,11 +74,9 @@
       ${detail(cap(P), 'pozPts')}
       ${detail('Carte in mano', 'handPts')}
       <tr class="tot"><td>Smazzata</td>${hr.teams.map((t) => `<td>${signed(t.total)}</td>`).join('')}</tr>
+      <tr class="grand"><td>${isS40Game() ? 'Penalità totale' : 'Totale partita'}</td>${hr.teams.map((t) => `<td>${isS40Game() ? -hr.scores[t.members[0]] : hr.scores[t.members[0]]}</td>`).join('')}</tr>
       </table>
       ${leftoverHTML(g, hr)}
-      ${g.coach && g.you >= 0 && S.prefs.coach !== false ? `<div class="coachbox"><h3>🧑‍🏫 Il coach</h3>${g.coach.length
-        ? `<ul>${g.coach.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>`
-        : '<p>Nessun errore evidente negli scarti: bravo! 👏</p>'}</div>` : ''}
       ${g.hasReplay && !S.room.daily ? '<div class="row" style="justify-content:center;margin:8px 0"><button class="btn small" data-act="replay">🎬 Rivedi la smazzata</button></div>' : ''}
       ${footer}</div>`);
     if (firstShow) countUp($$('#modal [data-count]'));

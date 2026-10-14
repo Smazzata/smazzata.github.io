@@ -702,13 +702,6 @@ body[data-theme="notte"] .dailycard { border-color: #3a413e; background: rgba(58
 .replay #rpRange { width: 100%; margin-top: 8px; }
 body[data-theme="notte"] .replay .rpcap { background: rgba(255,255,255,.08); }
 
-/* coach di fine smazzata */
-.coachbox { margin: 10px 0; padding: 8px 12px; border-radius: 12px; background: #eef6ff; border: 1px solid #c7dcf5; }
-.coachbox h3 { margin: 2px 0 4px; }
-.coachbox ul { margin: 4px 0; padding-left: 18px; font-size: 13px; }
-.coachbox li { margin: 4px 0; }
-.coachbox p { margin: 4px 0; font-size: 13px; }
-body[data-theme="notte"] .coachbox { background: #1b2733; border-color: #2d4257; }
 
 /* distribuzione: la mia mano entra carta per carta */
 .hand .card.dealin { animation: dealIn .38s cubic-bezier(.2,.8,.2,1) both; }
@@ -744,3 +737,16 @@ body[data-theme="notte"] .league.open .lghead { background: #3a321a; }
 .gamepick .preset b { font-size: 16px; }
 .scorebar .sc.out { opacity: .55; text-decoration: line-through; }
 .rteam .rbar.pen i { background: linear-gradient(90deg, #f2c14e, #d64545); }
+
+/* resoconto: il totale della partita in primo piano */
+.rteam .rgrand { font-size: 34px; font-weight: 900; color: #155d3a; line-height: 1.05; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.rteam .rgrand.neg { color: #b3261e; }
+.rteam .rlabel { font-size: 10px; text-transform: uppercase; letter-spacing: .6px; color: #777; font-weight: 700; }
+.rteam .rhand { font-size: 13px; margin-top: 4px; }
+.rteam .rhand.pos b { color: #155d3a; }
+.rteam .rhand.neg b { color: #b3261e; }
+.result tr.grand td { font-size: 18px; font-weight: 900; background: #fff3c8; border-top: 2px solid #333; padding: 9px 6px; }
+body[data-theme="notte"] .rteam .rgrand { color: #8fd3a8; }
+body[data-theme="notte"] .rteam .rgrand.neg { color: #ff9b9b; }
+body[data-theme="notte"] .rteam .rlabel { color: #a5aca8; }
+body[data-theme="notte"] .result tr.grand td { background: #4a3f1e; }

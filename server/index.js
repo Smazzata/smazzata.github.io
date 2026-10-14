@@ -8,11 +8,10 @@ const { Server } = require('socket.io');
 const E = require('./engine');
 const Bot = require('./bot');
 const Trophies = require('./trophies');
-const Coach = require('./coach');
 const Levels = require('./levels');
 const Daily = require('./daily');
 const Games = require('./games');
-/** motore, computer e coach del gioco di questo tavolo */
+/** motore e computer del gioco di questo tavolo */
 const GE = (room) => Games.of(room).E;
 const GBot = (room) => Games.of(room).Bot;
 const createPush = require('./push');
@@ -245,7 +244,7 @@ function broadcast(room) {
     const seat = seatOfToken(room, s.data.token);
     s.emit('state', {
       room: { ...roomInfo(room), you: seat, isHost: s.data.token === room.hostToken },
-      game: room.game ? { ...GE(room).viewFor(room.game, seat), coach: room.game.phase === 'handEnd' && room.coachTips ? room.coachTips[seat] || null : null } : null,
+      game: room.game ? GE(room).viewFor(room.game, seat) : null,
     });
   }
   scheduleBot(room);
@@ -617,14 +616,6 @@ function checkReady(room) {
 function afterAction(room) {
   const g = room.game;
   room.lastActionAt = Date.now();
-  // coach: a fine smazzata, consigli per ogni giocatore umano (li vede solo lui)
-  if (g && Games.idOf(room.rules) === 'burraco' && g.phase === 'handEnd' && g.lastReplay && g.lastReplay.handNo === g.handNo && room.coachKey !== `${room.gameSeq}:${g.handNo}`) {
-    room.coachKey = `${room.gameSeq}:${g.handNo}`;
-    room.coachTips = {};
-    room.seats.forEach((s, seat) => {
-      if (s && !s.isBot) { try { room.coachTips[seat] = Games.of(room).Coach.analyze(GE(room), g.lastReplay, seat); } catch (e) { room.coachTips[seat] = []; } }
-    });
-  }
   recordLeaderboard(room);
   if (g && g.turn !== room.lastTurnSeat) {
     room.lastTurnSeat = g.turn;
