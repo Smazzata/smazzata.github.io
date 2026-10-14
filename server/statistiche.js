@@ -7,6 +7,7 @@ const Games = require('./games');
 const Levels = require('./levels');
 const Trophies = require('./trophies');
 const ctx = require('./contesto');
+const Elo = require('./elo');
 const { io, sessions, leaderboard, daily } = ctx;
 // funzioni degli altri moduli (lette dal contesto al momento della chiamata)
 const tournamentsChanged = (...a) => ctx.tournamentsChanged(...a);
@@ -46,6 +47,15 @@ function recordLeaderboard(room) {
   const hr = g.handResult;
   const gameEnds = g.over && room.recordedGame !== room.gameSeq;
   if (gameEnds) recordSeries(room);
+  // punteggio Elo: si calcola una volta per partita, con i punteggi di tutti prima della partita
+  const eloGid = Games.idOf(room.rules);
+  const eloDelta = gameEnds && !room.tutorial ? Elo.deltas(
+    room.seats.map((s) => {
+      if (!s || s.isBot || !s.token) return { human: false, rating: Elo.BOT_RATING[room.botLevel || 'normale'] || Elo.START, games: 0 };
+      const x = ((leaderboard.get(s.token) || {}).byGame || {})[eloGid] || {};
+      return { human: true, rating: x.elo || Elo.START, games: x.games || 0 };
+    }),
+    g.teams.map((t) => t.members), g.winners || []) : null;
   room.seats.forEach((s, seat) => {
     if (!s || s.isBot || !s.token) return;
     const e = { ...STATS0, ...(leaderboard.get(s.token) || {}) };
@@ -82,6 +92,12 @@ function recordLeaderboard(room) {
         x.games++;
         if (g.winners.includes(seat)) x.wins++;
         x.points += g.scores[seat];
+      }
+      if (eloDelta) {
+        const before = gs.elo || Elo.START;
+        gs.elo = before + eloDelta[seat];
+        gs.eloMax = Math.max(gs.eloMax || Elo.START, gs.elo);
+        for (const sock of io.sockets.sockets.values()) if (sock.data.token === s.token) sock.emit('elo', { game: gid, before, after: gs.elo });
       }
       const team = g.teams.find((t) => t.members.includes(seat));
       e.history = [{
@@ -191,6 +207,7 @@ function publicStats(e) {
     name: e.name, games: e.games, wins: e.wins, points: e.points, burraco: e.burraco, hands: e.hands || 0,
     handsWon: e.handsWon || 0, closures: e.closures || 0, bestHand: e.bestHand == null ? null : e.bestHand,
     avgHand: e.hands ? Math.round((e.handPoints || 0) / e.hands) : null,
+    elo: e.elo || null, eloMax: e.eloMax || null,
   };
 }
 

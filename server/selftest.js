@@ -316,6 +316,19 @@ function dailyTests() {
   console.log(`sfida del giorno: ${seen.size} varianti, tutti i giochi OK`);
 }
 
+/** Punteggio Elo: chi vince contro un pari guadagna, contro il computer facile guadagna poco */
+function eloTests() {
+  const Elo = require('./elo');
+  const h = (rating, games = 20) => ({ human: true, rating, games });
+  let d = Elo.deltas([h(1000), h(1000)], [[0], [1]], [0]);
+  assert(d[0] === 12 && d[1] === -12, 'pari livello: +12 e -12');
+  d = Elo.deltas([h(1000), { human: false, rating: Elo.BOT_RATING.facile, games: 0 }], [[0], [1]], [0]);
+  assert(d[0] > 0 && d[0] <= 6 && d[1] === 0, 'battere il computer facile vale poco; il computer non cambia');
+  d = Elo.deltas([h(1000, 0), h(1000, 0), h(1000, 0), h(1000, 0)], [[0, 2], [1, 3]], [1, 3]);
+  assert(d[1] === 20 && d[3] === 20 && d[0] === -20, 'a coppie: tutta la coppia sale o scende');
+  console.log('punteggio Elo OK');
+}
+
 function trophyTests() {
   const T = require('./trophies');
   const hand = (kinds, total) => ({ burraco: kinds.map((kind) => ({ kind })), total });
@@ -439,6 +452,7 @@ function simulate(label, rules, n, games = 3) {
 
 unitTests();
 trophyTests();
+eloTests();
 dailyTests();
 leagueTests();
 storeTests();

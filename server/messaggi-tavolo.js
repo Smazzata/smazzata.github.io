@@ -106,8 +106,13 @@ module.exports.register = function register(socket, handler) {
     n = Number(n) === 2 ? 2 : 4;
     const sess = sessions.get(socket.data.token);
     if (!sess || !sess.nick) throw new E.GameError('Scegli prima il tuo nickname');
-    let room = [...rooms.values()].find((r) => r.quick === n && !r.game && r.seats.some((s) => !s)
-      && seatOfToken(r, socket.data.token) < 0 && r.seats.some((s) => s && !s.isBot && isConnected(s.token)));
+    // tra i tavoli veloci aperti si sceglie quello con i giocatori più vicini al mio punteggio di bravura (Elo)
+    const eloOf = (t) => ((((ctx.leaderboard.get(t) || {}).byGame || {}).burraco || {}).elo) || 1000;
+    const mine = eloOf(socket.data.token);
+    const avg = (r) => { const h = r.seats.filter((s) => s && !s.isBot); return h.reduce((a, s) => a + eloOf(s.token), 0) / Math.max(1, h.length); };
+    let room = [...rooms.values()].filter((r) => r.quick === n && !r.game && r.seats.some((s) => !s)
+      && seatOfToken(r, socket.data.token) < 0 && r.seats.some((s) => s && !s.isBot && isConnected(s.token)))
+      .sort((a, b) => Math.abs(avg(a) - mine) - Math.abs(avg(b) - mine))[0];
     if (!room) {
       const r = Rules.normalize({ ...Rules.PRESETS[0].rules, players: n });
       room = {

@@ -263,3 +263,9 @@ Vinci un torneo a eliminazione ‖ Win a knockout tournament ‖ Gana un torneo 
 Diplomato ‖ Graduate ‖ Graduado ‖ Formado
 Finisci la partita di allenamento ‖ Finish the practice game ‖ Termina la partida de práctica ‖ Termine a partida de treino
 Albo d'oro ‖ Roll of honour ‖ Palmarés ‖ Galeria de campeões
+Punteggio ‖ Rating ‖ Puntuación ‖ Pontuação
+Punteggio di bravura (Elo) ‖ Skill rating (Elo) ‖ Puntuación de habilidad (Elo) ‖ Pontuação de habilidade (Elo)
+Punteggio di bravura ‖ Skill rating ‖ Puntuación de habilidad ‖ Pontuação de habilidade
+{0} · record {1} ‖ {0} · best {1} ‖ {0} · récord {1} ‖ {0} · recorde {1}
+Classifica di tutti i giocatori di questo server. ‖ Rankings of all players on this server. ‖ Clasificación de todos los jugadores de este servidor. ‖ Ranking de todos os jogadores deste servidor.
+= punteggio di bravura: si parte da 1000, sale battendo avversari forti (anche il computer, secondo il livello) e scende perdendo. ‖ = skill rating: it starts at 1000, rises when you beat strong opponents (the computer too, depending on its level) and falls when you lose. ‖ = puntuación de habilidad: empieza en 1000, sube al ganar a rivales fuertes (también la computadora, según su nivel) y baja al perder. ‖ = pontuação de habilidade: começa em 1000, sobe ao vencer adversários fortes (também o computador, conforme o nível) e desce ao perder.

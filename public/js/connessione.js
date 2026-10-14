@@ -117,6 +117,11 @@
     if (seat !== g.you) Sound.play('select');
   }
   // livello del giocatore: si aggiorna a fine smazzata; quando sale, festa
+  // punteggio di bravura (Elo) aggiornato a fine partita
+  socket.on('elo', ({ game, after, before }) => {
+    const d = after - before;
+    setTimeout(() => toast(`${d >= 0 ? '📈' : '📉'} ${t('Punteggio')} ${RX.gameName({ game })}: ${after} (${d >= 0 ? '+' : ''}${d})`), 1800);
+  });
   socket.on('progress', (p) => {
     S.progress = p;
     if (p.up) {

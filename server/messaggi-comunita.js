@@ -27,9 +27,10 @@ module.exports.register = function register(socket, handler) {
     const allowed = friends ? new Set([me, ...(mine.friends || [])]) : null;
     const list = [...leaderboard.entries()]
       .filter(([token]) => !allowed || allowed.has(token))
-      .map(([token, e]) => { const x = (e.byGame && e.byGame[gid]) || GSTATS0; return { name: e.name, games: x.games, wins: x.wins, points: x.points, burraco: x.burraco, level: Levels.levelOf(e).level, me: token === me }; })
+      .map(([token, e]) => { const x = (e.byGame && e.byGame[gid]) || GSTATS0; return { name: e.name, games: x.games, wins: x.wins, points: x.points, burraco: x.burraco, elo: x.elo || 1000, level: Levels.levelOf(e).level, me: token === me }; })
       .filter((e) => e.games > 0)
-      .sort((a, b) => b.wins - a.wins || (b.wins / b.games) - (a.wins / a.games) || b.points - a.points)
+      // prima il punteggio di bravura (Elo), poi le vittorie
+      .sort((a, b) => b.elo - a.elo || b.wins - a.wins || b.points - a.points)
       .slice(0, 30);
     return { list, game: gid };
   }));

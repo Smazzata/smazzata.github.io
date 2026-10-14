@@ -135,19 +135,19 @@
     const row = (l, v) => `<tr><td>${l}</td><td><b>${v}</b></td></tr>`;
     if (['scopa', 'briscola', 'tressette', 'rubamazzetto', 'settemezzo'].includes(gid)) {
       return `<table>
-      ${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
+      ${st.elo ? row('Punteggio di bravura (Elo)', `${st.elo}${st.eloMax > st.elo ? ` · record ${st.eloMax}` : ''}`) : ''}${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
       ${row('Smazzate giocate', st.hands)}${row('Smazzate vinte', `${st.handsWon} (${pct(st.handsWon, st.hands)})`)}
     </table>`;
     }
     if (gid === 'scala40') {
       return `<table>
-      ${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
+      ${st.elo ? row('Punteggio di bravura (Elo)', `${st.elo}${st.eloMax > st.elo ? ` · record ${st.eloMax}` : ''}`) : ''}${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
       ${row('Smazzate giocate', st.hands)}${row('Chiusure', `${st.closures} (${pct(st.closures, st.hands)})`)}
       ${row('Penalità media a smazzata', st.avgHand == null ? '—' : -st.avgHand)}
     </table>`;
     }
     return `<table>
-      ${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
+      ${st.elo ? row('Punteggio di bravura (Elo)', `${st.elo}${st.eloMax > st.elo ? ` · record ${st.eloMax}` : ''}`) : ''}${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
       ${row('Smazzate giocate', st.hands)}${row('Smazzate vinte', `${st.handsWon} (${pct(st.handsWon, st.hands)})`)}
       ${row(gid === 'canasta' ? 'Canaste fatte' : 'Burraco fatti', st.burraco)}${row('Chiusure', st.closures)}
       ${row('Miglior smazzata', st.bestHand == null ? '—' : st.bestHand)}${row('Media punti a smazzata', st.avgHand == null ? '—' : st.avgHand)}
