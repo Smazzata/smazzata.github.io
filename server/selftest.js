@@ -120,6 +120,45 @@ function canastaTests() {
   console.log(`Canasta: combinazioni e ${hands} smazzate simulate OK`);
 }
 
+/** Scopa e Briscola: prese, punti e partite simulate (40 carte conservate, moviola, fine partita) */
+function presaTests() {
+  const SC = require('../shared/scopa');
+  const BR = require('../shared/briscola');
+  const c = (r, s, id) => ({ id, r, s });
+  // Scopa: la carta uguale ha la precedenza sulla somma
+  assert.deepStrictEqual(SC.captures(c(5, 'd', 1), [c(5, 'c', 2), c(2, 's', 3), c(3, 'b', 4)], {}).map((o) => o.map((x) => x.id)), [[2]]);
+  assert.strictEqual(SC.captures(c(7, 'd', 1), [c(3, 'c', 2), c(4, 's', 3), c(2, 'b', 4), c(5, 'b', 5)], {}).length, 2, 'due somme possibili');
+  assert.strictEqual(SC.primiera([c(7, 'd', 1), c(7, 'c', 2), c(6, 's', 3), c(1, 'b', 4)]), 21 + 21 + 18 + 16);
+  // Briscola: la briscola batte il seme di uscita, l'Asso batte il Tre
+  assert.strictEqual(BR.winner([c(3, 'd', 1), c(1, 'd', 2)], 'c'), 1);
+  assert.strictEqual(BR.winner([c(1, 'd', 1), c(2, 'c', 2)], 'c'), 1);
+  assert.strictEqual(BR.winner([c(1, 'd', 1), c(10, 's', 2)], 'c'), 0, 'seme diverso senza briscola: vince chi esce');
+  let hands = 0;
+  for (const [gid, ns] of [['scopa', [2, 4]], ['briscola', [2, 4]]]) {
+    const EG = require('./' + gid), BG = require('./' + gid + '-bot');
+    for (const n of ns) {
+      const g = EG.createGame({ rules: { players: n }, players: Array.from({ length: n }, (_, i) => ({ name: 'B' + i, isBot: true })) });
+      let guard = 0;
+      while (!g.over && guard++ < 5000) {
+        if (g.phase === 'handEnd') {
+          hands++;
+          const h = JSON.parse(JSON.stringify(g.lastReplay.start));
+          Object.assign(h, { log: [], events: [], history: [] });
+          for (const x of g.lastReplay.actions) EG.apply(h, x.s, x.a);
+          assert.deepStrictEqual(h.handResult.teams.map((t) => t.total), g.handResult.teams.map((t) => t.total), 'moviola ' + gid);
+          EG.nextHand(g);
+          continue;
+        }
+        EG.apply(g, g.turn, BG.nextAction(g, g.turn, {}));
+        const total = g.stock.length + (g.table || []).length + (g.trick || []).length + g.players.reduce((a, p) => a + p.hand.length, 0) + g.teams.reduce((a, t) => a + t.taken.length, 0);
+        assert.strictEqual(total, 40, gid + ': carte non conservate');
+      }
+      assert(g.over, gid + ': partita finita');
+    }
+  }
+  console.log(`Scopa e Briscola: prese, punti e ${hands} smazzate simulate OK`);
+}
+
 function storeTests() {
   const fs = require('fs');
   const os = require('os');
@@ -304,6 +343,7 @@ leagueTests();
 storeTests();
 scala40Tests();
 canastaTests();
+presaTests();
 filesTests();
 // TEST_RAPIDO=1 (npm run test:rapido): meno partite simulate, per le verifiche durante il lavoro.
 // Le prove su GitHub usano sempre la versione completa.

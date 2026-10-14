@@ -563,6 +563,32 @@ const step = (t) => console.log('✓ ' + t);
     K.sock.close();
     step('Canasta: smazzata a coppie giocata contro il computer');
 
+    // Scopa e Briscola: una smazzata ciascuna contro il computer (si gioca la prima presa possibile)
+    const SCm = require('../shared/scopa');
+    for (const gid of ['scopa', 'briscola']) {
+      const P = player('Presa' + gid); await P.hello(); { const rp = await P.call('setNick', { nick: 'Presa_' + gid }); assert(rp.ok, 'nickname: ' + rp.error); }
+      assert((await P.call('createRoom', { rules: { game: gid, players: 2 }, vsBots: true })).ok);
+      const ps = await P.until((st) => st.game, 'partita di ' + gid);
+      assert(ps.room.game === gid && ps.game.presa && ps.game.hand.length === 3, gid + ': 3 carte in mano');
+      const endP = Date.now() + 60000;
+      while (!(P.state.game && P.state.game.phase === 'handEnd')) {
+        if (Date.now() > endP) throw new Error('la smazzata di ' + gid + ' non finisce');
+        const g = P.state.game;
+        if (g.turn === g.you && g.phase === 'play') {
+          const card = g.hand[0];
+          const opts = gid === 'scopa' ? SCm.captures(card, g.table, g.cfg.rules) : [];
+          const r = await P.call('action', { type: 'play', cardId: card.id, ...(opts.length > 1 ? { take: opts[0].map((c) => c.id) } : {}) });
+          assert(r.ok, gid + ': giocata rifiutata ' + r.error);
+        }
+        await wait(20);
+      }
+      const hrP = P.state.game.handResult;
+      assert(hrP.rows && hrP.rows.length >= 2, gid + ': resoconto con le sue righe');
+      assert((await P.call('replay')).ok, 'moviola ' + gid);
+      P.sock.close();
+    }
+    step('Scopa e Briscola: una smazzata ciascuna contro il computer');
+
     A.sock.close(); B.sock.close();
     console.log('\nProva multigiocatore: tutto OK');
   } finally {

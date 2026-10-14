@@ -7,7 +7,7 @@
   const SUIT = { S: '♠', H: '♥', D: '♦', C: '♣' };
   const rankName = (r) => ({ 1: 'A', 11: 'J', 12: 'Q', 13: 'K' }[r] || String(r));
   // nella Scala 40 le matte sono solo i jolly
-  const isWild = (c) => c.r === 0 || (c.r === 2 && !isS40Game());
+  const isWild = (c) => c.r === 0 || (c.r === 2 && !isS40Game() && !isPresaGame());
 
   const SUIT_NAME = { S: 'picche', H: 'cuori', D: 'quadri', C: 'fiori' };
   /* Stile "Realistiche": i semi disposti come nei mazzi tradizionali (x, y in % della carta) */
@@ -35,7 +35,23 @@
   // indice della carta: le lettere di Asso e figure dipendono dallo stile (A/K/Q/J, R/D/V, R/D/F) e le decide il CSS
   const ixName = (r) => (r === 1 || r >= 11 ? `<span class="rk r${r}"></span>` : String(r));
 
+  /* Carte italiane (Scopa, Briscola): semi denari, coppe, spade, bastoni; Fante, Cavallo, Re */
+  const IT_SUIT = { d: '🪙', c: '🏆', s: '⚔️', b: '🪵' };
+  const IT_SUIT_NAME = { d: 'denari', c: 'coppe', s: 'spade', b: 'bastoni' };
+  const IT_RANK = { 8: 'F', 9: 'C', 10: 'R' };
+  const IT_FIG = { 8: '💂', 9: '🏇', 10: '🤴' };
+  const IT_NAME = { 1: 'Asso', 8: 'Fante', 9: 'Cavallo', 10: 'Re' };
+  function italianCardHTML(c, cls, attrs) {
+    const ix = `<span class="ix">${IT_RANK[c.r] || c.r}<i>${IT_SUIT[c.s]}</i></span>`;
+    let mid;
+    if (IT_FIG[c.r]) mid = `<span class="itfig"><em>${IT_FIG[c.r]}</em><i>${IT_SUIT[c.s]}</i></span>`;
+    else if (c.r === 1) mid = `<span class="itace">${IT_SUIT[c.s]}</span>`;
+    else mid = `<span class="itpips">${PIPS[c.r].map(([x, y]) => `<b style="left:${x}%;top:${y}%">${IT_SUIT[c.s]}</b>`).join('')}</span>`;
+    return `<div class="card it it-${c.s} ${cls}" data-card="${c.id}" aria-label="${IT_NAME[c.r] || c.r} di ${IT_SUIT_NAME[c.s]}" ${attrs}>${ix}${mid}</div>`;
+  }
+
   function cardHTML(c, cls = '', attrs = '') {
+    if (IT_SUIT[c.s]) return italianCardHTML(c, cls, attrs);
     if (c.r === 0) {
       return `<div class="card joker ${cls}" data-card="${c.id}" aria-label="Jolly" ${attrs}><span class="ix">J<br>O<br>L<br>L<br>Y</span><span class="jk">★</span></div>`;
     }
@@ -101,8 +117,8 @@
 
   function sortCards(cards, mode) {
     if (mode === 'smart') return smartSort(cards);
-    const suitOrder = { S: 0, H: 1, C: 2, D: 3 };
-    const rk = (c) => (c.r === 1 ? 14 : c.r);
+    const suitOrder = { S: 0, H: 1, C: 2, D: 3, d: 0, c: 1, s: 2, b: 3 };
+    const rk = (c) => (c.r === 1 && !IT_SUIT[c.s] ? 14 : c.r);
     return cards.slice().sort((a, b) => {
       const wa = isWild(a), wb = isWild(b);
       if (wa !== wb) return wa ? 1 : -1;

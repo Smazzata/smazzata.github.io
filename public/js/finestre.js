@@ -11,7 +11,7 @@
     const P = g.cfg.pozzettoName;
     const cols = hr.teams.map((t) => `<th>${esc(t.members.map((s) => (s === g.you ? 'Tu' : g.players[s].name)).join(' & '))}</th>`).join('');
     const row = (label, fn) => `<tr><td>${label}</td>${hr.teams.map((t) => `<td>${fn(t)}</td>`).join('')}</tr>`;
-    const reason = hr.reason === 'surrender'
+    const reason = hr.reason === 'tie' ? 'Smazzata pari: 60 a 60.' : hr.reason === 'end' ? 'Smazzata terminata.' : hr.reason === 'surrender'
       ? `🏳️ <b>${esc(hr.surrendered.map((x) => (x === g.you ? 'Tu' : g.players[x].name)).join(' e '))}</b> ${hr.surrendered.length > 1 ? 'si sono arresi' : (hr.surrendered[0] === g.you ? 'ti sei arreso' : 'si è arreso')}.`
       : hr.reason === 'close' ? `<b>${esc(g.players[hr.closer].name)}</b> ha chiuso la smazzata${hr.inHand ? ' <b>in mano</b> 🎩' : ''}.` : 'Il tallone è finito.';
     const humans = S.room.seats.map((s, i) => (s && !s.isBot ? i : -1)).filter((i) => i >= 0);
@@ -54,7 +54,7 @@
         <div class="rhand ${t.total < 0 ? 'neg' : 'pos'}">${t.total === best ? '★ ' : ''}smazzata <b data-count="${t.total}" data-sign="1">${signed(t.total)}</b></div>
         ${s40
           ? `<div class="rbar pen"><i style="--from:${pct(t.total - tot)}%;--to:${pct(-tot)}%"></i></div><div class="rtot">eliminato a ${g.cfg.target}</div>`
-          : `<div class="rbar"><i style="--from:${pct(tot - t.total)}%;--to:${pct(tot)}%"></i></div><div class="rtot">si vince a ${g.cfg.target}</div>`}</div>`;
+          : `<div class="rbar"><i style="--from:${pct(tot - t.total)}%;--to:${pct(tot)}%"></i></div><div class="rtot">${g.game === 'briscola' ? `vince chi arriva a ${g.cfg.target} ${g.cfg.target === 1 ? 'smazzata' : 'smazzate'}` : `si vince a ${g.cfg.target}`}</div>`}</div>`;
     }).join('');
     // righe del dettaglio: quelle tutte a zero non servono
     const detail = (label, key, extra) => (hr.teams.some((t) => t[key]) || (key === 'meldPts' && !isS40Game())
@@ -68,7 +68,8 @@
       <h2>Fine smazzata ${g.handNo}</h2><p>${reason}</p>
       <div class="rsum">${summary}</div>
       <table><tr><th></th>${cols}</tr>
-      ${detail('Carte calate', 'meldPts')}
+      ${hr.rows ? hr.rows.map((rw) => `<tr><td>${esc(rw.label)}</td>${rw.values.map((v, i) => `<td class="${rw.plain ? '' : v > 0 ? 'pos' : ''}">${rw.plain ? v : signed(v)}${rw.notes && rw.notes[i] ? `<br><span class="muted small">${esc(rw.notes[i])}</span>` : ''}</td>`).join('')}</tr>`).join('') : ''}
+      ${hr.rows ? '' : detail('Carte calate', 'meldPts')}
       ${detail(`Bonus ${g.cfg.burracoName}`, 'bonusPts', (t) => (t.burraco.length ? `<div class="bchips">${t.burraco.map((b) => `<span class="bchip ${kindCls(b)}">${esc(cap(b.label.replace(/^(burraco|canastra) /i, '')))} +${b.bonus}</span>`).join('')}</div>` : ''))}
       ${detail('Chiusura', 'closePts')}
       ${detail(cap(P), 'pozPts')}

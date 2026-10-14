@@ -132,8 +132,11 @@ function draw(g, seat) {
   assertTurn(g, seat, 'draw');
   if (!g.stock.length) return endHand(g, 'stock', null);
   const p = g.players[seat];
+  const before = p.hand.length;
   p.hand.push(g.stock.pop());
   layRedThrees(g, seat);
+  // un tre rosso pescato con l'ultima carta del tallone non si può sostituire: il tallone è finito
+  if (p.hand.length === before) return endHand(g, 'stock', null);
   addLog(g, `${p.name} pesca dal tallone`);
   setEvent(g, { type: 'draw', seat });
   beginPlay(g, seat);

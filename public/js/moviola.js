@@ -51,7 +51,8 @@
       text: x ? g.log.slice(logLen).filter((l) => !l.startsWith('—')).join(' · ') : 'Carte appena distribuite',
       hands: g.players.map((p) => ({ name: p.name, cards: sortCards(p.hand, 'suit') })),
       teams: g.teams.map((t) => ({ members: t.members, melds: t.melds.map((m) => ({ ...m, ...E.meldKind(m, g.cfg) })) })),
-      discard: g.discard.slice(-1)[0] || null, discardCount: g.discard.length, stock: g.stock.length,
+      discard: (g.discard || []).slice(-1)[0] || null, discardCount: (g.discard || []).length, stock: g.stock.length,
+      table: g.table ? g.table.slice() : g.trick ? g.trick.map((x) => x.card) : null,
       hot,
     };
   }
@@ -69,6 +70,7 @@
       <div class="rpcap"><b>${RP.i}/${RP.frames.length - 1}</b> · ${esc(f.text || (f.seat != null ? `${f.hands[f.seat].name} gioca` : '…'))}</div>
       <div class="rpmid">${f.discard ? cardHTML(f.discard, `mini ${f.hot.has(f.discard.id) ? 'fresh' : ''}`) : '<span class="muted small">nessuno scarto</span>'}
         <span class="muted small">Scarti ${f.discardCount} · Tallone ${f.stock}</span></div>
+      ${f.table ? `<div class="rpp"><b>Tavolo</b><div class="rphand">${f.table.length ? f.table.map((c) => cardHTML(c, `mini ${f.hot.has(c.id) ? 'fresh' : ''}`)).join('') : '<span class="muted small">vuoto</span>'}</div></div>` : ''}
       ${order.map((s) => `<div class="rpp ${f.seat === s ? 'on' : ''}"><b>${esc(f.hands[s].name)}${s === RP.you ? ' (tu)' : ''}</b> <span class="muted small">${f.hands[s].cards.length} carte</span>
         <div class="rphand">${f.hands[s].cards.map((c) => cardHTML(c, `mini ${f.hot.has(c.id) ? 'fresh' : ''}`)).join('')}</div></div>`).join('')}
       ${f.teams.map((t) => `<div class="rpteam"><b>${esc(t.members.map((s) => f.hands[s].name).join(' & '))}</b><div class="melds">${meldsOf(t)}</div></div>`).join('')}`;

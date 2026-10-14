@@ -26,7 +26,7 @@
   const S40R = window.BurracoScala40;
   const CANR = window.BurracoCanasta;
   // regole degli altri giochi (oltre al Burraco): stesso "contratto" (normalize, SCHEMA, PRESET, describe)
-  const OTHER = { scala40: S40R, canasta: CANR };
+  const OTHER = { scala40: S40R, canasta: CANR, scopa: window.BurracoScopa, briscola: window.BurracoBriscola };
   const otherOf = (r) => (r && OTHER[r.game]) || null;
   const RX = {
     isS40: (r) => !!r && r.game === 'scala40',
@@ -37,11 +37,13 @@
     matchPreset: (r) => (otherOf(r) ? r.game : R.matchPreset(r)),
     describe: (r) => (otherOf(r) ? otherOf(r).describe(r) : R.describe(r)),
     presetById: (id) => (OTHER[id] ? OTHER[id].PRESET : R.PRESETS.find((p) => p.id === id)),
-    gameName: (r) => (r && r.game === 'scala40' ? 'Scala 40' : r && r.game === 'canasta' ? 'Canasta' : 'Burraco'),
+    gameName: (r) => ({ scala40: 'Scala 40', canasta: 'Canasta', scopa: 'Scopa', briscola: 'Briscola' }[r && r.game] || 'Burraco'),
   };
   /** la partita in corso è di Scala 40? di Canasta? */
   const isS40Game = () => !!(S.game && S.game.game === 'scala40');
   const isCanastaGame = () => !!(S.game && S.game.game === 'canasta');
+  /** giochi a prese (carte italiane): Scopa e Briscola */
+  const isPresaGame = () => !!(S.game && S.game.presa);
 
   const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche' };
   const S = {

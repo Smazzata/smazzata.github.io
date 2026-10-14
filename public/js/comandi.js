@@ -170,6 +170,10 @@
     }
     const g = S.game;
     const card = e.target.closest('#hand [data-card]');
+    if (card && g && g.presa) {
+      if (g.turn === g.you && g.phase !== 'handEnd') presaPlay(Number(card.dataset.card));
+      return;
+    }
     if (card && g) {
       const id = Number(card.dataset.card);
       const now = Date.now();

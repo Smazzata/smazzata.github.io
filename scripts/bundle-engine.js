@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const MODULES = ['shared/rules', 'shared/melds', 'shared/scala40', 'shared/canasta', 'server/engine', 'server/bot', 'server/scala40', 'server/scala40-bot', 'server/canasta', 'server/canasta-bot'];
+const MODULES = ['shared/rules', 'shared/melds', 'shared/scala40', 'shared/canasta', 'shared/scopa', 'shared/briscola', 'server/engine', 'server/bot', 'server/scala40', 'server/scala40-bot', 'server/canasta', 'server/canasta-bot', 'server/scopa', 'server/scopa-bot', 'server/briscola', 'server/briscola-bot'];
 
 function bundle() {
   const defs = MODULES.map((name) => {
@@ -41,6 +41,8 @@ function bundle() {
     burraco: { E: self.BurracoEngine, Bot: self.BurracoBot },
     scala40: { E: load('server/scala40'), Bot: load('server/scala40-bot') },
     canasta: { E: load('server/canasta'), Bot: load('server/canasta-bot') },
+    scopa: { E: load('server/scopa'), Bot: load('server/scopa-bot') },
+    briscola: { E: load('server/briscola'), Bot: load('server/briscola-bot') },
   };
 })();
 `;

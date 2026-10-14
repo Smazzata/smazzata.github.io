@@ -102,6 +102,28 @@
     return out;
   }
 
+  /** Centro del tavolo per Scopa e Briscola */
+  function presaCenterHTML(g) {
+    const name = (s) => (s === g.you ? 'Tu' : g.players[s].name);
+    const teamLbl = (t) => esc(t.members.map(name).join(' & '));
+    if (g.game === 'scopa') {
+      const fresh = new Set(g.lastTake ? g.lastTake.cardIds : []);
+      return `<div class="presa">
+        <div class="ptable">${g.table.length ? g.table.map((c) => cardHTML(c, fresh.has(c.id) ? 'fresh' : '')).join('') : '<span class="empty">Tavolo vuoto</span>'}</div>
+        <div class="pinfo"><span>Mazzo <b>${g.stockCount}</b></span>${g.teams.map((t) => `<span>${teamLbl(t)}: <b>${t.taken}</b> carte${t.scope ? ` · <b>${t.scope}</b> ${t.scope === 1 ? 'scopa' : 'scope'} 🧹` : ''}</span>`).join('')}</div>
+      </div>`;
+    }
+    // briscola
+    const trick = g.trick.length ? g.trick : (g.lastTrick ? g.lastTrick.cards : []);
+    const winner = !g.trick.length && g.lastTrick ? g.lastTrick.winner : null;
+    return `<div class="presa">
+      <div class="ptrump">${g.stockCount ? `Mazzo <b>${g.stockCount}</b>` : 'Mazzo finito'} · briscola ${cardHTML(g.trump, g.stockCount ? '' : 'mini')}</div>
+      <div class="ptrick">${trick.length ? trick.map((x) => `<span class="tc ${x.seat === winner ? 'win' : ''}">${cardHTML(x.card)}<span>${esc(name(x.seat))}</span></span>`).join('') : '<span class="empty">Tocca a chi apre il giro</span>'}</div>
+      ${!g.trick.length && g.lastTrick ? `<div class="pinfo"><span>Ha preso <b>${esc(name(g.lastTrick.winner))}</b>${g.lastTrick.points ? ` · ${g.lastTrick.points} punti` : ''}</span></div>` : ''}
+      <div class="pinfo">${g.teams.map((t) => `<span>${teamLbl(t)}: <b>${t.taken}</b> carte prese</span>`).join('')}</div>
+    </div>`;
+  }
+
   function meldHTML(m, mine, preview) {
     const short = { clean: 'Pulito', dirty: 'Sporco', semi: 'Semi', real13: '+500', real14: '+1000' }[m.kind] || '';
     const attrs = `data-mid="${m.id}"` + (mine ? ` data-meld="${m.id}" data-drop="meld"` : '');
@@ -124,9 +146,10 @@
     if (g.phase === 'handEnd') return g.over ? 'Partita terminata' : 'Smazzata terminata';
     const cur = g.players[g.turn];
     if (g.turn !== me) return `Turno di <b>${esc(cur.name)}</b>${g.lastTurn ? ' · <b>ultimo giro</b>' : ''}`;
+    if (g.presa) return 'Tocca a te: tocca una carta per giocarla';
     if (g.phase === 'draw') {
       if (g.mustDraw) return 'Tocca a te: tocca il <b>tallone</b> per pescare';
-      if (isCanastaGame() && g.discardCount) return g.pileBlocked ? 'Tocca il <b>tallone</b> (il monte è bloccato)' : `Tocca il <b>tallone</b>, oppure seleziona ${g.pileFrozen ? 'due carte uguali' : 'le carte da usare'} con quella in cima e tocca il <b>monte</b>`;
+      if (isCanastaGame() && g.discardCount) return g.pileBlocked ? 'Tocca a te: tocca il <b>tallone</b> (il monte è bloccato)' : `Tocca a te: tocca il <b>tallone</b>, oppure seleziona ${g.pileFrozen ? 'due carte uguali' : 'le carte da usare'} con quella in cima e tocca il <b>monte</b>`;
       if (g.cfg.pile === 'closed' && g.discardCount) return 'Tocca il <b>tallone</b>, oppure seleziona carte da combinare con la cima e tocca gli <b>scarti</b>';
       return 'Tocca a te: tocca il <b>tallone</b> o gli <b>scarti</b>';
     }
@@ -308,7 +331,7 @@
 
     return `<div class="game ${myTurn ? 'myturn' : ''}">
       <div class="topbar">
-        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : `<b>${r.slow ? '🐢 ' : ''}${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, ${isS40Game() ? `eliminato a ${g.cfg.target}` : `si vince a ${g.cfg.target}`}">${isS40Game() ? 'Scala 40 · ' : isCanastaGame() ? 'Canasta · ' : ''}smazzata ${g.handNo}</span></span>
+        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : `<b>${r.slow ? '🐢 ' : ''}${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, ${isS40Game() ? `eliminato a ${g.cfg.target}` : `si vince a ${g.cfg.target}`}">${g.game && g.game !== 'burraco' ? `${RX.gameName(g.cfg.rules)} · ` : ''}smazzata ${g.handNo}</span></span>
         <button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
         ${OFFLINE ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}
         <button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>
@@ -324,7 +347,7 @@
         return (w ? `<div class="ticker warn w${w.level}">${w.text}</div>` : recap ? '' : `<div class="ticker" data-act="log" title="Ultima mossa (tocca per la cronaca)">${esc(lastMove(g))}</div>`) + recap;
       })()}
       ${surrenderBarHTML(g, r)}
-      <div class="felt" id="felt">${others}${center}${mineZone}</div>
+      <div class="felt" id="felt">${g.presa ? presaCenterHTML(g) : others + center + mineZone}</div>
       ${r.tutorial && !S.coachOff ? `<div class="coach">🎓 ${coachTip(g)} <button class="ico" data-act="coachOff" title="Nascondi">✕</button></div>` : ''}
       <div class="statusbar ${myTurn ? 'on' : ''}">
         <span class="msg">${S.turnEnd && g.phase !== 'handEnd' && myTurn ? '<b class="cd" data-cd></b> ' : ''}${statusText(g)}</span>

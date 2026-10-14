@@ -8,6 +8,8 @@
 const Rules = require('../shared/rules');
 const S40 = require('../shared/scala40');
 const CAN = require('../shared/canasta');
+const SCO = require('../shared/scopa');
+const BRI = require('../shared/briscola');
 
 const GAMES = {
   burraco: {
@@ -27,6 +29,18 @@ const GAMES = {
     E: require('./canasta'), Bot: require('./canasta-bot'),
     normalize: (r) => CAN.normalize(r),
     presetOf: () => 'canasta',
+  },
+  scopa: {
+    id: 'scopa', name: 'Scopa',
+    E: require('./scopa'), Bot: require('./scopa-bot'),
+    normalize: (r) => SCO.normalize(r),
+    presetOf: () => 'scopa',
+  },
+  briscola: {
+    id: 'briscola', name: 'Briscola',
+    E: require('./briscola'), Bot: require('./briscola-bot'),
+    normalize: (r) => BRI.normalize(r),
+    presetOf: () => 'briscola',
   },
 };
 

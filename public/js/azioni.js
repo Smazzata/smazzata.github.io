@@ -17,6 +17,22 @@
     if (!r.ok) { S.screen = 'home'; render(); }
   }
 
+  /** Scopa/Briscola: gioca una carta; nella Scopa, se la carta può prendere in più modi, si sceglie la presa */
+  function presaPlay(cardId) {
+    const g = S.game;
+    if (g.game === 'scopa') {
+      const card = g.hand.find((c) => c.id === cardId);
+      const opts = window.BurracoScopa.captures(card, g.table, g.cfg.rules);
+      if (opts.length > 1) {
+        openModal('takeChoice', `<h2>Cosa prendi?</h2><p class="muted small">Con ${cardHTML(card, 'mini')} puoi prendere:</p>
+          ${opts.map((o) => `<button class="takeopt" data-act="scopaTake" data-card="${cardId}" data-take="${o.map((c) => c.id).join(',')}">${o.map((c) => cardHTML(c)).join('')}</button>`).join('')}`);
+        return;
+      }
+    }
+    Sound.play('card');
+    act('play', { cardId });
+  }
+
   async function act(type, extra = {}) {
     if (type === 'add' && isS40Game() && extra.cardIds && extra.cardIds.length === 1) {
       const g = S.game;
@@ -144,6 +160,7 @@
     roomRules() { rulesModal(S.room.rules); },
     daily() { if (!requireName()) return; dailyModal(); },
     replay() { openReplay(); },
+    scopaTake(el) { closeModal(); act('play', { cardId: Number(el.dataset.card), take: el.dataset.take.split(',').map(Number) }); },
     appUpdateLater() { store.set('bur_apk_later', S.appUpdate.n); S.appUpdate.dismissed = true; render(); },
     playerMenu(el) { playerMenu(el.dataset.nick); },
     async addFriendNick(el) {
@@ -268,6 +285,12 @@
       let text;
       switch (h.type) {
         case 'draw': text = 'Pesca dal tallone'; break;
+        case 'play': {
+          const card = byId.get(h.cardId);
+          text = `Gioca ${card ? cardLabel(card) : 'la carta evidenziata'}${h.take && h.take.length ? ' e prendi' : ''}`;
+          if (card) S.selected = new Set([card.id]);
+          break;
+        }
         case 'takePile':
           text = h.cardIds && h.cardIds.length ? `Raccogli gli scarti e combina la carta in cima con ${names(h.cardIds)}` : 'Raccogli gli scarti: ti servono';
           if (h.cardIds) S.selected = new Set(h.cardIds);
@@ -369,11 +392,11 @@
       const friends = !!S.lbFriends, game = S.lbGame || 'burraco';
       const r = await emit('leaderboard', { friends, game });
       if (!r.ok) return;
-      const tabs = `<div class="row tabs"><button class="swatch ${game === 'burraco' ? 'on' : ''}" data-act="leaders" data-game="burraco">🃏 Burraco</button><button class="swatch ${game === 'scala40' ? 'on' : ''}" data-act="leaders" data-game="scala40">🂡 Scala 40</button><button class="swatch ${game === 'canasta' ? 'on' : ''}" data-act="leaders" data-game="canasta">🎴 Canasta</button></div>
+      const tabs = `<div class="row tabs"><button class="swatch ${game === 'burraco' ? 'on' : ''}" data-act="leaders" data-game="burraco">🃏 Burraco</button><button class="swatch ${game === 'scala40' ? 'on' : ''}" data-act="leaders" data-game="scala40">🂡 Scala 40</button><button class="swatch ${game === 'canasta' ? 'on' : ''}" data-act="leaders" data-game="canasta">🎴 Canasta</button><button class="swatch ${game === 'scopa' ? 'on' : ''}" data-act="leaders" data-game="scopa">🧹 Scopa</button><button class="swatch ${game === 'briscola' ? 'on' : ''}" data-act="leaders" data-game="briscola">🍷 Briscola</button></div>
         <div class="row tabs"><button class="swatch ${friends ? '' : 'on'}" data-act="leaders" data-friends="0">Tutti</button><button class="swatch ${friends ? 'on' : ''}" data-act="leaders" data-friends="1">Solo amici</button></div>`;
-      const rows = r.list.map((e, i) => `<tr class="${e.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][i] || i + 1}</td><td style="text-align:left">${esc(e.name)} ${lvlHTML(e.level)}${e.me ? ' (tu)' : ''}</td><td>${e.wins}/${e.games}</td><td>${Math.round((e.wins / e.games) * 100)}%</td><td>${game === 'scala40' ? '' : e.burraco}</td></tr>`).join('');
+      const rows = r.list.map((e, i) => `<tr class="${e.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][i] || i + 1}</td><td style="text-align:left">${esc(e.name)} ${lvlHTML(e.level)}${e.me ? ' (tu)' : ''}</td><td>${e.wins}/${e.games}</td><td>${Math.round((e.wins / e.games) * 100)}%</td><td>${game === 'canasta' || game === 'burraco' ? e.burraco : ''}</td></tr>`).join('');
       openModal('leaders', `<div class="result"><h2>🏆 Classifica</h2>${tabs}
-        ${rows ? `<table><tr><th></th><th style="text-align:left">Giocatore</th><th>Vinte</th><th>%</th><th>${game === 'scala40' ? '' : game === 'canasta' ? 'Canaste' : 'Burraco'}</th></tr>${rows}</table>` : '<p class="muted">Ancora nessuna partita completata. La classifica conta le partite finite tra giocatori umani (anche contro il computer).</p>'}
+        ${rows ? `<table><tr><th></th><th style="text-align:left">Giocatore</th><th>Vinte</th><th>%</th><th>${game === 'canasta' ? 'Canaste' : game === 'burraco' ? 'Burraco' : ''}</th></tr>${rows}</table>` : '<p class="muted">Ancora nessuna partita completata. La classifica conta le partite finite tra giocatori umani (anche contro il computer).</p>'}
         <p class="muted small">Classifica di tutti i giocatori di questo server.</p></div>`);
     },
     resetStats() { if (confirm('Azzerare le statistiche?')) { store.set('bur_stats', {}); statsModal(); } },
@@ -386,5 +409,6 @@
   };
 
   function cardLabel(c) {
+    if (IT_SUIT[c.s]) return `${IT_NAME[c.r] || c.r} di ${IT_SUIT_NAME[c.s]}`;
     return c.r === 0 ? 'Jolly' : rankName(c.r) + SUIT[c.s];
   }

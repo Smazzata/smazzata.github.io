@@ -69,8 +69,9 @@ const HELPERS = `
       const felt = document.querySelector('#felt');
       if (felt && felt.scrollHeight > felt.clientHeight + 2) scroll++;
       const st = __status();
-      if (/tocca il/.test(st)) __tap('.stock');
-      else if (/Seleziona le carte|Tocca ＋/.test(st)) {
+      const myTurn = /Tocca a te/.test(document.title);
+      if (/tocca il/i.test(st)) __tap('.stock');
+      else if (myTurn) {
         const cs = [...document.querySelectorAll('#hand .card')];
         if (cs.length) { __tap(cs[cs.length - 1]); await __W(120); __tap('.pile'); turns++; }
       }
@@ -188,6 +189,31 @@ const HELPERS = `
       return __playHand(240000);`, 260000);
     await shot('04b-canasta-fine-smazzata');
     step(`Canasta: smazzata giocata toccando (${can.turns} turni)`);
+
+    // 5c. Scopa: si gioca toccando le carte (se servono, si sceglie la presa)
+    await cdp.run(`
+      __tap('[data-act="leave"]'); await __W(400);
+      if (document.querySelector('[data-act="leaveNow"]')) { __tap('[data-act="leaveNow"]'); await __W(800); }
+      if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); __tap('[data-act="leave"]'); await __W(800); }
+      __tap(__btn('Nuova partita')); await __W(400);
+      __tap('[data-act="pickGame"][data-game="scopa"]'); await __W(400);
+      __tap(__btn('Gioca subito contro')); await __W(1500);
+      if (document.querySelectorAll('#hand .card.it').length !== 3) throw new Error('Scopa: niente carte italiane in mano');
+      return true;`, 30000);
+    await shot('04c-scopa-tavolo');
+    const sco = await cdp.run(`
+      const end = Date.now() + 120000; let plays = 0;
+      while (Date.now() < end && !document.querySelector('#modal:not(.hidden) .result')) {
+        const opt = document.querySelector('#modal:not(.hidden) .takeopt');
+        if (opt) { __tap(opt); plays++; }
+        else if (/Tocca a te/.test(__status())) { const c = document.querySelector('#hand .card'); if (c) { __tap(c); plays++; } }
+        await __W(300);
+      }
+      if (!document.querySelector('#modal:not(.hidden) .result')) throw new Error('la smazzata di Scopa non finisce');
+      await __W(1500);
+      return { plays };`, 150000);
+    await shot('04c-scopa-fine-smazzata');
+    step(`Scopa: smazzata giocata toccando (${sco.plays} giocate)`);
 
     // 6. gioco senza internet
     const off = await cdp.run(`

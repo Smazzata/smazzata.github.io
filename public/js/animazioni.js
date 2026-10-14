@@ -133,6 +133,12 @@
   function statsTable(st, gid) {
     const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
     const row = (l, v) => `<tr><td>${l}</td><td><b>${v}</b></td></tr>`;
+    if (gid === 'scopa' || gid === 'briscola') {
+      return `<table>
+      ${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
+      ${row('Smazzate giocate', st.hands)}${row('Smazzate vinte', `${st.handsWon} (${pct(st.handsWon, st.hands)})`)}
+    </table>`;
+    }
     if (gid === 'scala40') {
       return `<table>
       ${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
@@ -152,7 +158,7 @@
     if (!list.length) return '<p class="muted">Nessuna partita completata.</p>';
     return list.map((h) => `<div class="hist ${h.won ? 'won' : 'lost'}">
       <span class="hres">${h.won ? '🏆' : '—'}</span>
-      <span class="grow"><b>${h.won ? 'Vinta' : 'Persa'}</b> · ${fmtDate(h.at)} · ${h.game === 'scala40' ? 'Scala 40' : h.game === 'canasta' ? 'Canasta' : PRESET_NAMES[h.preset] || h.preset}${h.hands ? ` · ${h.hands} smazzate` : ''}<br>
+      <span class="grow"><b>${h.won ? 'Vinta' : 'Persa'}</b> · ${fmtDate(h.at)} · ${({ scala40: 'Scala 40', canasta: 'Canasta', scopa: 'Scopa', briscola: 'Briscola' })[h.game] || PRESET_NAMES[h.preset] || h.preset}${h.hands ? ` · ${h.hands} smazzate` : ''}<br>
       <span class="muted small">${h.teams.map((t) => `${t.mine ? '<b>' : ''}${t.names.map(esc).join(' & ')} ${t.score}${t.mine ? '</b>' : ''}`).join(' · ')}</span></span></div>`).join('');
   }
 
@@ -160,7 +166,7 @@
   function byGameHTML(byGame, total) {
     const games = Object.entries(byGame || {});
     if (!games.length) return total ? statsTable(total) : '<p class="muted">Gioca la tua prima smazzata per vedere le statistiche.</p>';
-    const names = { burraco: '🃏 Burraco', scala40: '🂡 Scala 40', canasta: '🎴 Canasta' };
+    const names = { burraco: '🃏 Burraco', scala40: '🂡 Scala 40', canasta: '🎴 Canasta', scopa: '🧹 Scopa', briscola: '🍷 Briscola' };
     return games.map(([gid, st]) => `<h3>${names[gid] || gid}</h3>${statsTable(st, gid)}`).join('');
   }
 
