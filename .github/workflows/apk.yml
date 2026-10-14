@@ -37,6 +37,9 @@ jobs:
       - name: Compila e firma l'APK
         working-directory: android-app
         run: |
+          # apksigner sta tra i build-tools dell'SDK Android, non nel PATH
+          export PATH="$PATH:$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)"
+          which apksigner
           npx cap build android --androidreleasetype APK --signing-type apksigner \
             --keystorepath "$PWD/burraco.p12" --keystorepass burraco-amici \
             --keystorealias burraco --keystorealiaspass burraco-amici
