@@ -331,6 +331,7 @@
       <h4>Suoni</h4>
       <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
       ${S.room && S.room.isHost ? `<h4>Tempo per turno</h4>${turnTimeHTML(S.room.turnTime)}` : ''}
+      ${S.room && S.room.isHost ? `<h4>Bravura del computer</h4>${botLevelHTML(S.room.botLevel)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Velocità del computer</h4>${botSpeedHTML(S.room.botSpeed)}` : ''}
       ${S.room && S.room.isHost && S.room.humans <= 1 ? `<h4>Suggerimenti 💡 (solo contro il computer)</h4>
         <div class="row"><button class="swatch ${S.room.hints ? 'on' : ''}" data-act="setHints" data-val="1">Attivi</button><button class="swatch ${S.room.hints ? '' : 'on'}" data-act="setHints" data-val="0">Disattivati</button></div>` : ''}`);
@@ -339,6 +340,11 @@
   function turnTimeHTML(cur) {
     return `<div class="row">${[[0, 'Nessun limite'], [30, '30 s'], [60, '60 s'], [90, '90 s']]
       .map(([v, l]) => `<button class="swatch ${Number(cur || 0) === v ? 'on' : ''}" data-act="turnTime" data-val="${v}">${l}</button>`).join('')}</div>`;
+  }
+
+  function botLevelHTML(cur) {
+    return `<div class="row">${[['facile', '🙂 Facile'], ['normale', 'Normale'], ['difficile', '🧠 Difficile']]
+      .map(([v, l]) => `<button class="swatch ${(cur || 'normale') === v ? 'on' : ''}" data-act="botLevel" data-val="${v}">${l}</button>`).join('')}</div>`;
   }
 
   function botSpeedHTML(cur) {
@@ -484,6 +490,7 @@
         ${isHost ? '<button class="btn small" data-act="editRules">✏️ Modifica regole</button>' : ''}</div>
         ${isHost ? `<h2 style="margin-top:14px">Tempo per turno</h2>${turnTimeHTML(r.turnTime)}
           <p class="muted small">Allo scadere il gioco pesca e scarta al posto del giocatore.</p>` : ''}
+        ${isHost ? `<h2 style="margin-top:14px">Bravura del computer</h2>${botLevelHTML(r.botLevel)}` : ''}
         ${isHost ? `<h2 style="margin-top:14px">Velocità del computer</h2>${botSpeedHTML(r.botSpeed)}` : ''}
       </div>
     </div>`;
@@ -1032,6 +1039,7 @@
     },
     music() { musicModal(); render(); },
     musicStop() { emit('setMusic', { url: '' }).then(() => musicModal()); },
+    botLevel(el) { emit('setBotLevel', { level: el.dataset.val }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     turnTime(el) { emit('setTurnTime', { seconds: Number(el.dataset.val) }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     setHints(el) { emit('setHints', { on: el.dataset.val === '1' }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     botSpeed(el) { emit('setBotSpeed', { speed: el.dataset.val }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },

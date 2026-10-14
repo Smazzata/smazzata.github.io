@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node server/index.js",
     "test": "node server/selftest.js",
-    "e2e": "node server/e2etest.js"
+    "e2e": "node server/e2etest.js",
+    "bench": "node server/botbench.js"
   },
   "engines": {
     "node": ">=18"

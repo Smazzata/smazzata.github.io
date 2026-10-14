@@ -53,6 +53,7 @@ function roomInfo(room) {
     started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
     hints: !!room.hints && humanCount(room) <= 1, humans: humanCount(room),
     music: room.music || null,
+    botLevel: room.botLevel || 'normale',
     turnTime: room.turnTime || 0,
     turnLeft: room.turnDeadline ? Math.max(0, room.turnDeadline - Date.now()) : null,
   };
@@ -130,6 +131,7 @@ function scheduleBot(room) {
       room.botMemoTurn = room.turnCounter;
     }
     try {
+      room.botMemo.level = room.botLevel || 'normale';
       const a = Bot.nextAction(g, seat, room.botMemo);
       E.apply(g, seat, a);
     } catch (e) {
@@ -360,7 +362,7 @@ io.on('connection', (socket) => {
     const seat = seatOfToken(room, socket.data.token);
     if (humanCount(room) > 1 || !room.hints) throw new E.GameError('I suggerimenti sono disponibili solo giocando da soli contro il computer');
     if (!g || g.turn !== seat || g.phase === 'handEnd') throw new E.GameError('Il suggerimento è disponibile solo nel tuo turno');
-    const hint = Bot.nextAction(JSON.parse(JSON.stringify(g)), seat, {});
+    const hint = Bot.nextAction(JSON.parse(JSON.stringify(g)), seat, { level: 'difficile' });
     return { hint };
   }));
 
@@ -377,6 +379,14 @@ io.on('connection', (socket) => {
     }
     const seat = seatOfToken(room, socket.data.token);
     room.music = { url: parsed.href, by: seat >= 0 ? room.seats[seat].name : 'Host', at: Date.now() };
+    broadcast(room);
+  }));
+
+  socket.on('setBotLevel', handler(({ level }) => {
+    const room = getRoom(socket);
+    requireHost(socket, room);
+    if (!['facile', 'normale', 'difficile'].includes(level)) throw new E.GameError('Livello non valido');
+    room.botLevel = level;
     broadcast(room);
   }));
 
@@ -495,7 +505,7 @@ function saveNow() {
       sessions: [...sessions],
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
-        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, music: r.music, turnTime: r.turnTime,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel,
       })),
     };
     fs.mkdirSync(DATA_DIR, { recursive: true });

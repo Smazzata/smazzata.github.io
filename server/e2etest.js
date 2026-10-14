@@ -68,6 +68,12 @@ const step = (t) => console.log('✓ ' + t);
     assert(!(await B.call('setMusic', { url: 'https://open.spotify.com/playlist/x' })).ok, 'solo l\'host cambia la musica');
     step('musica del tavolo condivisa (e riservata all\'host)');
 
+    // bravura del computer
+    assert(!(await A.call('setBotLevel', { level: 'impossibile' })).ok);
+    assert((await A.call('setBotLevel', { level: 'difficile' })).ok);
+    await B.until((s) => s.room.botLevel === 'difficile', 'livello del computer');
+    step("bravura del computer impostata dall'host");
+
     // timer: 30 s (accelerati) → i turni degli umani vanno avanti da soli
     assert((await A.call('setTurnTime', { seconds: 30 })).ok);
     assert((await A.call('addBot', {})).ok);
