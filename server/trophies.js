@@ -23,6 +23,8 @@ const LIST = [
   { id: 'difficile', e: '🤖', name: 'Più forte del computer', desc: 'Batti il computer al livello difficile' },
   { id: 'campione', e: '🏅', name: 'Campione', desc: 'Vinci un mini-torneo' },
   { id: 'amici', e: '🤝', name: 'Tra amici', desc: 'Finisci una partita al tavolo con un amico' },
+  { id: 'sfida', e: '📅', name: 'Sfidante', desc: 'Completa una sfida del giorno' },
+  { id: 'sfida_primo', e: '🌟', name: 'Re del giorno', desc: 'Primo nella sfida del giorno (almeno 3 partecipanti)' },
   { id: 'diplomato', e: '🎓', name: 'Diplomato', desc: 'Finisci la partita di allenamento' },
 ];
 const BY_ID = new Map(LIST.map((t) => [t.id, t]));

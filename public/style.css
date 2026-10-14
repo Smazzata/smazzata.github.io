@@ -601,3 +601,10 @@ body[data-theme="notte"] .trophy span { color: #a5aca8; }
 .lvlbox .xpbar { width: 100%; background: rgba(0,0,0,.1); margin: 4px 0; }
 .lvlbox > div { flex: 1; }
 .seatchip .sinfo b .lvl { margin-left: 2px; }
+
+/* sfida del giorno */
+.dailybtn { background: linear-gradient(180deg, #3a7bd5, #2a5ea8); color: #fff; border-color: transparent; }
+.dailycard { border: 1px solid #e3ddcc; border-radius: 12px; padding: 10px 12px; margin: 8px 0 12px; background: rgba(58,123,213,.07); }
+.dailycard .dtitle { font-size: 16px; }
+.dailycard p { margin: 6px 0 8px; font-size: 13px; }
+body[data-theme="notte"] .dailycard { border-color: #3a413e; background: rgba(58,123,213,.15); }

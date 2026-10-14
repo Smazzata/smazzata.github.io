@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 /*
  * Prova multigiocatore end-to-end: avvia un server di prova, collega due giocatori
  * e verifica le funzioni del tavolo una dopo l'altra.  npm run e2e
@@ -295,6 +295,36 @@ const step = (t) => console.log('✓ ' + t);
     assert(ts.room.tutorial && ts.room.hints && ts.room.botLevel === 'facile' && ts.room.n === 2, 'impostazioni dell\'allenamento');
     T.sock.close();
     step('allenamento: 2 giocatori, computer facile, suggerimenti attivi');
+
+    // sfida del giorno: un tentativo, stesse carte per tutti, punteggio in classifica, niente rivincita
+    const Dd = player('Dora'); await Dd.hello(); assert((await Dd.call('setNick', { nick: 'Dora' })).ok);
+    const info = await Dd.call('daily');
+    assert(info.ok && info.title && info.rules.players === 2 && info.mine === null, 'informazioni sulla sfida');
+    assert((await Dd.call('startDaily')).ok);
+    assert(!(await Dd.call('startDaily')).ok, 'un solo tentativo al giorno');
+    const ds = await Dd.until((st) => st.game, 'partita della sfida');
+    assert(ds.room.daily && ds.room.botLevel === 'difficile', 'sfida contro il computer difficile');
+    const firstHand = ds.game.hand.map((c) => `${c.r}${c.s}`).sort().join();
+    const endD = Date.now() + 60000;
+    while (!(Dd.state.game && Dd.state.game.over)) {
+      if (Date.now() > endD) throw new Error('la sfida non finisce');
+      const g = Dd.state.game;
+      if (g.turn === g.you && g.phase === 'draw') await Dd.call('action', { type: 'draw' });
+      else if (g.turn === g.you && g.phase === 'play') {
+        for (const c of g.hand.slice().reverse()) if ((await Dd.call('action', { type: 'discard', cardId: c.id })).ok) break;
+      }
+      await wait(20);
+    }
+    assert(!(await Dd.call('ready')).ok, 'la sfida è una sola smazzata');
+    const after = await Dd.call('daily');
+    assert(after.mine && after.mine.score != null && after.myPos === 1 && after.top[0].name === 'Dora', 'punteggio nella classifica del giorno');
+    // stesse carte per tutti: un secondo giocatore riceve la stessa mano iniziale
+    const Ee = player('Elio'); await Ee.hello(); assert((await Ee.call('setNick', { nick: 'Elio' })).ok);
+    assert((await Ee.call('startDaily')).ok);
+    const es = await Ee.until((st) => st.game, 'sfida di Elio');
+    assert.strictEqual(es.game.hand.map((c) => `${c.r}${c.s}`).sort().join(), firstHand, 'stessa mano iniziale');
+    Dd.sock.close(); Ee.sock.close();
+    step(`sfida del giorno «${info.title}»: Dora ${after.mine.score} punti, un tentativo, stesse carte per tutti`);
 
     // gioca subito: due giocatori cercano un tavolo da 2 e la partita parte da sola
     const Q1 = player('Quinto'), Q2 = player('Sesto');

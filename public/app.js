@@ -797,6 +797,7 @@
         ${!OFFLINE && store.get('bur_lastroom', '') ? `<div class="row" style="margin-top:8px"><button class="btn primary grow" data-act="rejoin">↩ Torna al tavolo ${esc(store.get('bur_lastroom', ''))}</button></div>` : ''}
         ${OFFLINE ? '<div class="row" style="margin-top:8px"><button class="btn grow" data-act="tutorial">🎓 Impara a giocare</button></div>'
         : `<div class="row" style="margin-top:8px"><button class="btn grow" data-act="quickMenu">⚡ Gioca subito</button><button class="btn grow" data-act="tutorial">🎓 Impara a giocare</button></div>
+        <div class="row" style="margin-top:8px"><button class="btn grow dailybtn" data-act="daily">📅 Sfida del giorno</button></div>
         <div class="row" style="margin-top:10px">
           <input type="text" id="joinCode" class="grow codein" maxlength="4" placeholder="Codice tavolo" value="${esc(S.pendingJoin)}">
           <button class="btn" data-act="join">Entra</button>
@@ -1140,7 +1141,7 @@
 
     return `<div class="game ${myTurn ? 'myturn' : ''}">
       <div class="topbar">
-        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : `<b>${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, si vince a ${g.cfg.target}">smazzata ${g.handNo}</span></span>
+        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : `<b>${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, si vince a ${g.cfg.target}">smazzata ${g.handNo}</span></span>
         <button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
         ${OFFLINE ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}
         <button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>
@@ -1346,6 +1347,27 @@
   const PRESET_NAMES = { classico: 'Classico', reale: 'Reale', aberto: 'Aberto', fechado: 'Fechado', personalizzate: 'Personalizzate' };
   const fmtDate = (t) => new Date(t).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
 
+  /** Sfida del giorno: variante di oggi, il mio risultato e la classifica */
+  async function dailyModal() {
+    const r = await emit('daily');
+    if (!r.ok) return;
+    S.dailyRules = r.rules;
+    const day = new Date(r.date + 'T12:00:00').toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
+    const mine = r.mine
+      ? (r.mine.score != null
+        ? `<div class="winner">Hai fatto ${signed(r.mine.score)} punti${r.myPos ? ` · ${r.myPos}° posto` : ''}</div><p class="muted" style="text-align:center">Torna domani per una nuova sfida!</p>`
+        : '<p class="muted" style="text-align:center">Hai già usato il tentativo di oggi. Torna domani!</p>')
+      : '<div class="row"><button class="btn primary grow big" data-act="startDaily">▶ Gioca la sfida</button></div>';
+    const rows = r.top.map((x) => `<tr class="${x.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][x.pos - 1] || x.pos}</td><td style="text-align:left">${esc(x.name)}${x.me ? ' (tu)' : ''}</td><td><b>${signed(x.score)}</b></td></tr>`).join('');
+    openModal('daily', `<div class="result"><h2>📅 Sfida del giorno</h2><p class="muted">${esc(day)}</p>
+      <div class="dailycard"><b class="dtitle">${esc(r.title)}</b>
+        <p>Una sola smazzata contro il computer <b>difficile</b>, con <b>le stesse carte per tutti</b>. Vince chi fa più punti. Hai un solo tentativo.</p>
+        <button class="btn small" data-act="dailyRules">📜 Regole della sfida</button></div>
+      ${mine}
+      <h3>Classifica di oggi${r.players ? ` · ${r.players} ${r.players === 1 ? 'giocatore' : 'giocatori'}` : ''}</h3>
+      ${rows ? `<table>${rows}</table>` : '<p class="muted">Nessuno ha ancora finito la sfida di oggi: sii il primo!</p>'}</div>`);
+  }
+
   /** Bacheca dei trofei: sbloccati a colori, gli altri in grigio con l'avanzamento */
   function trophiesHTML(list) {
     const got = list.filter((t) => t.at).length;
@@ -1458,7 +1480,11 @@
     const waiting = humans.filter((i) => !S.room.ready.includes(i)).map((i) => S.room.seats[i].name);
     const imReady = S.room.ready.includes(g.you);
     let footer;
-    if (g.you < 0) {
+    if (S.room.daily && g.you >= 0) {
+      const mineT = hr.teams.find((t) => t.members.includes(g.you));
+      footer = `<div class="winner">📅 Sfida completata: ${signed(mineT.total)} punti</div>
+        <div class="row"><button class="btn primary grow" data-act="dailyFromResult">🏆 Classifica della sfida</button><button class="btn grow" data-act="leave">Torna alla home</button></div>`;
+    } else if (g.you < 0) {
       footer = g.over ? `<div class="winner">🏆 Vince ${esc(g.winners.map((s) => g.players[s].name).join(' & '))}!</div>` : '<p class="muted">Stai guardando: la prossima smazzata parte quando i giocatori sono pronti.</p>';
     } else if (g.over && S.room.series) {
       const sr = S.room.series;
@@ -1672,6 +1698,15 @@
     removeSeat(el) { emit('removeSeat', { seat: Number(el.dataset.seat) }); },
     start() { emit('start'); },
     roomRules() { rulesModal(S.room.rules); },
+    daily() { if (!requireName()) return; dailyModal(); },
+    dailyFromResult() { emit('leaveRoom'); S.screen = 'home'; dailyModal(); },
+    dailyRules() { rulesModal(S.dailyRules, 'Regole della sfida di oggi'); },
+    async startDaily() {
+      if (!requireName()) return;
+      if (!confirm('Hai un solo tentativo: se esci prima della fine la sfida conta come giocata. Iniziamo?')) return;
+      const r = await emit('startDaily');
+      if (r.ok) closeModal();
+    },
     editRules() { S.editRules = R.normalize(S.room.rules); editRulesModal(); },
     async applyRules() { const r = await emit('configure', { rules: S.editRules }); if (r.ok) { closeModal(); toast('Regole aggiornate'); } },
     gameRules() { rulesModal(S.game.cfg.rules); },

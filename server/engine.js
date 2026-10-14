@@ -22,9 +22,18 @@ function buildDeck(jokers) {
   return deck;
 }
 
-function shuffle(a) {
+/** Numero casuale: se la partita ha un "seme" (sfida del giorno) la sequenza è sempre la stessa */
+function rand(g) {
+  if (!g || g.rng == null) return Math.random();
+  let t = (g.rng = (g.rng + 0x6D2B79F5) >>> 0); // mulberry32: lo stato resta nella partita (JSON)
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
+function shuffle(a, g) {
   for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rand(g) * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
@@ -87,16 +96,18 @@ function buildCfg(input) {
   };
 }
 
-function createGame({ rules, players }) {
+function createGame({ rules, players, seed }) {
   const n = players.length;
   if (![2, 3, 4].includes(n)) fail('Si gioca in 2, 3 o 4');
   const g = {
     cfg: buildCfg({ ...rules, players: n }), n,
     players: players.map((p, i) => ({ seat: i, name: p.name, isBot: !!p.isBot, hand: [], team: 0 })),
     scores: Array(n).fill(0),
-    handNo: 0, dealer: Math.floor(Math.random() * n),
+    handNo: 0, dealer: 0,
     history: [], over: false, winners: null, log: [],
+    rng: seed == null ? null : seed >>> 0,
   };
+  g.dealer = Math.floor(rand(g) * n);
   startHand(g);
   return g;
 }
@@ -120,7 +131,7 @@ function startHand(g) {
   const cfg = g.cfg, n = g.n;
   g.handNo++;
   g.dealer = (g.dealer + 1) % n;
-  const deck = shuffle(buildDeck(cfg.jokers));
+  const deck = shuffle(buildDeck(cfg.jokers), g);
   let teamDefs;
   if (n === 4) teamDefs = [[0, 2], [1, 3]];
   else if (n === 2) teamDefs = [[0], [1]];

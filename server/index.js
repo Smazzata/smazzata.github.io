@@ -9,6 +9,7 @@ const E = require('./engine');
 const Bot = require('./bot');
 const Trophies = require('./trophies');
 const Levels = require('./levels');
+const Daily = require('./daily');
 const Rules = require('../shared/rules');
 const createSocial = require('./social');
 
@@ -141,6 +142,8 @@ const rooms = new Map();
 const leaderboard = new Map();
 /* segnalazioni dei giocatori (le più recenti per prime), visibili nella pagina di stato */
 let reports = [];
+/* sfida del giorno: data -> { token: { name, score, at } } (score null = partita in corso o abbandonata) */
+const daily = new Map();
 const BOT_NAMES = ['Nonna Pina', 'Zio Gino', 'Carmela', 'Totò', 'Rosetta', 'Peppino', 'Ninetta', 'Gegè'];
 
 function newCode() {
@@ -191,6 +194,7 @@ function roomInfo(room) {
     botLevel: room.botLevel || 'normale',
     turnTime: room.turnTime || 0,
     tutorial: !!room.tutorial,
+    daily: room.daily ? { date: room.daily, title: Daily.challenge(room.daily).title } : null,
     quick: room.quick || 0,
     series: room.series || null,
     turnLeft: room.turnDeadline ? Math.max(0, room.turnDeadline - Date.now()) : null,
@@ -386,6 +390,7 @@ const STATS0 = { games: 0, wins: 0, points: 0, burraco: 0, hands: 0, handsWon: 0
 function recordLeaderboard(room) {
   const g = room.game;
   if (!g || g.phase !== 'handEnd' || !g.handResult) return;
+  if (room.daily) { recordDaily(room); return; }
   const handKey = `${room.gameSeq}:${g.handNo}`;
   const hr = g.handResult;
   const gameEnds = g.over && room.recordedGame !== room.gameSeq;
@@ -444,6 +449,48 @@ function recordLeaderboard(room) {
   });
   room.recordedHand = handKey;
   if (g.over) room.recordedGame = room.gameSeq;
+}
+
+/** Sfida del giorno: a fine smazzata si registra il punteggio e la partita finisce */
+function recordDaily(room) {
+  const g = room.game;
+  if (g.over) return;
+  const hr = g.handResult;
+  const best = Math.max(...hr.teams.map((t) => t.total));
+  g.over = true;
+  g.winners = hr.teams.filter((t) => t.total === best).flatMap((t) => t.members);
+  const board = daily.get(room.daily) || {};
+  room.seats.forEach((s, seat) => {
+    if (!s || s.isBot || !s.token) return;
+    const mine = hr.teams.find((t) => t.members.includes(seat));
+    board[s.token] = { name: s.name, score: mine.total, at: Date.now() };
+    // trofei: sfida completata, primo in classifica al momento della chiusura
+    const e = { ...STATS0, ...(leaderboard.get(s.token) || {}) };
+    e.name = e.name || s.name;
+    const done = Object.values(board).filter((x) => x.score != null);
+    const won = ['sfida'];
+    if (done.length >= 3 && done.every((x) => x.score <= mine.total)) won.push('sfida_primo');
+    e.trophies = { ...(e.trophies || {}) };
+    const fresh = won.filter((id) => !e.trophies[id]);
+    for (const id of fresh) e.trophies[id] = Date.now();
+    leaderboard.set(s.token, e);
+    if (fresh.length) {
+      const list = fresh.map((id) => { const t = Trophies.BY_ID.get(id); return { id, e: t.e, name: t.name, desc: t.desc }; });
+      for (const sock of io.sockets.sockets.values()) if (sock.data.token === s.token) sock.emit('trophy', list);
+    }
+  });
+  daily.set(room.daily, board);
+  // si tengono solo gli ultimi 7 giorni
+  for (const d of [...daily.keys()].sort().slice(0, -7)) daily.delete(d);
+}
+
+/** Classifica di una sfida: solo chi l'ha finita, dal punteggio più alto */
+function dailyBoard(date, me) {
+  const board = daily.get(date) || {};
+  const list = Object.entries(board).filter(([, x]) => x.score != null)
+    .sort((a, b) => b[1].score - a[1].score || a[1].at - b[1].at)
+    .map(([token, x], i) => ({ pos: i + 1, name: x.name, score: x.score, me: token === me }));
+  return { list, mine: board[me] || null, myPos: (list.find((x) => x.me) || {}).pos || null };
 }
 
 /** Mini-torneo: conta le partite vinte da ogni posto; vince chi arriva per primo alla maggioranza */
@@ -655,6 +702,32 @@ io.on('connection', (socket) => {
       fillBots(room);
       startGame(room);
     }
+  }));
+
+  // Sfida del giorno: informazioni, classifica e avvio (un tentativo al giorno)
+  socket.on('daily', handler(() => {
+    const c = Daily.challenge();
+    const b = dailyBoard(c.date, socket.data.token);
+    return { date: c.date, title: c.title, preset: Rules.matchPreset(c.rules), rules: c.rules, top: b.list.slice(0, 10), players: b.list.length, mine: b.mine, myPos: b.myPos };
+  }));
+
+  socket.on('startDaily', handler(() => {
+    const sess = sessions.get(socket.data.token);
+    if (!sess || !sess.nick) throw new E.GameError('Scegli prima il tuo nickname');
+    const c = Daily.challenge();
+    const board = daily.get(c.date) || {};
+    if (board[socket.data.token]) throw new E.GameError('Hai già giocato la sfida di oggi: torna domani!');
+    board[socket.data.token] = { name: sess.nick, score: null, at: Date.now() };
+    daily.set(c.date, board);
+    const room = {
+      code: newCode(), rules: c.rules, n: 2, hostToken: socket.data.token, daily: c.date, seed: c.seed,
+      seats: [null, null], game: null, ready: new Set(), botTimer: null, botMemo: {}, botLevel: 'difficile',
+    };
+    rooms.set(room.code, room);
+    joinRoom(socket, room);
+    fillBots(room);
+    startGame(room);
+    return { code: room.code };
   }));
 
   socket.on('quickPlay', handler(({ n }) => {
@@ -886,6 +959,7 @@ io.on('connection', (socket) => {
     const room = getRoom(socket);
     const g = room.game;
     if (!g || g.phase !== 'handEnd') throw new E.GameError('Nessuna smazzata da chiudere');
+    if (room.daily) throw new E.GameError('La sfida del giorno è una sola smazzata: riprova domani!');
     const seat = seatOfToken(room, socket.data.token);
     if (seat < 0) throw new E.GameError('Gli spettatori non partecipano');
     room.ready.add(seat);
@@ -969,6 +1043,7 @@ function startGame(room) {
   room.game = E.createGame({
     rules: room.rules,
     players: room.seats.map((s) => ({ name: s.name, isBot: !!s.isBot })),
+    seed: room.daily ? room.seed : undefined,
   });
   room.ready = new Set();
   room.botMemo = {};
@@ -1007,9 +1082,10 @@ function saveNow() {
       sessions: [...sessions],
       leaderboard: [...leaderboard],
       reports,
+      daily: [...daily].map(([d, m]) => [d, m]),
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
-        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series, daily: r.daily, seed: r.seed,
       })),
     };
     fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -1027,6 +1103,7 @@ function loadSaved() {
     for (const [token, sess] of data.sessions || []) sessions.set(token, sess);
     for (const [token, e] of data.leaderboard || []) leaderboard.set(token, e);
     reports = data.reports || [];
+    for (const [d, m] of data.daily || []) daily.set(d, m);
     social.rebuildIndexes();
     for (const r of data.rooms || []) {
       rooms.set(r.code, { ...r, ready: new Set(r.ready || []), botTimer: null, botMemo: {}, botMemoTurn: -1 });
