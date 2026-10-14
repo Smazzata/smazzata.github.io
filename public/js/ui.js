@@ -95,6 +95,8 @@
   function settingsModal() {
     const opt = (key, val, label, extra = '') => `<button class="swatch ${S.prefs[key] === val ? 'on' : ''}" data-act="pref" data-key="${key}" data-val="${val}" ${extra}>${label}</button>`;
     openModal('settings', `<h2>Aspetto e suoni</h2>
+      <h4>Lingua · Language</h4>
+      <div class="row">${opt('lang', 'auto', '🌐 Automatica')}${Object.entries(LANGS).map(([id, name]) => opt('lang', id, name)).join('')}</div>
       <h4>Tema</h4>
       <div class="row">${opt('theme', 'chiaro', '☀️ Chiaro')}${opt('theme', 'scuro', '🌙 Scuro')}</div>
       <h4>Colore del tavolo</h4>

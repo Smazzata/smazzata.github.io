@@ -100,6 +100,7 @@
       if (val === 'true') val = true; else if (val === 'false') val = false;
       S.prefs[key] = val;
       applyPrefs();
+      if (key === 'lang') { location.reload(); return; } // la lingua si applica ricaricando la pagina
       settingsModal();
       if (S.screen === 'game') render();
       if (key === 'sound' && val) { Sound.unlock(); Sound.play('turn'); }

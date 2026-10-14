@@ -1,0 +1,265 @@
+# Profilo, amici, statistiche, trofei, classifica, sfida del giorno, tornei, campionati
+# italiano ‖ English ‖ Español ‖ Português
+📊 Le tue statistiche ‖ 📊 Your statistics ‖ 📊 Tus estadísticas ‖ 📊 Suas estatísticas
+{0}/{1} punti esperienza al livello {2} · partite, vittorie, burraco, chiusure e trofei fanno salire ‖ {0}/{1} experience points to level {2} · games, wins, burracos, going out and trophies make you climb ‖ {0}/{1} puntos de experiencia para el nivel {2} · partidas, victorias, burracos, cierres y trofeos te hacen subir ‖ {0}/{1} pontos de experiência para o nível {2} · partidas, vitórias, canastras, batidas e troféus fazem subir
+Partite giocate ‖ Games played ‖ Partidas jugadas ‖ Partidas jogadas
+Partite vinte ‖ Games won ‖ Partidas ganadas ‖ Partidas vencidas
+Smazzate giocate ‖ Hands played ‖ Manos jugadas ‖ Mãos jogadas
+Smazzate vinte ‖ Hands won ‖ Manos ganadas ‖ Mãos vencidas
+Burraco fatti ‖ Burracos made ‖ Burracos hechos ‖ Canastras feitas
+Canaste fatte ‖ Canastas made ‖ Canastas hechas ‖ Canastras feitas
+Chiusure ‖ Going out ‖ Cierres ‖ Batidas
+Miglior smazzata ‖ Best hand ‖ Mejor mano ‖ Melhor mão
+Media punti a smazzata ‖ Average points per hand ‖ Media de puntos por mano ‖ Média de pontos por mão
+Penalità media a smazzata ‖ Average penalty per hand ‖ Penalización media por mano ‖ Penalidade média por mão
+Nessuna partita completata. ‖ No games completed. ‖ Ninguna partida completada. ‖ Nenhuma partida concluída.
+· {0} smazzate ‖ · {0} hands ‖ · {0} manos ‖ · {0} mãos
+⚔️ Contro chi ‖ ⚔️ Opponents ‖ ⚔️ Contra quién ‖ ⚔️ Contra quem
+Le vinci ‖ You win ‖ Las ganas ‖ Você vence
+📈 Andamento ‖ 📈 Trend ‖ 📈 Evolución ‖ 📈 Evolução
+ultime {0} partite · {1}% vinte in tutto ‖ last {0} games · {1}% won overall ‖ últimas {0} partidas · {1}% ganadas en total ‖ últimas {0} partidas · {1}% vencidas no total
+persa · la linea è la percentuale di vittorie ‖ lost · the line is the win percentage ‖ perdida · la línea es el porcentaje de victorias ‖ perdida · a linha é a porcentagem de vitórias
+🎮 Per gioco ‖ 🎮 By game ‖ 🎮 Por juego ‖ 🎮 Por jogo
+vinte / giocate ‖ won / played ‖ ganadas / jugadas ‖ vencidas / jogadas
+Gioca la tua prima smazzata per vedere le statistiche. ‖ Play your first hand to see your statistics. ‖ Juega tu primera mano para ver las estadísticas. ‖ Jogue sua primeira mão para ver as estatísticas.
+Ultime partite ‖ Recent games ‖ Últimas partidas ‖ Últimas partidas
+Vinta ‖ Won ‖ Ganada ‖ Vencida
+Persa ‖ Lost ‖ Perdida ‖ Perdida
+Le statistiche sono salvate sul server: ti seguono anche se cambi dispositivo. ‖ Statistics are saved on the server: they follow you even if you change device. ‖ Las estadísticas se guardan en el servidor: te siguen aunque cambies de dispositivo. ‖ As estatísticas ficam no servidor: acompanham você mesmo se trocar de aparelho.
+Le statistiche sono salvate solo su questo dispositivo. ‖ Statistics are saved only on this device. ‖ Las estadísticas se guardan solo en este dispositivo. ‖ As estatísticas ficam salvas só neste aparelho.
+Azzera statistiche ‖ Reset statistics ‖ Borrar estadísticas ‖ Zerar estatísticas
+🏆 Trofei ‖ 🏆 Trophies ‖ 🏆 Trofeos ‖ 🏆 Troféus
+{0} su {1} ‖ {0} of {1} ‖ {0} de {1} ‖ {0} de {1}
+Avatar ‖ Avatar ‖ Avatar ‖ Avatar
+Cambia nickname ‖ Change nickname ‖ Cambiar apodo ‖ Mudar apelido
+Salva ‖ Save ‖ Guardar ‖ Salvar
+Usa il profilo su un altro dispositivo ‖ Use your profile on another device ‖ Usa el perfil en otro dispositivo ‖ Use o perfil em outro aparelho
+Inquadra il QR con la fotocamera del nuovo telefono, oppure inserisci lì il codice personale ( ‖ Scan the QR with the new phone's camera, or enter your personal code there ( ‖ Escanea el QR con la cámara del nuevo teléfono, o introduce allí el código personal ( ‖ Aponte a câmera do novo celular para o QR, ou digite lá o código pessoal (
+Hai già un profilo? Recuperalo ‖ Already have a profile? Recover it ‖ ¿Ya tienes un perfil? Recupéralo ‖ Já tem um perfil? Recupere-o
+Hai già un profilo? ‖ Already have a profile? ‖ ¿Ya tienes un perfil? ‖ Já tem um perfil?
+Non condividerlo: ‖ Do not share it: ‖ No lo compartas: ‖ Não compartilhe:
+chi lo ha può usare il tuo profilo. ‖ whoever has it can use your profile. ‖ quien lo tenga puede usar tu perfil. ‖ quem tiver pode usar seu perfil.
+Mostra ‖ Show ‖ Mostrar ‖ Mostrar
+Nascondi ‖ Hide ‖ Ocultar ‖ Ocultar
+Copia ‖ Copy ‖ Copiar ‖ Copiar
+Genera un nuovo codice (il vecchio smette di funzionare) ‖ Generate a new code (the old one stops working) ‖ Generar un código nuevo (el anterior deja de funcionar) ‖ Gerar um novo código (o antigo para de funcionar)
+Password (facoltativa) ‖ Password (optional) ‖ Contraseña (opcional) ‖ Senha (opcional)
+Password (impostata ✓) ‖ Password (set ✓) ‖ Contraseña (configurada ✓) ‖ Senha (definida ✓)
+Con nickname e password puoi recuperare il profilo anche senza il codice. ‖ With nickname and password you can recover your profile even without the code. ‖ Con apodo y contraseña puedes recuperar el perfil incluso sin el código. ‖ Com apelido e senha você recupera o perfil mesmo sem o código.
+Imposta ‖ Set ‖ Configurar ‖ Definir
+Nuova password ‖ New password ‖ Nueva contraseña ‖ Nova senha
+Almeno 6 caratteri ‖ At least 6 characters ‖ Al menos 6 caracteres ‖ Pelo menos 6 caracteres
+Altro profilo ‖ Another profile ‖ Otro perfil ‖ Outro perfil
+Usa un altro profilo su questo dispositivo ‖ Use another profile on this device ‖ Usa otro perfil en este dispositivo ‖ Use outro perfil neste aparelho
+Elimina profilo ‖ Delete profile ‖ Eliminar perfil ‖ Excluir perfil
+Elimina il mio profilo ‖ Delete my profile ‖ Eliminar mi perfil ‖ Excluir meu perfil
+Libera il nickname e cancella codice, password, amicizie e classifica. Le statistiche su questo dispositivo restano. ‖ Frees the nickname and deletes code, password, friendships and rankings. Statistics on this device remain. ‖ Libera el apodo y borra código, contraseña, amistades y clasificación. Las estadísticas de este dispositivo se mantienen. ‖ Libera o apelido e apaga código, senha, amizades e ranking. As estatísticas deste aparelho continuam.
+Leggi l'informativa privacy ‖ Read the privacy policy ‖ Lee la política de privacidad ‖ Leia a política de privacidade
+Questo dispositivo ora usa il profilo ‖ This device now uses the profile ‖ Este dispositivo ahora usa el perfil ‖ Este aparelho agora usa o perfil
+: per tornarci ti servirà il suo codice personale (lo trovi nel Profilo). ‖ : to come back to it you will need its personal code (you find it in the Profile). ‖ : para volver necesitarás su código personal (está en el Perfil). ‖ : para voltar você vai precisar do código pessoal dele (fica no Perfil).
+Recupera il tuo profilo ‖ Recover your profile ‖ Recupera tu perfil ‖ Recupere seu perfil
+Con il codice personale ‖ With your personal code ‖ Con el código personal ‖ Com o código pessoal
+Usa ‖ Use ‖ Usar ‖ Usar
+Lo trovi nel Profilo del vecchio dispositivo (o inquadra il suo QR con la fotocamera). ‖ You find it in the Profile of the old device (or scan its QR with the camera). ‖ Está en el Perfil del dispositivo anterior (o escanea su QR con la cámara). ‖ Fica no Perfil do aparelho antigo (ou aponte a câmera para o QR dele).
+Con nickname e password ‖ With nickname and password ‖ Con apodo y contraseña ‖ Com apelido e senha
+Accedi ‖ Sign in ‖ Acceder ‖ Entrar
+Usare questo profilo? ‖ Use this profile? ‖ ¿Usar este perfil? ‖ Usar este perfil?
+Hai aperto un link per spostare un profilo su questo dispositivo. ‖ You opened a link to move a profile to this device. ‖ Abriste un enlace para mover un perfil a este dispositivo. ‖ Você abriu um link para mover um perfil para este aparelho.
+Sì, usalo qui ‖ Yes, use it here ‖ Sí, úsalo aquí ‖ Sim, use aqui
+Controllo… ‖ Checking… ‖ Comprobando… ‖ Verificando…
+è disponibile ‖ is available ‖ está disponible ‖ está disponível
+Non disponibile ‖ Not available ‖ No disponible ‖ Indisponível
+🏟️ Campionati tra amici ‖ 🏟️ Leagues with friends ‖ 🏟️ Ligas entre amigos ‖ 🏟️ Ligas entre amigos
+3 punti a vittoria, 1 a partecipazione. Contano le partite finite con almeno due membri al tavolo. ‖ 3 points per win, 1 for taking part. Games finished with at least two members at the table count. ‖ 3 puntos por victoria, 1 por participar. Cuentan las partidas terminadas con al menos dos miembros en la mesa. ‖ 3 pontos por vitória, 1 por participação. Contam as partidas terminadas com pelo menos dois membros na mesa.
+Esci dal campionato ‖ Leave the league ‖ Salir de la liga ‖ Sair da liga
+Nuovo campionato ‖ New league ‖ Nueva liga ‖ Nova liga
+Settimanale ‖ Weekly ‖ Semanal ‖ Semanal
+Mensile ‖ Monthly ‖ Mensual ‖ Mensal
+settimanale ‖ weekly ‖ semanal ‖ semanal
+mensile ‖ monthly ‖ mensual ‖ mensal
+Crea ‖ Create ‖ Crear ‖ Criar
+finisce tra {0} giorni ‖ ends in {0} days ‖ termina en {0} días ‖ termina em {0} dias
+· sei {0}° ‖ · you are {0}th ‖ · eres {0}° ‖ · você é o {0}º
+{0} · finisce tra {1} giorni · sei {2}° ‖ {0} · ends in {1} days · you are #{2} ‖ {0} · termina en {1} días · eres {2}° ‖ {0} · termina em {1} dias · você é o {2}º
+{0} · finisce tra {1} giorni ‖ {0} · ends in {1} days ‖ {0} · termina en {1} días ‖ {0} · termina em {1} dias
+Aggiungi ‖ Add ‖ Añadir ‖ Adicionar
+I tuoi amici ‖ Your friends ‖ Tus amigos ‖ Seus amigos
+Nessun amico ancora: aggiungili con il loro nickname. ‖ No friends yet: add them with their nickname. ‖ Todavía no tienes amigos: añádelos con su apodo. ‖ Nenhum amigo ainda: adicione-os pelo apelido.
+Crea o entra in un tavolo per invitare gli amici online. ‖ Create or join a table to invite friends who are online. ‖ Crea o entra en una mesa para invitar a los amigos conectados. ‖ Crie ou entre numa mesa para convidar amigos online.
+Richieste ricevute ‖ Requests received ‖ Solicitudes recibidas ‖ Pedidos recebidos
+Richieste inviate ‖ Requests sent ‖ Solicitudes enviadas ‖ Pedidos enviados
+in attesa ‖ pending ‖ pendiente ‖ pendente
+Bloccati ‖ Blocked ‖ Bloqueados ‖ Bloqueados
+Nickname dell'amico ‖ Friend's nickname ‖ Apodo del amigo ‖ Apelido do amigo
+👤 Vedi la scheda ‖ 👤 View profile ‖ 👤 Ver ficha ‖ 👤 Ver ficha
+👥 Aggiungi agli amici ‖ 👥 Add as friend ‖ 👥 Añadir a amigos ‖ 👥 Adicionar aos amigos
+🚫 Blocca ‖ 🚫 Block ‖ 🚫 Bloquear ‖ 🚫 Bloquear
+Sblocca ‖ Unblock ‖ Desbloquear ‖ Desbloquear
+⚠️ Segnala ‖ ⚠️ Report ‖ ⚠️ Denunciar ‖ ⚠️ Denunciar
+👁 Guarda ‖ 👁 Watch ‖ 👁 Mirar ‖ 👁 Assistir
+Invita ‖ Invite ‖ Invitar ‖ Convidar
+Rimuovi ‖ Remove ‖ Quitar ‖ Remover
+online ‖ online ‖ en línea ‖ online
+offline ‖ offline ‖ desconectado ‖ offline
+sta giocando ‖ playing ‖ jugando ‖ jogando
+← Amici ‖ ← Friends ‖ ← Amigos ‖ ← Amigos
+← Tornei ‖ ← Tournaments ‖ ← Torneos ‖ ← Torneios
+Tutti ‖ Everyone ‖ Todos ‖ Todos
+Solo amici ‖ Friends only ‖ Solo amigos ‖ Só amigos
+Giocatore ‖ Player ‖ Jugador ‖ Jogador
+Vinte ‖ Won ‖ Ganadas ‖ Vencidas
+Giocate ‖ Played ‖ Jugadas ‖ Jogadas
+Punti ‖ Points ‖ Puntos ‖ Pontos
+Classifica di tutti i giocatori di questo server. ‖ Rankings of all players on this server. ‖ Clasificación de todos los jugadores de este servidor. ‖ Ranking de todos os jogadores deste servidor.
+Classifica tra te e i tuoi amici. ‖ Rankings between you and your friends. ‖ Clasificación entre tú y tus amigos. ‖ Ranking entre você e seus amigos.
+Nessuno in classifica per ora. ‖ Nobody in the rankings yet. ‖ Nadie en la clasificación todavía. ‖ Ninguém no ranking ainda.
+# sfida del giorno
+Una sola smazzata contro il computer ‖ A single hand against the computer ‖ Una sola mano contra la computadora ‖ Uma única mão contra o computador
+, con ‖ , with ‖ , con ‖ , com
+le stesse carte per tutti ‖ the same cards for everyone ‖ las mismas cartas para todos ‖ as mesmas cartas para todos
+. Vince chi fa più punti. Hai un solo tentativo. ‖ . Highest score wins. You have only one try. ‖ . Gana quien hace más puntos. Tienes un solo intento. ‖ . Vence quem fizer mais pontos. Você tem uma só tentativa.
+. Vince chi resta con meno penalità in mano. Hai un solo tentativo. ‖ . Whoever is left with the lowest penalty wins. You have only one try. ‖ . Gana quien se queda con menos penalización en mano. Tienes un solo intento. ‖ . Vence quem ficar com menos penalidade na mão. Você tem uma só tentativa.
+Vince chi resta con meno penalità in mano. ‖ Whoever is left with the lowest penalty wins. ‖ Gana quien se queda con menos penalización en mano. ‖ Vence quem ficar com menos penalidade na mão.
+Vince chi fa più punti. ‖ Highest score wins. ‖ Gana quien hace más puntos. ‖ Vence quem fizer mais pontos.
+📜 Regole della sfida ‖ 📜 Challenge rules ‖ 📜 Reglas del desafío ‖ 📜 Regras do desafio
+▶ Gioca la sfida ‖ ▶ Play the challenge ‖ ▶ Jugar el desafío ‖ ▶ Jogar o desafio
+Classifica di oggi ‖ Today's ranking ‖ Clasificación de hoy ‖ Ranking de hoje
+Classifica di oggi{0} ‖ Today's ranking{0} ‖ Clasificación de hoy{0} ‖ Ranking de hoje{0}
+Nessuno ha ancora finito la sfida di oggi: sii il primo! ‖ Nobody has finished today's challenge yet: be the first! ‖ Nadie ha terminado aún el desafío de hoy: ¡sé el primero! ‖ Ninguém terminou o desafio de hoje ainda: seja o primeiro!
+Hai fatto {0} punti{1} ‖ You scored {0} points{1} ‖ Hiciste {0} puntos{1} ‖ Você fez {0} pontos{1}
+· {0}° posto ‖ · {0}th place ‖ · puesto {0}° ‖ · {0}º lugar
+Torna domani per una nuova sfida! ‖ Come back tomorrow for a new challenge! ‖ ¡Vuelve mañana para un nuevo desafío! ‖ Volte amanhã para um novo desafio!
+Hai già usato il tentativo di oggi. Torna domani! ‖ You have already used today's try. Come back tomorrow! ‖ Ya usaste el intento de hoy. ¡Vuelve mañana! ‖ Você já usou a tentativa de hoje. Volte amanhã!
+📅 Sfida completata: {0} punti ‖ 📅 Challenge completed: {0} points ‖ 📅 Desafío completado: {0} puntos ‖ 📅 Desafio concluído: {0} pontos
+🏆 Classifica della sfida ‖ 🏆 Challenge ranking ‖ 🏆 Clasificación del desafío ‖ 🏆 Ranking do desafio
+Torna alla home ‖ Back to home ‖ Volver al inicio ‖ Voltar ao início
+Burraco Classico ‖ Classic Burraco ‖ Burraco Clásico ‖ Burraco Clássico
+Classico solo scale ‖ Classic, runs only ‖ Clásico solo escaleras ‖ Clássico só sequências
+Classico con scarti chiusi ‖ Classic with closed discards ‖ Clásico con descartes cerrados ‖ Clássico com lixo fechado
+Classico, Asso alto e basso ‖ Classic, Ace high and low ‖ Clásico, As alto y bajo ‖ Clássico, Ás alto e baixo
+Scopa, Asso piglia tutto ‖ Scopa, Ace takes all ‖ Escoba, el As se lo lleva todo ‖ Escopa, Ás leva tudo
+Classico ‖ Classic ‖ Clásico ‖ Clássico
+Reale ‖ Royal ‖ Real ‖ Real
+# fine partita
+🏆 Vince {0}! ‖ 🏆 {0} wins! ‖ 🏆 ¡Gana {0}! ‖ 🏆 {0} vence!
+Stai guardando: la prossima smazzata parte quando i giocatori sono pronti. ‖ You are watching: the next hand starts when the players are ready. ‖ Estás mirando: la siguiente mano empieza cuando los jugadores estén listos. ‖ Você está assistindo: a próxima mão começa quando os jogadores estiverem prontos.
+🏆 Campione del torneo: {0}! ‖ 🏆 Tournament champion: {0}! ‖ 🏆 Campeón del torneo: ¡{0}! ‖ 🏆 Campeão do torneio: {0}!
+Partita {0} di {1} vinta da {2} ‖ Game {0} of {1} won by {2} ‖ Partida {0} de {1} ganada por {2} ‖ Partida {0} de {1} vencida por {2}
+Hai votato ✓ ‖ You voted ✓ ‖ Has votado ✓ ‖ Você votou ✓
+🔁 Nuovo torneo ‖ 🔁 New series ‖ 🔁 Nueva serie ‖ 🔁 Nova série
+▶ Prossima partita del torneo ‖ ▶ Next game of the series ‖ ▶ Siguiente partida de la serie ‖ ▶ Próxima partida da série
+🎉 Passi al turno successivo! ‖ 🎉 You go through to the next round! ‖ 🎉 ¡Pasas a la siguiente ronda! ‖ 🎉 Você passa para a próxima rodada!
+Fuori dal torneo, alla prossima! ‖ Out of the tournament, see you next time! ‖ Fuera del torneo, ¡a la próxima! ‖ Fora do torneio, fica para a próxima!
+🏆 Torna al tabellone ‖ 🏆 Back to the bracket ‖ 🏆 Volver al cuadro ‖ 🏆 Voltar à chave
+Rivincita: hai votato ✓ ‖ Rematch: you voted ✓ ‖ Revancha: has votado ✓ ‖ Revanche: você votou ✓
+🔁 Rivincita ‖ 🔁 Rematch ‖ 🔁 Revancha ‖ 🔁 Revanche
+Stessi posti, stesse regole: si riparte quando tutti premono Rivincita. ‖ Same seats, same rules: it restarts when everyone presses Rematch. ‖ Mismos puestos, mismas reglas: se reinicia cuando todos pulsan Revancha. ‖ Mesmos lugares, mesmas regras: recomeça quando todos tocarem em Revanche.
+# moviola
+Moviola non disponibile in questo momento ‖ Replay not available right now ‖ Repetición no disponible en este momento ‖ Replay indisponível no momento
+🎬 Moviola · smazzata {0} ‖ 🎬 Replay · hand {0} ‖ 🎬 Repetición · mano {0} ‖ 🎬 Replay · mão {0}
+Carte appena distribuite ‖ Cards just dealt ‖ Cartas recién repartidas ‖ Cartas recém-distribuídas
+{0} gioca ‖ {0} plays ‖ {0} juega ‖ {0} joga
+Scarti {0} · Tallone {1} ‖ Discards {0} · Stock {1} ‖ Descartes {0} · Mazo {1} ‖ Lixo {0} · Monte {1}
+# tornei
+A eliminazione diretta, partite uno contro uno in versione breve. Quando tocca a te ti avvisiamo. ‖ Knockout, one-on-one games in a short version. We tell you when it is your turn. ‖ Eliminación directa, partidas uno contra uno en versión corta. Te avisamos cuando te toque. ‖ Eliminação direta, partidas um contra um em versão curta. Avisamos quando for sua vez.
+Nessun torneo in corso: creane uno! ‖ No tournaments running: create one! ‖ No hay torneos en curso: ¡crea uno! ‖ Nenhum torneio em andamento: crie um!
+Nuovo torneo ‖ New tournament ‖ Nuevo torneo ‖ Novo torneio
+{0} giocatori ‖ {0} players ‖ {0} jugadores ‖ {0} jogadores
+Crea il torneo ‖ Create the tournament ‖ Crear el torneo ‖ Criar o torneio
+Es. Coppa del venerdì ‖ E.g. Friday Cup ‖ Ej. Copa del viernes ‖ Ex. Copa de sexta
+📝 iscrizioni aperte ‖ 📝 registration open ‖ 📝 inscripciones abiertas ‖ 📝 inscrições abertas
+▶ in corso ‖ ▶ in progress ‖ ▶ en curso ‖ ▶ em andamento
+🏁 finito ‖ 🏁 finished ‖ 🏁 terminado ‖ 🏁 encerrado
+· ci sei ‖ · you are in ‖ · estás dentro ‖ · você está dentro
+Finale ‖ Final ‖ Final ‖ Final
+Semifinali ‖ Semi-finals ‖ Semifinales ‖ Semifinais
+Quarti ‖ Quarter-finals ‖ Cuartos ‖ Quartas
+Ottavi ‖ Round of 16 ‖ Octavos ‖ Oitavas
+▶ Vai al tavolo ‖ ▶ Go to the table ‖ ▶ Ir a la mesa ‖ ▶ Ir para a mesa
+a tavolino: ‖ by forfeit: ‖ por abandono: ‖ por W.O.:
+Tabellone ‖ Bracket ‖ Cuadro ‖ Chave
+Iscriviti ‖ Sign up ‖ Inscribirse ‖ Inscrever-se
+Ritirati ‖ Withdraw ‖ Retirarse ‖ Desistir
+Annulla il torneo ‖ Cancel the tournament ‖ Cancelar el torneo ‖ Cancelar o torneio
+🤖 Riempi con il computer ‖ 🤖 Fill with the computer ‖ 🤖 Llenar con la computadora ‖ 🤖 Completar com o computador
+▶ Inizia il torneo ‖ ▶ Start the tournament ‖ ▶ Empezar el torneo ‖ ▶ Começar o torneio
+🏆 Campione: {0}! ‖ 🏆 Champion: {0}! ‖ 🏆 Campeón: ¡{0}! ‖ 🏆 Campeão: {0}!
+Iscritti ({0}/{1}) ‖ Registered ({0}/{1}) ‖ Inscritos ({0}/{1}) ‖ Inscritos ({0}/{1})
+{0} · {1} giocatori · organizza {2} ‖ {0} · {1} players · organised by {2} ‖ {0} · {1} jugadores · organiza {2} ‖ {0} · {1} jogadores · organiza {2}
+Iscritto! Ti avvisiamo quando tocca a te ‖ Signed up! We will tell you when it is your turn ‖ ¡Inscrito! Te avisamos cuando te toque ‖ Inscrito! Avisamos quando for sua vez
+Sei sicuro? ‖ Are you sure? ‖ ¿Estás seguro? ‖ Tem certeza?
+▶ Gioca ‖ ▶ Play ‖ ▶ Jugar ‖ ▶ Jogar
+🏆 Torneo ‖ 🏆 Tournament ‖ 🏆 Torneo ‖ 🏆 Torneio
+📅 Sfida ‖ 📅 Challenge ‖ 📅 Desafío ‖ 📅 Desafio
+# trofei
+Primo burraco ‖ First burraco ‖ Primer burraco ‖ Primeira canastra
+Completa il tuo primo burraco ‖ Complete your first burraco ‖ Completa tu primer burraco ‖ Complete sua primeira canastra
+Tutto pulito ‖ All clean ‖ Todo limpio ‖ Tudo limpo
+Fai un burraco pulito (senza matte) ‖ Make a clean burraco (no wild cards) ‖ Haz un burraco limpio (sin comodines) ‖ Faça uma canastra limpa (sem curingas)
+Tris di burraco ‖ Burraco hat-trick ‖ Triplete de burracos ‖ Trio de canastras
+Fai 3 burraco nella stessa smazzata ‖ Make 3 burracos in the same hand ‖ Haz 3 burracos en la misma mano ‖ Faça 3 canastras na mesma mão
+Scala reale ‖ Royal run ‖ Escalera real ‖ Sequência real
+Completa una scala dall'Asso al Re ‖ Complete a run from Ace to King ‖ Completa una escalera del As al Rey ‖ Complete uma sequência do Ás ao Rei
+Smazzata da mille ‖ Thousand-point hand ‖ Mano de mil ‖ Mão de mil
+Fai almeno 1000 punti in una smazzata ‖ Score at least 1000 points in a hand ‖ Haz al menos 1000 puntos en una mano ‖ Faça pelo menos 1000 pontos numa mão
+Si chiude! ‖ Going out! ‖ ¡Se cierra! ‖ Batida!
+Chiudi una smazzata ‖ Go out in a hand ‖ Cierra una mano ‖ Bata numa mão
+Specialista della chiusura ‖ Going-out specialist ‖ Especialista en cerrar ‖ Especialista em bater
+Chiudi 25 smazzate ‖ Go out in 25 hands ‖ Cierra 25 manos ‖ Bata em 25 mãos
+Collezionista ‖ Collector ‖ Coleccionista ‖ Colecionador
+Completa 50 burraco ‖ Complete 50 burracos ‖ Completa 50 burracos ‖ Complete 50 canastras
+Prima vittoria ‖ First win ‖ Primera victoria ‖ Primeira vitória
+Vinci una partita ‖ Win a game ‖ Gana una partida ‖ Vença uma partida
+Dieci vittorie ‖ Ten wins ‖ Diez victorias ‖ Dez vitórias
+Vinci 10 partite ‖ Win 10 games ‖ Gana 10 partidas ‖ Vença 10 partidas
+Cinquanta vittorie ‖ Fifty wins ‖ Cincuenta victorias ‖ Cinquenta vitórias
+Vinci 50 partite ‖ Win 50 games ‖ Gana 50 partidas ‖ Vença 50 partidas
+Cento vittorie ‖ A hundred wins ‖ Cien victorias ‖ Cem vitórias
+Vinci 100 partite ‖ Win 100 games ‖ Gana 100 partidas ‖ Vença 100 partidas
+Maratona ‖ Marathon ‖ Maratón ‖ Maratona
+Gioca 100 partite ‖ Play 100 games ‖ Juega 100 partidas ‖ Jogue 100 partidas
+Rimonta ‖ Comeback ‖ Remontada ‖ Virada
+Vinci una partita dopo essere stato sotto di almeno 500 punti ‖ Win a game after being behind by at least 500 points ‖ Gana una partida tras ir perdiendo por al menos 500 puntos ‖ Vença uma partida depois de estar perdendo por pelo menos 500 pontos
+Vittoria schiacciante ‖ Landslide win ‖ Victoria aplastante ‖ Vitória esmagadora
+Vinci con almeno 1000 punti di vantaggio ‖ Win by at least 1000 points ‖ Gana con al menos 1000 puntos de ventaja ‖ Vença com pelo menos 1000 pontos de vantagem
+Più forte del computer ‖ Stronger than the computer ‖ Más fuerte que la computadora ‖ Mais forte que o computador
+Batti il computer al livello difficile ‖ Beat the computer on hard ‖ Gana a la computadora en nivel difícil ‖ Vença o computador no nível difícil
+Campione ‖ Champion ‖ Campeón ‖ Campeão
+Vinci un mini-torneo ‖ Win a series ‖ Gana una serie ‖ Vença uma série
+Tra amici ‖ Among friends ‖ Entre amigos ‖ Entre amigos
+Finisci una partita al tavolo con un amico ‖ Finish a game at a table with a friend ‖ Termina una partida en la mesa con un amigo ‖ Termine uma partida na mesa com um amigo
+Sfidante ‖ Challenger ‖ Retador ‖ Desafiante
+Completa una sfida del giorno ‖ Complete a daily challenge ‖ Completa un desafío del día ‖ Complete um desafio do dia
+Re del giorno ‖ King of the day ‖ Rey del día ‖ Rei do dia
+Primo nella sfida del giorno (almeno 3 partecipanti) ‖ First in the daily challenge (at least 3 players) ‖ Primero en el desafío del día (al menos 3 participantes) ‖ Primeiro no desafio do dia (pelo menos 3 participantes)
+Campione del campionato ‖ League champion ‖ Campeón de la liga ‖ Campeão da liga
+Vinci una stagione di un campionato tra amici ‖ Win a season of a league with friends ‖ Gana una temporada de una liga entre amigos ‖ Vença uma temporada de uma liga entre amigos
+Prima Scala 40 ‖ First Scala 40 ‖ Primera Scala 40 ‖ Primeira Scala 40
+Vinci una partita di Scala 40 ‖ Win a game of Scala 40 ‖ Gana una partida de Scala 40 ‖ Vença uma partida de Scala 40
+Apertura lampo ‖ Lightning opening ‖ Apertura relámpago ‖ Abertura relâmpago
+Scala 40: apri al tuo primo turno ‖ Scala 40: open on your first turn ‖ Scala 40: abre en tu primer turno ‖ Scala 40: abra na sua primeira vez
+Chiusura in mano ‖ Going out in one ‖ Cierre en mano ‖ Batida de mão
+Scala 40: apri e chiudi nello stesso turno ‖ Scala 40: open and go out in the same turn ‖ Scala 40: abre y cierra en el mismo turno ‖ Scala 40: abra e bata na mesma vez
+Ladro di jolly ‖ Joker thief ‖ Ladrón de comodines ‖ Ladrão de coringa
+Scala 40: prendi un jolly dal tavolo ‖ Scala 40: take a joker from the table ‖ Scala 40: toma un comodín de la mesa ‖ Scala 40: pegue um coringa da mesa
+Prima Canasta ‖ First Canasta ‖ Primera Canasta ‖ Primeira Canastra
+Vinci una partita di Canasta ‖ Win a game of Canasta ‖ Gana una partida de Canasta ‖ Vença uma partida de Canastra
+Canasta pulita ‖ Clean canasta ‖ Canasta limpia ‖ Canastra limpa
+Canasta: completa una canasta senza matte ‖ Canasta: complete a canasta with no wild cards ‖ Canasta: completa una canasta sin comodines ‖ Canastra: complete uma canastra sem curingas
+Quattro tre rossi ‖ Four red threes ‖ Cuatro treses rojos ‖ Quatro três vermelhos
+Canasta: metti in tavola tutti e quattro i tre rossi ‖ Canasta: put down all four red threes ‖ Canasta: pon en la mesa los cuatro treses rojos ‖ Canastra: coloque na mesa os quatro três vermelhos
+Prima Scopa ‖ First Scopa ‖ Primera Escoba ‖ Primeira Escopa
+Vinci una partita di Scopa ‖ Win a game of Scopa ‖ Gana una partida de Escoba ‖ Vença uma partida de Escopa
+Spazzino ‖ Sweeper ‖ Barrendero ‖ Varredor
+Scopa: fai almeno 3 scope nella stessa smazzata ‖ Scopa: make at least 3 sweeps in the same hand ‖ Escoba: haz al menos 3 escobas en la misma mano ‖ Escopa: faça pelo menos 3 escopas na mesma mão
+Tutto mio ‖ All mine ‖ Todo mío ‖ Tudo meu
+Scopa: prendi carte, denari, settebello e primiera nella stessa smazzata ‖ Scopa: take cards, coins, settebello and primiera in the same hand ‖ Escoba: llévate cartas, oros, siete de oros y primiera en la misma mano ‖ Escopa: pegue cartas, ouros, sete belo e primiera na mesma mão
+Prima Briscola ‖ First Briscola ‖ Primera Brisca ‖ Primeira Bisca
+Vinci una partita di Briscola ‖ Win a game of Briscola ‖ Gana una partida de Brisca ‖ Vença uma partida de Bisca
+Briscola da cento ‖ Hundred-point Briscola ‖ Brisca de cien ‖ Bisca de cem
+Briscola: fai almeno 100 punti in una smazzata ‖ Briscola: score at least 100 points in a hand ‖ Brisca: haz al menos 100 puntos en una mano ‖ Bisca: faça pelo menos 100 pontos numa mão
+Campione di torneo ‖ Tournament champion ‖ Campeón de torneo ‖ Campeão de torneio
+Vinci un torneo a eliminazione ‖ Win a knockout tournament ‖ Gana un torneo de eliminación ‖ Vença um torneio eliminatório
+Diplomato ‖ Graduate ‖ Graduado ‖ Formado
+Finisci la partita di allenamento ‖ Finish the practice game ‖ Termina la partida de práctica ‖ Termine a partida de treino
+Albo d'oro ‖ Roll of honour ‖ Palmarés ‖ Galeria de campeões

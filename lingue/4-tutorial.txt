@@ -1,0 +1,167 @@
+# Nomi e descrizioni dei giochi, tutorial "Impara a giocare"
+# italiano ‖ English ‖ Español ‖ Português
+Scopa ‖ Scopa ‖ Escoba ‖ Escopa
+Briscola ‖ Briscola ‖ Brisca ‖ Bisca
+Canasta ‖ Canasta ‖ Canasta ‖ Canastra
+🧹 Scopa ‖ 🧹 Scopa ‖ 🧹 Escoba ‖ 🧹 Escopa
+🍷 Briscola ‖ 🍷 Briscola ‖ 🍷 Brisca ‖ 🍷 Bisca
+🎴 Canasta ‖ 🎴 Canasta ‖ 🎴 Canasta ‖ 🎴 Canastra
+Burraco Classico (FIBUR) ‖ Classic Burraco (FIBUR) ‖ Burraco Clásico (FIBUR) ‖ Burraco Clássico (FIBUR)
+La versione italiana ufficiale da torneo: jolly e pinelle, scale e tris, pozzetti. ‖ The official Italian tournament version: jokers and twos, runs and sets, kitties. ‖ La versión italiana oficial de torneo: comodines y doses, escaleras y tríos, muertos. ‖ A versão italiana oficial de torneio: coringas e dois, sequências e trincas, mortos.
+Burraco Reale ‖ Royal Burraco ‖ Burraco Real ‖ Burraco Real
+Senza jolly e solo scale: più difficile, con bonus enormi per le scale complete. ‖ No jokers and runs only: harder, with huge bonuses for complete runs. ‖ Sin comodines y solo escaleras: más difícil, con bonus enormes por las escaleras completas. ‖ Sem coringas e só sequências: mais difícil, com bônus enormes para sequências completas.
+Buraco Brasiliano Aberto ‖ Brazilian Buraco Aberto ‖ Buraco Brasileño Aberto ‖ Buraco Aberto
+L'originale sudamericano “aperto”: solo scale, morti, serve una canastra pulita per battere. ‖ The original South American “open” game: runs only, kitties, you need a clean canastra to go out. ‖ El original sudamericano “abierto”: solo escaleras, muertos, hace falta una canastra limpia para cerrar. ‖ O original sul-americano “aberto”: só sequências, mortos, precisa de uma canastra limpa para bater.
+Buraco Brasiliano Fechado ‖ Brazilian Buraco Fechado ‖ Buraco Brasileño Fechado ‖ Buraco Fechado
+Il Buraco “chiuso”: tris ammessi, ma lo scarto si raccoglie solo usando la carta in cima. ‖ The “closed” Buraco: sets allowed, but the discards can be picked up only by using the top card. ‖ El Buraco “cerrado”: se permiten tríos, pero el descarte solo se recoge usando la carta de arriba. ‖ O Buraco “fechado”: trincas permitidas, mas o lixo só se pega usando a carta de cima.
+Il classico italiano: apri con 40 punti, attacca ovunque, chi arriva a 101 è fuori. ‖ The Italian classic: open with 40 points, lay off anywhere, reach 101 and you are out. ‖ El clásico italiano: abre con 40 puntos, añade en cualquier sitio, quien llega a 101 queda fuera. ‖ O clássico italiano: abra com 40 pontos, encaixe em qualquer lugar, quem chega a 101 está fora.
+La classica americana: solo combinazioni dello stesso valore, tre rossi, scarti congelati. ‖ The American classic: only melds of the same rank, red threes, frozen discards. ‖ La clásica americana: solo combinaciones del mismo valor, treses rojos, descartes congelados. ‖ A clássica americana: só jogos do mesmo valor, três vermelhos, lixo congelado.
+La regina dei giochi italiani: prendi le carte, fai scopa, conta denari e primiera. ‖ The queen of Italian games: capture cards, sweep, count coins and primiera. ‖ La reina de los juegos italianos: llévate cartas, haz escoba, cuenta oros y primiera. ‖ A rainha dos jogos italianos: capture cartas, faça escopa, conte ouros e primiera.
+Il classico delle osterie: prese, carichi e briscole, vince chi fa 61. ‖ The tavern classic: tricks, high cards and trumps, 61 wins. ‖ El clásico de las tabernas: bazas, cargas y triunfos, gana quien hace 61. ‖ O clássico das tavernas: vazas, cargas e trunfos, vence quem faz 61.
+Burraco ‖ Burraco ‖ Burraco ‖ Burraco
+# tutorial
+{0}. Lo scopo ‖ {0}. The goal ‖ {0}. El objetivo ‖ {0}. O objetivo
+1. Lo scopo ‖ 1. The goal ‖ 1. El objetivo ‖ 1. O objetivo
+2. Il tuo turno ‖ 2. Your turn ‖ 2. Tu turno ‖ 2. Sua vez
+3. Le combinazioni ‖ 3. Melds ‖ 3. Las combinaciones ‖ 3. Os jogos
+4. Le matte ‖ 4. Wild cards ‖ 4. Los comodines ‖ 4. Os curingas
+5. Il pozzetto ‖ 5. The kitty ‖ 5. El muerto ‖ 5. O morto
+6. Chiudere e vincere ‖ 6. Going out and winning ‖ 6. Cerrar y ganar ‖ 6. Bater e vencer
+2. Aprire ‖ 2. Opening ‖ 2. Abrir ‖ 2. Abrir
+3. Il turno ‖ 3. The turn ‖ 3. El turno ‖ 3. A vez
+2. Le carte speciali ‖ 2. Special cards ‖ 2. Las cartas especiales ‖ 2. As cartas especiais
+3. Il turno e la chiusura ‖ 3. The turn and going out ‖ 3. El turno y el cierre ‖ 3. A vez e a batida
+2. Prendere ‖ 2. Capturing ‖ 2. Llevarse cartas ‖ 2. Capturar
+3. I punti ‖ 3. Scoring ‖ 3. Los puntos ‖ 3. Os pontos
+2. La presa ‖ 2. The trick ‖ 2. La baza ‖ 2. A vaza
+3. Consigli ‖ 3. Tips ‖ 3. Consejos ‖ 3. Dicas
+Avanti → ‖ Next → ‖ Siguiente → ‖ Próximo →
+Si gioca in coppia (o da soli) con due mazzi e i jolly. Lo scopo è ‖ You play in pairs (or alone) with two decks and jokers. The goal is to ‖ Se juega en pareja (o solo) con dos barajas y comodines. El objetivo es ‖ Joga-se em dupla (ou sozinho) com dois baralhos e coringas. O objetivo é
+calare combinazioni ‖ meld cards ‖ bajar combinaciones ‖ baixar jogos
+, fare dei ‖ , make ‖ , hacer ‖ , fazer
+burraco ‖ burracos ‖ burracos ‖ canastras
+(combinazioni di almeno 7 carte), prendere il ‖ (melds of at least 7 cards), take the ‖ (combinaciones de al menos 7 cartas), tomar el ‖ (jogos de pelo menos 7 cartas), pegar o
+pozzetto ‖ kitty ‖ muerto ‖ morto
+chiudere ‖ go out ‖ cerrar ‖ bater
+prima degli avversari. ‖ before your opponents. ‖ antes que los rivales. ‖ antes dos adversários.
+Un burraco: 7 carte in scala. ‖ A burraco: 7 cards in a run. ‖ Un burraco: 7 cartas en escalera. ‖ Uma canastra: 7 cartas em sequência.
+: tocca il tallone, oppure tocca gli scarti per prenderli ‖ : tap the stock, or tap the discards to take them ‖ : toca el mazo, o toca los descartes para tomarlos ‖ : toque no monte, ou toque no lixo para pegá-lo
+tutti ‖ all ‖ todos ‖ todo
+: seleziona le carte toccandole e tocca ‖ : select cards by tapping them and tap ‖ : selecciona las cartas tocándolas y toca ‖ : selecione as cartas tocando nelas e toque em
+sul tavolo (oppure trascinale lì). ‖ on the table (or drag them there). ‖ en la mesa (o arrástralas allí). ‖ na mesa (ou arraste-as para lá).
+: seleziona una carta e tocca gli scarti. Il turno finisce sempre con uno scarto. ‖ : select a card and tap the discards. The turn always ends with a discard. ‖ : selecciona una carta y toca los descartes. El turno siempre termina con un descarte. ‖ : selecione uma carta e toque no lixo. A vez sempre termina com um descarte.
+Scala ‖ Run ‖ Escalera ‖ Sequência
+Tris ‖ Set ‖ Trío ‖ Trinca
+: almeno 3 carte in fila dello stesso seme. ‖ : at least 3 cards in sequence of the same suit. ‖ : al menos 3 cartas seguidas del mismo palo. ‖ : pelo menos 3 cartas seguidas do mesmo naipe.
+: almeno 3 carte uguali. ‖ : at least 3 cards of the same rank. ‖ : al menos 3 cartas iguales. ‖ : pelo menos 3 cartas iguais.
+Puoi attaccare carte alle tue combinazioni in qualsiasi turno. ‖ You can add cards to your melds on any turn. ‖ Puedes añadir cartas a tus combinaciones en cualquier turno. ‖ Você pode encaixar cartas nos seus jogos em qualquer vez.
+jolly ‖ jokers ‖ comodines ‖ coringas
+2 (pinelle) ‖ 2s (pinelle) ‖ doses (pinelle) ‖ dois (curingas)
+sostituiscono qualsiasi carta, ma al massimo ‖ replace any card, but at most ‖ sustituyen cualquier carta, pero como máximo ‖ substituem qualquer carta, mas no máximo
+una per combinazione ‖ one per meld ‖ uno por combinación ‖ um por jogo
+Un burraco senza matte è ‖ A burraco without wild cards is ‖ Un burraco sin comodines es ‖ Uma canastra sem curingas é
+pulito ‖ clean ‖ limpio ‖ limpa
+(+200), con una matta è ‖ (+200), with a wild card it is ‖ (+200), con un comodín es ‖ (+200), com um curinga é
+sporco ‖ dirty ‖ sucio ‖ suja
+Quando finisci le carte prendi un ‖ When you run out of cards you take a ‖ Cuando te quedas sin cartas tomas un ‖ Quando suas cartas acabam você pega um
+: 11 carte nuove con cui continuare. Ogni coppia ne prende uno. ‖ : 11 new cards to carry on with. Each pair takes one. ‖ : 11 cartas nuevas para seguir. Cada pareja toma uno. ‖ : 11 cartas novas para continuar. Cada dupla pega um.
+Se a fine smazzata non l'hai preso: ‖ If you have not taken it by the end of the hand: ‖ Si al final de la mano no lo has tomado: ‖ Se no fim da mão você não o pegou:
+−100 punti ‖ −100 points ‖ −100 puntos ‖ −100 pontos
+Per ‖ To ‖ Para ‖ Para
+devi aver preso il pozzetto, avere almeno un burraco e scartare l'ultima carta (non una matta): ‖ you must have taken the kitty, have at least one burraco and discard your last card (not a wild card): ‖ debes haber tomado el muerto, tener al menos un burraco y descartar la última carta (no un comodín): ‖ você precisa ter pego o morto, ter pelo menos uma canastra e descartar a última carta (não um curinga):
+Contano le carte calate e i bonus; le carte rimaste in mano si sottraggono. Vince chi arriva per primo al punteggio stabilito. ‖ Melded cards and bonuses count; cards left in hand are subtracted. The first to reach the target score wins. ‖ Cuentan las cartas bajadas y los bonus; las cartas que quedan en mano se restan. Gana quien llega primero a la puntuación fijada. ‖ Contam as cartas baixadas e os bônus; as cartas que sobram na mão são subtraídas. Vence quem chegar primeiro à pontuação definida.
+Ora prova una partita di allenamento: il computer gioca piano e il pulsante 💡 ti suggerisce la mossa. ‖ Now try a practice game: the computer plays slowly and the 💡 button suggests your move. ‖ Ahora prueba una partida de práctica: la computadora juega despacio y el botón 💡 te sugiere la jugada. ‖ Agora tente uma partida de treino: o computador joga devagar e o botão 💡 sugere a jogada.
+🎓 Allenamento a Burraco ‖ 🎓 Burraco practice ‖ 🎓 Práctica de Burraco ‖ 🎓 Treino de Burraco
+🎓 Allenamento a Scala 40 ‖ 🎓 Scala 40 practice ‖ 🎓 Práctica de Scala 40 ‖ 🎓 Treino de Scala 40
+🎓 Allenamento a Canasta ‖ 🎓 Canasta practice ‖ 🎓 Práctica de Canasta ‖ 🎓 Treino de Canastra
+🎓 Allenamento a Scopa ‖ 🎓 Scopa practice ‖ 🎓 Práctica de Escoba ‖ 🎓 Treino de Escopa
+🎓 Allenamento a Briscola ‖ 🎓 Briscola practice ‖ 🎓 Práctica de Brisca ‖ 🎓 Treino de Bisca
+Ognuno gioca per sé con due mazzi e i jolly. Si cerca di ‖ Everyone plays for themselves with two decks and jokers. You try to ‖ Cada uno juega para sí con dos barajas y comodines. Se intenta ‖ Cada um joga por si com dois baralhos e coringas. Tenta-se
+restare senza carte ‖ get rid of all your cards ‖ quedarse sin cartas ‖ ficar sem cartas
+: quelle che ti restano in mano sono punti di penalità. Chi arriva a ‖ : those left in your hand are penalty points. Whoever reaches ‖ : las que te quedan en mano son puntos de penalización. Quien llega a ‖ : as que sobram na mão são pontos de penalidade. Quem chega a
+è eliminato; vince l'ultimo rimasto. ‖ is out; the last one standing wins. ‖ queda eliminado; gana el último que queda. ‖ está eliminado; vence o último que sobrar.
+Per calare la prima volta devi ‖ To meld for the first time you must ‖ Para bajar la primera vez debes ‖ Para baixar pela primeira vez você precisa
+aprire ‖ open ‖ abrir ‖ abrir
+con almeno ‖ with at least ‖ con al menos ‖ com pelo menos
+40 punti ‖ 40 points ‖ 40 puntos ‖ 40 pontos
+, anche con più giochi insieme (Asso 11, figure 10, le altre il loro valore). ‖ , even with several melds together (Ace 11, face cards 10, the others their value). ‖ , incluso con varias combinaciones juntas (As 11, figuras 10, las demás su valor). ‖ , mesmo com vários jogos juntos (Ás 11, figuras 10, as outras o seu valor).
+30 + 30 = 60 punti: puoi aprire. ‖ 30 + 30 = 60 points: you can open. ‖ 30 + 30 = 60 puntos: puedes abrir. ‖ 30 + 30 = 60 pontos: você pode abrir.
+dal tallone (lo scarto si prende solo se lo usi subito). ‖ from the stock (the discard can be taken only if you use it straight away). ‖ del mazo (el descarte solo se toma si lo usas enseguida). ‖ do monte (o descarte só se pega se você usar na hora).
+Dopo aver aperto puoi ‖ After opening you can ‖ Después de abrir puedes ‖ Depois de abrir você pode
+attaccare ‖ lay off ‖ añadir ‖ encaixar
+ai giochi di tutti. ‖ on everyone's melds. ‖ a las combinaciones de todos. ‖ nos jogos de todos.
+una carta. ‖ a card. ‖ una carta. ‖ uma carta.
+Se un gioco ha un jolly e tu hai la carta che sostituisce, puoi ‖ If a meld has a joker and you have the card it replaces, you can ‖ Si una combinación tiene un comodín y tú tienes la carta que sustituye, puedes ‖ Se um jogo tem um coringa e você tem a carta que ele substitui, você pode
+prenderti il jolly ‖ take the joker ‖ llevarte el comodín ‖ pegar o coringa
+Due mazzi e i jolly. Si calano ‖ Two decks and jokers. You meld ‖ Dos barajas y comodines. Se bajan ‖ Dois baralhos e coringas. Baixam-se
+di carte uguali (non scale!) e si cerca di fare ‖ of the same rank (no runs!) and you try to make ‖ de cartas iguales (¡no escaleras!) y se intenta hacer ‖ de cartas iguais (sem sequências!) e tenta-se fazer
+canaste ‖ canastas ‖ canastas ‖ canastras
+: giochi di almeno 7 carte. Pulita (senza matte) ‖ : melds of at least 7 cards. Clean (no wild cards) ‖ : combinaciones de al menos 7 cartas. Limpia (sin comodines) ‖ : jogos de pelo menos 7 cartas. Limpa (sem curingas)
+, sporca ‖ , dirty ‖ , sucia ‖ , suja
+sono matte, ma in un gioco devono essere meno delle carte vere. ‖ are wild, but in a meld they must be fewer than the natural cards. ‖ son comodines, pero en una combinación deben ser menos que las cartas naturales. ‖ são curingas, mas num jogo devem ser menos que as cartas naturais.
+3 rossi ‖ red 3s ‖ treses rojos ‖ três vermelhos
+vanno subito in tavola (+100 l'uno, 800 se li hai tutti e 4); i ‖ go straight onto the table (+100 each, 800 if you have all 4); the ‖ van enseguida a la mesa (+100 cada uno, 800 si tienes los 4); los ‖ vão logo para a mesa (+100 cada, 800 se tiver os 4); os
+3 neri ‖ black 3s ‖ treses negros ‖ três pretos
+scartati bloccano gli scarti. ‖ when discarded block the pile. ‖ descartados bloquean el pozo. ‖ descartados trancam o lixo.
+dal tallone, oppure prendi ‖ from the stock, or take ‖ del mazo, o toma ‖ do monte, ou pegue
+gli scarti se usi subito la carta in cima. ‖ the discards if you use the top card straight away. ‖ los descartes si usas enseguida la carta de arriba. ‖ o lixo se usar na hora a carta de cima.
+e attacca ai tuoi giochi. ‖ and lay off on your melds. ‖ y añade a tus combinaciones. ‖ e encaixe nos seus jogos.
+Il primo gioco deve valere un minimo di punti che cresce col punteggio. Per ‖ The first meld must be worth a minimum that grows with your score. To ‖ La primera combinación debe valer un mínimo de puntos que crece con la puntuación. Para ‖ O primeiro jogo precisa valer um mínimo de pontos que cresce com a pontuação. Para
+serve almeno una canasta. ‖ you need at least one canasta. ‖ hace falta al menos una canasta. ‖ é preciso pelo menos uma canastra.
+Carte italiane da 40. Ricevi 3 carte, in tavola ce ne sono 4. A turno giochi una carta per ‖ Italian 40-card deck. You get 3 cards, there are 4 on the table. In turn you play a card to ‖ Baraja italiana de 40. Recibes 3 cartas, en la mesa hay 4. Por turnos juegas una carta para ‖ Baralho italiano de 40. Você recebe 3 cartas, na mesa há 4. Na sua vez joga uma carta para
+prendere ‖ capture ‖ llevarte ‖ capturar
+carte dal tavolo. ‖ cards from the table. ‖ cartas de la mesa. ‖ cartas da mesa.
+Fante 8, Cavallo 9, Re 10. ‖ Jack 8, Knight 9, King 10. ‖ Sota 8, Caballo 9, Rey 10. ‖ Valete 8, Cavalo 9, Rei 10.
+Prendi la carta ‖ Take the card ‖ Llévate la carta ‖ Pegue a carta
+dello stesso valore ‖ of the same value ‖ del mismo valor ‖ do mesmo valor
+, oppure ‖ , or ‖ , o ‖ , ou
+più carte che sommano ‖ several cards adding up ‖ varias cartas que suman ‖ várias cartas que somam
+al valore della tua. Se c'è la carta uguale devi prendere quella. ‖ to the value of yours. If there is a matching card you must take that one. ‖ el valor de la tuya. Si hay una carta igual debes llevarte esa. ‖ o valor da sua. Se houver a carta igual você deve pegar essa.
+Se pulisci il tavolo fai ‖ If you clear the table you make a ‖ Si limpias la mesa haces ‖ Se limpar a mesa você faz
+scopa ‖ sweep ‖ escoba ‖ escopa
+: un punto! ‖ : one point! ‖ : ¡un punto! ‖ : um ponto!
+A fine smazzata: un punto a chi ha più ‖ At the end of the hand: one point to whoever has the most ‖ Al final de la mano: un punto a quien tiene más ‖ No fim da mão: um ponto para quem tem mais
+carte ‖ cards ‖ cartas ‖ cartas
+, più ‖ , most ‖ , más ‖ , mais
+denari ‖ coins ‖ oros ‖ ouros
+settebello ‖ settebello ‖ siete de oros ‖ sete belo
+primiera ‖ primiera ‖ primiera ‖ primiera
+(i 7 e i 6 contano di più), più le scope. ‖ (7s and 6s count most), plus the sweeps. ‖ (los 7 y los 6 cuentan más), más las escobas. ‖ (os 7 e os 6 valem mais), mais as escopas.
+Il settebello: tienilo d'occhio! ‖ The settebello: keep an eye on it! ‖ El siete de oros: ¡no lo pierdas de vista! ‖ O sete belo: fique de olho nele!
+Carte italiane da 40, 3 carte a testa. La carta scoperta sotto il mazzo è la ‖ Italian 40-card deck, 3 cards each. The face-up card under the deck is the ‖ Baraja italiana de 40, 3 cartas cada uno. La carta descubierta bajo el mazo es el ‖ Baralho italiano de 40, 3 cartas cada. A carta virada embaixo do baralho é o
+briscola ‖ trump ‖ triunfo ‖ trunfo
+: il suo seme batte tutti gli altri. Servono ‖ : its suit beats all the others. You need ‖ : su palo gana a todos los demás. Hacen falta ‖ : o seu naipe vence todos os outros. São necessários
+più di 60 punti ‖ more than 60 points ‖ más de 60 puntos ‖ mais de 60 pontos
+su 120. ‖ out of 120. ‖ de 120. ‖ de 120.
+Asso 11, Tre 10, Re 4, Cavallo 3, Fante 2; le altre 0. ‖ Ace 11, Three 10, King 4, Knight 3, Jack 2; the others 0. ‖ As 11, Tres 10, Rey 4, Caballo 3, Sota 2; las demás 0. ‖ Ás 11, Três 10, Rei 4, Cavalo 3, Valete 2; as outras 0.
+Chi apre gioca una carta, l'altro risponde con ‖ The leader plays a card, the other answers with ‖ Quien abre juega una carta, el otro responde con ‖ Quem abre joga uma carta, o outro responde com
+quella che vuole ‖ any card they like ‖ la que quiera ‖ a que quiser
+(non c'è obbligo di seme). Vince la carta più alta del seme di apertura, a meno che qualcuno giochi una ‖ (no need to follow suit). The highest card of the suit led wins, unless someone plays a ‖ (no hay obligación de palo). Gana la carta más alta del palo de salida, salvo que alguien juegue un ‖ (não é obrigatório seguir o naipe). Vence a carta mais alta do naipe de saída, a menos que alguém jogue um
+Chi prende pesca per primo e apre il giro dopo. ‖ Whoever wins the trick draws first and leads the next one. ‖ Quien se lleva la baza roba primero y abre la siguiente vuelta. ‖ Quem leva a vaza compra primeiro e abre a próxima rodada.
+Non sprecare le briscole per prese senza punti; se l'avversario apre con un carico (Asso o Tre) e hai una briscola piccola, prendilo! ‖ Do not waste trumps on tricks with no points; if your opponent leads a high card (Ace or Three) and you have a small trump, take it! ‖ No malgastes triunfos en bazas sin puntos; si el rival sale con una carga (As o Tres) y tienes un triunfo pequeño, ¡llévatela! ‖ Não desperdice trunfos em vazas sem pontos; se o adversário sair com uma carga (Ás ou Três) e você tiver um trunfo pequeno, leve-a!
+# allenatore
+Ora gioca il computer: osserva cosa cala e cosa scarta. ‖ The computer is playing now: watch what it melds and discards. ‖ Ahora juega la computadora: observa qué baja y qué descarta. ‖ Agora o computador joga: observe o que baixa e o que descarta.
+Ora gioca il computer: guarda come apre e cosa scarta. ‖ The computer is playing now: watch how it opens and what it discards. ‖ Ahora juega la computadora: mira cómo abre y qué descarta. ‖ Agora o computador joga: veja como abre e o que descarta.
+Ora gioca il computer: guarda cosa sceglie. ‖ The computer is playing now: see what it chooses. ‖ Ahora juega la computadora: mira qué elige. ‖ Agora o computador joga: veja o que escolhe.
+Tocca il tallone per pescare una carta. ‖ Tap the stock to draw a card. ‖ Toca el mazo para robar una carta. ‖ Toque no monte para comprar uma carta.
+Pesca dal tallone, oppure prendi tutti gli scarti se ti servono per una combinazione. ‖ Draw from the stock, or take all the discards if you need them for a meld. ‖ Roba del mazo, o toma todos los descartes si te sirven para una combinación. ‖ Compre do monte, ou pegue todo o lixo se precisar dele para um jogo.
+Puoi chiudere! Cala tutto quello che puoi e scarta l'ultima carta. ‖ You can go out! Meld everything you can and discard your last card. ‖ ¡Puedes cerrar! Baja todo lo que puedas y descarta la última carta. ‖ Você pode bater! Baixe tudo o que puder e descarte a última carta.
+Se la casella ＋ dice "✓ Cala", toccala per calare queste carte. ‖ If the ＋ box says "✓ Meld", tap it to meld these cards. ‖ Si la casilla ＋ dice "✓ Baja", tócala para bajar estas cartas. ‖ Se a caixa ＋ disser "✓ Baixar", toque nela para baixar estas cartas.
+Tocca gli scarti per scartare questa carta, oppure un tuo gioco per attaccarla. ‖ Tap the discards to discard this card, or one of your melds to lay it off. ‖ Toca los descartes para descartar esta carta, o una de tus combinaciones para añadirla. ‖ Toque no lixo para descartar esta carta, ou num jogo seu para encaixá-la.
+Cerca 3 carte in scala dello stesso seme o 3 uguali e selezionale. Non sai cosa fare? Tocca 💡. ‖ Look for 3 cards in a run of the same suit or 3 of a kind and select them. Not sure what to do? Tap 💡. ‖ Busca 3 cartas en escalera del mismo palo o 3 iguales y selecciónalas. ¿No sabes qué hacer? Toca 💡. ‖ Procure 3 cartas em sequência do mesmo naipe ou 3 iguais e selecione-as. Não sabe o que fazer? Toque em 💡.
+Guarda il riepilogo: le carte calate e i burraco danno punti, quelle in mano li tolgono. ‖ Look at the summary: melded cards and burracos give points, cards in hand take them away. ‖ Mira el resumen: las cartas bajadas y los burracos dan puntos, las de la mano los restan. ‖ Veja o resumo: cartas baixadas e canastras dão pontos, as da mão tiram.
+Le carte rimaste in mano sono penalità (jolly 25, Asso 11, figure 10): chi arriva a 101 è fuori. ‖ Cards left in hand are penalties (joker 25, Ace 11, face cards 10): whoever reaches 101 is out. ‖ Las cartas que quedan en mano son penalización (comodín 25, As 11, figuras 10): quien llega a 101 queda fuera. ‖ As cartas que sobram na mão são penalidade (coringa 25, Ás 11, figuras 10): quem chega a 101 está fora.
+Pesca dal tallone, oppure prendi lo scarto in cima se ti serve. ‖ Draw from the stock, or take the top discard if you need it. ‖ Roba del mazo, o toma el descarte de arriba si te sirve. ‖ Compre do monte, ou pegue o descarte de cima se precisar.
+Tocca il tallone per pescare. Lo scarto si può prendere solo per aprire subito con esso. ‖ Tap the stock to draw. The discard can be taken only to open with it straight away. ‖ Toca el mazo para robar. El descarte solo se puede tomar para abrir enseguida con él. ‖ Toque no monte para comprar. O descarte só pode ser pego para abrir na hora com ele.
+Hai aperto: ora puoi attaccare ai giochi di tutti. Liberati delle carte che valgono di più! ‖ You have opened: now you can lay off on everyone's melds. Get rid of the cards worth the most! ‖ Has abierto: ahora puedes añadir a las combinaciones de todos. ¡Deshazte de las cartas que más valen! ‖ Você abriu: agora pode encaixar nos jogos de todos. Livre-se das cartas que valem mais!
+Canaste e carte calate danno punti, le carte in mano li tolgono. ‖ Canastas and melded cards give points, cards in hand take them away. ‖ Las canastas y las cartas bajadas dan puntos, las de la mano los restan. ‖ Canastras e cartas baixadas dão pontos, as da mão tiram.
+Tocca il tallone per pescare, oppure gli scarti se puoi usare subito la carta in cima. ‖ Tap the stock to draw, or the discards if you can use the top card straight away. ‖ Toca el mazo para robar, o los descartes si puedes usar enseguida la carta de arriba. ‖ Toque no monte para comprar, ou no lixo se puder usar na hora a carta de cima.
+Cerca 3 carte uguali (anche con una matta) e selezionale. Non sai cosa fare? Tocca 💡. ‖ Look for 3 cards of the same rank (a wild card is fine too) and select them. Not sure what to do? Tap 💡. ‖ Busca 3 cartas iguales (también con un comodín) y selecciónalas. ¿No sabes qué hacer? Toca 💡. ‖ Procure 3 cartas iguais (também com um curinga) e selecione-as. Não sabe o que fazer? Toque em 💡.
+Si contano carte, denari, settebello, primiera e scope. ‖ Cards, coins, settebello, primiera and sweeps are counted. ‖ Se cuentan cartas, oros, siete de oros, primiera y escobas. ‖ Contam-se cartas, ouros, sete belo, primiera e escopas.
+Si contano i punti delle carte prese: servono più di 60. ‖ The points of the cards taken are counted: you need more than 60. ‖ Se cuentan los puntos de las cartas tomadas: hacen falta más de 60. ‖ Contam-se os pontos das cartas capturadas: são precisos mais de 60.
+Tocca una carta e poi il tavolo: se c'è una carta uguale o una somma giusta, la prendi. Attento a non lasciare una scopa facile! ‖ Tap a card and then the table: if there is a matching card or the right sum, you take it. Careful not to leave an easy sweep! ‖ Toca una carta y luego la mesa: si hay una carta igual o una suma justa, te la llevas. ¡Cuidado con dejar una escoba fácil! ‖ Toque numa carta e depois na mesa: se houver uma carta igual ou uma soma certa, você captura. Cuidado para não deixar uma escopa fácil!
+Rispondi: con una carta più alta dello stesso seme o con una briscola prendi; altrimenti gioca una carta senza punti. ‖ Answer: a higher card of the same suit or a trump wins the trick; otherwise play a card with no points. ‖ Responde: con una carta más alta del mismo palo o con un triunfo te la llevas; si no, juega una carta sin puntos. ‖ Responda: com uma carta mais alta do mesmo naipe ou com um trunfo você leva; senão jogue uma carta sem pontos.
+Apri il giro con una carta che vale poco: tieni Assi, Tre e briscole per dopo. ‖ Lead with a low-value card: keep Aces, Threes and trumps for later. ‖ Abre la vuelta con una carta que vale poco: guarda Ases, Treses y triunfos para después. ‖ Abra a rodada com uma carta que vale pouco: guarde Ases, Três e trunfos para depois.
+Per aprire servono {0} punti: cerca scale dello stesso seme e tris di semi diversi (Asso 11, figure 10). Non sai cosa fare? Tocca 💡. ‖ To open you need {0} points: look for runs of the same suit and sets of different suits (Ace 11, face cards 10). Not sure what to do? Tap 💡. ‖ Para abrir hacen falta {0} puntos: busca escaleras del mismo palo y tríos de palos distintos (As 11, figuras 10). ¿No sabes qué hacer? Toca 💡. ‖ Para abrir são precisos {0} pontos: procure sequências do mesmo naipe e trincas de naipes diferentes (Ás 11, figuras 10). Não sabe o que fazer? Toque em 💡.
+La casella ＋ ti dice quanti punti fai: ne servono almeno {0} per aprire (anche con più giochi insieme). ‖ The ＋ box tells you how many points you make: you need at least {0} to open (several melds together are fine). ‖ La casilla ＋ te dice cuántos puntos haces: hacen falta al menos {0} para abrir (también con varias combinaciones). ‖ A caixa ＋ mostra quantos pontos você faz: são precisos pelo menos {0} para abrir (também com vários jogos juntos).
+Tocca un gioco (anche degli altri) per attaccare la carta, o gli scarti per scartarla. Se un gioco ha un jolly, la carta giusta lo sostituisce e il jolly è tuo! ‖ Tap a meld (even someone else's) to lay off the card, or the discards to discard it. If a meld has a joker, the right card replaces it and the joker is yours! ‖ Toca una combinación (también de otros) para añadir la carta, o los descartes para descartarla. Si una combinación tiene un comodín, la carta justa lo sustituye y ¡el comodín es tuyo! ‖ Toque num jogo (também dos outros) para encaixar a carta, ou no lixo para descartá-la. Se um jogo tem um coringa, a carta certa o substitui e o coringa é seu!

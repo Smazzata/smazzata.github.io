@@ -1,0 +1,291 @@
+# Regole: impostazioni modificabili e testo completo delle regole di ogni gioco
+# italiano ‖ English ‖ Español ‖ Português
+Partita ‖ Game ‖ Partida ‖ Partida
+Giocatori ‖ Players ‖ Jugadores ‖ Jogadores
+Eliminato chi arriva a ‖ Out when reaching ‖ Eliminado quien llega a ‖ Eliminado quem chega a
+101 punti ‖ 101 points ‖ 101 puntos ‖ 101 pontos
+201 punti ‖ 201 points ‖ 201 puntos ‖ 201 pontos
+Combinazioni ‖ Melds ‖ Combinaciones ‖ Jogos
+Punti per aprire ‖ Points to open ‖ Puntos para abrir ‖ Pontos para abrir
+Jolly per combinazione ‖ Jokers per meld ‖ Comodines por combinación ‖ Coringas por jogo
+al massimo 1 ‖ at most 1 ‖ como máximo 1 ‖ no máximo 1
+al massimo 2 ‖ at most 2 ‖ como máximo 2 ‖ no máximo 2
+al massimo 3 ‖ at most 3 ‖ como máximo 3 ‖ no máximo 3
+Al massimo 1 ‖ At most 1 ‖ Como máximo 1 ‖ No máximo 1
+Al massimo 2 ‖ At most 2 ‖ Como máximo 2 ‖ No máximo 2
+Si può prendere un jolly dal tavolo sostituendolo ‖ A joker can be taken from the table by replacing it ‖ Se puede tomar un comodín de la mesa sustituyéndolo ‖ Pode-se pegar um coringa da mesa substituindo-o
+Lo scarto si prende solo se si è aperto (o si apre subito con esso) ‖ The discard can be taken only after opening (or to open with it straight away) ‖ El descarte solo se toma si ya se abrió (o se abre enseguida con él) ‖ O descarte só se pega depois de abrir (ou para abrir na hora com ele)
+Il jolly preso dal tavolo va usato nello stesso turno ‖ A joker taken from the table must be used in the same turn ‖ El comodín tomado de la mesa debe usarse en el mismo turno ‖ O coringa pego da mesa deve ser usado na mesma vez
+Punteggio ‖ Scoring ‖ Puntuación ‖ Pontuação
+Chiusura in mano (apri e chiudi nello stesso turno): penalità doppie agli altri ‖ Going out in one (open and go out in the same turn): double penalties for the others ‖ Cierre en mano (abrir y cerrar en el mismo turno): penalizaciones dobles para los demás ‖ Batida de mão (abrir e bater na mesma vez): penalidades dobradas para os outros
+Variante ‖ Variant ‖ Variante ‖ Variante
+Tavolo ‖ Table ‖ Mesa ‖ Mesa
+4 giocatori (2 coppie) ‖ 4 players (2 pairs) ‖ 4 jugadores (2 parejas) ‖ 4 jogadores (2 duplas)
+2 giocatori ‖ 2 players ‖ 2 jugadores ‖ 2 jogadores
+3 giocatori ‖ 3 players ‖ 3 jugadores ‖ 3 jogadores
+4 giocatori ‖ 4 players ‖ 4 jugadores ‖ 4 jogadores
+3 giocatori (squadre in partita) ‖ 3 players (teams formed during the game) ‖ 3 jugadores (equipos durante la partida) ‖ 3 jogadores (duplas formadas na partida)
+Punteggio per vincere ‖ Winning score ‖ Puntuación para ganar ‖ Pontuação para vencer
+Valori tipici: 505, 1005, 2005 (Italia), 3000 (Brasile) ‖ Typical values: 505, 1005, 2005 (Italy), 3000 (Brazil) ‖ Valores típicos: 505, 1005, 2005 (Italia), 3000 (Brasil) ‖ Valores típicos: 505, 1005, 2005 (Itália), 3000 (Brasil)
+Terminologia ‖ Terminology ‖ Terminología ‖ Terminologia
+Italiana (burraco, pozzetto) ‖ Italian (burraco, pozzetto) ‖ Italiana (burraco, pozzetto) ‖ Italiana (burraco, pozzetto)
+Brasiliana (canastra, morto) ‖ Brazilian (canastra, morto) ‖ Brasileña (canastra, muerto) ‖ Brasileira (canastra, morto)
+Carte e matte ‖ Cards and wild cards ‖ Cartas y comodines ‖ Cartas e curingas
+Jolly nel mazzo ‖ Jokers in the deck ‖ Comodines en la baraja ‖ Coringas no baralho
+4 jolly (108 carte) ‖ 4 jokers (108 cards) ‖ 4 comodines (108 cartas) ‖ 4 coringas (108 cartas)
+2 jolly (106 carte) ‖ 2 jokers (106 cards) ‖ 2 comodines (106 cartas) ‖ 2 coringas (106 cartas)
+Nessun jolly (104 carte, solo pinelle) ‖ No jokers (104 cards, twos only) ‖ Sin comodines (104 cartas, solo doses) ‖ Sem coringas (104 cartas, só os dois)
+Matte per combinazione ‖ Wild cards per meld ‖ Comodines por combinación ‖ Curingas por jogo
+Valore del jolly ‖ Joker value ‖ Valor del comodín ‖ Valor do coringa
+Valore della pinella (2) ‖ Value of the two (2) ‖ Valor del dos (2) ‖ Valor do dois (2)
+Tris ammessi (carte dello stesso valore) ‖ Sets allowed (cards of the same rank) ‖ Tríos permitidos (cartas del mismo valor) ‖ Trincas permitidas (cartas do mesmo valor)
+Un solo tris per valore per squadra ‖ Only one set per rank per team ‖ Un solo trío por valor por equipo ‖ Só uma trinca por valor por dupla
+Scala da Asso ad Asso (14 carte) ‖ Run from Ace to Ace (14 cards) ‖ Escalera de As a As (14 cartas) ‖ Sequência de Ás a Ás (14 cartas)
+Scarti ‖ Discards ‖ Descartes ‖ Lixo
+Monte degli scarti ‖ Discard pile ‖ Pozo de descartes ‖ Lixo
+Aperto: si raccoglie sempre tutto ‖ Open: you always pick up everything ‖ Abierto: siempre se recoge todo ‖ Aberto: sempre se pega tudo
+Chiuso: si raccoglie solo usando subito la carta in cima ‖ Closed: you pick up only by using the top card straight away ‖ Cerrado: solo se recoge usando enseguida la carta de arriba ‖ Fechado: só se pega usando na hora a carta de cima
+Una carta scoperta sugli scarti a inizio smazzata ‖ One face-up card on the discards at the start of the hand ‖ Una carta descubierta en los descartes al inicio de la mano ‖ Uma carta virada no lixo no início da mão
+Pozzetto e chiusura ‖ Kitty and going out ‖ Muerto y cierre ‖ Morto e batida
+Per chiudere serve ‖ To go out you need ‖ Para cerrar hace falta ‖ Para bater é preciso
+Almeno un burraco (anche sporco) ‖ At least one burraco (dirty is fine) ‖ Al menos un burraco (también sucio) ‖ Pelo menos uma canastra (também suja)
+Almeno un burraco pulito ‖ At least one clean burraco ‖ Al menos un burraco limpio ‖ Pelo menos uma canastra limpa
+Vietato chiudere scartando una matta ‖ No going out by discarding a wild card ‖ Prohibido cerrar descartando un comodín ‖ Proibido bater descartando um curinga
+Quando il tallone finisce ‖ When the stock runs out ‖ Cuando se acaba el mazo ‖ Quando o monte acaba
+La smazzata finisce quando restano 2 carte ‖ The hand ends when 2 cards are left ‖ La mano termina cuando quedan 2 cartas ‖ A mão termina quando restam 2 cartas
+Un pozzetto non preso diventa il nuovo tallone ‖ An untaken kitty becomes the new stock ‖ Un muerto no tomado pasa a ser el nuevo mazo ‖ Um morto não pego vira o novo monte
+Vulnerabilità: a metà obiettivo la prima calata deve valere ≥ 75 ‖ Vulnerability: at half the target the first meld must be worth ≥ 75 ‖ Vulnerabilidad: a mitad del objetivo la primera bajada debe valer ≥ 75 ‖ Vulnerabilidade: na metade do objetivo o primeiro jogo deve valer ≥ 75
+Burraco pulito ‖ Clean burraco ‖ Burraco limpio ‖ Canastra limpa
+Burraco sporco ‖ Dirty burraco ‖ Burraco sucio ‖ Canastra suja
+Burraco semipulito (8+ carte, 7 naturali in fila) ‖ Semi-clean burraco (8+ cards, 7 naturals in a row) ‖ Burraco semilimpio (8+ cartas, 7 naturales seguidas) ‖ Canastra semilimpa (8+ cartas, 7 naturais seguidas)
+Non previsto ‖ Not used ‖ No previsto ‖ Não previsto
+Scala pulita di 13 carte ‖ Clean run of 13 cards ‖ Escalera limpia de 13 cartas ‖ Sequência limpa de 13 cartas
+Nessun bonus extra ‖ No extra bonus ‖ Sin bonus extra ‖ Sem bônus extra
+Scala pulita di 14 carte (A-A) ‖ Clean run of 14 cards (A-A) ‖ Escalera limpia de 14 cartas (A-A) ‖ Sequência limpa de 14 cartas (A-A)
+Bonus chiusura ‖ Going-out bonus ‖ Bonus de cierre ‖ Bônus de batida
+Bonus per la chiusura ‖ Going-out bonus ‖ Bonus por cerrar ‖ Bônus pela batida
+Penalità pozzetto non preso ‖ Penalty for untaken kitty ‖ Penalización por muerto no tomado ‖ Penalidade por morto não pego
+Nessuna ‖ None ‖ Ninguna ‖ Nenhuma
+Niente penalità se nessuno ha preso il pozzetto ‖ No penalty if nobody took the kitty ‖ Sin penalización si nadie tomó el muerto ‖ Sem penalidade se ninguém pegou o morto
+Si vince a ‖ Winning score ‖ Se gana a ‖ Vence-se com
+5000 punti ‖ 5000 points ‖ 5000 puntos ‖ 5000 pontos
+3000 punti ‖ 3000 points ‖ 3000 puntos ‖ 3000 pontos
+2000 punti ‖ 2000 points ‖ 2000 puntos ‖ 2000 pontos
+2005 punti ‖ 2005 points ‖ 2005 puntos ‖ 2005 pontos
+11 punti ‖ 11 points ‖ 11 puntos ‖ 11 pontos
+21 punti ‖ 21 points ‖ 21 puntos ‖ 21 pontos
+75 punti ‖ 75 points ‖ 75 puntos ‖ 75 pontos
+Prese ‖ Captures ‖ Capturas ‖ Capturas
+Asso piglia tutto (l'Asso prende tutte le carte in tavola) ‖ Ace takes all (the Ace captures all the cards on the table) ‖ El As se lo lleva todo (el As toma todas las cartas de la mesa) ‖ Ás leva tudo (o Ás captura todas as cartas da mesa)
+Vince chi si aggiudica ‖ The winner is the first to win ‖ Gana quien se lleva ‖ Vence quem ganhar
+1 smazzata ‖ 1 hand ‖ 1 mano ‖ 1 mão
+2 smazzate ‖ 2 hands ‖ 2 manos ‖ 2 mãos
+3 smazzate ‖ 3 hands ‖ 3 manos ‖ 3 mãos
+Altre varianti esistenti ‖ Other existing variants ‖ Otras variantes existentes ‖ Outras variantes existentes
+Burraco a 3 ‖ Three-player Burraco ‖ Burraco de 3 ‖ Burraco a 3
+: si ottiene scegliendo 3 giocatori in qualsiasi preset (pozzetti da 18 e da 11, squadre che si formano in partita). ‖ : choose 3 players in any preset (kitties of 18 and 11 cards, teams formed during the game). ‖ : se obtiene eligiendo 3 jugadores en cualquier preajuste (muertos de 18 y de 11, equipos que se forman en la partida). ‖ : basta escolher 3 jogadores em qualquer predefinição (mortos de 18 e de 11, duplas formadas na partida).
+: varianti italiane di circolo con obiettivi diversi (es. restare con una sola carta): non giocabili qui. ‖ : Italian club variants with different goals (e.g. ending with a single card): not playable here. ‖ : variantes italianas de club con objetivos distintos (p. ej. quedarse con una sola carta): no se pueden jugar aquí. ‖ : variantes italianas de clube com objetivos diferentes (ex. ficar com uma só carta): não jogáveis aqui.
+: versione argentina/uruguaiana con tessere al posto delle carte. ‖ : Argentine/Uruguayan version played with tiles instead of cards. ‖ : versión argentina/uruguaya con fichas en lugar de cartas. ‖ : versão argentina/uruguaia com peças no lugar das cartas.
+Regole “della casa” comuni (impostabili qui sopra): jolly a 50 punti, burraco pulito 300 e sporco 150, obiettivo 3000/3500. ‖ Common “house rules” (you can set them above): jokers worth 50, clean burraco 300 and dirty 150, target 3000/3500. ‖ Reglas “de la casa” habituales (configurables arriba): comodín a 50 puntos, burraco limpio 300 y sucio 150, objetivo 3000/3500. ‖ Regras “da casa” comuns (ajustáveis acima): coringa a 50 pontos, canastra limpa 300 e suja 150, objetivo 3000/3500.
+# testo delle regole: Burraco classico
+La forma più diffusa in Italia, codificata dalla ‖ The most widespread form in Italy, codified by the ‖ La forma más difundida en Italia, codificada por la ‖ A forma mais difundida na Itália, codificada pela
+(Federazione Italiana Burraco). Si gioca di norma in 4 a coppie, ma anche in 2 o in 3. Con la regola opzionale del ‖ (Italian Burraco Federation). It is usually played by 4 in pairs, but also by 2 or 3. With the optional ‖ (Federación Italiana de Burraco). Se juega normalmente de 4 en parejas, pero también de 2 o de 3. Con la regla opcional del ‖ (Federação Italiana de Burraco). Joga-se normalmente em 4 em duplas, mas também em 2 ou em 3. Com a regra opcional da
+semipulito ‖ semi-clean ‖ semilimpio ‖ semilimpa
+(150 punti) molti circoli premiano i burraco con una sola matta e almeno 7 carte naturali in fila. ‖ rule (150 points) many clubs reward burracos with a single wild card and at least 7 natural cards in a row. ‖ (150 puntos) muchos clubes premian los burracos con un solo comodín y al menos 7 cartas naturales seguidas. ‖ (150 pontos) muitos clubes premiam canastras com um só curinga e pelo menos 7 cartas naturais seguidas.
+Materiale e giocatori ‖ Equipment and players ‖ Material y jugadores ‖ Material e jogadores
+in due coppie: i compagni siedono uno di fronte all'altro. Due mazzi da 52 carte più 4 jolly ( ‖ in two pairs: partners sit opposite each other. Two 52-card decks plus 4 jokers ( ‖ en dos parejas: los compañeros se sientan uno frente al otro. Dos barajas de 52 cartas más 4 comodines ( ‖ em duas duplas: os parceiros sentam um de frente para o outro. Dois baralhos de 52 cartas mais 4 coringas (
+108 carte ‖ 108 cards ‖ 108 cartas ‖ 108 cartas
+). Si gioca in senso orario. ‖ ). Play goes clockwise. ‖ ). Se juega en el sentido de las agujas del reloj. ‖ ). Joga-se no sentido horário.
+Distribuzione ‖ Dealing ‖ Reparto ‖ Distribuição
+Ogni giocatore riceve ‖ Each player receives ‖ Cada jugador recibe ‖ Cada jogador recebe
+11 carte ‖ 11 cards ‖ 11 cartas ‖ 11 cartas
+13 carte ‖ 13 cards ‖ 13 cartas ‖ 13 cartas
+Due pozzetti coperti da ‖ Two face-down kitties of ‖ Dos muertos boca abajo de ‖ Dois mortos virados de
+ciascuno. ‖ each. ‖ cada uno. ‖ cada.
+Una carta viene girata scoperta per iniziare il monte degli scarti. Le restanti carte formano il ‖ One card is turned face up to start the discard pile. The remaining cards form the ‖ Se da vuelta una carta para empezar el pozo de descartes. Las cartas restantes forman el ‖ Uma carta é virada para começar o lixo. As cartas restantes formam o
+Inizia il giocatore alla sinistra di chi distribuisce; il mazziere ruota a ogni smazzata. ‖ The player to the dealer's left starts; the dealer changes every hand. ‖ Empieza el jugador a la izquierda de quien reparte; el que reparte rota en cada mano. ‖ Começa o jogador à esquerda de quem dá as cartas; quem dá muda a cada mão.
+Il turno ‖ The turn ‖ El turno ‖ A vez
+la prima carta del tallone ‖ the top card of the stock ‖ la primera carta del mazo ‖ a primeira carta do monte
+oppure ‖ or ‖ o ‖ ou
+raccogli ‖ pick up ‖ recoge ‖ pegue
+tutto ‖ all of ‖ todo ‖ todo
+il monte degli scarti (sempre visibile per intero; non se ne può prendere solo una parte). ‖ the discard pile (always fully visible; you cannot take only part of it). ‖ el pozo de descartes (siempre visible entero; no se puede tomar solo una parte). ‖ o lixo (sempre visível por inteiro; não se pode pegar só uma parte).
+Facoltativamente ‖ Optionally ‖ Opcionalmente ‖ Opcionalmente
+cala ‖ meld ‖ baja ‖ baixe
+nuove combinazioni o ‖ new melds or ‖ nuevas combinaciones o ‖ novos jogos ou
+attacca ‖ lay off ‖ añade ‖ encaixe
+carte ai giochi della tua squadra (mai a quelli avversari). ‖ cards on your team's melds (never on the opponents'). ‖ cartas a las combinaciones de tu equipo (nunca a las de los rivales). ‖ cartas nos jogos da sua dupla (nunca nos dos adversários).
+una carta: il turno finisce sempre con uno scarto. ‖ a card: the turn always ends with a discard. ‖ una carta: el turno siempre termina con un descarte. ‖ uma carta: a vez sempre termina com um descarte.
+Se il monte ha una sola carta e la raccogli, non puoi riscartare la stessa carta nello stesso turno. ‖ If the pile has a single card and you pick it up, you cannot discard the same card in the same turn. ‖ Si el pozo tiene una sola carta y la recoges, no puedes volver a descartarla en el mismo turno. ‖ Se o lixo tem uma só carta e você a pega, não pode descartar a mesma carta na mesma vez.
+Dopo 4 raccolte consecutive dello scarto, il giocatore successivo deve pescare dal tallone. ‖ After 4 discard pick-ups in a row, the next player must draw from the stock. ‖ Después de 4 recogidas seguidas del descarte, el siguiente jugador debe robar del mazo. ‖ Depois de 4 vezes seguidas pegando o lixo, o próximo jogador deve comprar do monte.
+: almeno 3 carte consecutive dello stesso seme. L'Asso può stare sotto il 2 (A-2-3) o sopra il K (Q-K-A), ma non a entrambe le estremità. ‖ : at least 3 consecutive cards of the same suit. The Ace can go below the 2 (A-2-3) or above the K (Q-K-A), but not at both ends. ‖ : al menos 3 cartas consecutivas del mismo palo. El As puede ir debajo del 2 (A-2-3) o encima del K (Q-K-A), pero no en ambos extremos. ‖ : pelo menos 3 cartas seguidas do mesmo naipe. O Ás pode ficar abaixo do 2 (A-2-3) ou acima do K (Q-K-A), mas não nas duas pontas.
+: almeno 3 carte dello stesso valore, semi qualsiasi (al massimo 8 naturali). Una squadra non può avere due tris dello stesso valore. ‖ : at least 3 cards of the same rank, any suits (at most 8 naturals). A team cannot have two sets of the same rank. ‖ : al menos 3 cartas del mismo valor, de cualquier palo (como máximo 8 naturales). Un equipo no puede tener dos tríos del mismo valor. ‖ : pelo menos 3 cartas do mesmo valor, qualquer naipe (no máximo 8 naturais). Uma dupla não pode ter duas trincas do mesmo valor.
+: almeno 3 carte dello stesso valore, semi qualsiasi (al massimo 8 naturali). ‖ : at least 3 cards of the same rank, any suits (at most 8 naturals). ‖ : al menos 3 cartas del mismo valor, de cualquier palo (como máximo 8 naturales). ‖ : pelo menos 3 cartas do mesmo valor, qualquer naipe (no máximo 8 naturais).
+Non c'è un punteggio minimo per la prima calata. ‖ There is no minimum score for the first meld. ‖ No hay puntuación mínima para la primera bajada. ‖ Não há pontuação mínima para o primeiro jogo.
+Matte ‖ Wild cards ‖ Comodines ‖ Curingas
+Sono matte i ‖ Wild cards are the ‖ Son comodines los ‖ São curingas os
+: possono sostituire qualsiasi carta. ‖ : they can replace any card. ‖ : pueden sustituir cualquier carta. ‖ : podem substituir qualquer carta.
+Ogni combinazione può contenere ‖ Each meld can contain ‖ Cada combinación puede tener ‖ Cada jogo pode ter
+al massimo una matta ‖ at most one wild card ‖ como máximo un comodín ‖ no máximo um curinga
+; non si possono fare combinazioni di sole matte. ‖ ; melds made only of wild cards are not allowed. ‖ ; no se pueden hacer combinaciones solo de comodines. ‖ ; não se podem fazer jogos só de curingas.
+Un 2 dello stesso seme della scala, nella sua posizione naturale (A-2-3…), conta come carta ‖ A 2 of the same suit as the run, in its natural position (A-2-3…), counts as a ‖ Un 2 del mismo palo de la escalera, en su posición natural (A-2-3…), cuenta como carta ‖ Um 2 do mesmo naipe da sequência, na sua posição natural (A-2-3…), conta como carta
+naturale ‖ natural card ‖ natural ‖ natural
+e non come matta. ‖ and not as a wild card. ‖ y no como comodín. ‖ e não como curinga.
+Una matta a un'estremità si colloca in basso; se si aggiunge la carta che sostituiva, la matta scivola in fondo alla scala. ‖ A wild card at one end goes at the bottom; if the card it replaced is added, the wild card slides to the end of the run. ‖ Un comodín en un extremo se coloca abajo; si se añade la carta que sustituía, el comodín pasa al final de la escalera. ‖ Um curinga numa ponta fica embaixo; se a carta que ele substituía for adicionada, o curinga vai para o fim da sequência.
+Una combinazione di ‖ A meld of ‖ Una combinación de ‖ Um jogo de
+7 o più carte ‖ 7 or more cards ‖ 7 o más cartas ‖ 7 ou mais cartas
+è un burraco: ‖ is a burraco: ‖ es un burraco: ‖ é uma canastra:
+è una canastra: ‖ is a canastra: ‖ es una canastra: ‖ é uma canastra:
+(senza matte): ‖ (no wild cards): ‖ (sin comodines): ‖ (sem curingas):
+(con matta): ‖ (with a wild card): ‖ (con comodín): ‖ (com curinga):
+Il pozzetto ‖ The kitty ‖ El muerto ‖ O morto
+Il primo giocatore di una squadra che resta senza carte prende un pozzetto e continua a giocare con quelle carte. ‖ The first player of a team to run out of cards takes a kitty and keeps playing with those cards. ‖ El primer jugador de un equipo que se queda sin cartas toma un muerto y sigue jugando con esas cartas. ‖ O primeiro jogador de uma dupla que fica sem cartas pega um morto e continua jogando com essas cartas.
+Presa diretta ‖ Direct pick-up ‖ Toma directa ‖ Pegada direta
+: cali tutte le carte, prendi subito il pozzetto e continui il turno. ‖ : you meld all your cards, take the kitty at once and carry on with your turn. ‖ : bajas todas las cartas, tomas enseguida el muerto y sigues el turno. ‖ : você baixa todas as cartas, pega na hora o morto e continua a vez.
+Presa con lo scarto ‖ Pick-up with the discard ‖ Toma con el descarte ‖ Pegada com o descarte
+: cali tutto tranne una carta, la scarti (può essere anche una matta) e prendi il pozzetto, che userai dal turno successivo. ‖ : you meld everything but one card, discard it (it can be a wild card) and take the kitty, which you will use from your next turn. ‖ : bajas todo menos una carta, la descartas (puede ser un comodín) y tomas el muerto, que usarás desde el turno siguiente. ‖ : você baixa tudo menos uma carta, descarta-a (pode ser um curinga) e pega o morto, que usará a partir da próxima vez.
+Ogni squadra può prendere un solo pozzetto. Chi non lo prende entro la fine della smazzata: ‖ Each team can take only one kitty. A team that has not taken it by the end of the hand: ‖ Cada equipo puede tomar un solo muerto. Quien no lo toma antes del final de la mano: ‖ Cada dupla pode pegar só um morto. Quem não o pegar até o fim da mão:
+Si può chiudere solo se la squadra ‖ You can go out only if your team ‖ Solo se puede cerrar si el equipo ‖ Só se pode bater se a dupla
+ha già preso il pozzetto ‖ has already taken the kitty ‖ ya tomó el muerto ‖ já pegou o morto
+almeno un burraco ‖ at least one burraco ‖ al menos un burraco ‖ pelo menos uma canastra
+. Si chiude calando tutte le carte tranne una e ‖ . You go out by melding all your cards but one and ‖ . Se cierra bajando todas las cartas menos una y ‖ . Bate-se baixando todas as cartas menos uma e
+scartando l'ultima ‖ discarding the last one ‖ descartando la última ‖ descartando a última
+, che ‖ , which ‖ , que ‖ , que
+non può essere una matta ‖ cannot be a wild card ‖ no puede ser un comodín ‖ não pode ser um curinga
+: non si può chiudere calando tutto senza scartare. Finché la tua squadra non può chiudere, dopo aver calato devi tenere almeno 2 carte in mano. La chiusura vale ‖ : you cannot go out by melding everything without discarding. Until your team can go out, after melding you must keep at least 2 cards in hand. Going out is worth ‖ : no se puede cerrar bajando todo sin descartar. Mientras tu equipo no pueda cerrar, después de bajar debes quedarte con al menos 2 cartas. El cierre vale ‖ : não se pode bater baixando tudo sem descartar. Enquanto sua dupla não puder bater, depois de baixar você deve ficar com pelo menos 2 cartas na mão. A batida vale
+Fine della smazzata ‖ End of the hand ‖ Fin de la mano ‖ Fim da mão
+Quando un giocatore chiude, oppure ‖ When a player goes out, or ‖ Cuando un jugador cierra, o ‖ Quando um jogador bate, ou
+quando nel tallone restano ‖ when the stock has only ‖ cuando en el mazo quedan ‖ quando no monte restam
+: chi ha pescato la terzultima completa il turno e la smazzata finisce senza bonus di chiusura. ‖ left: whoever drew the third-to-last card finishes the turn and the hand ends with no going-out bonus. ‖ : quien robó la antepenúltima completa el turno y la mano termina sin bonus de cierre. ‖ : quem comprou a antepenúltima completa a vez e a mão termina sem bônus de batida.
+Carta ‖ Card ‖ Carta ‖ Carta
+Punti ‖ Points ‖ Puntos ‖ Pontos
+2 (pinella) ‖ 2 (wild two) ‖ 2 (comodín) ‖ 2 (curinga)
+A fine smazzata ogni squadra somma il valore delle carte calate, i bonus dei burraco e la chiusura; sottrae il valore delle carte rimaste in mano e 100 se non ha preso il pozzetto. I punteggi possono essere negativi. ‖ At the end of the hand each team adds the value of the melded cards, the burraco bonuses and going out; it subtracts the value of the cards left in hand and 100 if it did not take the kitty. Scores can be negative. ‖ Al final de la mano cada equipo suma el valor de las cartas bajadas, los bonus de los burracos y el cierre; resta el valor de las cartas que quedan en mano y 100 si no tomó el muerto. Las puntuaciones pueden ser negativas. ‖ No fim da mão cada dupla soma o valor das cartas baixadas, os bônus das canastras e a batida; subtrai o valor das cartas que sobraram na mão e 100 se não pegou o morto. As pontuações podem ser negativas.
+Vince chi raggiunge per primo ‖ The first to reach ‖ Gana quien llega primero a ‖ Vence quem chegar primeiro a
+(se più giocatori li superano nella stessa smazzata, vince chi ha di più). ‖ wins (if several players pass it in the same hand, the highest wins). ‖ (si varios jugadores los superan en la misma mano, gana quien tiene más). ‖ (se vários jogadores passarem na mesma mão, vence quem tiver mais).
+# Burraco reale
+Evoluzione più recente del classico: si gioca con ‖ A more recent evolution of the classic: it is played with ‖ Evolución más reciente del clásico: se juega con ‖ Evolução mais recente do clássico: joga-se com
+104 carte senza jolly ‖ 104 cards without jokers ‖ 104 cartas sin comodines ‖ 104 cartas sem coringas
+, le uniche matte sono le pinelle, e si possono calare ‖ , the only wild cards are the twos, and you can meld ‖ , los únicos comodines son los doses, y se pueden bajar ‖ , os únicos curingas são os dois, e só se podem baixar
+solo scale ‖ runs only ‖ solo escaleras ‖ sequências
+. L'Asso può chiudere la scala in alto e in basso: la scala completa da Asso ad Asso (14 carte) vale 1000 punti, quella di 13 carte 500. Non ha un regolamento federale unico. ‖ . The Ace can end the run both high and low: the complete run from Ace to Ace (14 cards) is worth 1000 points, the 13-card one 500. There is no single federation rulebook. ‖ . El As puede cerrar la escalera arriba y abajo: la escalera completa de As a As (14 cartas) vale 1000 puntos, la de 13 cartas 500. No tiene un reglamento federal único. ‖ . O Ás pode fechar a sequência em cima e embaixo: a sequência completa de Ás a Ás (14 cartas) vale 1000 pontos, a de 13 cartas 500. Não há um regulamento federal único.
+in due coppie: i compagni siedono uno di fronte all'altro. Due mazzi da 52 carte ( ‖ in two pairs: partners sit opposite each other. Two 52-card decks ( ‖ en dos parejas: los compañeros se sientan uno frente al otro. Dos barajas de 52 cartas ( ‖ em duas duplas: os parceiros sentam um de frente para o outro. Dois baralhos de 52 cartas (
+104 carte ‖ 104 cards ‖ 104 cartas ‖ 104 cartas
+: almeno 3 carte consecutive dello stesso seme. L'Asso può stare sia sotto il 2 sia sopra il K: è ammessa la scala completa ‖ : at least 3 consecutive cards of the same suit. The Ace can go both below the 2 and above the K: the complete run is allowed ‖ : al menos 3 cartas consecutivas del mismo palo. El As puede ir debajo del 2 y encima del K: se admite la escalera completa ‖ : pelo menos 3 cartas seguidas do mesmo naipe. O Ás pode ficar abaixo do 2 e acima do K: é permitida a sequência completa
+da Asso ad Asso ‖ from Ace to Ace ‖ de As a As ‖ de Ás a Ás
+(14 carte). ‖ (14 cards). ‖ (14 cartas). ‖ (14 cartas).
+Niente tris ‖ No sets ‖ Sin tríos ‖ Sem trincas
+: si calano solo scale. ‖ : only runs are melded. ‖ : solo se bajan escaleras. ‖ : só se baixam sequências.
+Sono matte solo i ‖ The only wild cards are the ‖ Solo son comodines los ‖ Só são curingas os
+, perché si gioca senza jolly: possono sostituire qualsiasi carta. ‖ , because there are no jokers: they can replace any card. ‖ , porque se juega sin comodines: pueden sustituir cualquier carta. ‖ , porque se joga sem coringas: podem substituir qualquer carta.
+Scala pulita di ‖ Clean run of ‖ Escalera limpia de ‖ Sequência limpa de
+al posto del bonus normale ‖ instead of the normal bonus ‖ en lugar del bonus normal ‖ no lugar do bônus normal
+14 carte ‖ 14 cards ‖ 14 cartas ‖ 14 cartas
+da Asso ad Asso: ‖ from Ace to Ace: ‖ de As a As: ‖ de Ás a Ás:
+# Buraco brasiliano
+Il Buraco nasce tra ‖ Buraco was born between ‖ El Buraco nace entre ‖ O Buraco nasceu entre
+Uruguay e Argentina ‖ Uruguay and Argentina ‖ Uruguay y Argentina ‖ Uruguai e Argentina
+negli anni '40 ed è molto popolare in Brasile (anche come Canastra o Biriba): il Burraco italiano ne deriva. Nella versione ‖ in the 1940s and is very popular in Brazil (also as Canastra or Biriba): Italian Burraco comes from it. In the ‖ en los años 40 y es muy popular en Brasil (también como Canastra o Biriba): el Burraco italiano deriva de él. En la versión ‖ nos anos 40 e é muito popular no Brasil (também como Canastra ou Biriba): o Burraco italiano vem dele. Na versão
+aberto ‖ aberto ‖ aberto ‖ aberto
+si calano solo scale, il monte degli scarti parte vuoto, i pozzetti si chiamano ‖ version only runs are melded, the discard pile starts empty, the kitties are called ‖ solo se bajan escaleras, el pozo de descartes empieza vacío, los muertos se llaman ‖ só se baixam sequências, o lixo começa vazio, os mortos se chamam
+morti ‖ morti ‖ muertos ‖ mortos
+e, se il tallone finisce, un morto non preso diventa il nuovo tallone. Le squadre a metà del punteggio sono ‖ and, if the stock runs out, an untaken kitty becomes the new stock. Teams at half the target score are ‖ y, si se acaba el mazo, un muerto no tomado pasa a ser el nuevo mazo. Los equipos a mitad de la puntuación son ‖ e, se o monte acaba, um morto não pego vira o novo monte. As duplas na metade da pontuação ficam
+vulnerabili ‖ vulnerable ‖ vulnerables ‖ vulneráveis
+Due morti coperti da ‖ Two face-down kitties of ‖ Dos muertos boca abajo de ‖ Dois mortos virados de
+Il monte degli scarti parte vuoto. Le restanti carte formano il ‖ The discard pile starts empty. The remaining cards form the ‖ El pozo de descartes empieza vacío. Las cartas restantes forman el ‖ O lixo começa vazio. As cartas restantes formam o
+Non c'è un punteggio minimo per la prima calata, salvo la regola della vulnerabilità (vedi sotto). ‖ There is no minimum score for the first meld, except for the vulnerability rule (see below). ‖ No hay puntuación mínima para la primera bajada, salvo la regla de la vulnerabilidad (ver abajo). ‖ Não há pontuação mínima para o primeiro jogo, salvo a regra da vulnerabilidade (veja abaixo).
+Canastra ‖ Canastra ‖ Canastra ‖ Canastra
+Canastra limpa ‖ Clean canastra ‖ Canastra limpia ‖ Canastra limpa
+Canastra suja ‖ Dirty canastra ‖ Canastra sucia ‖ Canastra suja
+(meia real): ‖ (half royal): ‖ (media real): ‖ (meia real):
+da Asso ad Asso (real): ‖ from Ace to Ace (royal): ‖ de As a As (real): ‖ de Ás a Ás (real):
+Il morto ‖ The kitty ‖ El muerto ‖ O morto
+Il primo giocatore di una squadra che resta senza carte prende un morto e continua a giocare con quelle carte. ‖ The first player of a team to run out of cards takes a kitty and keeps playing with those cards. ‖ El primer jugador de un equipo que se queda sin cartas toma un muerto y sigue jugando con esas cartas. ‖ O primeiro jogador de uma dupla que fica sem cartas pega um morto e continua jogando com essas cartas.
+: cali tutte le carte, prendi subito il morto e continui il turno. ‖ : you meld all your cards, take the kitty at once and carry on with your turn. ‖ : bajas todas las cartas, tomas enseguida el muerto y sigues el turno. ‖ : você baixa todas as cartas, pega na hora o morto e continua a vez.
+: cali tutto tranne una carta, la scarti (può essere anche una matta) e prendi il morto, che userai dal turno successivo. ‖ : you meld everything but one card, discard it (it can be a wild card) and take the kitty, which you will use from your next turn. ‖ : bajas todo menos una carta, la descartas (puede ser un comodín) y tomas el muerto, que usarás desde el turno siguiente. ‖ : você baixa tudo menos uma carta, descarta-a (pode ser um curinga) e pega o morto, que usará a partir da próxima vez.
+Ogni squadra può prendere un solo morto. Chi non lo prende entro la fine della smazzata: ‖ Each team can take only one kitty. A team that has not taken it by the end of the hand: ‖ Cada equipo puede tomar un solo muerto. Quien no lo toma antes del final de la mano: ‖ Cada dupla pode pegar só um morto. Quem não o pegar até o fim da mão:
+(ma non se nessuna squadra lo ha preso). ‖ (but not if no team took it). ‖ (pero no si ningún equipo lo tomó). ‖ (mas não se nenhuma dupla o pegou).
+ha già preso il morto ‖ has already taken the kitty ‖ ya tomó el muerto ‖ já pegou o morto
+almeno una canastra limpa ‖ at least one clean canastra ‖ al menos una canastra limpia ‖ pelo menos uma canastra limpa
+almeno una canastra ‖ at least one canastra ‖ al menos una canastra ‖ pelo menos uma canastra
+quando il tallone è esaurito: se c'è ancora un morto non preso, quello diventa il nuovo tallone; altrimenti chi ha pescato l'ultima carta completa il turno e la smazzata finisce. ‖ when the stock is exhausted: if there is still an untaken kitty, it becomes the new stock; otherwise whoever drew the last card finishes the turn and the hand ends. ‖ cuando se agota el mazo: si queda un muerto sin tomar, pasa a ser el nuevo mazo; si no, quien robó la última carta completa el turno y la mano termina. ‖ quando o monte se esgota: se ainda houver um morto não pego, ele vira o novo monte; senão quem comprou a última carta completa a vez e a mão termina.
+Vulnerabilità ‖ Vulnerability ‖ Vulnerabilidad ‖ Vulnerabilidade
+Una squadra che ha almeno ‖ A team that has at least ‖ Un equipo que tiene al menos ‖ Uma dupla que tem pelo menos
+metà del punteggio obiettivo ‖ half the target score ‖ la mitad de la puntuación objetivo ‖ metade da pontuação objetivo
+(1500) è vulnerabile: la sua prima calata della smazzata deve valere almeno ‖ (1500) is vulnerable: its first meld of the hand must be worth at least ‖ (1500) es vulnerable: su primera bajada de la mano debe valer al menos ‖ (1500) fica vulnerável: o primeiro jogo da mão deve valer pelo menos
+(somma delle carte calate in quel turno). ‖ (sum of the cards melded in that turn). ‖ (suma de las cartas bajadas en ese turno). ‖ (soma das cartas baixadas naquela vez).
+(somma delle carte calate in quel turno, comprese quelle raccolte dallo scarto). ‖ (sum of the cards melded in that turn, including those picked up from the discards). ‖ (suma de las cartas bajadas en ese turno, incluidas las recogidas del descarte). ‖ (soma das cartas baixadas naquela vez, incluindo as pegas do lixo).
+A fine smazzata ogni squadra somma il valore delle carte calate, i bonus delle canastre e la chiusura; sottrae il valore delle carte rimaste in mano e 100 se non ha preso il morto. I punteggi possono essere negativi. ‖ At the end of the hand each team adds the value of the melded cards, the canastra bonuses and going out; it subtracts the value of the cards left in hand and 100 if it did not take the kitty. Scores can be negative. ‖ Al final de la mano cada equipo suma el valor de las cartas bajadas, los bonus de las canastras y el cierre; resta el valor de las cartas que quedan en mano y 100 si no tomó el muerto. Las puntuaciones pueden ser negativas. ‖ No fim da mão cada dupla soma o valor das cartas baixadas, os bônus das canastras e a batida; subtrai o valor das cartas que sobraram na mão e 100 se não pegou o morto. As pontuações podem ser negativas.
+Versione ‖ Version ‖ Versión ‖ Versão
+fechado ‖ fechado ‖ fechado ‖ fechado
+(chiusa) del Buraco brasiliano: sono ammessi i tris ( ‖ (closed) of Brazilian Buraco: sets are allowed ( ‖ (cerrada) del Buraco brasileño: se permiten los tríos ( ‖ (fechada) do Buraco brasileiro: as trincas são permitidas (
+lavadeira ‖ lavadeira ‖ lavadeira ‖ lavadeira
+) e degli scarti si vede solo la carta in cima. Il monte si può raccogliere solo usando subito quella carta in una combinazione; per battere basta una canastra qualsiasi. ‖ ) and only the top discard is visible. The pile can be picked up only by using that card straight away in a meld; any canastra is enough to go out. ‖ ) y de los descartes solo se ve la carta de arriba. El pozo solo se puede recoger usando enseguida esa carta en una combinación; para cerrar basta cualquier canastra. ‖ ) e do lixo só se vê a carta de cima. O lixo só pode ser pego usando na hora essa carta num jogo; para bater basta qualquer canastra.
+raccogli il monte degli scarti, di cui si vede ‖ pick up the discard pile, of which you see ‖ recoge el pozo de descartes, del que se ve ‖ pegue o lixo, do qual se vê
+solo la carta in cima ‖ only the top card ‖ solo la carta de arriba ‖ só a carta de cima
+: è permesso solo se usi ‖ : allowed only if you use ‖ : solo está permitido si usas ‖ : só é permitido se você usar
+subito ‖ straight away ‖ enseguida ‖ na hora
+quella carta in una nuova combinazione con carte della tua mano, oppure attaccandola a un gioco della tua squadra (una matta in cima si può usare solo in una combinazione nuova). ‖ that card in a new meld with cards from your hand, or by laying it off on one of your team's melds (a wild card on top can only be used in a new meld). ‖ esa carta en una nueva combinación con cartas de tu mano, o añadiéndola a una combinación de tu equipo (un comodín arriba solo se puede usar en una combinación nueva). ‖ essa carta num novo jogo com cartas da sua mão, ou encaixando-a num jogo da sua dupla (um curinga em cima só pode ser usado num jogo novo).
+# Scala 40
+La Scala 40 è il gioco di carte più diffuso in Italia insieme al Burraco: ognuno gioca per sé, si apre con almeno 40 punti e si cerca di restare senza carte prima degli altri. ‖ Scala 40 is the most popular card game in Italy together with Burraco: everyone plays for themselves, you open with at least 40 points and try to get rid of your cards before the others. ‖ La Scala 40 es el juego de cartas más popular de Italia junto con el Burraco: cada uno juega para sí, se abre con al menos 40 puntos y se intenta quedarse sin cartas antes que los demás. ‖ A Scala 40 é o jogo de cartas mais difundido na Itália junto com o Burraco: cada um joga por si, abre-se com pelo menos 40 pontos e tenta-se ficar sem cartas antes dos outros.
+Due mazzi da 52 carte e 4 jolly. Ognuno gioca per sé con ‖ Two 52-card decks and 4 jokers. Everyone plays for themselves with ‖ Dos barajas de 52 cartas y 4 comodines. Cada uno juega para sí con ‖ Dois baralhos de 52 cartas e 4 coringas. Cada um joga por si com
+. A ogni turno si pesca (dal tallone o lo scarto in cima), si calano o attaccano carte e si scarta. ‖ . Each turn you draw (from the stock or the top discard), meld or lay off cards and discard. ‖ . En cada turno se roba (del mazo o el descarte de arriba), se bajan o añaden cartas y se descarta. ‖ . A cada vez compra-se (do monte ou o descarte de cima), baixam-se ou encaixam-se cartas e descarta-se.
+: scale dello stesso seme (l'Asso va prima del 2 o dopo il K) e tris o poker di semi tutti diversi. Le matte sono solo i jolly (al massimo 1 per combinazione). ‖ : runs of the same suit (the Ace goes before the 2 or after the K) and sets or fours of all different suits. Only jokers are wild (at most 1 per meld). ‖ : escaleras del mismo palo (el As va antes del 2 o después del K) y tríos o pókers de palos todos distintos. Solo los comodines son comodines (como máximo 1 por combinación). ‖ : sequências do mesmo naipe (o Ás vem antes do 2 ou depois do K) e trincas ou quadras de naipes todos diferentes. Só os coringas são curingas (no máximo 1 por jogo).
+Apertura ‖ Opening ‖ Apertura ‖ Abertura
+: la prima calata deve valere almeno ‖ : the first meld must be worth at least ‖ : la primera bajada debe valer al menos ‖ : o primeiro jogo deve valer pelo menos
+(Asso 11, o 1 in A-2-3; figure 10; le altre il loro numero; il jolly vale la carta che sostituisce). Prima di aprire non si può attaccare e lo scarto si prende solo per aprire subito con esso. ‖ (Ace 11, or 1 in A-2-3; face cards 10; others their number; the joker is worth the card it replaces). Before opening you cannot lay off and the discard can be taken only to open with it straight away. ‖ (As 11, o 1 en A-2-3; figuras 10; las demás su número; el comodín vale la carta que sustituye). Antes de abrir no se puede añadir y el descarte solo se toma para abrir enseguida con él. ‖ (Ás 11, ou 1 em A-2-3; figuras 10; as outras o seu número; o coringa vale a carta que substitui). Antes de abrir não se pode encaixar e o descarte só se pega para abrir na hora com ele.
+Dopo l'apertura si attacca a ‖ After opening you lay off on ‖ Después de la apertura se añade a ‖ Depois da abertura encaixa-se em
+i giochi sul tavolo e si può prendere un jolly dal tavolo mettendo al suo posto la carta che rappresenta. ‖ the melds on the table and you can take a joker from the table by putting the card it stands for in its place. ‖ las combinaciones de la mesa y se puede tomar un comodín de la mesa poniendo en su lugar la carta que representa. ‖ os jogos da mesa e pode-se pegar um coringa da mesa colocando no lugar dele a carta que ele representa.
+Chiude chi scarta l'ultima carta. Gli altri si segnano i punti delle carte rimaste in mano (jolly 25, Asso 11, figure 10). ‖ Whoever discards their last card goes out. The others score the points of the cards left in hand (joker 25, Ace 11, face cards 10). ‖ Cierra quien descarta la última carta. Los demás se apuntan los puntos de las cartas que les quedan (comodín 25, As 11, figuras 10). ‖ Bate quem descarta a última carta. Os outros marcam os pontos das cartas que sobraram na mão (coringa 25, Ás 11, figuras 10).
+Se il tallone finisce si rimescolano gli scarti; alla terza volta la smazzata finisce senza chiusura e ognuno paga le carte che ha in mano. ‖ If the stock runs out the discards are reshuffled; the third time the hand ends without anyone going out and everyone pays for the cards in hand. ‖ Si se acaba el mazo se vuelven a barajar los descartes; a la tercera vez la mano termina sin cierre y cada uno paga las cartas que tiene. ‖ Se o monte acaba, embaralha-se o lixo; na terceira vez a mão termina sem batida e cada um paga as cartas que tem na mão.
+Chi arriva a ‖ Whoever reaches ‖ Quien llega a ‖ Quem chega a
+punti è eliminato: vince l'ultimo rimasto. ‖ points is out: the last one standing wins. ‖ puntos queda eliminado: gana el último que queda. ‖ pontos está eliminado: vence o último que sobrar.
+# Canasta
+La Canasta è la "madre" del Burraco: si fanno combinazioni di carte dello stesso valore e si punta alle canaste (7 carte). Si gioca di solito in quattro, a coppie. ‖ Canasta is the "mother" of Burraco: you make melds of cards of the same rank and aim for canastas (7 cards). It is usually played by four, in pairs. ‖ La Canasta es la "madre" del Burraco: se hacen combinaciones de cartas del mismo valor y se busca hacer canastas (7 cartas). Se suele jugar de a cuatro, en parejas. ‖ A Canastra é a "mãe" do Burraco: fazem-se jogos de cartas do mesmo valor e busca-se fazer canastras (7 cartas). Costuma-se jogar em quatro, em duplas.
+Due mazzi da 52 carte e 4 jolly. In quattro si gioca a coppie, 11 carte a testa. A ogni turno si pesca una carta (o si prende tutto il monte degli scarti), si cala e si scarta. ‖ Two 52-card decks and 4 jokers. With four players you play in pairs, 11 cards each. Each turn you draw a card (or take the whole discard pile), meld and discard. ‖ Dos barajas de 52 cartas y 4 comodines. De a cuatro se juega en parejas, 11 cartas cada uno. En cada turno se roba una carta (o se toma todo el pozo de descartes), se baja y se descarta. ‖ Dois baralhos de 52 cartas e 4 coringas. Em quatro joga-se em duplas, 11 cartas cada. A cada vez compra-se uma carta (ou pega-se todo o lixo), baixa-se e descarta-se.
+solo di carte ‖ only of cards ‖ solo de cartas ‖ só de cartas
+(dal 4 all'Asso): almeno 2 naturali e al massimo 3 matte. Matte: jolly e 2. ‖ (from 4 to Ace): at least 2 naturals and at most 3 wild cards. Wild cards: jokers and 2s. ‖ (del 4 al As): al menos 2 naturales y como máximo 3 comodines. Comodines: jokers y doses. ‖ (do 4 ao Ás): pelo menos 2 naturais e no máximo 3 curingas. Curingas: coringas e os 2.
+: combinazione di 7 carte. ‖ : a meld of 7 cards. ‖ : combinación de 7 cartas. ‖ : jogo de 7 cartas.
+Pulita ‖ Clean ‖ Limpia ‖ Limpa
+(senza matte) 500 punti, ‖ (no wild cards) 500 points, ‖ (sin comodines) 500 puntos, ‖ (sem curingas) 500 pontos,
+sporca ‖ dirty ‖ sucia ‖ suja
+300. Per chiudere serve almeno una canasta. ‖ 300. To go out you need at least one canasta. ‖ 300. Para cerrar hace falta al menos una canasta. ‖ 300. Para bater é preciso pelo menos uma canastra.
+Tre rossi ‖ Red threes ‖ Treses rojos ‖ Três vermelhos
+: si mettono subito in tavola e si pesca un'altra carta; valgono 100 l'uno (800 tutti e quattro), ma in negativo se la squadra non ha calato nulla. I ‖ : they go straight onto the table and you draw another card; they are worth 100 each (800 all four), but negative if the team has melded nothing. The ‖ : se ponen enseguida en la mesa y se roba otra carta; valen 100 cada uno (800 los cuatro), pero en negativo si el equipo no bajó nada. Los ‖ : vão logo para a mesa e compra-se outra carta; valem 100 cada (800 os quatro), mas negativos se a dupla não baixou nada. Os
+tre neri ‖ black threes ‖ treses negros ‖ três pretos
+scartati bloccano il monte al giocatore successivo. ‖ when discarded block the pile for the next player. ‖ descartados bloquean el pozo al siguiente jugador. ‖ descartados trancam o lixo para o próximo jogador.
+: la prima calata deve valere almeno 50 punti (90 sopra i 1500, 120 sopra i 3000; 15 se si è sotto zero). Valori: jolly 50, Asso e 2 20, dall'8 al K 10, dal 4 al 7 5. ‖ : the first meld must be worth at least 50 points (90 above 1500, 120 above 3000; 15 when below zero). Values: joker 50, Ace and 2 20, 8 to K 10, 4 to 7 5. ‖ : la primera bajada debe valer al menos 50 puntos (90 por encima de 1500, 120 por encima de 3000; 15 si se está bajo cero). Valores: comodín 50, As y 2 20, del 8 al K 10, del 4 al 7 5. ‖ : o primeiro jogo deve valer pelo menos 50 pontos (90 acima de 1500, 120 acima de 3000; 15 se estiver abaixo de zero). Valores: coringa 50, Ás e 2 20, do 8 ao K 10, do 4 ao 7 5.
+: si prende tutto, ma la carta in cima va usata subito in una combinazione. È ‖ : you take it all, but the top card must be used straight away in a meld. It is ‖ : se toma todo, pero la carta de arriba debe usarse enseguida en una combinación. Está ‖ : pega-se tudo, mas a carta de cima deve ser usada na hora num jogo. Fica
+congelato ‖ frozen ‖ congelado ‖ congelado
+finché la squadra non apre o se contiene una matta: allora servono due carte naturali uguali a quella in cima. ‖ until the team opens or if it contains a wild card: then you need two natural cards matching the top one. ‖ hasta que el equipo abre o si contiene un comodín: entonces hacen falta dos cartas naturales iguales a la de arriba. ‖ até a dupla abrir ou se contiver um curinga: então são precisas duas cartas naturais iguais à de cima.
+Chi chiude prende 100 punti. Si contano le carte calate, le canaste e i tre rossi; si tolgono le carte rimaste in mano. Vince chi arriva a ‖ Going out is worth 100 points. Melded cards, canastas and red threes are counted; cards left in hand are subtracted. The first to reach ‖ Quien cierra gana 100 puntos. Se cuentan las cartas bajadas, las canastas y los treses rojos; se restan las cartas que quedan en mano. Gana quien llega a ‖ Quem bate ganha 100 pontos. Contam-se as cartas baixadas, as canastras e os três vermelhos; subtraem-se as cartas que sobraram na mão. Vence quem chegar a
+# Scopa
+La Scopa si gioca con le carte italiane da 40. Si prende dal tavolo la carta dello stesso valore o più carte che sommano al valore giocato; chi pulisce il tavolo fa ‖ Scopa is played with the 40-card Italian deck. You capture from the table the card of the same value or several cards adding up to the value played; whoever clears the table makes a ‖ La Escoba se juega con la baraja italiana de 40 cartas. Se toma de la mesa la carta del mismo valor o varias cartas que suman el valor jugado; quien limpia la mesa hace ‖ A Escopa se joga com o baralho italiano de 40 cartas. Captura-se da mesa a carta do mesmo valor ou várias cartas que somam o valor jogado; quem limpa a mesa faz
+Mazzo italiano da 40 carte (denari, coppe, spade, bastoni; Fante 8, Cavallo 9, Re 10). In quattro si gioca a coppie: 3 carte a testa e 4 scoperte in tavola; finite le carte se ne danno altre 3 finché c'è mazzo. ‖ Italian 40-card deck (coins, cups, swords, clubs; Jack 8, Knight 9, King 10). With four you play in pairs: 3 cards each and 4 face up on the table; when the cards are finished 3 more are dealt while the deck lasts. ‖ Baraja italiana de 40 cartas (oros, copas, espadas, bastos; Sota 8, Caballo 9, Rey 10). De a cuatro se juega en parejas: 3 cartas cada uno y 4 descubiertas en la mesa; acabadas las cartas se reparten otras 3 mientras haya mazo. ‖ Baralho italiano de 40 cartas (ouros, copas, espadas, paus; Valete 8, Cavalo 9, Rei 10). Em quatro joga-se em duplas: 3 cartas cada e 4 viradas na mesa; acabadas as cartas dão-se mais 3 enquanto houver baralho.
+Mazzo italiano da 40 carte (denari, coppe, spade, bastoni; Fante 8, Cavallo 9, Re 10). In due: 3 carte a testa e 4 scoperte in tavola; finite le carte se ne danno altre 3 finché c'è mazzo. ‖ Italian 40-card deck (coins, cups, swords, clubs; Jack 8, Knight 9, King 10). Two players: 3 cards each and 4 face up on the table; when the cards are finished 3 more are dealt while the deck lasts. ‖ Baraja italiana de 40 cartas (oros, copas, espadas, bastos; Sota 8, Caballo 9, Rey 10). De a dos: 3 cartas cada uno y 4 descubiertas en la mesa; acabadas las cartas se reparten otras 3 mientras haya mazo. ‖ Baralho italiano de 40 cartas (ouros, copas, espadas, paus; Valete 8, Cavalo 9, Rei 10). Em dois: 3 cartas cada e 4 viradas na mesa; acabadas as cartas dão-se mais 3 enquanto houver baralho.
+Giochi una carta: se in tavola c'è una carta ‖ You play a card: if there is a card on the table ‖ Juegas una carta: si en la mesa hay una carta ‖ Você joga uma carta: se na mesa houver uma carta
+la prendi (è obbligatorio prendere quella), altrimenti puoi prendere ‖ you take it (taking that one is compulsory), otherwise you can take ‖ te la llevas (es obligatorio llevarse esa), si no puedes llevarte ‖ você a captura (é obrigatório pegar essa), senão pode capturar
+al valore. Se non prendi nulla la carta resta in tavola. ‖ to the value. If you take nothing the card stays on the table. ‖ el valor. Si no te llevas nada la carta queda en la mesa. ‖ o valor. Se não capturar nada a carta fica na mesa.
+: se prendi tutte le carte in tavola fai scopa (1 punto), tranne all'ultima giocata. ‖ : if you take all the cards on the table you make a sweep (1 point), except on the very last play. ‖ : si te llevas todas las cartas de la mesa haces escoba (1 punto), salvo en la última jugada. ‖ : se capturar todas as cartas da mesa você faz escopa (1 ponto), exceto na última jogada.
+A fine smazzata le carte rimaste in tavola vanno a chi ha fatto l'ultima presa. ‖ At the end of the hand the cards left on the table go to whoever made the last capture. ‖ Al final de la mano las cartas que quedan en la mesa son para quien hizo la última captura. ‖ No fim da mão as cartas que ficaram na mesa vão para quem fez a última captura.
+Punti: ‖ Points: ‖ Puntos: ‖ Pontos:
+(chi ne ha di più), ‖ (whoever has the most), ‖ (quien tiene más), ‖ (quem tiver mais),
+(il 7 di denari), ‖ (the 7 of coins), ‖ (el 7 de oros), ‖ (o 7 de ouros),
+(la miglior carta per seme: 7, 6, Asso…), più le ‖ (the best card per suit: 7, 6, Ace…), plus the ‖ (la mejor carta por palo: 7, 6, As…), más las ‖ (a melhor carta por naipe: 7, 6, Ás…), mais as
+scope ‖ sweeps ‖ escobas ‖ escopas
+Vince chi arriva per primo a ‖ The first to reach ‖ Gana quien llega primero a ‖ Vence quem chegar primeiro a
+# Briscola
+La Briscola si gioca con le carte italiane da 40: a ogni giro ognuno gioca una carta e la presa va alla briscola più alta o alla carta più forte del seme di uscita. Vince la smazzata chi raccoglie almeno 61 punti su 120. ‖ Briscola is played with the 40-card Italian deck: in each round everyone plays a card and the trick goes to the highest trump or the strongest card of the suit led. Whoever collects at least 61 of the 120 points wins the hand. ‖ La Brisca se juega con la baraja italiana de 40: en cada vuelta cada uno juega una carta y la baza es para el triunfo más alto o la carta más fuerte del palo de salida. Gana la mano quien suma al menos 61 de 120 puntos. ‖ A Bisca se joga com o baralho italiano de 40: a cada rodada cada um joga uma carta e a vaza vai para o trunfo mais alto ou para a carta mais forte do naipe de saída. Vence a mão quem juntar pelo menos 61 de 120 pontos.
+Mazzo italiano da 40 carte. In quattro si gioca a coppie: 3 carte a testa; la carta successiva, scoperta, indica il seme di ‖ Italian 40-card deck. With four you play in pairs: 3 cards each; the next card, face up, shows the suit of ‖ Baraja italiana de 40 cartas. De a cuatro se juega en parejas: 3 cartas cada uno; la carta siguiente, descubierta, indica el palo de ‖ Baralho italiano de 40 cartas. Em quatro joga-se em duplas: 3 cartas cada; a carta seguinte, virada, indica o naipe de
+Mazzo italiano da 40 carte. In due: 3 carte a testa; la carta successiva, scoperta, indica il seme di ‖ Italian 40-card deck. Two players: 3 cards each; the next card, face up, shows the suit of ‖ Baraja italiana de 40 cartas. De a dos: 3 cartas cada uno; la carta siguiente, descubierta, indica el palo de ‖ Baralho italiano de 40 cartas. Em dois: 3 cartas cada; a carta seguinte, virada, indica o naipe de
+e resta in fondo al mazzo. ‖ and stays at the bottom of the deck. ‖ y queda al fondo del mazo. ‖ e fica no fundo do baralho.
+A ogni giro ognuno gioca una carta (non c'è obbligo di rispondere al seme). Prende la ‖ In each round everyone plays a card (no need to follow suit). The trick goes to the ‖ En cada vuelta cada uno juega una carta (no hay obligación de seguir el palo). Se la lleva el ‖ A cada rodada cada um joga uma carta (não é obrigatório seguir o naipe). Leva a vaza o
+briscola più alta ‖ highest trump ‖ triunfo más alto ‖ trunfo mais alto
+; se non ci sono briscole, la carta più forte del ‖ ; if there are no trumps, the strongest card of the ‖ ; si no hay triunfos, la carta más fuerte del ‖ ; se não houver trunfos, a carta mais forte do
+seme di uscita ‖ suit led ‖ palo de salida ‖ naipe de saída
+Forza delle carte: Asso, Tre, Re, Cavallo, Fante, 7, 6, 5, 4, 2. ‖ Card strength: Ace, Three, King, Knight, Jack, 7, 6, 5, 4, 2. ‖ Fuerza de las cartas: As, Tres, Rey, Caballo, Sota, 7, 6, 5, 4, 2. ‖ Força das cartas: Ás, Três, Rei, Cavalo, Valete, 7, 6, 5, 4, 2.
+Chi prende pesca per primo dal mazzo e gioca per primo il giro successivo. ‖ Whoever takes the trick draws first from the deck and leads the next round. ‖ Quien se lleva la baza roba primero del mazo y juega primero la vuelta siguiente. ‖ Quem leva a vaza compra primeiro do baralho e joga primeiro na rodada seguinte.
+Punti: Asso 11, Tre 10, Re 4, Cavallo 3, Fante 2 (in tutto 120). Vince la smazzata chi ne fa almeno ‖ Points: Ace 11, Three 10, King 4, Knight 3, Jack 2 (120 in all). The hand is won by whoever makes at least ‖ Puntos: As 11, Tres 10, Rey 4, Caballo 3, Sota 2 (120 en total). Gana la mano quien hace al menos ‖ Pontos: Ás 11, Três 10, Rei 4, Cavalo 3, Valete 2 (120 no total). Vence a mão quem fizer pelo menos
+(60 a 60 è pari). ‖ (60 to 60 is a tie). ‖ (60 a 60 es empate). ‖ (60 a 60 é empate).
+Vince la partita chi si aggiudica per primo ‖ The game is won by the first to win ‖ Gana la partida quien gana primero ‖ Vence a partida quem ganhar primeiro
+smazzate. ‖ hands. ‖ manos. ‖ mãos.

@@ -242,6 +242,7 @@
   }
   async function notify(title, body, tag) {
     if (!S.prefs.notify || !canNotify || Notification.permission !== 'granted' || document.visibilityState === 'visible') return;
+    title = t(title); body = t(body); // nella lingua scelta
     const opts = { body, tag, icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', renotify: true, vibrate: [120, 60, 120] };
     try {
       const reg = swReg || (await navigator.serviceWorker.ready);

@@ -1,0 +1,209 @@
+# Schermata iniziale, sala d'attesa, impostazioni, avvisi
+# italiano ‖ English ‖ Español ‖ Português
+Per calare servono almeno 3 carte: selezionale e trascinale insieme ‖ To meld you need at least 3 cards: select them and drag them together ‖ Para bajar necesitas al menos 3 cartas: selecciónalas y arrástralas juntas ‖ Para baixar você precisa de pelo menos 3 cartas: selecione-as e arraste-as juntas
+Scala di {0} ‖ Run of {0} ‖ Escalera de {0} ‖ Sequência de {0}
+La tua squadra ‖ Your team ‖ Tu equipo ‖ Sua dupla
+· bordo viola = matta ‖ · purple border = wild card ‖ · borde morado = comodín ‖ · borda roxa = curinga
+{0} · {1} carte ‖ {0} · {1} cards ‖ {0} · {1} cartas ‖ {0} · {1} cartas
+Nickname aggiornato ‖ Nickname updated ‖ Apodo actualizado ‖ Apelido atualizado
+Password salvata ‖ Password saved ‖ Contraseña guardada ‖ Senha salva
+Torneo creato: invita gli amici a iscriversi! ‖ Tournament created: invite your friends to join! ‖ ¡Torneo creado: invita a tus amigos a inscribirse! ‖ Torneio criado: convide seus amigos para se inscrever!
+Grazie, segnalazione inviata 🙏 ‖ Thanks, report sent 🙏 ‖ Gracias, informe enviado 🙏 ‖ Obrigado, relato enviado 🙏
+Campionato creato: aggiungi i tuoi amici! ‖ League created: add your friends! ‖ ¡Liga creada: añade a tus amigos! ‖ Liga criada: adicione seus amigos!
+Grazie! Segnalazione inviata 🙏 ‖ Thanks! Report sent 🙏 ‖ ¡Gracias! Informe enviado 🙏 ‖ Obrigado! Relato enviado 🙏
+🎵 Musica condivisa con il tavolo ‖ 🎵 Music shared with the table ‖ 🎵 Música compartida con la mesa ‖ 🎵 Música compartilhada com a mesa
+✓ Riconnesso ‖ ✓ Reconnected ‖ ✓ Reconectado ‖ ✓ Reconectado
+Burraco: torneo 🏆 ‖ Burraco: tournament 🏆 ‖ Burraco: torneo 🏆 ‖ Burraco: torneio 🏆
+Burraco: tocca a te 🐢 ‖ Burraco: your turn 🐢 ‖ Burraco: te toca 🐢 ‖ Burraco: sua vez 🐢
+Burraco: invito ‖ Burraco: invitation ‖ Burraco: invitación ‖ Burraco: convite
+{0} ti invita al tavolo {1} ‖ {0} invites you to table {1} ‖ {0} te invita a la mesa {1} ‖ {0} convida você para a mesa {1}
+La partita è già iniziata: potrai entrare solo se si libera un posto. ‖ The game has already started: you can join only if a seat frees up. ‖ La partida ya empezó: solo podrás entrar si se libera un puesto. ‖ A partida já começou: você só poderá entrar se um lugar ficar livre.
+🎴 Invito ‖ 🎴 Invitation ‖ 🎴 Invitación ‖ 🎴 Convite
+No grazie ‖ No thanks ‖ No, gracias ‖ Não, obrigado
+Sei salito di livello! ‖ You levelled up! ‖ ¡Subiste de nivel! ‖ Você subiu de nível!
+Continua così: {2} punti esperienza al prossimo ‖ Keep it up: {2} experience points to the next ‖ Sigue así: {2} puntos de experiencia para el siguiente ‖ Continue assim: {2} pontos de experiência para o próximo
+Trofeo sbloccato! ‖ Trophy unlocked! ‖ ¡Trofeo desbloqueado! ‖ Troféu desbloqueado!
+🎵 {0} ha avviato la musica: tocca 🎵 per ascoltarla ‖ 🎵 {0} started the music: tap 🎵 to listen ‖ 🎵 {0} puso música: toca 🎵 para escucharla ‖ 🎵 {0} iniciou a música: toque 🎵 para ouvir
+Burraco: tocca a te! ‖ Burraco: your turn! ‖ Burraco: ¡te toca! ‖ Burraco: sua vez!
+Tavolo {0} · {1} ‖ Table {0} · {1} ‖ Mesa {0} · {1} ‖ Mesa {0} · {1}
+Burraco: smazzata finita ‖ Burraco: hand over ‖ Burraco: mano terminada ‖ Burraco: mão encerrada
+La partita è terminata: guarda chi ha vinto! ‖ The game is over: see who won! ‖ La partida terminó: ¡mira quién ganó! ‖ A partida terminou: veja quem venceu!
+Guarda il punteggio e preparati alla prossima. ‖ Check the score and get ready for the next one. ‖ Mira la puntuación y prepárate para la siguiente. ‖ Veja a pontuação e prepare-se para a próxima.
+● Tocca a te · Burraco ‖ ● Your turn · Burraco ‖ ● Te toca · Burraco ‖ ● Sua vez · Burraco
+📡 Connessione persa: mi ricollego… ‖ 📡 Connection lost: reconnecting… ‖ 📡 Conexión perdida: reconectando… ‖ 📡 Conexão perdida: reconectando…
+Connessione al server… ‖ Connecting to the server… ‖ Conectando con el servidor… ‖ Conectando ao servidor…
+📲 È disponibile un aggiornamento dell'app ‖ 📲 An app update is available ‖ 📲 Hay una actualización de la app ‖ 📲 Há uma atualização do app
+📲 Nuova versione dell'app ‖ 📲 New app version ‖ 📲 Nueva versión de la app ‖ 📲 Nova versão do app
+Scaricala e installala sopra quella che hai: profilo e partite restano. ‖ Download it and install it over the one you have: profile and games are kept. ‖ Descárgala e instálala sobre la que tienes: el perfil y las partidas se mantienen. ‖ Baixe e instale por cima da que você tem: perfil e partidas continuam.
+Più tardi ‖ Later ‖ Más tarde ‖ Mais tarde
+Senza internet ‖ Offline ‖ Sin internet ‖ Sem internet
+Puoi giocare contro il computer e fare l'allenamento. Amici, classifica e partite online tornano quando sei collegato. ‖ You can play against the computer and practise. Friends, rankings and online games come back when you are connected. ‖ Puedes jugar contra la computadora y practicar. Amigos, clasificación y partidas online vuelven cuando estés conectado. ‖ Você pode jogar contra o computador e treinar. Amigos, ranking e partidas online voltam quando você estiver conectado.
+🔄 Riprova online ‖ 🔄 Try online again ‖ 🔄 Reintentar online ‖ 🔄 Tentar online de novo
+{0}/{1} punti esperienza ‖ {0}/{1} experience points ‖ {0}/{1} puntos de experiencia ‖ {0}/{1} pontos de experiência
+👤 Profilo ‖ 👤 Profile ‖ 👤 Perfil ‖ 👤 Perfil
+👥 Amici{0} ‖ 👥 Friends{0} ‖ 👥 Amigos{0} ‖ 👥 Amigos{0}
+👥 Amici ‖ 👥 Friends ‖ 👥 Amigos ‖ 👥 Amigos
+Scegli il tuo nickname ‖ Choose your nickname ‖ Elige tu apodo ‖ Escolha seu apelido
+Conferma nickname ‖ Confirm nickname ‖ Confirmar apodo ‖ Confirmar apelido
+Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? ‖ Your nickname is unique: your friends use it to find you. Already have a profile? ‖ El apodo es único: tus amigos lo usan para encontrarte. ¿Ya tienes un perfil? ‖ O apelido é único: seus amigos o usam para te encontrar. Já tem um perfil?
+↩ Torna al tavolo {0} ‖ ↩ Back to table {0} ‖ ↩ Volver a la mesa {0} ‖ ↩ Voltar à mesa {0}
+🎓 Impara a giocare ‖ 🎓 Learn to play ‖ 🎓 Aprende a jugar ‖ 🎓 Aprenda a jogar
+Sei stato invitato al tavolo: scrivi il tuo nome e premi Entra. ‖ You have been invited to the table: type your name and press Join. ‖ Te invitaron a la mesa: escribe tu nombre y pulsa Entrar. ‖ Você foi convidado para a mesa: escreva seu nome e toque em Entrar.
+🐢 Le tue partite con calma ‖ 🐢 Your slow games ‖ 🐢 Tus partidas con calma ‖ 🐢 Suas partidas sem pressa
+In attesa di giocatori ‖ Waiting for players ‖ Esperando jugadores ‖ Aguardando jogadores
+Tocca a te! ‖ Your turn! ‖ ¡Te toca! ‖ Sua vez!
+Partita finita ‖ Game over ‖ Partida terminada ‖ Partida encerrada
+Smazzata {0} · {1} ‖ Hand {0} · {1} ‖ Mano {0} · {1} ‖ Mão {0} · {1}
+In sala d’attesa ‖ In the lobby ‖ En la sala de espera ‖ Na sala de espera
+📱 Scarica l'app per Android ‖ 📱 Get the Android app ‖ 📱 Descarga la app para Android ‖ 📱 Baixe o app para Android
+Installala e gioca a schermo intero ‖ Install it and play full screen ‖ Instálala y juega a pantalla completa ‖ Instale e jogue em tela cheia
+☀️ Tema chiaro ‖ ☀️ Light theme ‖ ☀️ Tema claro ‖ ☀️ Tema claro
+🌙 Tema scuro ‖ 🌙 Dark theme ‖ 🌙 Tema oscuro ‖ 🌙 Tema escuro
+Gioca con gli amici o contro il computer ‖ Play with friends or against the computer ‖ Juega con amigos o contra la computadora ‖ Jogue com amigos ou contra o computador
+Nuova partita ‖ New game ‖ Nueva partida ‖ Nova partida
+Regole e varianti ‖ Rules and variants ‖ Reglas y variantes ‖ Regras e variantes
+Ogni preset è un punto di partenza: quando crei una partita puoi modificare ogni singola regola. ‖ Each preset is a starting point: when you create a game you can change every single rule. ‖ Cada preajuste es un punto de partida: al crear una partida puedes cambiar cada regla. ‖ Cada predefinição é um ponto de partida: ao criar uma partida você pode mudar cada regra.
+Come si gioca nell'app ‖ How to play in the app ‖ Cómo se juega en la app ‖ Como jogar no app
+⚙️ Aspetto e suoni ‖ ⚙️ Look and sounds ‖ ⚙️ Apariencia y sonidos ‖ ⚙️ Aparência e sons
+📊 Statistiche ‖ 📊 Statistics ‖ 📊 Estadísticas ‖ 📊 Estatísticas
+🔒 Privacy: quali dati usiamo e come cancellarli ‖ 🔒 Privacy: what data we use and how to delete it ‖ 🔒 Privacidad: qué datos usamos y cómo borrarlos ‖ 🔒 Privacidade: quais dados usamos e como apagá-los
+A coppie o da soli: burraco, pozzetti e tante varianti ‖ In pairs or alone: burracos, kitties and many variants ‖ En parejas o solo: burracos, muertos y muchas variantes ‖ Em duplas ou sozinho: canastras, mortos e muitas variantes
+Ognuno per sé: apri con 40 punti, chi arriva a 101 è fuori ‖ Every player for themselves: open with 40 points, reach 101 and you are out ‖ Cada uno para sí: abre con 40 puntos, quien llega a 101 queda fuera ‖ Cada um por si: abra com 40 pontos, quem chega a 101 está fora
+La classica: carte uguali, canaste, tre rossi e monte congelato ‖ The classic: sets, canastas, red threes and frozen pile ‖ La clásica: cartas iguales, canastas, treses rojos y pozo congelado ‖ A clássica: cartas iguais, canastras, três vermelhos e lixo congelado
+Carte italiane: prendi, fai scopa, conta denari e primiera ‖ Italian cards: capture, sweep, count coins and primiera ‖ Cartas italianas: captura, haz escoba, cuenta oros y primiera ‖ Cartas italianas: capture, faça escopa, conte ouros e primiera
+Carte italiane: prese, carichi e briscole, vince chi fa 61 ‖ Italian cards: tricks, high cards and trumps, 61 wins ‖ Cartas italianas: bazas, cargas y triunfos, gana quien hace 61 ‖ Cartas italianas: vazas, cargas e trunfos, vence quem faz 61
+Gioca contro il computer ‖ Play against the computer ‖ Jugar contra la computadora ‖ Jogar contra o computador
+Crea tavolo e invita amici ‖ Create a table and invite friends ‖ Crear mesa e invitar amigos ‖ Criar mesa e convidar amigos
+Gioca subito contro il computer ‖ Play now against the computer ‖ Jugar ya contra la computadora ‖ Jogar agora contra o computador
+Nel tavolo online potrai riempire i posti vuoti con giocatori del computer. ‖ At an online table you can fill empty seats with computer players. ‖ En la mesa online podrás llenar los puestos vacíos con jugadores de la computadora. ‖ Na mesa online você pode preencher lugares vazios com jogadores do computador.
+← Indietro ‖ ← Back ‖ ← Atrás ‖ ← Voltar
+1. Scegli il gioco ‖ 1. Choose the game ‖ 1. Elige el juego ‖ 1. Escolha o jogo
+2. Personalizza le regole {3} ‖ 2. Customise the rules {3} ‖ 2. Personaliza las reglas {3} ‖ 2. Personalize as regras {3}
+2. Personalizza le regole ‖ 2. Customise the rules ‖ 2. Personaliza las reglas ‖ 2. Personalize as regras
+📜 Leggi le regole di questa partita ‖ 📜 Read the rules of this game ‖ 📜 Lee las reglas de esta partida ‖ 📜 Leia as regras desta partida
+3. Gioca ‖ 3. Play ‖ 3. Juega ‖ 3. Jogue
+{0} min fa ‖ {0} min ago ‖ hace {0} min ‖ há {0} min
+{0} giorni fa ‖ {0} days ago ‖ hace {0} días ‖ há {0} dias
+{0} ore fa ‖ {0} hours ago ‖ hace {0} horas ‖ há {0} horas
+{0} ora fa ‖ {0} hour ago ‖ hace {0} hora ‖ há {0} hora
+Siedi qui ‖ Sit here ‖ Siéntate aquí ‖ Sente aqui
++ Computer ‖ + Computer ‖ + Computadora ‖ + Computador
+Coppia {0} ‖ Team {0} ‖ Pareja {0} ‖ Dupla {0}
+Posto libero ‖ Free seat ‖ Puesto libre ‖ Lugar livre
+⚡ Tavolo veloce: la partita parte da sola appena il tavolo è pieno. Se non arriva nessuno, l'host può riempirlo con il computer. ‖ ⚡ Quick table: the game starts by itself as soon as the table is full. If nobody comes, the host can fill it with the computer. ‖ ⚡ Mesa rápida: la partida empieza sola en cuanto la mesa está llena. Si no llega nadie, el anfitrión puede llenarla con la computadora. ‖ ⚡ Mesa rápida: a partida começa sozinha quando a mesa estiver cheia. Se ninguém chegar, o anfitrião pode completá-la com o computador.
+Riempi con il computer ‖ Fill with the computer ‖ Llenar con la computadora ‖ Completar com o computador
+Avvia partita ‖ Start game ‖ Empezar partida ‖ Começar partida
+In attesa che l'host avvii la partita… ‖ Waiting for the host to start the game… ‖ Esperando que el anfitrión empiece la partida… ‖ Aguardando o anfitrião começar a partida…
+✏️ Modifica regole ‖ ✏️ Edit rules ‖ ✏️ Modificar reglas ‖ ✏️ Editar regras
+Modifica regole ‖ Edit rules ‖ Modificar reglas ‖ Editar regras
+🏆 Torneo al meglio di {0} ‖ 🏆 Best of {0} ‖ 🏆 Al mejor de {0} ‖ 🏆 Melhor de {0}
+Ritmo della partita ‖ Game pace ‖ Ritmo de la partida ‖ Ritmo da partida
+⚡ Normale ‖ ⚡ Normal ‖ ⚡ Normal ‖ ⚡ Normal
+🐢 Con calma ‖ 🐢 Slow ‖ 🐢 Con calma ‖ 🐢 Sem pressa
+Con calma: ognuno gioca il suo turno quando può, anche ore dopo. Puoi uscire quando vuoi: il posto resta tuo, la partita ti aspetta e ti avvisiamo quando tocca a te. ‖ Slow: everyone plays their turn when they can, even hours later. You can leave whenever you want: your seat stays yours, the game waits for you and we tell you when it is your turn. ‖ Con calma: cada uno juega su turno cuando puede, incluso horas después. Puedes salir cuando quieras: el puesto sigue siendo tuyo, la partida te espera y te avisamos cuando te toque. ‖ Sem pressa: cada um joga sua vez quando pode, até horas depois. Você pode sair quando quiser: o lugar continua seu, a partida espera e avisamos quando for sua vez.
+Partita con calma ‖ Slow game ‖ Partida con calma ‖ Partida sem pressa
+: ognuno gioca quando può, ti avvisiamo quando tocca a te. ‖ : everyone plays when they can, we tell you when it is your turn. ‖ : cada uno juega cuando puede, te avisamos cuando te toque. ‖ : cada um joga quando pode, avisamos quando for sua vez.
+Aiuto: dove attaccare le carte ‖ Help: where to lay off cards ‖ Ayuda: dónde añadir cartas ‖ Ajuda: onde encaixar as cartas
+Tempo per turno ‖ Time per turn ‖ Tiempo por turno ‖ Tempo por vez
+Allo scadere il gioco pesca e scarta al posto del giocatore. ‖ When time runs out the game draws and discards for the player. ‖ Al terminar el tiempo el juego roba y descarta por el jugador. ‖ Quando o tempo acaba o jogo compra e descarta pelo jogador.
+Bravura del computer ‖ Computer skill ‖ Habilidad de la computadora ‖ Habilidade do computador
+Velocità del computer ‖ Computer speed ‖ Velocidad de la computadora ‖ Velocidade do computador
+← Esci dal tavolo ‖ ← Leave the table ‖ ← Salir de la mesa ‖ ← Sair da mesa
+Codice tavolo ‖ Table code ‖ Código de mesa ‖ Código da mesa
+👥 Invita amici ‖ 👥 Invite friends ‖ 👥 Invitar amigos ‖ 👥 Convidar amigos
+Condividi link ‖ Share link ‖ Compartir enlace ‖ Compartilhar link
+Gli amici aprono il link oppure scrivono il codice nella schermata iniziale. ‖ Friends open the link or type the code on the home screen. ‖ Los amigos abren el enlace o escriben el código en la pantalla inicial. ‖ Os amigos abrem o link ou digitam o código na tela inicial.
+Giocatori ({1}/{2}) ‖ Players ({1}/{2}) ‖ Jugadores ({1}/{2}) ‖ Jogadores ({1}/{2})
+· {7} giocatori · si vince a {8} ‖ · {7} players · first to {8} wins ‖ · {7} jugadores · se gana a {8} ‖ · {7} jogadores · vence quem chegar a {8}
+🎵 Musica del tavolo{9} ‖ 🎵 Table music{9} ‖ 🎵 Música de la mesa{9} ‖ 🎵 Música da mesa{9}
+🎵 Musica del tavolo ‖ 🎵 Table music ‖ 🎵 Música de la mesa ‖ 🎵 Música da mesa
+📜 Leggi le regole ‖ 📜 Read the rules ‖ 📜 Lee las reglas ‖ 📜 Leia as regras
+← Torna alla modifica ‖ ← Back to editing ‖ ← Volver a editar ‖ ← Voltar à edição
+Regole personalizzate ‖ Custom rules ‖ Reglas personalizadas ‖ Regras personalizadas
+personalizzate ‖ custom ‖ personalizadas ‖ personalizadas
+Regole personalizzate per questa partita. Ecco il riepilogo completo: ‖ Custom rules for this game. Here is the full summary: ‖ Reglas personalizadas para esta partida. Este es el resumen completo: ‖ Regras personalizadas para esta partida. Aqui está o resumo completo:
+: tocca il tallone, oppure trascinalo nella tua mano. Per raccogliere gli scarti tocca il monte o trascinalo nella mano. ‖ : tap the stock, or drag it into your hand. To pick up the discards tap the pile or drag it into your hand. ‖ : toca el mazo o arrástralo a tu mano. Para recoger los descartes toca el pozo o arrástralo a la mano. ‖ : toque o monte ou arraste-o para sua mão. Para pegar o lixo toque nele ou arraste-o para a mão.
+: tocca le carte della mano (si alzano). ‖ : tap the cards in your hand (they lift up). ‖ : toca las cartas de la mano (se levantan). ‖ : toque as cartas da mão (elas sobem).
+: trascina le carte selezionate nella zona ‖ : drag the selected cards to the area ‖ : arrastra las cartas seleccionadas a la zona ‖ : arraste as cartas selecionadas para a área
+“＋ Nuova combinazione” ‖ “＋ New meld” ‖ “＋ Nueva combinación” ‖ “＋ Novo jogo”
+del tuo tavolo, oppure premi ‖ on your side of the table, or press ‖ de tu lado de la mesa, o pulsa ‖ do seu lado da mesa, ou toque
+: trascina le carte su una tua combinazione, oppure selezionale e tocca la combinazione. ‖ : drag the cards onto one of your melds, or select them and tap the meld. ‖ : arrastra las cartas sobre una de tus combinaciones, o selecciónalas y toca la combinación. ‖ : arraste as cartas sobre um dos seus jogos, ou selecione-as e toque no jogo.
+: seleziona una carta e tocca il monte degli scarti, oppure trascinala sul monte. ‖ : select a card and tap the discard pile, or drag it onto the pile. ‖ : selecciona una carta y toca el pozo de descartes, o arrástrala al pozo. ‖ : selecione uma carta e toque no lixo, ou arraste-a para o lixo.
+Riordinare la mano ‖ Sorting your hand ‖ Ordenar la mano ‖ Organizar a mão
+: trascina una carta in un altro punto della mano. Il pulsante ⇅ riordina per seme o per valore. ‖ : drag a card to another place in your hand. The ⇅ button sorts by suit or by rank. ‖ : arrastra una carta a otro lugar de la mano. El botón ⇅ ordena por palo o por valor. ‖ : arraste uma carta para outro lugar da mão. O botão ⇅ organiza por naipe ou por valor.
+Puoi calare ‖ You can meld ‖ Puedes bajar ‖ Você pode baixar
+più combinazioni insieme ‖ several melds at once ‖ varias combinaciones a la vez ‖ vários jogos de uma vez
+: selezionale tutte e tocca ＋. Le giocate fatte non si possono annullare. ‖ : select them all and tap ＋. Moves cannot be undone. ‖ : selecciónalas todas y toca ＋. Las jugadas no se pueden deshacer. ‖ : selecione todas e toque ＋. As jogadas não podem ser desfeitas.
+Da ⚙️ puoi cambiare colore del tavolo, dorso delle carte, dimensione e suoni. Giocando da solo contro il computer puoi attivare i ‖ In ⚙️ you can change table colour, card back, size and sounds. Playing alone against the computer you can turn on ‖ En ⚙️ puedes cambiar el color de la mesa, el dorso de las cartas, el tamaño y los sonidos. Jugando solo contra la computadora puedes activar las ‖ Em ⚙️ você pode mudar a cor da mesa, o verso das cartas, o tamanho e os sons. Jogando sozinho contra o computador você pode ativar as
+suggerimenti 💡 ‖ hints 💡 ‖ sugerencias 💡 ‖ dicas 💡
+Classiche ‖ Classic ‖ Clásicas ‖ Clássicas
+Moderne ‖ Modern ‖ Modernas ‖ Modernas
+Quattro colori ‖ Four colours ‖ Cuatro colores ‖ Quatro cores
+Indici grandi ‖ Big indices ‖ Índices grandes ‖ Índices grandes
+Vintage ‖ Vintage ‖ Vintage ‖ Vintage
+Americane ‖ American ‖ Americanas ‖ Americanas
+Francesi ‖ French ‖ Francesas ‖ Francesas
+Italiane ‖ Italian ‖ Italianas ‖ Italianas
+☀️ Chiaro ‖ ☀️ Light ‖ ☀️ Claro ‖ ☀️ Claro
+🌙 Scuro ‖ 🌙 Dark ‖ 🌙 Oscuro ‖ 🌙 Escuro
+⬇️ In colonna ‖ ⬇️ In columns ‖ ⬇️ En columna ‖ ⬇️ Em coluna
+➡️ In fila ‖ ➡️ In rows ‖ ➡️ En fila ‖ ➡️ Em fila
+🔔 Attive ‖ 🔔 On ‖ 🔔 Activadas ‖ 🔔 Ativadas
+🔕 Disattivate ‖ 🔕 Off ‖ 🔕 Desactivadas ‖ 🔕 Desativadas
+Il browser le ha bloccate: riattivale dalle impostazioni del sito. ‖ The browser has blocked them: turn them back on in the site settings. ‖ El navegador las bloqueó: reactívalas en la configuración del sitio. ‖ O navegador as bloqueou: reative-as nas configurações do site.
+Arrivano quando il gioco è aperto in secondo piano.{2} ‖ They arrive when the game is open in the background.{2} ‖ Llegan cuando el juego está abierto en segundo plano.{2} ‖ Chegam quando o jogo está aberto em segundo plano.{2}
+Arrivano quando il gioco è aperto in secondo piano. ‖ They arrive when the game is open in the background. ‖ Llegan cuando el juego está abierto en segundo plano. ‖ Chegam quando o jogo está aberto em segundo plano.
+Su questo dispositivo o browser le notifiche non sono disponibili. ‖ Notifications are not available on this device or browser. ‖ Las notificaciones no están disponibles en este dispositivo o navegador. ‖ As notificações não estão disponíveis neste dispositivo ou navegador.
+🔊 Attivi ‖ 🔊 On ‖ 🔊 Activados ‖ 🔊 Ativados
+🔇 Disattivati ‖ 🔇 Off ‖ 🔇 Desactivados ‖ 🔇 Desativados
+🏳️ Abbandona la partita ‖ 🏳️ Leave the game ‖ 🏳️ Abandonar la partida ‖ 🏳️ Abandonar a partida
+Fine della partita ‖ End of the game ‖ Fin de la partida ‖ Fim da partida
+Arrendersi fa vincere gli avversari. «Termina» chiude la partita senza vincitori e riporta tutti in sala d'attesa; «Chiudi il tavolo» manda tutti alla schermata iniziale. ‖ Surrendering makes the opponents win. «End» closes the game with no winner and takes everyone back to the lobby; «Close the table» sends everyone to the home screen. ‖ Rendirse hace ganar a los rivales. «Terminar» cierra la partida sin ganadores y lleva a todos a la sala de espera; «Cerrar la mesa» manda a todos a la pantalla inicial. ‖ Desistir faz os adversários vencerem. «Encerrar» fecha a partida sem vencedores e leva todos à sala de espera; «Fechar a mesa» manda todos para a tela inicial.
+Versione {0}{1} ‖ Version {0}{1} ‖ Versión {0}{1} ‖ Versão {0}{1}
+Qualcosa non va? ‖ Something wrong? ‖ ¿Algo va mal? ‖ Algo errado?
+Aspetto e suoni ‖ Look and sounds ‖ Apariencia y sonidos ‖ Aparência e sons
+Tema ‖ Theme ‖ Tema ‖ Tema
+Colore del tavolo ‖ Table colour ‖ Color de la mesa ‖ Cor da mesa
+Dorso delle carte ‖ Card back ‖ Dorso de las cartas ‖ Verso das cartas
+Stile delle carte ‖ Card style ‖ Estilo de las cartas ‖ Estilo das cartas
+Carte ‖ Cards ‖ Cartas ‖ Cartas
+Normali ‖ Normal ‖ Normales ‖ Normais
+Grandi ‖ Large ‖ Grandes ‖ Grandes
+Suoni ‖ Sounds ‖ Sonidos ‖ Sons
+🌐 Automatica ‖ 🌐 Automatic ‖ 🌐 Automático ‖ 🌐 Automático
+Giochi calati sul tavolo ‖ Melds on the table ‖ Combinaciones en la mesa ‖ Jogos na mesa
+In colonna le carte stanno una sotto l'altra: sul telefono restano più grandi anche con tanti giochi. ‖ In columns the cards sit one below the other: on a phone they stay bigger even with many melds. ‖ En columna las cartas van una debajo de otra: en el teléfono siguen siendo más grandes aunque haya muchas combinaciones. ‖ Em coluna as cartas ficam uma abaixo da outra: no celular continuam maiores mesmo com muitos jogos.
+Notifiche "tocca a te" ‖ "Your turn" notifications ‖ Notificaciones "te toca" ‖ Notificações "sua vez"
+Nessun limite ‖ No limit ‖ Sin límite ‖ Sem limite
+🙂 Facile ‖ 🙂 Easy ‖ 🙂 Fácil ‖ 🙂 Fácil
+😐 Normale ‖ 😐 Normal ‖ 😐 Normal ‖ 😐 Normal
+🧠 Difficile ‖ 🧠 Hard ‖ 🧠 Difícil ‖ 🧠 Difícil
+🎓 Esperto ‖ 🎓 Expert ‖ 🎓 Experto ‖ 🎓 Especialista
+🐢 Lenta ‖ 🐢 Slow ‖ 🐢 Lenta ‖ 🐢 Lenta
+⚡ Veloce ‖ ⚡ Fast ‖ ⚡ Rápida ‖ ⚡ Rápida
+di Spotify: entrando ascoltate tutti la stessa musica, sincronizzata. ‖ on Spotify: by joining you all listen to the same music, in sync. ‖ de Spotify: al entrar todos escucháis la misma música, sincronizada. ‖ do Spotify: entrando, todos ouvem a mesma música, sincronizada.
+questa musica: ‖ this music: ‖ esta música: ‖ esta música:
+{0} ha condiviso {1} ‖ {0} shared {1} ‖ {0} compartió {1} ‖ {0} compartilhou {1}
+▶ Unisciti alla Jam su Spotify ‖ ▶ Join the Jam on Spotify ‖ ▶ Únete a la Jam en Spotify ‖ ▶ Entre na Jam no Spotify
+▶ Apri in Spotify ‖ ▶ Open in Spotify ‖ ▶ Abrir en Spotify ‖ ▶ Abrir no Spotify
+Nessuna musica condivisa per ora. ‖ No music shared yet. ‖ Todavía no hay música compartida. ‖ Nenhuma música compartilhada ainda.
+Cambia musica ‖ Change music ‖ Cambiar música ‖ Trocar música
+Condividi la musica con il tavolo ‖ Share music with the table ‖ Compartir música con la mesa ‖ Compartilhar música com a mesa
+Smetti di condividere ‖ Stop sharing ‖ Dejar de compartir ‖ Parar de compartilhar
+Su Spotify avvia una ‖ On Spotify start a ‖ En Spotify inicia una ‖ No Spotify inicie uma
+(dal brano in riproduzione: icona dei dispositivi → ‖ (from the playing track: devices icon → ‖ (desde la canción en reproducción: icono de dispositivos → ‖ (a partir da música tocando: ícone de dispositivos →
+Avvia una Jam ‖ Start a Jam ‖ Iniciar una Jam ‖ Iniciar uma Jam
+) e copia il link d'invito, oppure copia il link di una playlist. Poi incollalo qui. ‖ ) and copy the invite link, or copy a playlist link. Then paste it here. ‖ ) y copia el enlace de invitación, o copia el enlace de una playlist. Luego pégalo aquí. ‖ ) e copie o link de convite, ou copie o link de uma playlist. Depois cole aqui.
+Ognuno ascolta dal proprio Spotify: per le Jam di solito serve Spotify Premium a chi la avvia. ‖ Everyone listens on their own Spotify: Jams usually need Spotify Premium for whoever starts them. ‖ Cada uno escucha desde su propio Spotify: para las Jam normalmente quien la inicia necesita Spotify Premium. ‖ Cada um ouve no próprio Spotify: para Jams geralmente quem inicia precisa do Spotify Premium.
+Torneo (si imposta tra una partita e l'altra) ‖ Series (set between one game and the next) ‖ Serie (se configura entre una partida y otra) ‖ Série (definida entre uma partida e outra)
+vinta ‖ won ‖ ganada ‖ vencida
+persa ‖ lost ‖ perdida ‖ perdida
+Avversario ‖ Opponent ‖ Rival ‖ Adversário
+Partite ‖ Games ‖ Partidas ‖ Partidas
+📜 Anteprima regole ‖ 📜 Rules preview ‖ 📜 Vista previa de las reglas ‖ 📜 Prévia das regras
+Applica ‖ Apply ‖ Aplicar ‖ Aplicar
+Lingua · Language ‖ Language ‖ Idioma ‖ Idioma
+· {0} ore fa ‖ · {0} hours ago ‖ · hace {0} horas ‖ · há {0} horas
+· {0} min fa ‖ · {0} min ago ‖ · hace {0} min ‖ · há {0} min
+· {0} giorni fa ‖ · {0} days ago ‖ · hace {0} días ‖ · há {0} dias
+· {0} ora fa ‖ · {0} hour ago ‖ · hace {0} hora ‖ · há {0} hora

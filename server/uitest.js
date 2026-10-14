@@ -91,7 +91,7 @@ const HELPERS = `
   await new Promise((res) => server.stdout.on('data', (d) => { if (String(d).includes('ascolto')) res(); }));
   const browser = spawn(findBrowser(), [
     '--headless=new', `--remote-debugging-port=${DEBUG_PORT}`, ...(process.env.CI ? ['--no-sandbox'] : []), `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check',
-    '--window-size=375,812', '--force-device-scale-factor=2', '--autoplay-policy=no-user-gesture-required', 'about:blank',
+    '--window-size=375,812', '--force-device-scale-factor=2', '--lang=it-IT', '--autoplay-policy=no-user-gesture-required', 'about:blank',
   ], { stdio: 'ignore' });
   let cdp;
   const errors = [];
@@ -262,6 +262,21 @@ const HELPERS = `
     const later = await cdp.run(`__tap('[data-act="appUpdateLater"]'); await __W(300); return !!document.querySelector('.apkbanner.update');`);
     if (later) throw new Error("«Più tardi» non nasconde l'avviso");
     step("app vecchia: avviso di aggiornamento con il link all'APK, «Più tardi» lo nasconde");
+
+    // 8. lingue: in inglese, spagnolo e portoghese la schermata iniziale e le regole sono tradotte
+    const LANG_CHECK = { en: ['New game', 'Play now'], es: ['Nueva partida', 'Jugar ya'], pt: ['Nova partida', 'Jogar agora'] };
+    for (const [lang, words] of Object.entries(LANG_CHECK)) {
+      await cdp.run(`localStorage.setItem('bur_prefs', JSON.stringify({ lang: '${lang}' })); return true;`);
+      await open(URL);
+      const txt = await cdp.run(`
+        for (let i = 0; i < 40 && !document.querySelector('[data-act="goSetup"]'); i++) await __W(250);
+        await __W(300);
+        return { lang: document.documentElement.lang, text: document.body.innerText };`);
+      if (txt.lang !== lang || words.some((w) => !txt.text.includes(w))) throw new Error(`lingua ${lang}: testi non tradotti`);
+      if (lang === 'en') await shot('07-inglese');
+    }
+    await cdp.run(`localStorage.setItem('bur_prefs', JSON.stringify({ lang: 'it' })); return true;`);
+    step('lingue: inglese, spagnolo e portoghese');
 
     const real = errors.filter((e) => !/vibrate|Failed to load resource|favicon/.test(e));
     if (real.length) throw new Error('errori nella pagina:\n' + real.slice(0, 5).join('\n'));

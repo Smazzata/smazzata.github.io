@@ -25,6 +25,7 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
   animazioni, finestre, azioni, comandi): file normali caricati in ordine da `index.html` che condividono le stesse
   dichiarazioni. Un file nuovo va aggiunto a `index.html` e ai due service worker (`npm test` lo controlla).
 - `public/` — interfaccia: tavolo mobile-first, trascinamento carte, animazioni, suoni sintetizzati, tema chiaro/scuro a scelta dell'utente, statistiche personali in localStorage.
+- Lingue (it/en/es/pt): l'interfaccia resta scritta in italiano; `public/js/lingue.js` traduce al volo i testi che compaiono (dizionario `public/lingue/xx.js`, generato da `lingue/*.txt` con `node scripts/lingue.js`; righe `italiano ‖ English ‖ Español ‖ Português`, `{0}` = parte variabile). Per un testo nuovo aggiungi la riga e rigenera (npm test controlla). In console `[...I18N.missing]` mostra i testi visti senza traduzione.
 - `launcher/` — pagina d'ingresso su GitHub Pages (link fisso) che legge l'indirizzo del server dal ramo `indirizzo` (`server.json`).
 - Gioco senza internet: `public/local-server.js` è un "server" nel browser (stessi eventi di socket.io) che usa motore e computer
   impacchettati da `scripts/bundle-engine.js` (il server li offre su `/engine.js`). Si attiva da solo se socket.io non si carica,

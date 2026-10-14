@@ -28,6 +28,12 @@ function filesTests() {
     assert(lsw.includes(`'gioca/js/${f}'`), `launcher/sw.js non salva gioca/js/${f}`);
   }
   console.log(`file dell'interfaccia: ${js.length}, tutti caricati e salvati per l'uso offline`);
+  // lingue: dizionari aggiornati rispetto a lingue/*.txt e salvati per l'uso offline
+  const n = require('../scripts/lingue').build(true);
+  for (const l of ['en', 'es', 'pt']) {
+    assert(sw.includes(`'lingue/${l}.js'`) && lsw.includes(`'gioca/lingue/${l}.js'`), `dizionario ${l} non salvato per l'uso offline`);
+  }
+  console.log(`lingue: ${n} testi in inglese, spagnolo e portoghese`);
 }
 
 /** Archivio: salvataggio e rilettura, scritture solo delle voci cambiate, importazione da stato.json */

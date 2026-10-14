@@ -1,0 +1,248 @@
+# Al tavolo: barra di stato, mosse, cronaca, risultati
+# italiano ‖ English ‖ Español ‖ Português
+⚡ Gioca subito ‖ ⚡ Play now ‖ ⚡ Jugar ya ‖ ⚡ Jogar agora
+📅 Sfida del giorno ‖ 📅 Daily challenge ‖ 📅 Desafío del día ‖ 📅 Desafio do dia
+🏆 Tornei ‖ 🏆 Tournaments ‖ 🏆 Torneos ‖ 🏆 Torneios
+Entra ‖ Join ‖ Entrar ‖ Entrar
+Recuperalo ‖ Recover it ‖ Recupéralo ‖ Recupere-o
+Privacy ‖ Privacy ‖ Privacidad ‖ Privacidade
+🏆 Classifica ‖ 🏆 Rankings ‖ 🏆 Clasificación ‖ 🏆 Ranking
+🐞 Segnala un problema ‖ 🐞 Report a problem ‖ 🐞 Informar de un problema ‖ 🐞 Relatar um problema
+Ciao, ‖ Hi, ‖ Hola, ‖ Olá,
+{0} · smazzata {1} ‖ {0} · hand {1} ‖ {0} · mano {1} ‖ {0} · mão {1}
+smazzata {0} ‖ hand {0} ‖ mano {0} ‖ mão {0}
+{0} carte ‖ {0} cards ‖ {0} cartas ‖ {0} cartas
+1 carta ‖ 1 card ‖ 1 carta ‖ 1 carta
+Nessuna carta ‖ No cards ‖ Ninguna carta ‖ Nenhuma carta
+Smazzata chiusa. ‖ Hand closed. ‖ Mano cerrada. ‖ Mão encerrada.
+ha aperto ‖ has opened ‖ ha abierto ‖ abriu
+Tallone · {0} ‖ Stock · {0} ‖ Mazo · {0} ‖ Monte · {0}
+Scarti · {0} ‖ Discards · {0} ‖ Descartes · {0} ‖ Lixo · {0}
+Monte · {0} ‖ Pile · {0} ‖ Pozo · {0} ‖ Lixo · {0}
+Mazzo ‖ Deck ‖ Mazo ‖ Baralho
+Pozzetti ‖ Kitties ‖ Muertos ‖ Mortos
+Pozzetto ‖ Kitty ‖ Muerto ‖ Morto
+pozzetto da prendere ‖ kitty to take ‖ muerto por tomar ‖ morto a pegar
+✓ pozzetto ‖ ✓ kitty ‖ ✓ muerto ‖ ✓ morto
+pozzetto preso · può chiudere ‖ kitty taken · can go out ‖ muerto tomado · puede cerrar ‖ morto pego · pode bater
+I tuoi giochi ‖ Your melds ‖ Tus combinaciones ‖ Seus jogos
+deve aprire ({0}) ‖ must open ({0}) ‖ debe abrir ({0}) ‖ precisa abrir ({0})
+Nessuna combinazione ‖ No melds ‖ Ninguna combinación ‖ Nenhum jogo
+Nessun gioco ‖ No melds ‖ Ninguna combinación ‖ Nenhum jogo
+Smazzata terminata ‖ Hand over ‖ Mano terminada ‖ Mão encerrada
+Smazzata terminata. ‖ Hand over. ‖ Mano terminada. ‖ Mão encerrada.
+Risultati ‖ Results ‖ Resultados ‖ Resultados
+⇅ Seme ‖ ⇅ Suit ‖ ⇅ Palo ‖ ⇅ Naipe
+⇅ Valore ‖ ⇅ Rank ‖ ⇅ Valor ‖ ⇅ Valor
+Fine smazzata {0} ‖ End of hand {0} ‖ Fin de la mano {0} ‖ Fim da mão {0}
+ha chiuso la smazzata. ‖ went out. ‖ cerró la mano. ‖ bateu.
+ha chiuso la smazzata{0}. ‖ went out{0}. ‖ cerró la mano{0}. ‖ bateu{0}.
+si è arreso ‖ surrendered ‖ se rindió ‖ desistiu
+Il tallone è finito. ‖ The stock ran out. ‖ Se acabó el mazo. ‖ O monte acabou.
+penalità totale ‖ total penalty ‖ penalización total ‖ penalidade total
+Penalità totale ‖ Total penalty ‖ Penalización total ‖ Penalidade total
+smazzata ‖ hand ‖ mano ‖ mão
+Smazzata ‖ Hand ‖ Mano ‖ Mão
+★ smazzata ‖ ★ hand ‖ ★ mano ‖ ★ mão
+eliminato a {0} ‖ out at {0} ‖ eliminado a {0} ‖ eliminado em {0}
+Carte in mano ‖ Cards in hand ‖ Cartas en mano ‖ Cartas na mão
+Carte calate ‖ Melded cards ‖ Cartas bajadas ‖ Cartas baixadas
+Carte rimaste in mano ‖ Cards left in hand ‖ Cartas que quedaron en mano ‖ Cartas que sobraram na mão
+Bonus {0} ‖ Bonus {0} ‖ Bonus {0} ‖ Bônus {0}
+Totale partita ‖ Game total ‖ Total de la partida ‖ Total da partida
+totale partita ‖ game total ‖ total de la partida ‖ total da partida
+Chiusura ‖ Going out ‖ Cierre ‖ Batida
+Pozzetto non preso ‖ Kitty not taken ‖ Muerto no tomado ‖ Morto não pego
+🎬 Rivedi la smazzata ‖ 🎬 Replay the hand ‖ 🎬 Ver de nuevo la mano ‖ 🎬 Rever a mão
+🎬 Rivedi l'ultima smazzata ‖ 🎬 Replay the last hand ‖ 🎬 Ver de nuevo la última mano ‖ 🎬 Rever a última mão
+Prossima smazzata ‖ Next hand ‖ Siguiente mano ‖ Próxima mão
+Pronto ✓ ‖ Ready ✓ ‖ Listo ✓ ‖ Pronto ✓
+Punteggi ‖ Scores ‖ Puntuaciones ‖ Pontuação
+Smazzate ‖ Hands ‖ Manos ‖ Mãos
+Nessuna smazzata conclusa. ‖ No hands finished yet. ‖ Ninguna mano terminada. ‖ Nenhuma mão concluída.
+Chat ‖ Chat ‖ Chat ‖ Chat
+Nessun messaggio ‖ No messages ‖ Ningún mensaje ‖ Nenhuma mensagem
+Invia ‖ Send ‖ Enviar ‖ Enviar
+Bella! ‖ Nice! ‖ ¡Bien! ‖ Boa!
+Tocca a te 😉 ‖ Your turn 😉 ‖ Te toca 😉 ‖ Sua vez 😉
+Che fortuna! ‖ Lucky you! ‖ ¡Qué suerte! ‖ Que sorte!
+Ops… ‖ Oops… ‖ Uy… ‖ Ops…
+Ben giocato 👏 ‖ Well played 👏 ‖ Bien jugado 👏 ‖ Bem jogado 👏
+Cronaca ‖ Game log ‖ Crónica ‖ Histórico
+Jam ‖ Jam ‖ Jam ‖ Jam
+Condividi ‖ Share ‖ Compartir ‖ Compartilhar
+Entri in un tavolo con chi sta cercando una partita adesso. Si parte appena il tavolo è pieno (oppure puoi riempirlo con il computer). ‖ You join a table with people looking for a game right now. It starts as soon as the table is full (or you can fill it with the computer). ‖ Entras en una mesa con quien busca partida ahora. Empieza en cuanto la mesa está llena (o puedes llenarla con la computadora). ‖ Você entra numa mesa com quem procura partida agora. Começa assim que a mesa encher (ou você pode completá-la com o computador).
+In 2 ‖ 2 players ‖ De 2 ‖ Em 2
+In 4 (a coppie) ‖ 4 players (in pairs) ‖ De 4 (en parejas) ‖ Em 4 (em duplas)
+4 (a coppie) ‖ 4 (in pairs) ‖ 4 (en parejas) ‖ 4 (em duplas)
+Descrivi cosa è successo e cosa ti aspettavi. Insieme al messaggio inviamo la situazione del tavolo (smazzata, turno, ultime mosse e quante carte hai), senza le carte degli altri giocatori. ‖ Describe what happened and what you expected. With the message we send the table situation (hand, turn, last moves and how many cards you have), without the other players' cards. ‖ Describe qué pasó y qué esperabas. Con el mensaje enviamos la situación de la mesa (mano, turno, últimas jugadas y cuántas cartas tienes), sin las cartas de los demás. ‖ Descreva o que aconteceu e o que você esperava. Com a mensagem enviamos a situação da mesa (mão, vez, últimas jogadas e quantas cartas você tem), sem as cartas dos outros jogadores.
+Invia segnalazione ‖ Send report ‖ Enviar informe ‖ Enviar relato
+Verde ‖ Green ‖ Verde ‖ Verde
+Blu ‖ Blue ‖ Azul ‖ Azul
+Bordeaux ‖ Burgundy ‖ Burdeos ‖ Bordô
+Antracite ‖ Charcoal ‖ Antracita ‖ Grafite
+Rosso ‖ Red ‖ Rojo ‖ Vermelho
+Nero ‖ Black ‖ Negro ‖ Preto
+🏳️ Arrenditi ‖ 🏳️ Surrender ‖ 🏳️ Rendirse ‖ 🏳️ Desistir
+⛔ Termina la partita ‖ ⛔ End the game ‖ ⛔ Terminar la partida ‖ ⛔ Encerrar a partida
+🚪 Chiudi il tavolo ‖ 🚪 Close the table ‖ 🚪 Cerrar la mesa ‖ 🚪 Fechar a mesa
+nessun vincitore, tutti in sala d’attesa ‖ no winner, everyone back to the lobby ‖ sin ganador, todos a la sala de espera ‖ sem vencedor, todos para a sala de espera
+Attivi ‖ On ‖ Activados ‖ Ativados
+Disattivati ‖ Off ‖ Desactivados ‖ Desativados
+Attivo ‖ On ‖ Activado ‖ Ativado
+Disattivato ‖ Off ‖ Desactivado ‖ Desativado
+Selezionando delle carte si illuminano le combinazioni a cui si possono attaccare e si vede se la nuova calata è valida. ‖ When you select cards, the melds you can add them to light up and you see whether the new meld is valid. ‖ Al seleccionar cartas se iluminan las combinaciones a las que se pueden añadir y se ve si la nueva bajada es válida. ‖ Ao selecionar cartas, os jogos onde elas encaixam acendem e você vê se o novo jogo é válido.
+Normale ‖ Normal ‖ Normal ‖ Normal
+Facile ‖ Easy ‖ Fácil ‖ Fácil
+Difficile ‖ Hard ‖ Difícil ‖ Difícil
+difficile ‖ hard ‖ difícil ‖ difícil
+Esperto ‖ Expert ‖ Experto ‖ Especialista
+Suggerimenti 💡 (solo contro il computer) ‖ Hints 💡 (only against the computer) ‖ Sugerencias 💡 (solo contra la computadora) ‖ Dicas 💡 (só contra o computador)
+Pescare ‖ Drawing ‖ Robar ‖ Comprar
+Selezionare ‖ Selecting ‖ Seleccionar ‖ Selecionar
+Calare ‖ Melding ‖ Bajar ‖ Baixar
+Cala ‖ Meld ‖ Baja ‖ Baixe
+Attaccare ‖ Laying off ‖ Añadir ‖ Encaixar
+Scartare ‖ Discarding ‖ Descartar ‖ Descartar
+Pesca ‖ Draw ‖ Roba ‖ Compre
+Scarta ‖ Discard ‖ Descarta ‖ Descarte
+host ‖ host ‖ anfitrión ‖ anfitrião
+Regole ‖ Rules ‖ Reglas ‖ Regras
+Torneo ‖ Tournament ‖ Torneo ‖ Torneio
+Partita singola ‖ Single game ‖ Partida única ‖ Partida única
+Al meglio di 3 ‖ Best of 3 ‖ Al mejor de 3 ‖ Melhor de 3
+Al meglio di 5 ‖ Best of 5 ‖ Al mejor de 5 ‖ Melhor de 5
+La smazzata è iniziata: buon divertimento! ‖ The hand has started: have fun! ‖ La mano ha empezado: ¡diviértete! ‖ A mão começou: divirta-se!
+Turno di ‖ Turn of ‖ Turno de ‖ Vez de
+Tocca a te: tocca il ‖ Your turn: tap the ‖ Te toca: toca el ‖ Sua vez: toque no
+o gli ‖ or the ‖ o los ‖ ou no
+scarti ‖ discards ‖ descartes ‖ lixo
+tallone ‖ stock ‖ mazo ‖ monte
+＋ Nuova ‖ ＋ New ‖ ＋ Nueva ‖ ＋ Novo
+combinazione ‖ meld ‖ combinación ‖ jogo
+Seleziona le carte: cala, attacca e poi ‖ Select cards: meld, lay off and then ‖ Selecciona las cartas: baja, añade y luego ‖ Selecione as cartas: baixe, encaixe e depois
+scarta ‖ discard ‖ descarta ‖ descarte
+: scarta ‖ : discard ‖ : descarta ‖ : descarte
+: raccoglie lo scarto · cala una ‖ : takes the discard · melds a ‖ : recoge el descarte · baja una ‖ : pega o lixo · baixa uma
+: raccoglie ‖ : takes ‖ : recoge ‖ : pega
+: cala un ‖ : melds a ‖ : baja un ‖ : baixa um
+: cala ‖ : melds ‖ : baja ‖ : baixa
+: attacca ‖ : lays off ‖ : añade ‖ : encaixa
+· attacca ‖ · lays off ‖ · añade ‖ · encaixa
+· scarta ‖ · discards ‖ · descarta ‖ · descarta
+scala ‖ run ‖ escalera ‖ sequência
+tris ‖ set ‖ trío ‖ trinca
+carte · scarta ‖ cards · discards ‖ cartas · descarta ‖ cartas · descarta
+carta · scarta ‖ card · discards ‖ carta · descarta ‖ carta · descarta
+carta · cala un ‖ card · melds a ‖ carta · baja un ‖ carta · baixa um
+giochi · attacca ‖ melds · lays off ‖ combinaciones · añade ‖ jogos · encaixa
+giochi · scarta ‖ melds · discards ‖ combinaciones · descarta ‖ jogos · descarta
+scarti · cala un ‖ discards · melds a ‖ descartes · baja un ‖ lixo · baixa um
+scarti · attacca ‖ discards · lays off ‖ descartes · añade ‖ lixo · encaixa
+★ Burraco sporco! ‖ ★ Dirty burraco! ‖ ★ ¡Burraco sucio! ‖ ★ Canastra suja!
+★ Burraco pulito! ‖ ★ Clean burraco! ‖ ★ ¡Burraco limpio! ‖ ★ Canastra limpa!
+BURRACO SPORCO! ‖ DIRTY BURRACO! ‖ ¡BURRACO SUCIO! ‖ CANASTRA SUJA!
+BURRACO PULITO! ‖ CLEAN BURRACO! ‖ ¡BURRACO LIMPIO! ‖ CANASTRA LIMPA!
+Sporco ‖ Dirty ‖ Sucio ‖ Suja
+Pulito ‖ Clean ‖ Limpio ‖ Limpa
+Semipulito ‖ Semi-clean ‖ Semilimpio ‖ Semilimpa
+★ Canasta sporca! ‖ ★ Dirty canasta! ‖ ★ ¡Canasta sucia! ‖ ★ Canastra suja!
+★ Canasta pulita! ‖ ★ Clean canasta! ‖ ★ ¡Canasta limpia! ‖ ★ Canastra limpa!
+CANASTA SPORCA! ‖ DIRTY CANASTA! ‖ ¡CANASTA SUCIA! ‖ CANASTRA SUJA!
+CANASTA PULITA! ‖ CLEAN CANASTA! ‖ ¡CANASTA LIMPIA! ‖ CANASTRA LIMPA!
+Poker ‖ Four of a kind ‖ Póker ‖ Quadra
+apertura: {0} punti ‖ opening: {0} points ‖ apertura: {0} puntos ‖ abertura: {0} pontos
+apertura: {0} punti · {1} ‖ opening: {0} points · {1} ‖ apertura: {0} puntos · {1} ‖ abertura: {0} pontos · {1}
+ha aperto · {0} ‖ has opened · {0} ‖ ha abierto · {0} ‖ abriu · {0}
+ha aperto · {0} · può chiudere ‖ has opened · {0} · can go out ‖ ha abierto · {0} · puede cerrar ‖ abriu · {0} · pode bater
+, oppure seleziona due carte uguali con quella in cima e tocca il ‖ , or select two cards matching the top one and tap the ‖ , o selecciona dos cartas iguales a la de arriba y toca el ‖ , ou selecione duas cartas iguais à de cima e toque no
+, oppure seleziona le carte da usare con quella in cima e tocca il ‖ , or select the cards to use with the top one and tap the ‖ , o selecciona las cartas que usarás con la de arriba y toca el ‖ , ou selecione as cartas para usar com a de cima e toque no
+monte ‖ pile ‖ pozo ‖ lixo
+Monte ‖ Pile ‖ Pozo ‖ Lixo
+(il monte è bloccato) ‖ (the pile is frozen) ‖ (el pozo está bloqueado) ‖ (o lixo está trancado)
+Tocca a te: tocca una carta per giocarla ‖ Your turn: tap a card to play it ‖ Te toca: toca una carta para jugarla ‖ Sua vez: toque numa carta para jogá-la
+Tavolo vuoto ‖ Empty table ‖ Mesa vacía ‖ Mesa vazia
+carte · ‖ cards · ‖ cartas · ‖ cartas ·
+scopa 🧹 ‖ sweep 🧹 ‖ escoba 🧹 ‖ escopa 🧹
+{0} scope 🧹 ‖ {0} sweeps 🧹 ‖ {0} escobas 🧹 ‖ {0} escopas 🧹
+⚠️ Ultimo giro: restano {0} pescate ‖ ⚠️ Last round: {0} draws left ‖ ⚠️ Última vuelta: quedan {0} robos ‖ ⚠️ Última rodada: restam {0} compras
+⚠️ Tallone quasi finito: ~{0} giri ‖ ⚠️ Stock almost over: ~{0} rounds ‖ ⚠️ Mazo casi agotado: ~{0} vueltas ‖ ⚠️ Monte quase no fim: ~{0} rodadas
+· briscola ‖ · trump ‖ · triunfo ‖ · trunfo
+Mazzo finito · briscola ‖ Deck over · trump ‖ Mazo agotado · triunfo ‖ Baralho acabou · trunfo
+Tocca a chi apre il giro ‖ The leader plays first ‖ Le toca a quien abre la vuelta ‖ É a vez de quem abre a rodada
+carte prese ‖ cards taken ‖ cartas tomadas ‖ cartas capturadas
+Ha preso ‖ Took ‖ Se llevó ‖ Pegou
+Prende {0} ‖ {0} takes ‖ Se la lleva {0} ‖ {0} leva
+Prende {0} ({1} punti) ‖ {0} takes ({1} points) ‖ Se la lleva {0} ({1} puntos) ‖ {0} leva ({1} pontos)
+· {0} punti ‖ · {0} points ‖ · {0} puntos ‖ · {0} pontos
+{0} punti ‖ {0} points ‖ {0} puntos ‖ {0} pontos
+{0} punto ‖ {0} point ‖ {0} punto ‖ {0} ponto
+Smazzata a {0} con {1} punti. ‖ Hand to {0} with {1} points. ‖ Mano para {0} con {1} puntos. ‖ Mão para {0} com {1} pontos.
+Smazzata pari: 60 a 60. ‖ Tied hand: 60 to 60. ‖ Mano empatada: 60 a 60. ‖ Mão empatada: 60 a 60.
+vince chi arriva a {0} smazzate ‖ first to {0} hands wins ‖ gana quien llega a {0} manos ‖ vence quem chegar a {0} mãos
+Punti delle prese ‖ Trick points ‖ Puntos de las bazas ‖ Pontos das vazas
+Carte prese ‖ Cards taken ‖ Cartas tomadas ‖ Cartas capturadas
+Denari ‖ Coins ‖ Oros ‖ Ouros
+Settebello ‖ Settebello ‖ Siete de oros ‖ Sete belo
+Primiera ‖ Primiera ‖ Primiera ‖ Primiera
+Scope ‖ Sweeps ‖ Escobas ‖ Escopas
+Si danno altre tre carte ‖ Three more cards are dealt ‖ Se reparten tres cartas más ‖ Mais três cartas são dadas
+Le carte rimaste in tavola vanno a {0} ‖ The cards left on the table go to {0} ‖ Las cartas que quedan en la mesa son para {0} ‖ As cartas que ficaram na mesa vão para {0}
+Partita finita! Vince {0} ‖ Game over! {0} wins ‖ ¡Partida terminada! Gana {0} ‖ Partida encerrada! {0} vence
+Partita terminata ‖ Game over ‖ Partida terminada ‖ Partida encerrada
+Non è il tuo turno ‖ It is not your turn ‖ No es tu turno ‖ Não é sua vez
+Il suggerimento è disponibile solo nel tuo turno ‖ Hints are only available on your turn ‖ La sugerencia solo está disponible en tu turno ‖ A dica só está disponível na sua vez
+Livello {0} ‖ Level {0} ‖ Nivel {0} ‖ Nível {0}
+# cronaca delle mosse
+{0} pesca dal tallone ‖ {0} draws from the stock ‖ {0} roba del mazo ‖ {0} compra do monte
+{0} scarta {1} ‖ {0} discards {1} ‖ {0} descarta {1} ‖ {0} descarta {1}
+{0} scarta {1} e CHIUDE! ‖ {0} discards {1} and GOES OUT! ‖ ¡{0} descarta {1} y CIERRA! ‖ {0} descarta {1} e BATE!
+{0} cala {1} ‖ {0} melds {1} ‖ {0} baja {1} ‖ {0} baixa {1}
+{0} attacca {1} ‖ {0} lays off {1} ‖ {0} añade {1} ‖ {0} encaixa {1}
+{0} prende {1} dagli scarti ‖ {0} takes {1} from the discards ‖ {0} toma {1} de los descartes ‖ {0} pega {1} do lixo
+{0} raccoglie gli scarti ({1} carte) ‖ {0} picks up the discards ({1} cards) ‖ {0} recoge los descartes ({1} cartas) ‖ {0} pega o lixo ({1} cartas)
+{0} raccoglie gli scarti (1 carta) ‖ {0} picks up the discards (1 card) ‖ {0} recoge los descartes (1 carta) ‖ {0} pega o lixo (1 carta)
+{0} prende il monte degli scarti ({1} carte) ‖ {0} takes the discard pile ({1} cards) ‖ {0} toma el pozo de descartes ({1} cartas) ‖ {0} pega o lixo ({1} cartas)
+{0} prende il pozzetto ‖ {0} takes the kitty ‖ {0} toma el muerto ‖ {0} pega o morto
+{0} prende il morto ‖ {0} takes the kitty ‖ {0} toma el muerto ‖ {0} pega o morto
+{0} mette {1} al posto del jolly e lo prende ‖ {0} puts {1} in place of the joker and takes it ‖ {0} pone {1} en lugar del comodín y se lo lleva ‖ {0} coloca {1} no lugar do coringa e o pega
+{0} mette in tavola un tre rosso ‖ {0} puts down a red three ‖ {0} pone un tres rojo en la mesa ‖ {0} coloca um três vermelho na mesa
+{0} mette in tavola {1} tre rossi ‖ {0} puts down {1} red threes ‖ {0} pone {1} treses rojos en la mesa ‖ {0} coloca {1} três vermelhos na mesa
+{0} gioca {1} ‖ {0} plays {1} ‖ {0} juega {1} ‖ {0} joga {1}
+{0} gioca {1} e prende {2} ‖ {0} plays {1} and takes {2} ‖ {0} juega {1} y se lleva {2} ‖ {0} joga {1} e leva {2}
+{0} gioca {1} e prende {2}: SCOPA! ‖ {0} plays {1} and takes {2}: SWEEP! ‖ {0} juega {1} y se lleva {2}: ¡ESCOBA! ‖ {0} joga {1} e leva {2}: ESCOPA!
+— Smazzata {0}: distribuisce {1} ‖ — Hand {0}: {1} deals ‖ — Mano {0}: reparte {1} ‖ — Mão {0}: {1} dá as cartas
+— Smazzata {0}: distribuisce {1} ({2} in gioco) ‖ — Hand {0}: {1} deals ({2} still in) ‖ — Mano {0}: reparte {1} ({2} en juego) ‖ — Mão {0}: {1} dá as cartas ({2} em jogo)
+— Smazzata {0}: briscola {1} ‖ — Hand {0}: trump {1} ‖ — Mano {0}: triunfo {1} ‖ — Mão {0}: trunfo {1}
+{0} è tornato al tavolo ‖ {0} is back at the table ‖ {0} volvió a la mesa ‖ {0} voltou à mesa
+🤖 {0} è offline: il computer gioca al suo posto ‖ 🤖 {0} is offline: the computer plays for them ‖ 🤖 {0} está desconectado: la computadora juega por él ‖ 🤖 {0} está offline: o computador joga no lugar
+⏱ Tempo scaduto per {0}: pesca e scarta in automatico ‖ ⏱ Time is up for {0}: automatic draw and discard ‖ ⏱ Se acabó el tiempo de {0}: roba y descarta automáticamente ‖ ⏱ Tempo esgotado para {0}: compra e descarte automáticos
+{0} si arrende ‖ {0} surrenders ‖ {0} se rinde ‖ {0} desiste
+{0} si arrendono ‖ {0} surrender ‖ {0} se rinden ‖ {0} desistem
+Jolly ‖ Joker ‖ Comodín ‖ Coringa
+# carte italiane
+{0} di denari ‖ {0} of Coins ‖ {0} de oros ‖ {0} de ouros
+{0} di coppe ‖ {0} of Cups ‖ {0} de copas ‖ {0} de copas
+{0} di spade ‖ {0} of Swords ‖ {0} de espadas ‖ {0} de espadas
+{0} di bastoni ‖ {0} of Clubs ‖ {0} de bastos ‖ {0} de paus
+Asso ‖ Ace ‖ As ‖ Ás
+Fante ‖ Jack ‖ Sota ‖ Valete
+Cavallo ‖ Knight ‖ Caballo ‖ Cavalo
+Re ‖ King ‖ Rey ‖ Rei
+pozzetto preso ‖ kitty taken ‖ muerto tomado ‖ morto pego
+{0} prende il pozzetto ({1} carte, {2}) ‖ {0} takes the kitty ({1} cards, {2}) ‖ {0} toma el muerto ({1} cartas, {2}) ‖ {0} pega o morto ({1} cartas, {2})
+{0} prende il morto ({1} carte, {2}) ‖ {0} takes the kitty ({1} cards, {2}) ‖ {0} toma el muerto ({1} cartas, {2}) ‖ {0} pega o morto ({1} cartas, {2})
+con lo scarto ‖ with the discard ‖ con el descarte ‖ com o descarte
+al volo ‖ on the fly ‖ al vuelo ‖ direto
+· per chiudere serve un burraco ‖ · a burraco is needed to go out ‖ · para cerrar hace falta un burraco ‖ · para bater é preciso uma canastra
+· per chiudere serve un burraco pulito ‖ · a clean burraco is needed to go out ‖ · para cerrar hace falta un burraco limpio ‖ · para bater é preciso uma canastra limpa
+· per chiudere serve una canastra limpa ‖ · a clean canastra is needed to go out ‖ · para cerrar hace falta una canastra limpia ‖ · para bater é preciso uma canastra limpa
+· per chiudere serve una canastra ‖ · a canastra is needed to go out ‖ · para cerrar hace falta una canastra ‖ · para bater é preciso uma canastra
+si vince a {0} ‖ first to {0} wins ‖ se gana a {0} ‖ vence quem chegar a {0}
+Pulito +{0} ‖ Clean +{0} ‖ Limpio +{0} ‖ Limpa +{0}
+Sporco +{0} ‖ Dirty +{0} ‖ Sucio +{0} ‖ Suja +{0}
+Semipulito +{0} ‖ Semi-clean +{0} ‖ Semilimpio +{0} ‖ Semilimpa +{0}
+eliminato ‖ out ‖ eliminado ‖ eliminado
+scope 🧹 ‖ sweeps 🧹 ‖ escobas 🧹 ‖ escopas 🧹
+Tu ‖ You ‖ Tú ‖ Você
+Tu: ‖ You: ‖ Tú: ‖ Você:

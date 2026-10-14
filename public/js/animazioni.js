@@ -98,14 +98,14 @@
   }
 
   const PRESET_NAMES = { classico: 'Classico', reale: 'Reale', aberto: 'Aberto', fechado: 'Fechado', personalizzate: 'Personalizzate' };
-  const fmtDate = (t) => new Date(t).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+  const fmtDate = (t) => new Date(t).toLocaleDateString(LOCALE, { day: 'numeric', month: 'short' });
 
   /** Sfida del giorno: variante di oggi, il mio risultato e la classifica */
   async function dailyModal() {
     const r = await emit('daily');
     if (!r.ok) return;
     S.dailyRules = r.rules;
-    const day = new Date(r.date + 'T12:00:00').toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
+    const day = new Date(r.date + 'T12:00:00').toLocaleDateString(LOCALE, { weekday: 'long', day: 'numeric', month: 'long' });
     const mine = r.mine
       ? (r.mine.score != null
         ? `<div class="winner">Hai fatto ${signed(r.mine.score)} punti${r.myPos ? ` · ${r.myPos}° posto` : ''}</div><p class="muted" style="text-align:center">Torna domani per una nuova sfida!</p>`
@@ -127,7 +127,7 @@
     return `<h3>🏆 Trofei <span class="muted small">${got} su ${list.length}</span></h3><div class="trophies">${list.map((t) => `
       <div class="trophy ${t.at ? 'got' : ''}" title="${esc(t.desc)}"><i>${esc(t.e)}</i><b>${esc(t.name)}</b><span>${esc(t.desc)}</span>
         ${t.progress ? `<em class="tprog"><u style="width:${Math.round((t.progress.now / t.progress.goal) * 100)}%"></u></em><span class="tnum">${t.progress.now}/${t.progress.goal}</span>` : ''}
-        ${t.at ? `<span class="tdate">${new Date(t.at).toLocaleDateString('it-IT')}</span>` : ''}</div>`).join('')}</div>`;
+        ${t.at ? `<span class="tdate">${new Date(t.at).toLocaleDateString(LOCALE)}</span>` : ''}</div>`).join('')}</div>`;
   }
 
   function statsTable(st, gid) {

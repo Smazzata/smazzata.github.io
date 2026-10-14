@@ -1,0 +1,175 @@
+# Messaggi del server (errori, avvisi) e mosse particolari
+# italiano ‖ English ‖ Español ‖ Português
+Tocca a te nella partita con {0} ‖ It is your turn in the game with {0} ‖ Te toca en la partida con {0} ‖ É sua vez na partida com {0}
+Troppi spettatori a questo tavolo ‖ Too many spectators at this table ‖ Demasiados espectadores en esta mesa ‖ Espectadores demais nesta mesa
+Non sei in nessun tavolo ‖ You are not at any table ‖ No estás en ninguna mesa ‖ Você não está em nenhuma mesa
+Solo chi ha creato il tavolo può farlo ‖ Only the table creator can do that ‖ Solo quien creó la mesa puede hacerlo ‖ Só quem criou a mesa pode fazer isso
+Sessione non valida ‖ Invalid session ‖ Sesión no válida ‖ Sessão inválida
+Hai già giocato la sfida di oggi: torna domani! ‖ You already played today's challenge: come back tomorrow! ‖ Ya jugaste el desafío de hoy: ¡vuelve mañana! ‖ Você já jogou o desafio de hoje: volte amanhã!
+Tavolo non trovato ‖ Table not found ‖ Mesa no encontrada ‖ Mesa não encontrada
+Partita già iniziata ‖ Game already started ‖ La partida ya empezó ‖ Partida já começou
+Posto occupato ‖ Seat taken ‖ Puesto ocupado ‖ Lugar ocupado
+Puoi togliere solo i bot ‖ You can only remove computer players ‖ Solo puedes quitar a los jugadores de la computadora ‖ Você só pode remover os jogadores do computador
+Troppi giocatori al tavolo per questa variante ‖ Too many players at the table for this variant ‖ Demasiados jugadores en la mesa para esta variante ‖ Jogadores demais na mesa para esta variante
+Ci sono posti liberi: aspetta altri giocatori o aggiungi dei bot ‖ There are free seats: wait for more players or add computer players ‖ Hay puestos libres: espera a otros jugadores o añade jugadores de la computadora ‖ Há lugares livres: espere outros jogadores ou adicione jogadores do computador
+Partita non iniziata ‖ Game not started ‖ Partida no iniciada ‖ Partida não iniciada
+I suggerimenti sono disponibili solo giocando da soli contro il computer ‖ Hints are only available when playing alone against the computer ‖ Las sugerencias solo están disponibles jugando solo contra la computadora ‖ As dicas só estão disponíveis jogando sozinho contra o computador
+Link non valido ‖ Invalid link ‖ Enlace no válido ‖ Link inválido
+Incolla un link di Spotify (Jam, playlist, album o brano) ‖ Paste a Spotify link (Jam, playlist, album or track) ‖ Pega un enlace de Spotify (Jam, playlist, álbum o canción) ‖ Cole um link do Spotify (Jam, playlist, álbum ou música)
+Torneo non valido ‖ Invalid series ‖ Serie no válida ‖ Série inválida
+Si cambia il torneo tra una partita e l'altra ‖ The series can be changed between games ‖ La serie se cambia entre una partida y otra ‖ A série se muda entre uma partida e outra
+Livello non valido ‖ Invalid level ‖ Nivel no válido ‖ Nível inválido
+Tempo non valido ‖ Invalid time ‖ Tiempo no válido ‖ Tempo inválido
+Solo chi gioca può arrendersi ‖ Only players can surrender ‖ Solo quien juega puede rendirse ‖ Só quem joga pode desistir
+Nessuna partita in corso ‖ No game in progress ‖ Ninguna partida en curso ‖ Nenhuma partida em andamento
+Non disponibile nella sfida del giorno ‖ Not available in the daily challenge ‖ No disponible en el desafío del día ‖ Indisponível no desafio do dia
+Nei tornei la partita non si può annullare: puoi arrenderti ‖ In tournaments the game cannot be cancelled: you can surrender ‖ En los torneos la partida no se puede anular: puedes rendirte ‖ Nos torneios a partida não pode ser cancelada: você pode desistir
+L'host ha terminato la partita ‖ The host ended the game ‖ El anfitrión terminó la partida ‖ O anfitrião encerrou a partida
+L'host ha chiuso il tavolo ‖ The host closed the table ‖ El anfitrión cerró la mesa ‖ O anfitrião fechou a mesa
+Il ritmo si sceglie prima di iniziare ‖ The pace is chosen before starting ‖ El ritmo se elige antes de empezar ‖ O ritmo se escolhe antes de começar
+Non disponibile per questa partita ‖ Not available for this game ‖ No disponible para esta partida ‖ Indisponível para esta partida
+Solo chi gioca può rivedere la smazzata ‖ Only players can replay the hand ‖ Solo quien juega puede ver de nuevo la mano ‖ Só quem joga pode rever a mão
+Nella sfida del giorno la moviola non è disponibile ‖ Replay is not available in the daily challenge ‖ En el desafío del día la repetición no está disponible ‖ No desafio do dia o replay não está disponível
+Nessuna smazzata da rivedere ‖ No hand to replay ‖ Ninguna mano para ver de nuevo ‖ Nenhuma mão para rever
+In multiplayer i suggerimenti non sono disponibili ‖ Hints are not available in multiplayer ‖ En multijugador las sugerencias no están disponibles ‖ No multijogador as dicas não estão disponíveis
+Velocità non valida ‖ Invalid speed ‖ Velocidad no válida ‖ Velocidade inválida
+Nessuna smazzata da chiudere ‖ No hand to close ‖ Ninguna mano por cerrar ‖ Nenhuma mão para fechar
+La sfida del giorno è una sola smazzata: riprova domani! ‖ The daily challenge is a single hand: try again tomorrow! ‖ El desafío del día es una sola mano: ¡vuelve a intentarlo mañana! ‖ O desafio do dia é uma única mão: tente de novo amanhã!
+La partita del torneo è finita: guarda il tabellone in 🏆 Tornei ‖ The tournament game is over: check the bracket in 🏆 Tournaments ‖ La partida del torneo terminó: mira el cuadro en 🏆 Torneos ‖ A partida do torneio terminou: veja a chave em 🏆 Torneios
+Gli spettatori non partecipano ‖ Spectators do not take part ‖ Los espectadores no participan ‖ Os espectadores não participam
+Solo chi è seduto al tavolo può reagire ‖ Only seated players can react ‖ Solo quien está sentado en la mesa puede reaccionar ‖ Só quem está sentado à mesa pode reagir
+Reazione non valida ‖ Invalid reaction ‖ Reacción no válida ‖ Reação inválida
+Piano con le reazioni 🙂 ‖ Easy with the reactions 🙂 ‖ Despacio con las reacciones 🙂 ‖ Calma com as reações 🙂
+Giocatore non trovato ‖ Player not found ‖ Jugador no encontrado ‖ Jogador não encontrado
+Puoi vedere solo la scheda dei tuoi amici ‖ You can only see your friends' profiles ‖ Solo puedes ver la ficha de tus amigos ‖ Você só pode ver a ficha dos seus amigos
+Puoi aggiungere solo i tuoi amici ‖ You can only add your friends ‖ Solo puedes añadir a tus amigos ‖ Você só pode adicionar seus amigos
+🏟️ {0} ti ha aggiunto al campionato «{1}» ‖ 🏟️ {0} added you to the league «{1}» ‖ 🏟️ {0} te añadió a la liga «{1}» ‖ 🏟️ {0} adicionou você à liga «{1}»
+Giocatore non trovato nel campionato ‖ Player not found in the league ‖ Jugador no encontrado en la liga ‖ Jogador não encontrado na liga
+Scegli il motivo della segnalazione ‖ Choose the reason for the report ‖ Elige el motivo del informe ‖ Escolha o motivo da denúncia
+Hai già inviato una segnalazione: riprova tra un minuto ‖ You already sent a report: try again in a minute ‖ Ya enviaste un informe: vuelve a intentarlo en un minuto ‖ Você já enviou um relato: tente de novo em um minuto
+Descrivi il problema in qualche parola ‖ Describe the problem in a few words ‖ Describe el problema en pocas palabras ‖ Descreva o problema em poucas palavras
+Da 3 a 16 caratteri: lettere, numeri, punto, trattino o _ ‖ 3 to 16 characters: letters, numbers, dot, hyphen or _ ‖ De 3 a 16 caracteres: letras, números, punto, guion o _ ‖ De 3 a 16 caracteres: letras, números, ponto, hífen ou _
+Nickname riservato ‖ Reserved nickname ‖ Apodo reservado ‖ Apelido reservado
+Già preso ‖ Already taken ‖ Ya está en uso ‖ Já está em uso
+Troppi tentativi: riprova tra qualche minuto ‖ Too many attempts: try again in a few minutes ‖ Demasiados intentos: vuelve a intentarlo en unos minutos ‖ Tentativas demais: tente de novo em alguns minutos
+Nessun giocatore con questo nickname ‖ No player with this nickname ‖ Ningún jugador con este apodo ‖ Nenhum jogador com esse apelido
+Avatar non valido ‖ Invalid avatar ‖ Avatar no válido ‖ Avatar inválido
+Scegli prima un nickname ‖ Choose a nickname first ‖ Elige primero un apodo ‖ Escolha um apelido primeiro
+Scegli prima il tuo nickname ‖ Choose your nickname first ‖ Elige primero tu apodo ‖ Escolha seu apelido primeiro
+La password deve avere almeno 6 caratteri ‖ The password must have at least 6 characters ‖ La contraseña debe tener al menos 6 caracteres ‖ A senha deve ter pelo menos 6 caracteres
+Password troppo lunga ‖ Password too long ‖ Contraseña demasiado larga ‖ Senha longa demais
+Codice non valido ‖ Invalid code ‖ Código no válido ‖ Código inválido
+Nickname o password errati ‖ Wrong nickname or password ‖ Apodo o contraseña incorrectos ‖ Apelido ou senha incorretos
+Non puoi aggiungere te stesso ‖ You cannot add yourself ‖ No puedes añadirte a ti mismo ‖ Você não pode adicionar a si mesmo
+Hai bloccato questo giocatore: sbloccalo prima ‖ You have blocked this player: unblock them first ‖ Bloqueaste a este jugador: desbloquéalo primero ‖ Você bloqueou este jogador: desbloqueie-o primeiro
+Non è possibile inviare la richiesta ‖ The request cannot be sent ‖ No se puede enviar la solicitud ‖ Não é possível enviar o pedido
+Siete già amici ‖ You are already friends ‖ Ya sois amigos ‖ Vocês já são amigos
+Nessuna richiesta da questo giocatore ‖ No request from this player ‖ Ninguna solicitud de este jugador ‖ Nenhum pedido deste jogador
+Non puoi bloccare te stesso ‖ You cannot block yourself ‖ No puedes bloquearte a ti mismo ‖ Você não pode bloquear a si mesmo
+Puoi invitare solo i tuoi amici ‖ You can only invite your friends ‖ Solo puedes invitar a tus amigos ‖ Você só pode convidar seus amigos
+Entra prima in un tavolo ‖ Join a table first ‖ Entra primero en una mesa ‖ Entre numa mesa primeiro
+Burraco: invito 🎴 ‖ Burraco: invitation 🎴 ‖ Burraco: invitación 🎴 ‖ Burraco: convite 🎴
+{0} non è online ‖ {0} is not online ‖ {0} no está conectado ‖ {0} não está online
+Scala reale A-A ‖ Royal run A-A ‖ Escalera real A-A ‖ Sequência real A-A
+Scala completa ‖ Complete run ‖ Escalera completa ‖ Sequência completa
+Seleziona delle carte ‖ Select some cards ‖ Selecciona algunas cartas ‖ Selecione algumas cartas
+Carte duplicate ‖ Duplicate cards ‖ Cartas duplicadas ‖ Cartas duplicadas
+Carta non presente in mano ‖ Card not in hand ‖ La carta no está en la mano ‖ Carta não está na mão
+La smazzata è terminata ‖ The hand is over ‖ La mano terminó ‖ A mão terminou
+Hai già pescato ‖ You have already drawn ‖ Ya robaste ‖ Você já comprou
+Prima devi pescare o raccogliere gli scarti ‖ First you must draw or pick up the discards ‖ Primero debes robar o recoger los descartes ‖ Primeiro você precisa comprar ou pegar o lixo
+Prima devi pescare ‖ First you must draw ‖ Primero debes robar ‖ Primeiro você precisa comprar
+Il tallone è finito: un {0} diventa il nuovo tallone ‖ The stock ran out: a {0} becomes the new stock ‖ Se acabó el mazo: un {0} pasa a ser el nuevo mazo ‖ O monte acabou: um {0} vira o novo monte
+Nel tallone restano 2 carte: ultimo turno! ‖ 2 cards left in the stock: last turn! ‖ Quedan 2 cartas en el mazo: ¡último turno! ‖ Restam 2 cartas no monte: última vez!
+Tallone esaurito: ultimo turno! ‖ Stock exhausted: last turn! ‖ Mazo agotado: ¡último turno! ‖ Monte esgotado: última vez!
+Il monte degli scarti è vuoto ‖ The discard pile is empty ‖ El pozo de descartes está vacío ‖ O lixo está vazio
+Non ci sono scarti ‖ There are no discards ‖ No hay descartes ‖ Não há descartes
+Dopo 4 raccolte consecutive bisogna pescare dal tallone ‖ After 4 pick-ups in a row you must draw from the stock ‖ Después de 4 recogidas seguidas hay que robar del mazo ‖ Depois de 4 vezes seguidas pegando o lixo é preciso comprar do monte
+Seleziona le carte da combinare con la carta in cima allo scarto, oppure una tua combinazione ‖ Select the cards to combine with the top discard, or one of your melds ‖ Selecciona las cartas para combinar con la carta de arriba del descarte, o una de tus combinaciones ‖ Selecione as cartas para combinar com a carta de cima do lixo, ou um jogo seu
+Una matta in cima allo scarto si può usare solo in una nuova combinazione ‖ A wild card on top of the discards can only be used in a new meld ‖ Un comodín arriba del descarte solo se puede usar en una combinación nueva ‖ Um curinga em cima do lixo só pode ser usado num jogo novo
+Combinazione non trovata ‖ Meld not found ‖ Combinación no encontrada ‖ Jogo não encontrado
+La carta in cima non si può attaccare a quella combinazione ‖ The top card cannot be added to that meld ‖ La carta de arriba no se puede añadir a esa combinación ‖ A carta de cima não pode ser encaixada nesse jogo
+Con la carta in cima non formi una combinazione valida ‖ With the top card you do not make a valid meld ‖ Con la carta de arriba no formas una combinación válida ‖ Com a carta de cima você não forma um jogo válido
+La carta in cima non va con questa combinazione ‖ The top card does not go with this meld ‖ La carta de arriba no va con esta combinación ‖ A carta de cima não combina com este jogo
+Combinazione non valida (serve una scala o un tris di almeno 3 carte, max 1 matta) ‖ Invalid meld (you need a run or a set of at least 3 cards, max 1 wild card) ‖ Combinación no válida (hace falta una escalera o un trío de al menos 3 cartas, máx. 1 comodín) ‖ Jogo inválido (é preciso uma sequência ou trinca de pelo menos 3 cartas, máx. 1 curinga)
+Combinazione non valida (servono scale di almeno 3 carte dello stesso seme, max 1 matta) ‖ Invalid meld (you need runs of at least 3 cards of the same suit, max 1 wild card) ‖ Combinación no válida (hacen falta escaleras de al menos 3 cartas del mismo palo, máx. 1 comodín) ‖ Jogo inválido (são precisas sequências de pelo menos 3 cartas do mesmo naipe, máx. 1 curinga)
+La tua squadra ha già un tris di quel valore: attacca le carte a quello ‖ Your team already has a set of that rank: add the cards to it ‖ Tu equipo ya tiene un trío de ese valor: añade las cartas a ese ‖ Sua dupla já tem uma trinca desse valor: encaixe as cartas nela
+Puoi attaccare solo alle combinazioni della tua squadra ‖ You can only add to your team's melds ‖ Solo puedes añadir a las combinaciones de tu equipo ‖ Você só pode encaixar nos jogos da sua dupla
+Quelle carte non si possono attaccare a questa combinazione ‖ Those cards cannot be added to this meld ‖ Esas cartas no se pueden añadir a esta combinación ‖ Essas cartas não podem ser encaixadas neste jogo
+Siete vulnerabili: la prima calata deve valere almeno {0} punti (questa ne vale {1}). Seleziona più carte, anche più combinazioni insieme. ‖ You are vulnerable: the first meld must be worth at least {0} points (this one is worth {1}). Select more cards, even several melds together. ‖ Sois vulnerables: la primera bajada debe valer al menos {0} puntos (esta vale {1}). Selecciona más cartas, incluso varias combinaciones juntas. ‖ Vocês estão vulneráveis: o primeiro jogo deve valer pelo menos {0} pontos (este vale {1}). Selecione mais cartas, até vários jogos juntos.
+Siete vulnerabili: la prima calata deve valere almeno {0} punti (ora {1}). Cala altro per arrivarci. ‖ You are vulnerable: the first meld must be worth at least {0} points (now {1}). Meld more to get there. ‖ Sois vulnerables: la primera bajada debe valer al menos {0} puntos (ahora {1}). Baja más para llegar. ‖ Vocês estão vulneráveis: o primeiro jogo deve valer pelo menos {0} pontos (agora {1}). Baixe mais para chegar lá.
+Non puoi restare senza carte: per chiudere devi scartare l'ultima carta ‖ You cannot be left without cards: to go out you must discard your last card ‖ No puedes quedarte sin cartas: para cerrar debes descartar la última carta ‖ Você não pode ficar sem cartas: para bater precisa descartar a última carta
+Non puoi scartare la carta appena raccolta: tieni almeno un'altra carta ‖ You cannot discard the card you just picked up: keep at least one other card ‖ No puedes descartar la carta que acabas de recoger: quédate con al menos otra carta ‖ Você não pode descartar a carta que acabou de pegar: fique com pelo menos outra carta
+Non si può chiudere scartando una matta ‖ You cannot go out by discarding a wild card ‖ No se puede cerrar descartando un comodín ‖ Não se pode bater descartando um curinga
+Devi tenere almeno 2 carte in mano: {0} ‖ You must keep at least 2 cards in hand: {0} ‖ Debes quedarte con al menos 2 cartas en la mano: {0} ‖ Você precisa ficar com pelo menos 2 cartas na mão: {0}
+il {0} non è disponibile ‖ the {0} is not available ‖ el {0} no está disponible ‖ o {0} não está disponível
+serve una {0} pulita per chiudere ‖ you need a clean {0} to go out ‖ hace falta una {0} limpia para cerrar ‖ é preciso uma {0} limpa para bater
+serve almeno un {0} per chiudere ‖ you need at least one {0} to go out ‖ hace falta al menos un {0} para cerrar ‖ é preciso pelo menos um {0} para bater
+Non puoi riscartare l'unica carta appena raccolta ‖ You cannot discard the only card you just picked up ‖ No puedes volver a descartar la única carta que acabas de recoger ‖ Você não pode descartar a única carta que acabou de pegar
+Non puoi ancora chiudere ‖ You cannot go out yet ‖ Todavía no puedes cerrar ‖ Você ainda não pode bater
+Le giocate fatte non si possono annullare ‖ Moves cannot be undone ‖ Las jugadas no se pueden deshacer ‖ As jogadas não podem ser desfeitas
+Smazzata terminata (tallone esaurito). ‖ Hand over (stock exhausted). ‖ Mano terminada (mazo agotado). ‖ Mão encerrada (monte esgotado).
+La partita è già finita ‖ The game is already over ‖ La partida ya terminó ‖ A partida já terminou
+Non sei seduto al tavolo ‖ You are not seated at the table ‖ No estás sentado en la mesa ‖ Você não está sentado à mesa
+La smazzata non è finita ‖ The hand is not over ‖ La mano no ha terminado ‖ A mão não terminou
+La partita è finita ‖ The game is over ‖ La partida terminó ‖ A partida terminou
+Azione sconosciuta ‖ Unknown action ‖ Acción desconocida ‖ Ação desconhecida
+Carte non valide ‖ Invalid cards ‖ Cartas no válidas ‖ Cartas inválidas
+Il tallone è finito: si rimescolano gli scarti ‖ The stock ran out: the discards are reshuffled ‖ Se acabó el mazo: se vuelven a barajar los descartes ‖ O monte acabou: o lixo é embaralhado
+Per prendere lo scarto senza aver aperto devi calare subito almeno {0} punti usandolo ‖ To take the discard before opening you must meld at least {0} points with it straight away ‖ Para tomar el descarte sin haber abierto debes bajar enseguida al menos {0} puntos usándolo ‖ Para pegar o descarte sem ter aberto você precisa baixar na hora pelo menos {0} pontos usando-o
+Devi tenere almeno una carta da scartare ‖ You must keep at least one card to discard ‖ Debes quedarte con al menos una carta para descartar ‖ Você precisa ficar com pelo menos uma carta para descartar
+Combinazione non valida (scale dello stesso seme o tris di semi diversi, max {0} jolly) ‖ Invalid meld (runs of the same suit or sets of different suits, max {0} jokers) ‖ Combinación no válida (escaleras del mismo palo o tríos de palos distintos, máx. {0} comodines) ‖ Jogo inválido (sequências do mesmo naipe ou trincas de naipes diferentes, máx. {0} coringas)
+Per aprire servono almeno {0} punti in una volta (ne hai {1}) ‖ To open you need at least {0} points at once (you have {1}) ‖ Para abrir hacen falta al menos {0} puntos de una vez (tienes {1}) ‖ Para abrir são precisos pelo menos {0} pontos de uma vez (você tem {1})
+Per aprire servono almeno {0} punti (ne hai {1}) ‖ To open you need at least {0} points (you have {1}) ‖ Para abrir hacen falta al menos {0} puntos (tienes {1}) ‖ Para abrir são precisos pelo menos {0} pontos (você tem {1})
+{0} apre! ‖ {0} opens! ‖ ¡{0} abre! ‖ {0} abre!
+Prima devi aprire (almeno {0} punti) ‖ First you must open (at least {0} points) ‖ Primero debes abrir (al menos {0} puntos) ‖ Primeiro você precisa abrir (pelo menos {0} pontos)
+Prima devi aprire ‖ First you must open ‖ Primero debes abrir ‖ Primeiro você precisa abrir
+In questa partita i jolly sul tavolo non si possono prendere ‖ In this game jokers on the table cannot be taken ‖ En esta partida los comodines de la mesa no se pueden tomar ‖ Nesta partida os coringas da mesa não podem ser pegos
+Serve una carta naturale ‖ A natural card is needed ‖ Hace falta una carta natural ‖ É preciso uma carta natural
+Quella carta non sostituisce nessun jolly di questa combinazione ‖ That card does not replace any joker in this meld ‖ Esa carta no sustituye ningún comodín de esta combinación ‖ Essa carta não substitui nenhum coringa deste jogo
+Sostituzione non valida ‖ Invalid replacement ‖ Sustitución no válida ‖ Substituição inválida
+Il jolly preso dal tavolo va usato subito, ma ora non avresti dove metterlo ‖ A joker taken from the table must be used at once, but right now you would have nowhere to put it ‖ El comodín tomado de la mesa debe usarse enseguida, pero ahora no tendrías dónde ponerlo ‖ O coringa pego da mesa deve ser usado na hora, mas agora você não teria onde colocá-lo
+Non puoi riscartare la carta appena presa dagli scarti ‖ You cannot discard the card you just took from the discards ‖ No puedes volver a descartar la carta que acabas de tomar de los descartes ‖ Você não pode descartar a carta que acabou de pegar do lixo
+Prima usa il jolly che hai preso dal tavolo (calalo o attaccalo) ‖ First use the joker you took from the table (meld it or lay it off) ‖ Primero usa el comodín que tomaste de la mesa (bájalo o añádelo) ‖ Primeiro use o coringa que você pegou da mesa (baixe ou encaixe)
+Penalità doppie. ‖ Double penalties. ‖ Penalizaciones dobles. ‖ Penalidades dobradas.
+{0} arriva a {1} punti ed è eliminato ‖ {0} reaches {1} points and is out ‖ {0} llega a {1} puntos y queda eliminado ‖ {0} chega a {1} pontos e está eliminado
+{0} si arrende ed esce dalla partita ‖ {0} surrenders and leaves the game ‖ {0} se rinde y sale de la partida ‖ {0} desiste e sai da partida
+Il monte è bloccato: in cima c'è una matta o un tre nero ‖ The pile is frozen: there is a wild card or a black three on top ‖ El pozo está bloqueado: arriba hay un comodín o un tres negro ‖ O lixo está trancado: em cima há um curinga ou um três preto
+Il monte è congelato: servono due carte naturali uguali a quella in cima ‖ The pile is frozen: you need two natural cards matching the top one ‖ El pozo está congelado: hacen falta dos cartas naturales iguales a la de arriba ‖ O lixo está congelado: são precisas duas cartas naturais iguais à de cima
+Combinazione non valida: carte dello stesso valore, almeno 2 naturali e al massimo {0} matte (niente 3) ‖ Invalid meld: cards of the same rank, at least 2 naturals and at most {0} wild cards (no 3s) ‖ Combinación no válida: cartas del mismo valor, al menos 2 naturales y como máximo {0} comodines (sin treses) ‖ Jogo inválido: cartas do mesmo valor, pelo menos 2 naturais e no máximo {0} curingas (sem 3)
+Hai già una combinazione di quel valore: attacca le carte a quella ‖ You already have a meld of that rank: add the cards to it ‖ Ya tienes una combinación de ese valor: añade las cartas a esa ‖ Você já tem um jogo desse valor: encaixe as cartas nele
+Per restare con una carta sola (o chiudere) serve almeno una canasta ‖ To be left with a single card (or go out) you need at least one canasta ‖ Para quedarte con una sola carta (o cerrar) hace falta al menos una canasta ‖ Para ficar com uma só carta (ou bater) é preciso pelo menos uma canastra
+Quelle carte non si possono attaccare (al massimo {0} matte, almeno 2 naturali) ‖ Those cards cannot be added (at most {0} wild cards, at least 2 naturals) ‖ Esas cartas no se pueden añadir (como máximo {0} comodines, al menos 2 naturales) ‖ Essas cartas não podem ser encaixadas (no máximo {0} curingas, pelo menos 2 naturais)
+Per chiudere serve almeno una canasta: tieni la carta o cala ancora ‖ To go out you need at least one canasta: keep the card or meld more ‖ Para cerrar hace falta al menos una canasta: guarda la carta o baja más ‖ Para bater é preciso pelo menos uma canastra: fique com a carta ou baixe mais
+Canasta sporca ‖ Dirty canasta ‖ Canasta sucia ‖ Canastra suja
+Il tallone è finito: smazzata terminata. ‖ The stock ran out: hand over. ‖ Se acabó el mazo: mano terminada. ‖ O monte acabou: mão encerrada.
+La Scopa si gioca in 2 o in 4 ‖ Scopa is played by 2 or 4 ‖ La Escoba se juega de a 2 o de a 4 ‖ A Escopa se joga em 2 ou em 4
+La Briscola si gioca in 2 o in 4 ‖ Briscola is played by 2 or 4 ‖ La Brisca se juega de a 2 o de a 4 ‖ A Bisca se joga em 2 ou em 4
+Con questa carta non puoi prendere quelle carte ‖ With this card you cannot take those cards ‖ Con esta carta no puedes llevarte esas cartas ‖ Com esta carta você não pode capturar essas cartas
+Scegli quali carte prendere ‖ Choose which cards to take ‖ Elige qué cartas llevarte ‖ Escolha quais cartas capturar
+Con questa carta non puoi prendere nulla ‖ With this card you cannot take anything ‖ Con esta carta no puedes llevarte nada ‖ Com esta carta você não pode capturar nada
+Dai un nome al torneo (almeno 3 caratteri) ‖ Give the tournament a name (at least 3 characters) ‖ Ponle un nombre al torneo (al menos 3 caracteres) ‖ Dê um nome ao torneio (pelo menos 3 caracteres)
+Gioco non valido ‖ Invalid game ‖ Juego no válido ‖ Jogo inválido
+Numero di partecipanti non valido ‖ Invalid number of players ‖ Número de participantes no válido ‖ Número de participantes inválido
+Hai già due tornei aperti ‖ You already have two open tournaments ‖ Ya tienes dos torneos abiertos ‖ Você já tem dois torneios abertos
+Torneo non trovato ‖ Tournament not found ‖ Torneo no encontrado ‖ Torneio não encontrado
+Le iscrizioni sono chiuse ‖ Registration is closed ‖ Las inscripciones están cerradas ‖ As inscrições estão fechadas
+Sei già iscritto ‖ You are already registered ‖ Ya estás inscrito ‖ Você já está inscrito
+Il torneo è al completo ‖ The tournament is full ‖ El torneo está completo ‖ O torneio está completo
+Il torneo è già iniziato ‖ The tournament has already started ‖ El torneo ya empezó ‖ O torneio já começou
+Solo chi ha creato il torneo può farlo ‖ Only the tournament creator can do that ‖ Solo quien creó el torneo puede hacerlo ‖ Só quem criou o torneio pode fazer isso
+Servono {0} partecipanti (puoi riempire con il computer) ‖ {0} players are needed (you can fill with the computer) ‖ Hacen falta {0} participantes (puedes llenar con la computadora) ‖ São precisos {0} participantes (você pode completar com o computador)
+🏆 Torneo «{0}»: la tua partita contro {1} è pronta ‖ 🏆 Tournament «{0}»: your game against {1} is ready ‖ 🏆 Torneo «{0}»: tu partida contra {1} está lista ‖ 🏆 Torneio «{0}»: sua partida contra {1} está pronta
+🏆 Il torneo «{0}» è finito: vince {1}! ‖ 🏆 The tournament «{0}» is over: {1} wins! ‖ 🏆 El torneo «{0}» terminó: ¡gana {1}! ‖ 🏆 O torneio «{0}» terminou: {1} vence!
+Dai un nome al campionato (almeno 3 caratteri) ‖ Give the league a name (at least 3 characters) ‖ Ponle un nombre a la liga (al menos 3 caracteres) ‖ Dê um nome à liga (pelo menos 3 caracteres)
+Durata non valida ‖ Invalid duration ‖ Duración no válida ‖ Duração inválida
+Puoi far parte di al massimo {0} campionati ‖ You can be in at most {0} leagues ‖ Puedes estar como máximo en {0} ligas ‖ Você pode participar de no máximo {0} ligas
+Campionato non trovato ‖ League not found ‖ Liga no encontrada ‖ Liga não encontrada
+Solo chi ha creato il campionato può aggiungere giocatori ‖ Only the league creator can add players ‖ Solo quien creó la liga puede añadir jugadores ‖ Só quem criou a liga pode adicionar jogadores
+È già nel campionato ‖ Already in the league ‖ Ya está en la liga ‖ Já está na liga
+Al massimo {0} giocatori ‖ At most {0} players ‖ Como máximo {0} jugadores ‖ No máximo {0} jogadores
+{0} è già in {1} campionati ‖ {0} is already in {1} leagues ‖ {0} ya está en {1} ligas ‖ {0} já está em {1} ligas
+Solo chi ha creato il campionato può togliere giocatori ‖ Only the league creator can remove players ‖ Solo quien creó la liga puede quitar jugadores ‖ Só quem criou a liga pode remover jogadores
+Notifiche non consentite dal browser ‖ Notifications not allowed by the browser ‖ Notificaciones no permitidas por el navegador ‖ Notificações não permitidas pelo navegador
+Copiato! ‖ Copied! ‖ ¡Copiado! ‖ Copiado!
+Link copiato ‖ Link copied ‖ Enlace copiado ‖ Link copiado
