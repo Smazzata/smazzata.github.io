@@ -118,6 +118,13 @@ ${r.table.game.log.map(esc).join('\n')}</pre>` : ''}<span class="m">${esc(r.devi
 <p class="m">La pagina si aggiorna ogni 10 secondi. 🟢 online · ⚪ offline · 🤖 computer</p></body></html>`);
 });
 
+// motore e computer impacchettati per il gioco senza internet (vedi public/local-server.js)
+const { bundle: bundleEngine } = require('../scripts/bundle-engine');
+let engineBundle = null;
+app.get('/engine.js', (req, res) => {
+  engineBundle = engineBundle || bundleEngine();
+  res.type('application/javascript').send(engineBundle);
+});
 app.get('/vendor/qrcode.js', (req, res) => res.sendFile(require.resolve('qrcode-generator')));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/shared', express.static(path.join(__dirname, '..', 'shared')));
@@ -322,21 +329,7 @@ function scheduleBot(room) {
       } catch (e2) { console.error('Bot bloccato:', e2.message); }
     }
     afterAction(room);
-  }, planned ? botThinkMs(g, seat, planned, base) : base);
-}
-
-/** Tempo "di riflessione" del computer: rapido sulle mosse ovvie, più lento su quelle impegnative */
-function botThinkMs(g, seat, a, base) {
-  const r = (lo, hi) => base * (lo + Math.random() * (hi - lo));
-  const handN = g.players[seat].hand.length;
-  switch (a.type) {
-    case 'draw': return r(0.55, 0.9);
-    case 'takePile': return r(0.9, 1.4) + Math.min(g.discard.length, 10) * base * 0.04;
-    case 'meld': return r(0.8, 1.2) + (a.cardIds ? a.cardIds.length : 3) * base * 0.12;
-    case 'add': return r(0.45, 0.8);
-    case 'discard': return handN <= 2 ? r(0.6, 1.0) : r(0.8, 1.5) + (handN >= 10 ? base * 0.2 : 0);
-    default: return r(0.8, 1.2);
-  }
+  }, planned ? Bot.thinkMs(g, seat, planned, base) : base);
 }
 
 /* ---------- Reazioni del computer (ogni tanto, mai troppe) ---------- */

@@ -557,3 +557,6 @@ body[data-theme="notte"] .rteam .rpts.neg, body[data-theme="notte"] .result td.n
 body[data-theme="notte"] .rteam .rtot { color: #a5aca8; }
 body[data-theme="notte"] .rteam .rbar { background: rgba(255,255,255,.12); }
 @media (prefers-reduced-motion: reduce) { .result.anim .rteam .rbar i { animation: none; } }
+
+/* gioco senza internet */
+.offbanner { background: rgba(0,0,0,.22); border: 1px dashed rgba(255,255,255,.35); border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.45; }

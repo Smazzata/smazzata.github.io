@@ -29,6 +29,8 @@
     .hidden { display: none; }
     .btn.apk { display: block; margin: 22px auto 0; background: rgba(255,255,255,.12); color: #fff; border: 1.5px solid rgba(255,255,255,.4); max-width: 280px; }
     .btn.apk.hidden { display: none; }
+    .btn.offline { display: block; margin: 12px auto 0; max-width: 300px; background: rgba(255,255,255,.12); color: #fff; border: 1.5px solid rgba(255,255,255,.4); }
+    .btn.offline.hidden { display: none; }
     .tip { margin-top: 28px; font-size: 13px; background: rgba(0,0,0,.22); border-radius: 12px; padding: 10px 12px; text-align: left; }
   </style>
 </head>
@@ -39,6 +41,7 @@
     <p id="msg">Sto cercando il tavolo da gioco…</p>
     <div class="spinner" id="spin"></div>
     <button class="btn hidden" id="retry">Riprova</button>
+    <a class="btn offline hidden" id="offline" href="gioca/?offline=1">📴 Gioca senza internet contro il computer</a>
     <a class="btn apk hidden" id="apk" href="https://github.com/simonemuliello010500-web/BurracoByMSF/releases/latest/download/Burraco.apk">📱 Scarica l'app per Android</a>
     <div class="tip hidden" id="tip">
       <b>Consiglio:</b> aggiungi questa pagina alla schermata Home (su iPhone: Condividi → <i>Aggiungi alla schermata Home</i>)
@@ -75,6 +78,7 @@
       $('spin').classList.add('hidden');
       $('msg').innerHTML = text;
       $('retry').classList.remove('hidden');
+      $('offline').classList.remove('hidden');
     }
 
     const LAST = 'bur_last_server';
@@ -84,6 +88,7 @@
 
     async function go() {
       $('retry').classList.add('hidden');
+      $('offline').classList.add('hidden');
       $('spin').classList.remove('hidden');
       $('msg').textContent = 'Sto cercando il tavolo da gioco…';
       // prima prova l'ultimo indirizzo che ha funzionato: di solito è ancora quello giusto
@@ -95,7 +100,10 @@
       }
       let url;
       try { url = String(await serverUrl()).replace(/\/+$/, ''); }
-      catch (e) { return fail('Non trovo l\'indirizzo del server.<br>Controlla la connessione e riprova.'); }
+      catch (e) {
+        return fail(navigator.onLine === false ? 'Sei <b>senza internet</b>.<br>Puoi comunque giocare contro il computer.'
+          : 'Non trovo l\'indirizzo del server.<br>Controlla la connessione e riprova.');
+      }
       if (!/^https:\/\//.test(url)) return fail('Indirizzo del server non valido.');
       try {
         const h = await fetch(url + '/health', { cache: 'no-store', signal: withTimeout(9000) });
@@ -109,6 +117,8 @@
     }
 
     $('retry').addEventListener('click', go);
+    // copia della pagina e del gioco sul dispositivo: senza internet si gioca contro il computer
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
     // nel browser Android si propone l'app; dentro l'app (user agent "BurracoApp") no
     if (/android/i.test(navigator.userAgent) && !/BurracoApp/.test(navigator.userAgent)) $('apk').classList.remove('hidden');
     if (/iphone|ipad/i.test(navigator.userAgent) && !navigator.standalone) $('tip').classList.remove('hidden');

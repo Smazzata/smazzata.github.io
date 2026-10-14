@@ -11,6 +11,14 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage non disponibile */ } },
   };
 
+  // Senza internet (o aprendo la pagina con ?offline=1) si gioca contro il computer con il server locale
+  const OFFLINE = (() => {
+    try {
+      if (/[?&]offline=1/.test(location.search)) sessionStorage.setItem('bur_offline', '1');
+      return typeof io === 'undefined' || sessionStorage.getItem('bur_offline') === '1';
+    } catch (e) { return typeof io === 'undefined'; }
+  })();
+
   const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro' };
   const S = {
     token: store.get('bur_token', null),
@@ -103,7 +111,10 @@
 
   /* ================= Connessione ================= */
   // tentativi di ricollegamento ravvicinati (0,3 s → massimo 2 s)
-  const socket = io({ reconnectionDelay: 300, reconnectionDelayMax: 2000, randomizationFactor: 0.3 });
+  const socket = OFFLINE
+    ? LocalServer.createSocket({ engineUrl: 'engine.js', name: store.get('bur_name', '') })
+    : io({ reconnectionDelay: 300, reconnectionDelayMax: 2000, randomizationFactor: 0.3 });
+  if (OFFLINE) document.body.classList.add('offline');
   socket.on('connect', () => {
     if (S.lostConnection) toast('✓ Riconnesso');
     S.lostConnection = false;
@@ -129,14 +140,17 @@
   });
   window.addEventListener('online', () => { if (!socket.connected) socket.connect(); });
   socket.on('welcome', ({ token, name, nick }) => {
-    S.token = token;
-    store.set('bur_token', token);
-    if (nick) { S.name = nick; store.set('bur_name', nick); } else if (!S.name && name !== 'Giocatore') S.name = name;
+    // offline il codice del profilo salvato non va mai sovrascritto: serve quando si torna online
+    if (!OFFLINE) {
+      S.token = token;
+      store.set('bur_token', token);
+    }
+    if (nick) { S.name = nick; if (!OFFLINE) store.set('bur_name', nick); } else if (!S.name && name !== 'Giocatore') S.name = name;
     if (S.pendingProfile) { const c = S.pendingProfile; S.pendingProfile = ''; askImport(c); }
   });
   socket.on('social', (soc) => {
     S.social = soc;
-    if (soc && soc.nick) { S.name = soc.nick; store.set('bur_name', soc.nick); }
+    if (soc && soc.nick) { S.name = soc.nick; if (!OFFLINE) store.set('bur_name', soc.nick); }
     if (S.modalKind === 'friends') friendsModal();
     if (S.screen === 'home' || S.screen === 'lobby') render();
   });
@@ -732,7 +746,10 @@
       <div class="logo"><div class="logo-fan">${fan}</div><h1>Burraco</h1>
         <div class="muted">Gioca con gli amici o contro il computer</div></div>
       <div class="panel">
-        ${S.social && S.social.nick
+        ${OFFLINE ? `<div class="offbanner">📴 <b>Senza internet</b><br>Puoi giocare contro il computer e fare l'allenamento.
+            Amici, classifica e partite online tornano quando sei collegato.
+            <div class="row" style="margin-top:6px"><button class="btn small" data-act="goOnline">🔄 Riprova online</button></div></div>`
+        : S.social && S.social.nick
           ? `<div class="hello"><span class="row">${avatarHTML(S.social.nick, 0, false, S.social.avatar || { e: S.social.nick.charAt(0).toUpperCase(), c: '#f2c14e' })}<span>Ciao, <b>${esc(S.social.nick)}</b>!</span></span>
               <span class="row"><button class="btn small" data-act="profile">👤 Profilo</button>
               <button class="btn small" data-act="friends">👥 Amici${S.social.reqIn.length ? ` <span class="pill">${S.social.reqIn.length}</span>` : ''}</button></span></div>`
@@ -742,21 +759,22 @@
               <div class="row"><button class="btn primary grow" data-act="claimNick">Conferma nickname</button></div>
               <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a> · <a href="privacy.html">Privacy</a></p>`}
         <div class="row" style="margin-top:10px"><button class="btn primary grow big" data-act="goSetup">Nuova partita</button></div>
-        ${store.get('bur_lastroom', '') ? `<div class="row" style="margin-top:8px"><button class="btn primary grow" data-act="rejoin">↩ Torna al tavolo ${esc(store.get('bur_lastroom', ''))}</button></div>` : ''}
-        <div class="row" style="margin-top:8px"><button class="btn grow" data-act="quickMenu">⚡ Gioca subito</button><button class="btn grow" data-act="tutorial">🎓 Impara a giocare</button></div>
+        ${!OFFLINE && store.get('bur_lastroom', '') ? `<div class="row" style="margin-top:8px"><button class="btn primary grow" data-act="rejoin">↩ Torna al tavolo ${esc(store.get('bur_lastroom', ''))}</button></div>` : ''}
+        ${OFFLINE ? '<div class="row" style="margin-top:8px"><button class="btn grow" data-act="tutorial">🎓 Impara a giocare</button></div>'
+        : `<div class="row" style="margin-top:8px"><button class="btn grow" data-act="quickMenu">⚡ Gioca subito</button><button class="btn grow" data-act="tutorial">🎓 Impara a giocare</button></div>
         <div class="row" style="margin-top:10px">
           <input type="text" id="joinCode" class="grow codein" maxlength="4" placeholder="Codice tavolo" value="${esc(S.pendingJoin)}">
           <button class="btn" data-act="join">Entra</button>
-        </div>
+        </div>`}
         ${S.pendingJoin ? '<p class="muted">Sei stato invitato al tavolo: scrivi il tuo nome e premi Entra.</p>' : ''}
       </div>
-      ${IS_ANDROID && !IN_APP ? `<a class="apkbanner" href="${APK_URL}">
+      ${IS_ANDROID && !IN_APP && !OFFLINE ? `<a class="apkbanner" href="${APK_URL}">
         <img src="icons/icon-192.png" alt=""><span><b>📱 Scarica l'app per Android</b><br>Installala e gioca a schermo intero</span></a>` : ''}
       <div class="panel">
         <h2>Regole e varianti</h2>
         <p class="muted">Ogni preset è un punto di partenza: quando crei una partita puoi modificare ogni singola regola.</p>
         <div class="presets">${R.PRESETS.map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>
-        <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si gioca nell'app</button><button class="btn ghost small" data-act="settings">⚙️ Aspetto e suoni</button><button class="btn ghost small" data-act="toggleTheme">${S.prefs.theme === 'scuro' ? '☀️ Tema chiaro' : '🌙 Tema scuro'}</button><button class="btn ghost small" data-act="stats">📊 Statistiche</button><button class="btn ghost small" data-act="leaders">🏆 Classifica</button><button class="btn ghost small" data-act="report">🐞 Segnala un problema</button></div>
+        <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si gioca nell'app</button><button class="btn ghost small" data-act="settings">⚙️ Aspetto e suoni</button><button class="btn ghost small" data-act="toggleTheme">${S.prefs.theme === 'scuro' ? '☀️ Tema chiaro' : '🌙 Tema scuro'}</button><button class="btn ghost small" data-act="stats">📊 Statistiche</button>${OFFLINE ? '' : '<button class="btn ghost small" data-act="leaders">🏆 Classifica</button><button class="btn ghost small" data-act="report">🐞 Segnala un problema</button>'}</div>
         <p class="muted small" style="margin:10px 0 0;text-align:center"><a href="privacy.html" style="color:inherit">🔒 Privacy: quali dati usiamo e come cancellarli</a></p>
       </div>
     </div>`;
@@ -777,9 +795,10 @@
       </div>
       <div class="panel">
         <h2>3. Gioca</h2>
-        <div class="row"><button class="btn primary grow big" data-act="create">Crea tavolo e invita amici</button></div>
+        ${OFFLINE ? '<div class="row"><button class="btn primary grow big" data-act="createBots">Gioca contro il computer</button></div>'
+        : `<div class="row"><button class="btn primary grow big" data-act="create">Crea tavolo e invita amici</button></div>
         <div class="row" style="margin-top:8px"><button class="btn grow" data-act="createBots">Gioca subito contro il computer</button></div>
-        <p class="muted">Nel tavolo online potrai riempire i posti vuoti con giocatori del computer.</p>
+        <p class="muted">Nel tavolo online potrai riempire i posti vuoti con giocatori del computer.</p>`}
       </div>
     </div>`;
   }
@@ -1084,9 +1103,9 @@
 
     return `<div class="game ${myTurn ? 'myturn' : ''}">
       <div class="topbar">
-        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}<b>${esc(r.code)}</b> · <span title="Smazzata ${g.handNo}, si vince a ${g.cfg.target}">smazzata ${g.handNo}</span></span>
+        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : `<b>${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, si vince a ${g.cfg.target}">smazzata ${g.handNo}</span></span>
         <button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
-        <button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>
+        ${OFFLINE ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}
         <button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>
         <button class="iconbtn" data-act="scores" title="Punteggi">🏆</button>
         <button class="iconbtn" data-act="settings" title="Aspetto e suoni">⚙️</button>
@@ -1310,7 +1329,7 @@
   }
 
   async function statsModal() {
-    if (!S.social || !S.social.nick) { localStatsModal(); return; }
+    if (OFFLINE || !S.social || !S.social.nick) { localStatsModal(); return; }
     const r = await emit('myStats');
     if (!r.ok) return;
     openModal('stats', `<div class="result"><h2>📊 Le tue statistiche</h2>
@@ -1497,7 +1516,7 @@
 
   /* ================= Azioni ================= */
   function requireName() {
-    if (S.social && S.social.nick) return true;
+    if (OFFLINE || (S.social && S.social.nick)) return true;
     toast('Scegli prima il tuo nickname', true);
     const el = $('#nick');
     if (el) el.focus();
@@ -1540,6 +1559,11 @@
   }
 
   const handlers = {
+    goOnline() {
+      try { sessionStorage.removeItem('bur_offline'); } catch (e) { /* niente */ }
+      // dalla pagina fissa si torna alla pagina d'ingresso, che cerca il server
+      location.href = /\/gioca\//.test(location.pathname) ? '../' : location.pathname;
+    },
     goSetup() { if (!requireName()) return; S.screen = 'setup'; render(); },
     goHome() { S.screen = 'home'; render(); },
     join() {

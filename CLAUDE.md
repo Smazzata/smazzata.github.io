@@ -12,6 +12,10 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 - `server/index.js` — tavoli, posti, riconnessione via token, chat, musica Spotify, timer del turno, rivincita a voto, classifica; salva tutto in `data/stato.json` (anche ai riavvii); `/health` per la pagina d'ingresso.
 - `public/` — interfaccia: tavolo mobile-first, trascinamento carte, animazioni, suoni sintetizzati, tema chiaro/scuro a scelta dell'utente, statistiche personali in localStorage.
 - `launcher/` — pagina d'ingresso su GitHub Pages (link fisso) che legge l'indirizzo del server dal ramo `indirizzo` (`server.json`).
+- Gioco senza internet: `public/local-server.js` è un "server" nel browser (stessi eventi di socket.io) che usa motore e computer
+  impacchettati da `scripts/bundle-engine.js` (il server li offre su `/engine.js`). Si attiva da solo se socket.io non si carica,
+  o con `?offline=1`. `scripts/build-pages.js` pubblica su GitHub Pages la pagina d'ingresso + una copia del gioco in `gioca/`;
+  i service worker (`public/sw.js`, `launcher/sw.js`) salvano tutto sul dispositivo ("prima la rete").
 - `android-app/` — guscio Capacitor dell'APK (apre la pagina d'ingresso); `burraco.p12` è la chiave di firma fissa (non cambiarla: gli aggiornamenti non si installerebbero più).
 - `scripts/android-server.sh` — avvio sul telefono-server (Termux): dipendenze, aggiornamento da GitHub ogni 5 min, tunnel Cloudflare, pubblicazione dell'indirizzo (`--set-token`, `--install-boot`).
 
@@ -25,7 +29,7 @@ Computer: 3 livelli + apertura da vulnerabile con più combinazioni + pianificat
 ## Hosting e pubblicazione
 - Il server gira su un telefono Android con Termux e un tunnel Cloudflare gratuito (indirizzo che cambia). Un `git push` su `main` aggiorna il gioco sul telefono entro ~5 minuti; le partite in corso riprendono dopo il riavvio.
 - Link fisso: https://simonemuliello010500-web.github.io/BurracoByMSF/ — APK: https://github.com/simonemuliello010500-web/BurracoByMSF/releases/latest/download/Burraco.apk
-- Workflow: `.github/workflows/pages.yml` (pagina d'ingresso, solo se cambia `launcher/`), `.github/workflows/apk.yml` (APK, solo se cambia `android-app/`).
+- Workflow: `.github/workflows/pages.yml` (pagina d'ingresso + gioco offline in `gioca/`, quando cambiano launcher, public, shared, motore o computer), `.github/workflows/apk.yml` (APK, solo se cambia `android-app/`).
 - Render, Hugging Face e Koyeb sono stati scartati (carta richiesta / quota zero / iscrizioni bloccate).
 
 ## Verifiche prima di pubblicare
@@ -35,6 +39,7 @@ Computer: 3 livelli + apertura da vulnerabile con più combinazioni + pianificat
 - `npm run load [tavoli] [secondi]` — prova di carico (tavoli simulati insieme: tempi di risposta, ritardo, CPU, memoria).
 - `npm run playtest [partite] [varianti]` — statistiche su partite simulate in massa (durata, finali, punteggi, dati inviati).
 - Controlla le modifiche visive nel browser a misura di telefono (375×812).
+- Server di prova per le verifiche a mano: `node scripts/qa-server.js` (porta 3100, dati in una cartella temporanea, computer veloci): non toccare il server vero.
 
 ## Preferenze dell'utente
 - Mobile-first, niente pulsanti grandi: si gioca toccando/trascinando; solo piccole icone. Il tavolo non deve scorrere su smartphone.

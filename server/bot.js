@@ -308,4 +308,18 @@ function discardAction(g, seat, hand, memo = {}) {
   return { type: 'discard', cardId: order[0].id };
 }
 
-module.exports = { nextAction };
+/** Tempo "di riflessione" del computer: rapido sulle mosse ovvie, più lento su quelle impegnative */
+function thinkMs(g, seat, a, base) {
+  const r = (lo, hi) => base * (lo + Math.random() * (hi - lo));
+  const handN = g.players[seat].hand.length;
+  switch (a.type) {
+    case 'draw': return r(0.55, 0.9);
+    case 'takePile': return r(0.9, 1.4) + Math.min(g.discard.length, 10) * base * 0.04;
+    case 'meld': return r(0.8, 1.2) + (a.cardIds ? a.cardIds.length : 3) * base * 0.12;
+    case 'add': return r(0.45, 0.8);
+    case 'discard': return handN <= 2 ? r(0.6, 1.0) : r(0.8, 1.5) + (handN >= 10 ? base * 0.2 : 0);
+    default: return r(0.8, 1.2);
+  }
+}
+
+module.exports = { nextAction, thinkMs };
