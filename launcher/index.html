@@ -27,6 +27,8 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .btn { display: inline-block; margin-top: 16px; padding: 12px 22px; border: 0; border-radius: 12px; background: linear-gradient(180deg, #ffd56b, #d9a326); color: #1b1b1b; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
     .hidden { display: none; }
+    .btn.apk { display: block; margin: 22px auto 0; background: rgba(255,255,255,.12); color: #fff; border: 1.5px solid rgba(255,255,255,.4); max-width: 280px; }
+    .btn.apk.hidden { display: none; }
     .tip { margin-top: 28px; font-size: 13px; background: rgba(0,0,0,.22); border-radius: 12px; padding: 10px 12px; text-align: left; }
   </style>
 </head>
@@ -37,6 +39,7 @@
     <p id="msg">Sto cercando il tavolo da gioco…</p>
     <div class="spinner" id="spin"></div>
     <button class="btn hidden" id="retry">Riprova</button>
+    <a class="btn apk hidden" id="apk" href="https://github.com/simonemuliello010500-web/BurracoByMSF/releases/latest/download/Burraco.apk">📱 Scarica l'app per Android</a>
     <div class="tip hidden" id="tip">
       <b>Consiglio:</b> aggiungi questa pagina alla schermata Home (su iPhone: Condividi → <i>Aggiungi alla schermata Home</i>)
       per aprire Burraco come un'app.
@@ -93,6 +96,8 @@
     }
 
     $('retry').addEventListener('click', go);
+    // nel browser Android si propone l'app; dentro l'app (user agent "BurracoApp") no
+    if (/android/i.test(navigator.userAgent) && !/BurracoApp/.test(navigator.userAgent)) $('apk').classList.remove('hidden');
     if (/iphone|ipad/i.test(navigator.userAgent) && !navigator.standalone) $('tip').classList.remove('hidden');
     go();
   </script>

@@ -1,0 +1,59 @@
+name: App Android (APK)
+
+on:
+  push:
+    branches: [main]
+    paths: ['android-app/**', '.github/workflows/apk.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Progetto Android con Capacitor
+        working-directory: android-app
+        run: |
+          npm install --no-audit --no-fund
+          npx cap add android
+          # icone dell'app (sostituiscono quelle predefinite di Capacitor)
+          rm -rf android/app/src/main/res/mipmap-anydpi-v26
+          cp -r icons/* android/app/src/main/res/
+          # numero di versione crescente, così Android accetta gli aggiornamenti
+          sed -i "s/versionCode 1$/versionCode ${{ github.run_number }}/; s/versionName \"1.0\"/versionName \"1.${{ github.run_number }}\"/" android/app/build.gradle
+          grep -E "versionCode|versionName" android/app/build.gradle
+
+      - name: Compila e firma l'APK
+        working-directory: android-app
+        run: |
+          npx cap build android --androidreleasetype APK --signing-type apksigner \
+            --keystorepath "$PWD/burraco.p12" --keystorepass burraco-amici \
+            --keystorealias burraco --keystorealiaspass burraco-amici
+          apk=$(find android/app/build/outputs/apk/release -name '*.apk' | grep -v unsigned | head -1)
+          [ -n "$apk" ] || apk=$(find android/app/build/outputs/apk/release -name '*.apk' | head -1)
+          echo "APK: $apk"
+          cp "$apk" Burraco.apk
+          ls -la Burraco.apk
+
+      - name: Pubblica nelle Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-${{ github.run_number }}
+          name: Burraco per Android (versione 1.${{ github.run_number }})
+          make_latest: true
+          files: android-app/Burraco.apk
+          body: |
+            Scarica **Burraco.apk** qui sotto e aprilo dal telefono Android.
+            Se Android lo chiede, consenti l'installazione di app da questa fonte (browser o file).
+            L'app apre il gioco dalla pagina fissa https://simonemuliello010500-web.github.io/BurracoByMSF/

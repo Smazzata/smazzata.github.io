@@ -366,3 +366,12 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .meldview .mvcards { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; justify-content: center; }
 .meldview .mvcards .card { --cw: 52px; }
 @media (min-width: 760px) { .meldview .mvcards .card { --cw: 66px; } }
+
+/* ---------- Invito a scaricare l'app Android ---------- */
+.apkbanner {
+  display: flex; align-items: center; gap: 12px; margin: 12px 0; padding: 12px 14px; border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(242,193,78,.25), rgba(242,193,78,.1)); border: 1.5px solid rgba(242,193,78,.6);
+  color: #fff; text-decoration: none; line-height: 1.3; font-size: 14px;
+}
+.apkbanner img { width: 44px; height: 44px; border-radius: 10px; }
+.apkbanner b { font-size: 16px; }

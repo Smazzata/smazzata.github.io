@@ -1,0 +1,12 @@
+{
+  "name": "burraco-android",
+  "private": true,
+  "description": "Guscio Android (Capacitor) che apre Burraco Online dalla pagina d'ingresso fissa",
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/core": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0"
+  }
+}

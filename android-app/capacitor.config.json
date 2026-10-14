@@ -1,0 +1,11 @@
+{
+  "appId": "it.msf.burraco",
+  "appName": "Burraco",
+  "webDir": "www",
+  "appendUserAgent": "BurracoApp",
+  "backgroundColor": "#0f5132",
+  "server": {
+    "url": "https://simonemuliello010500-web.github.io/BurracoByMSF/",
+    "allowNavigation": ["*.trycloudflare.com", "simonemuliello010500-web.github.io"]
+  }
+}

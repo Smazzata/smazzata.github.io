@@ -344,6 +344,10 @@
     if (!S.connected) app.insertAdjacentHTML('afterbegin', '<div class="offline">Connessione al server…</div>');
   }
 
+  const APK_URL = 'https://github.com/simonemuliello010500-web/BurracoByMSF/releases/latest/download/Burraco.apk';
+  const IS_ANDROID = /android/i.test(navigator.userAgent);
+  const IN_APP = /BurracoApp/.test(navigator.userAgent);
+
   function homeHTML() {
     const fan = [{ r: 1, s: 'S' }, { r: 13, s: 'H' }, { r: 0, s: 'J' }, { r: 2, s: 'D' }, { r: 7, s: 'C' }]
       .map((c, i) => cardHTML({ ...c, id: -1 - i }, 'logo-card', `style="--i:${i - 2}"`)).join('');
@@ -359,6 +363,8 @@
         </div>
         ${S.pendingJoin ? '<p class="muted">Sei stato invitato al tavolo: scrivi il tuo nome e premi Entra.</p>' : ''}
       </div>
+      ${IS_ANDROID && !IN_APP ? `<a class="apkbanner" href="${APK_URL}">
+        <img src="icons/icon-192.png" alt=""><span><b>📱 Scarica l'app per Android</b><br>Installala e gioca a schermo intero</span></a>` : ''}
       <div class="panel">
         <h2>Regole e varianti</h2>
         <p class="muted">Ogni preset è un punto di partenza: quando crei una partita puoi modificare ogni singola regola.</p>

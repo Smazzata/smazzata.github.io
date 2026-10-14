@@ -91,3 +91,14 @@ for (const [name, [size, full]] of Object.entries(files)) {
   for (const dir of targets) fs.writeFileSync(path.join(dir, name), buf);
   console.log(`${name} (${size}px, ${buf.length} byte)`);
 }
+
+// icone dell'app Android (densità standard dei launcher)
+const dens = { mdpi: 48, hdpi: 72, xhdpi: 96, xxhdpi: 144, xxxhdpi: 192 };
+for (const [d, size] of Object.entries(dens)) {
+  const dir = path.join(root, 'android-app', 'icons', `mipmap-${d}`);
+  fs.mkdirSync(dir, { recursive: true });
+  const buf = render(size, false);
+  fs.writeFileSync(path.join(dir, 'ic_launcher.png'), buf);
+  fs.writeFileSync(path.join(dir, 'ic_launcher_round.png'), buf);
+  console.log(`android ${d} (${size}px)`);
+}
