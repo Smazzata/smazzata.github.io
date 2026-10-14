@@ -74,6 +74,17 @@ const step = (t) => console.log('✓ ' + t);
     assert((await B.call('setNick', { nick: 'Bruno' })).ok);
     step('nickname univoco con controllo disponibile / non disponibile');
 
+    // --- avatar e reazioni ---
+    assert(!(await A.call('setAvatar', { e: '💩', c: '#000' })).ok, 'avatar non previsto rifiutato');
+    assert((await A.call('setAvatar', { e: '🦊', c: '#64b5f6' })).ok);
+    await B.until((s) => s.room.seats.some((x) => x && x.avatar && x.avatar.e === '🦊'), 'avatar visibile al tavolo');
+    const reacted = new Promise((res) => B.sock.once('reaction', res));
+    assert((await A.call('react', { emoji: '👏' })).ok);
+    const re = await reacted;
+    assert(re.emoji === '👏' && re.seat === 0, 'reazione ricevuta');
+    assert(!(await A.call('react', { emoji: '🔥' })).ok, 'limite anti-raffica');
+    step('avatar personalizzato e reazioni rapide');
+
     // --- amici: richiesta, accettazione, stato online, invito ---
     const socialOf = (p) => new Promise((res) => p.call('social').then((r) => res(r.social)));
     assert(!(await A.call('friendRequest', { nick: 'Anna' })).ok, 'niente amicizia con se stessi');

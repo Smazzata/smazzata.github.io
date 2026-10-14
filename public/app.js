@@ -136,6 +136,21 @@
       <div class="row" style="justify-content:center"><button class="btn primary big" data-act="acceptInvite" data-code="${esc(code)}">Entra</button><button class="btn" data-act="closeModal">No grazie</button></div></div>`);
   });
   socket.on('state', ({ room, game }) => onState(room, game));
+  socket.on('reaction', ({ seat, emoji }) => {
+    const g = S.game;
+    if (!g) return;
+    const target = seat === g.you ? $('.handwrap') : $(`.seatchip[data-seat="${seat}"]`);
+    if (!target) return;
+    const r = target.getBoundingClientRect();
+    const b = document.createElement('div');
+    b.className = 'reaction';
+    b.textContent = emoji;
+    b.style.left = `${r.left + r.width / 2}px`;
+    b.style.top = `${r.top + (seat === g.you ? 0 : r.height / 2)}px`;
+    document.body.appendChild(b);
+    setTimeout(() => b.remove(), 2400);
+    if (seat !== g.you) Sound.play('select');
+  });
   socket.on('chat', (m) => {
     S.chat.push(m);
     if (S.chat.length > 100) S.chat.shift();
@@ -528,7 +543,12 @@
     if (!r.nick) { closeModal(); toast('Scegli prima il tuo nickname'); return; }
     const link = transferLink(r.code);
     const qr = qrDataUrl(link);
+    const av = r.avatar || { e: r.emoji[0], c: r.colors[0] };
     openModal('profile', `<h2>👤 ${esc(r.nick)}</h2>
+      <h4>Avatar</h4>
+      <div class="avpick">${avatarHTML(r.nick, 0, false, av)}
+        <div class="avgrid">${r.emoji.map((e) => `<button class="avopt ${e === av.e ? 'on' : ''}" data-act="pickAvatar" data-e="${e}" data-c="${av.c}">${e}</button>`).join('')}</div>
+        <div class="avcolors">${r.colors.map((c) => `<button class="avcol ${c === av.c ? 'on' : ''}" style="background:${c}" data-act="pickAvatar" data-e="${av.e}" data-c="${c}" aria-label="colore"></button>`).join('')}</div></div>
       <h4>Cambia nickname</h4>
       <form id="nickform" class="row"><input id="nickEdit" class="grow" maxlength="16" autocomplete="off" value="${esc(r.nick)}"><button class="btn primary">Salva</button></form>
       <div class="nickstatus" id="nickStatusEdit"></div>
@@ -578,7 +598,7 @@
   function friendsModal() {
     const so = S.social || { friends: [], reqIn: [], reqOut: [] };
     const inRoom = S.room && S.room.code;
-    const friend = (f) => `<div class="friend"><span class="dot ${f.online ? '' : 'off'}"></span>
+    const friend = (f) => `<div class="friend">${avatarHTML(f.nick, 0, false, f.avatar || { e: f.nick.charAt(0).toUpperCase(), c: '#9e9e9e' })}<span class="dot ${f.online ? '' : 'off'}"></span>
       <span class="grow"><b>${esc(f.nick)}</b><br><span class="muted small">${f.online ? (f.room ? (f.room === inRoom ? 'al tuo tavolo' : f.playing ? 'sta giocando' : 'in un tavolo') : 'online') : 'offline'}</span></span>
       ${inRoom && f.online && f.room !== inRoom ? `<button class="btn small primary" data-act="invite" data-nick="${esc(f.nick)}">Invita</button>` : ''}
       <button class="btn small ghost dark" data-act="unfriend" data-nick="${esc(f.nick)}" title="Rimuovi">✕</button></div>`;
@@ -624,7 +644,7 @@
         <div class="muted">Gioca con gli amici o contro il computer</div></div>
       <div class="panel">
         ${S.social && S.social.nick
-          ? `<div class="hello"><span>Ciao, <b>${esc(S.social.nick)}</b>!</span>
+          ? `<div class="hello"><span class="row">${avatarHTML(S.social.nick, 0, false, S.social.avatar || { e: S.social.nick.charAt(0).toUpperCase(), c: '#f2c14e' })}<span>Ciao, <b>${esc(S.social.nick)}</b>!</span></span>
               <span class="row"><button class="btn small" data-act="profile">👤 Profilo</button>
               <button class="btn small" data-act="friends">👥 Amici${S.social.reqIn.length ? ` <span class="pill">${S.social.reqIn.length}</span>` : ''}</button></span></div>`
           : `<label class="field"><span>Scegli il tuo nickname</span>
@@ -673,7 +693,8 @@
   }
 
   const SEAT_COLORS = ['#f2c14e', '#64b5f6', '#ef7d7d', '#81c784'];
-  function avatarHTML(name, seat, isBot) {
+  function avatarHTML(name, seat, isBot, av) {
+    if (av && !isBot) return `<span class="avatar emo" style="--c:${esc(av.c)}">${esc(av.e)}</span>`;
     const initial = esc((name || '?').trim().charAt(0).toUpperCase());
     return `<span class="avatar" style="--c:${SEAT_COLORS[seat % 4]}">${isBot ? '🤖' : initial}</span>`;
   }
@@ -690,7 +711,7 @@
       } else if (s.isBot && isHost) right = `<button class="btn small danger" data-act="removeSeat" data-seat="${i}">Togli</button>`;
       const team = r.n === 4 ? `<span class="teamtag">Coppia ${i % 2 === 0 ? 'A' : 'B'}</span>` : '';
       return `<div class="seat">
-        <div class="who">${s ? avatarHTML(s.name, i, s.isBot) : '<span class="avatar empty">?</span>'}
+        <div class="who">${s ? avatarHTML(s.name, i, s.isBot, s.avatar) : '<span class="avatar empty">?</span>'}
         <div>${s ? `<b>${esc(s.name)}</b>${me ? ' <span class="badge">tu</span>' : ''}${i === r.host ? ' <span class="badge">host</span>' : ''}${s.connected ? '' : ' <span class="muted">(offline)</span>'}` : '<span class="muted">Posto libero</span>'}<br>${team}</div>
         </div>${right}</div>`;
     }).join('');
@@ -844,7 +865,7 @@
     const rs = S.room && S.room.seats[seat];
     const off = rs && !rs.isBot && !rs.connected;
     return `<div class="seatchip pos-${pos} ${turn ? 'turn' : ''} ${partner ? 'partner' : ''} ${off ? 'offline' : ''}" data-seat="${seat}">
-      ${avatarHTML(p.name, seat, p.isBot)}
+      ${avatarHTML(p.name, seat, p.isBot, rs && rs.avatar)}
       <div class="sinfo"><b>${esc(p.name)}</b>
         <span class="smeta">${off ? '📴 offline · ' : ''}${partner ? 'compagno · ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` · ${g.cfg.pozzettoName} ✓` : ''}</span></div>
       <div class="minifan">${fan}</div>
@@ -913,6 +934,7 @@
     let actions = '';
     if (g.phase === 'handEnd') actions = '<button class="btn primary small" data-act="result">Risultati</button>';
     if (myTurn && r.hints) actions += '<button class="ico" data-act="hint" title="Suggerimento">💡</button>';
+    if (g.you >= 0) actions = '<button class="ico" data-act="reactPicker" title="Reazioni">😊</button>' + actions;
     if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';
     const sortLbl = { rank: '⇅ Valore', suit: '⇅ Seme', smart: '⇅ Giochi' }[S.sortMode] || '⇅ Ordina';
     actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;
@@ -935,6 +957,7 @@
         <span class="msg">${S.turnEnd && g.phase !== 'handEnd' && myTurn ? '<b class="cd" data-cd></b> ' : ''}${statusText(g)}</span>
         <div class="btns">${actions}</div>
       </div>
+      ${S.reactOpen ? `<div class="reactbar">${['👏', '😂', '😱', '🔥', '👍', '😡', '🙏', '😍'].map((e) => `<button data-act="react" data-e="${e}">${e}</button>`).join('')}</div>` : ''}
       <div class="handwrap" data-drop="hand"><div class="hand" id="hand">${handHTML(g)}</div></div>
     </div>`;
   }
@@ -1378,6 +1401,16 @@
       if (r.ok) { S.nickDraft = null; S.nickCheck = null; toast(`Benvenuto, ${r.nick}!`); render(); }
     },
     profile: profileModal,
+    async pickAvatar(el) { const r = await emit('setAvatar', { e: el.dataset.e, c: el.dataset.c }); if (r.ok) profileModal(); },
+    reactPicker() {
+      S.reactOpen = !S.reactOpen;
+      render();
+    },
+    async react(el) {
+      S.reactOpen = false;
+      render();
+      await emit('react', { emoji: el.dataset.e });
+    },
     async deleteProfile() {
       if (!confirm('Eliminare definitivamente il profilo? Nickname, amici e classifica andranno persi.')) return;
       const r = await emit('deleteProfile');

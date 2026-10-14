@@ -464,3 +464,21 @@ body[data-theme="notte"] .modal-box input, body[data-theme="notte"] .modal-box s
 body[data-theme="notte"] .friend { border-color: #3a413e; }
 body[data-theme="notte"] .modal-box .nickstatus .ok { color: #7ddc6f; }
 body[data-theme="notte"] .modal-box .nickstatus .ko { color: #ff8a80; }
+
+/* ---------- Avatar personalizzato e reazioni ---------- */
+.avatar.emo { font-size: 20px; color: initial; }
+.avpick { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.avpick > .avatar { width: 56px; height: 56px; font-size: 30px; }
+.avgrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.avopt { font-size: 22px; background: transparent; border: 2px solid transparent; border-radius: 10px; padding: 3px; }
+.avopt.on { border-color: var(--gold-2); background: #fff6dc; }
+.avcolors { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.avcol { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #aaa; }
+.avcol.on { box-shadow: 0 0 0 3px var(--gold-2); }
+.friend .avatar { width: 30px; height: 30px; font-size: 16px; }
+.hello .avatar { width: 34px; height: 34px; }
+.reactbar { display: flex; justify-content: center; gap: 4px; padding: 6px; background: rgba(0,0,0,.35); animation: fade .15s; }
+.reactbar button { font-size: 24px; background: rgba(255,255,255,.12); border: 0; border-radius: 12px; padding: 4px 8px; }
+.reaction { position: fixed; z-index: 92; font-size: 38px; transform: translate(-50%, -50%); pointer-events: none; animation: reactUp 2.4s ease-out forwards; filter: drop-shadow(0 4px 8px rgba(0,0,0,.4)); }
+@keyframes reactUp { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.4); } 12% { opacity: 1; transform: translate(-50%, -60%) scale(1.2); } 25% { transform: translate(-50%, -70%) scale(1); } 85% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -190%) scale(1); } }
+body[data-theme="notte"] .avopt.on { background: #4a3f1e; }

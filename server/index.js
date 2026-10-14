@@ -126,15 +126,17 @@ function roomOfToken(token) {
 
 /** Il nickname scelto diventa il nome mostrato nei tavoli e in classifica */
 function renamePlayer(token, nick) {
+  const sess = sessions.get(token) || {};
   for (const room of rooms.values()) {
     const seat = seatOfToken(room, token);
     if (seat < 0) continue;
-    room.seats[seat].name = nick;
-    if (room.game) room.game.players[seat].name = nick;
+    if (nick) room.seats[seat].name = nick;
+    room.seats[seat].avatar = sess.avatar || null;
+    if (room.game && nick) room.game.players[seat].name = nick;
     broadcast(room);
   }
   const e = leaderboard.get(token);
-  if (e) e.name = nick;
+  if (e && nick) e.name = nick;
 }
 
 function seatOfToken(room, token) {
@@ -145,7 +147,7 @@ function roomInfo(room) {
   return {
     code: room.code, host: room.seats.findIndex((s) => s && s.token === room.hostToken),
     rules: room.rules, n: room.n, preset: Rules.matchPreset(room.rules),
-    seats: room.seats.map((s) => (s ? { name: s.name, isBot: !!s.isBot, connected: s.isBot || isConnected(s.token) } : null)),
+    seats: room.seats.map((s) => (s ? { name: s.name, isBot: !!s.isBot, connected: s.isBot || isConnected(s.token), avatar: s.isBot ? null : s.avatar || null } : null)),
     started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
     hints: !!room.hints && humanCount(room) <= 1, humans: humanCount(room),
     music: room.music || null,
@@ -315,7 +317,7 @@ function joinRoom(socket, room) {
     if (room.game) throw new E.GameError('La partita è già iniziata');
     seat = room.seats.findIndex((s) => !s);
     if (seat < 0) throw new E.GameError('Il tavolo è pieno');
-    room.seats[seat] = { token, name: sess.name };
+    room.seats[seat] = { token, name: sess.name, avatar: sess.avatar || null };
   }
   if (socket.data.room && socket.data.room !== room.code) leaveRoom(socket);
   socket.join(room.code);
@@ -569,6 +571,19 @@ io.on('connection', (socket) => {
       room.turnCounter = (room.turnCounter || 0) + 1;
     }
     broadcast(room);
+  }));
+
+  // Reazioni rapide al tavolo (con un limite per evitare raffiche)
+  const REACTIONS = ['👏', '😂', '😱', '🔥', '👍', '😡', '🙏', '😍'];
+  socket.on('react', handler(({ emoji }) => {
+    const room = getRoom(socket);
+    const seat = seatOfToken(room, socket.data.token);
+    if (seat < 0) throw new E.GameError('Solo chi è seduto al tavolo può reagire');
+    if (!REACTIONS.includes(emoji)) throw new E.GameError('Reazione non valida');
+    const now = Date.now();
+    if (socket.data.lastReact && now - socket.data.lastReact < 1000) throw new E.GameError('Piano con le reazioni 🙂');
+    socket.data.lastReact = now;
+    io.to(room.code).emit('reaction', { seat, emoji });
   }));
 
   socket.on('chat', handler(({ text }) => {

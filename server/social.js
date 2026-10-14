@@ -13,6 +13,8 @@ const { GameError } = require('./engine');
 const NICK_RE = /^[A-Za-z0-9_.-]{3,16}$/;
 const CODE_ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RESERVED = new Set(['admin', 'host', 'bot', 'computer', 'burraco', 'tu', 'server']);
+const AVATAR_EMOJI = ['😀', '😎', '🤠', '🥳', '😇', '🤓', '🧐', '😺', '🐶', '🦊', '🐻', '🐼', '🐸', '🦁', '🐯', '🐵', '🦄', '🐙', '🦉', '🐢', '🌻', '🍀', '⭐', '🔥', '♠️', '♥️', '♦️', '♣️'];
+const AVATAR_COLORS = ['#f2c14e', '#64b5f6', '#ef7d7d', '#81c784', '#ba68c8', '#ffb74d', '#4dd0e1', '#e0e0e0'];
 
 module.exports = function createSocial({ io, sessions, isConnected, roomOfToken, renamePlayer, onDelete }) {
   const nickIndex = new Map(); // nick in minuscolo → token
@@ -80,10 +82,11 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     if (!s) return null;
     const entry = (t) => {
       const room = roomOfToken(t);
-      return { nick: nickOf(t), online: isConnected(t), room: room ? room.code : null, playing: !!(room && room.game) };
+      return { nick: nickOf(t), avatar: (sessions.get(t) || {}).avatar || null, online: isConnected(t), room: room ? room.code : null, playing: !!(room && room.game) };
     };
     return {
       nick: s.nick || null,
+      avatar: s.avatar || null,
       friends: s.friends.filter((t) => nickOf(t)).map(entry).sort((a, b) => b.online - a.online || a.nick.localeCompare(b.nick)),
       reqIn: s.reqIn.map(nickOf).filter(Boolean),
       reqOut: s.reqOut.map(nickOf).filter(Boolean),
@@ -128,10 +131,21 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       return { nick };
     }));
 
+    socket.on('setAvatar', handler(({ e, c }) => {
+      const token = me();
+      const s = sess(token);
+      if (!AVATAR_EMOJI.includes(e) || !AVATAR_COLORS.includes(c)) fail('Avatar non valido');
+      s.avatar = { e, c };
+      renamePlayer(token, null);
+      push(token);
+      pushFriends(token);
+      return { avatar: s.avatar };
+    }));
+
     socket.on('profile', handler(() => {
       const token = me();
       const s = sess(token);
-      return { nick: s.nick || null, code: s.nick ? ensureCode(token) : null, hasPassword: !!s.pw };
+      return { nick: s.nick || null, code: s.nick ? ensureCode(token) : null, hasPassword: !!s.pw, avatar: s.avatar || null, emoji: AVATAR_EMOJI, colors: AVATAR_COLORS };
     }));
 
     socket.on('regenCode', handler(() => {
@@ -192,7 +206,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       }
       if (s.nick) nickIndex.delete(s.nick.toLowerCase());
       if (s.code) codeIndex.delete(s.code);
-      delete s.nick; delete s.code; delete s.pw;
+      delete s.nick; delete s.code; delete s.pw; delete s.avatar;
       s.friends = []; s.reqIn = []; s.reqOut = []; s.name = 'Giocatore';
       if (onDelete) onDelete(token);
       push(token);
