@@ -11,10 +11,10 @@
   else root.BurracoScala40 = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
   const SCHEMA = [
-    { group: 'Partita', key: 'players', label: 'Giocatori', type: 'select', options: [[2, '2'], [3, '3'], [4, '4']] },
-    { group: 'Partita', key: 'target', label: 'Eliminato chi arriva a', type: 'select', options: [[101, '101 punti'], [201, '201 punti']] },
-    { group: 'Combinazioni', key: 'opening', label: 'Punti per aprire', type: 'select', options: [[40, '40'], [30, '30'], [50, '50']] },
-    { group: 'Combinazioni', key: 'maxJokers', label: 'Jolly per combinazione', type: 'select', options: [[1, 'al massimo 1'], [2, 'al massimo 2']] },
+    { group: 'Partita', key: 'players', label: 'Giocatori', type: 'select', choices: [[2, '2'], [3, '3'], [4, '4']] },
+    { group: 'Partita', key: 'target', label: 'Eliminato chi arriva a', type: 'select', choices: [[101, '101 punti'], [201, '201 punti']] },
+    { group: 'Combinazioni', key: 'opening', label: 'Punti per aprire', type: 'select', choices: [[40, '40'], [30, '30'], [50, '50']] },
+    { group: 'Combinazioni', key: 'maxJokers', label: 'Jolly per combinazione', type: 'select', choices: [[1, 'al massimo 1'], [2, 'al massimo 2']] },
     { group: 'Combinazioni', key: 'swapJoker', label: 'Si può prendere un jolly dal tavolo sostituendolo', type: 'bool' },
     { group: 'Combinazioni', key: 'pileNeedsOpen', label: 'Lo scarto si prende solo se si è aperto (o si apre subito con esso)', type: 'bool' },
   ];
@@ -27,7 +27,7 @@
       if (f.type === 'bool') out[f.key] = !!r[f.key];
       else {
         const v = Number(r[f.key]);
-        if (f.options.some(([o]) => o === v)) out[f.key] = v;
+        if (f.choices.some(([o]) => o === v)) out[f.key] = v;
       }
     }
     out.game = 'scala40';
@@ -120,7 +120,10 @@
   }
   function popcount(x) { let c = 0; while (x) { c += x & 1; x >>= 1; } return c; }
 
-  const PRESET = { id: 'scala40', name: 'Scala 40', tagline: 'Il classico italiano: apri con 40 punti, attacca ovunque, chi arriva a 101 è fuori.', rules: { ...DEFAULTS } };
+  const PRESET = {
+    id: 'scala40', name: 'Scala 40', tagline: 'Il classico italiano: apri con 40 punti, attacca ovunque, chi arriva a 101 è fuori.', rules: { ...DEFAULTS },
+    intro: '<p>La Scala 40 è il gioco di carte più diffuso in Italia insieme al Burraco: ognuno gioca per sé, si apre con almeno 40 punti e si cerca di restare senza carte prima degli altri.</p>',
+  };
 
   function describe(r) {
     return `<h3>Scala 40</h3>

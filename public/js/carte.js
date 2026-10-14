@@ -6,7 +6,8 @@
   /* ================= Carte ================= */
   const SUIT = { S: '♠', H: '♥', D: '♦', C: '♣' };
   const rankName = (r) => ({ 1: 'A', 11: 'J', 12: 'Q', 13: 'K' }[r] || String(r));
-  const isWild = (c) => c.r === 0 || c.r === 2;
+  // nella Scala 40 le matte sono solo i jolly
+  const isWild = (c) => c.r === 0 || (c.r === 2 && !isS40Game());
 
   const SUIT_NAME = { S: 'picche', H: 'cuori', D: 'quadri', C: 'fiori' };
   /* Stile "Realistiche": i semi disposti come nei mazzi tradizionali (x, y in % della carta) */

@@ -738,3 +738,9 @@ body[data-theme="notte"] .coachbox { background: #1b2733; border-color: #2d4257;
 .league .row:last-child { margin-bottom: 10px; }
 body[data-theme="notte"] .league { border-color: #3a413e; }
 body[data-theme="notte"] .league.open .lghead { background: #3a321a; }
+
+/* scelta del gioco e Scala 40 */
+.gamepick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.gamepick .preset b { font-size: 16px; }
+.scorebar .sc.out { opacity: .55; text-decoration: line-through; }
+.rteam .rbar.pen i { background: linear-gradient(90deg, #f2c14e, #d64545); }

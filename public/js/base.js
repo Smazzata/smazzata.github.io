@@ -22,11 +22,26 @@
     } catch (e) { return typeof io === 'undefined'; }
   })();
 
+  /* Regole del gioco scelto: Burraco (shared/rules.js) o Scala 40 (shared/scala40.js) */
+  const S40R = window.BurracoScala40;
+  const RX = {
+    isS40: (r) => !!r && r.game === 'scala40',
+    normalize: (r) => (r && r.game === 'scala40' ? S40R.normalize(r) : R.normalize(r)),
+    schema: (r) => (r && r.game === 'scala40' ? S40R.SCHEMA : R.SCHEMA),
+    presets: (r) => (r && r.game === 'scala40' ? [S40R.PRESET] : R.PRESETS),
+    matchPreset: (r) => (r && r.game === 'scala40' ? 'scala40' : R.matchPreset(r)),
+    describe: (r) => (r && r.game === 'scala40' ? S40R.describe(r) : R.describe(r)),
+    presetById: (id) => (id === 'scala40' ? S40R.PRESET : R.PRESETS.find((p) => p.id === id)),
+    gameName: (r) => (r && r.game === 'scala40' ? 'Scala 40' : 'Burraco'),
+  };
+  /** la partita in corso è di Scala 40? */
+  const isS40Game = () => !!(S.game && S.game.game === 'scala40');
+
   const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche', coach: true };
   const S = {
     token: store.get('bur_token', null),
     name: store.get('bur_name', ''),
-    rules: R.normalize(store.get('bur_rules', R.PRESETS[0].rules)),
+    rules: RX.normalize(store.get('bur_rules', R.PRESETS[0].rules)),
     prefs: (() => {
       const p = { ...DEFAULT_PREFS, ...store.get('bur_prefs', {}) };
       // vecchie scelte (automatico/giorno/notte) → chiaro/scuro

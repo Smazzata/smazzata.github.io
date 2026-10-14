@@ -31,6 +31,50 @@ function filesTests() {
 }
 
 /** Archivio: salvataggio e rilettura, scritture solo delle voci cambiate, importazione da stato.json */
+/** Scala 40: combinazioni e partite simulate tra computer (carte conservate, moviola, fine partita) */
+function scala40Tests() {
+  const S40 = require('../shared/scala40');
+  const E4 = require('./scala40');
+  const B4 = require('./scala40-bot');
+  const cfg = S40.normalize({});
+  const c = (r, s, id) => ({ id, r, s });
+  const J = (id) => ({ id, r: 0, s: 'J' });
+  assert(S40.analyzeMeld([c(1, 'H', 1), c(2, 'H', 2), c(3, 'H', 3)], cfg).points === 6, "A-2-3: l'Asso vale 1");
+  assert(S40.analyzeMeld([c(12, 'H', 1), c(13, 'H', 2), c(1, 'H', 3)], cfg).points === 31, "Q-K-A: l'Asso vale 11");
+  assert(!S40.analyzeMeld([c(13, 'H', 1), c(1, 'H', 2), c(2, 'H', 3)], cfg), 'niente giro K-A-2');
+  assert(!S40.analyzeMeld([c(7, 'H', 1), c(7, 'H', 2), c(7, 'D', 3)], cfg), 'tris con semi uguali vietato');
+  assert(!S40.analyzeMeld([c(10, 'H', 1), J(2), J(3)], cfg), 'al massimo un jolly');
+  assert(S40.analyzeMeld([c(2, 'S', 1), c(3, 'S', 2), c(4, 'S', 3)], cfg).wildCount === 0, 'il 2 non è una matta');
+  let hands = 0;
+  for (const n of [2, 3, 4]) {
+    for (let k = 0; k < 2; k++) {
+      const g = E4.createGame({ rules: { players: n }, players: Array.from({ length: n }, (_, i) => ({ name: 'B' + i, isBot: true })) });
+      let guard = 0;
+      while (!g.over && guard++ < 50000) {
+        if (g.phase === 'handEnd') {
+          hands++;
+          const h = JSON.parse(JSON.stringify(g.lastReplay.start));
+          Object.assign(h, { log: [], events: [], history: [] });
+          for (const x of g.lastReplay.actions) E4.apply(h, x.s, x.a);
+          assert.deepStrictEqual(h.handResult.teams.map((t) => t.total), g.handResult.teams.map((t) => t.total), 'moviola della Scala 40');
+          E4.nextHand(g);
+          continue;
+        }
+        const seat = g.turn, memo = {};
+        let steps = 0;
+        while (g.turn === seat && g.phase !== 'handEnd' && steps++ < 200) {
+          E4.apply(g, seat, B4.nextAction(g, seat, memo));
+          const total = g.stock.length + g.discard.length + g.players.reduce((a, p) => a + p.hand.length, 0) + g.teams.reduce((a, t) => a + t.melds.reduce((b, m) => b + m.cards.length, 0), 0);
+          assert.strictEqual(total, 108, 'Scala 40: carte non conservate');
+        }
+        assert(steps < 200, 'Scala 40: computer bloccato');
+      }
+      assert(g.over && g.winners.length >= 1, 'Scala 40: partita finita');
+    }
+  }
+  console.log(`Scala 40: combinazioni e ${hands} smazzate simulate OK`);
+}
+
 function storeTests() {
   const fs = require('fs');
   const os = require('os');
@@ -204,6 +248,7 @@ unitTests();
 trophyTests();
 leagueTests();
 storeTests();
+scala40Tests();
 filesTests();
 for (const p of Rules.PRESETS) for (const n of [4, 2, 3]) simulate(p.id, p.rules, n);
 // configurazioni casuali

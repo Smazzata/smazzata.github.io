@@ -1,5 +1,11 @@
 # Burraco Online — guida per Claude Code
 
+Giochi: **Burraco** e **Scala 40**. `server/games.js` è il registro dei giochi (motore, computer, coach, regole):
+il server sceglie il gioco da `rules.game` (senza = Burraco). Un nuovo gioco = motore con la stessa interfaccia
+(createGame, apply, isLegal, viewFor, nextHand, surrender, teamOf, note) + computer (nextAction, thinkMs) + regole condivise.
+Scala 40: `shared/scala40.js` (regole e analisi), `server/scala40.js`, `server/scala40-bot.js`; nel browser `RX` (in public/js/base.js)
+sceglie regole e preset del gioco.
+
 Webapp di Burraco multiplayer (Node.js + Express + Socket.IO, frontend HTML/CSS/JS senza build).
 Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice e scrivi i messaggi di commit in italiano.
 
@@ -7,7 +13,7 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 - `shared/rules.js` — schema delle regole modificabili, preset (Classico FIBUR, Reale, Buraco Aberto/Fechado), testo delle regole generato dalla configurazione. Condiviso server/browser (UMD).
 - `shared/melds.js` — analisi di scale/tris e divisione in più combinazioni (`partitionMelds`): il server valida, il browser fa l'anteprima.
 - `server/engine.js` — motore autoritativo, stato JSON puro; `apply()` è transazionale (in caso di errore ripristina). Le giocate NON si annullano; da vulnerabili una calata sotto i 75 punti è rifiutata.
-- `server/bot.js` — computer a tre livelli (`memo.level`: facile/normale/difficile).
+- `server/bot.js` — computer a quattro livelli (`memo.level`: facile/normale/difficile/esperto; l'esperto ricorda le carte raccolte, `g.known`).
 - `server/social.js` — profili: nickname univoco, codice personale/QR, password facoltativa (scrypt), amici, inviti, eliminazione profilo.
 - `server/index.js` — tavoli, posti, riconnessione via token, chat, musica Spotify, timer del turno, rivincita a voto, classifica; salva tutto in `data/stato.json` (anche ai riavvii); `/health` per la pagina d'ingresso.
 - `public/js/` — interfaccia divisa per sezioni (base, connessione, carte, ui, profilo, tutorial, schermate, tavolo,

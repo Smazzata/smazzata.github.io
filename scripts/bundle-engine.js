@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const MODULES = ['shared/rules', 'shared/melds', 'server/engine', 'server/bot', 'server/coach'];
+const MODULES = ['shared/rules', 'shared/melds', 'shared/scala40', 'server/engine', 'server/bot', 'server/coach', 'server/scala40', 'server/scala40-bot'];
 
 function bundle() {
   const defs = MODULES.map((name) => {
@@ -37,6 +37,11 @@ function bundle() {
   self.BurracoEngine = load('server/engine');
   self.BurracoBot = load('server/bot');
   self.BurracoCoach = load('server/coach');
+  // tutti i giochi: motore, computer e coach
+  self.BurracoGames = {
+    burraco: { E: self.BurracoEngine, Bot: self.BurracoBot, Coach: self.BurracoCoach },
+    scala40: { E: load('server/scala40'), Bot: load('server/scala40-bot'), Coach: { analyze: function () { return []; } } },
+  };
 })();
 `;
 }

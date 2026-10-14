@@ -65,7 +65,7 @@
       <div class="panel">
         <h2>Regole e varianti</h2>
         <p class="muted">Ogni preset è un punto di partenza: quando crei una partita puoi modificare ogni singola regola.</p>
-        <div class="presets">${R.PRESETS.map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>
+        <div class="presets">${R.PRESETS.concat([S40R.PRESET]).map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>
         <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si gioca nell'app</button><button class="btn ghost small" data-act="settings">⚙️ Aspetto e suoni</button><button class="btn ghost small" data-act="toggleTheme">${S.prefs.theme === 'scuro' ? '☀️ Tema chiaro' : '🌙 Tema scuro'}</button><button class="btn ghost small" data-act="stats">📊 Statistiche</button>${OFFLINE ? '' : '<button class="btn ghost small" data-act="leaders">🏆 Classifica</button><button class="btn ghost small" data-act="report">🐞 Segnala un problema</button>'}</div>
         <p class="muted small" style="margin:10px 0 0;text-align:center"><a href="privacy.html" style="color:inherit">🔒 Privacy: quali dati usiamo e come cancellarli</a></p>
       </div>
@@ -77,8 +77,10 @@
       <div class="row"><button class="btn ghost small" data-act="goHome">← Indietro</button></div>
       <h2>Nuova partita</h2>
       <div class="panel">
-        <h2>1. Scegli una base</h2>
-        ${presetsHTML(S.rules)}
+        <h2>1. Scegli il gioco</h2>
+        <div class="gamepick"><button class="preset ${RX.isS40(S.rules) ? '' : 'active'}" data-act="pickGame" data-game="burraco"><b>🃏 Burraco</b><span>A coppie o da soli: burraco, pozzetti e tante varianti</span></button>
+        <button class="preset ${RX.isS40(S.rules) ? 'active' : ''}" data-act="pickGame" data-game="scala40"><b>🂡 Scala 40</b><span>Ognuno per sé: apri con 40 punti, chi arriva a 101 è fuori</span></button></div>
+        ${RX.isS40(S.rules) ? '' : `<h2 style="margin-top:12px">Variante</h2>${presetsHTML(S.rules)}`}
         <details class="custom" ${S.customOpen ? 'open' : ''}>
           <summary>2. Personalizza le regole ${rulesStatus(S.rules)}</summary>
           ${rulesFormHTML(S.rules)}
@@ -125,7 +127,7 @@
         right = `<div class="row">${r.you >= 0 ? `<button class="btn small" data-act="sit" data-seat="${i}">Siedi qui</button>` : ''}
           ${isHost ? `<button class="btn small" data-act="addBot" data-seat="${i}">+ Computer</button>` : ''}</div>`;
       } else if (s.isBot && isHost) right = `<button class="btn small danger" data-act="removeSeat" data-seat="${i}">Togli</button>`;
-      const team = r.n === 4 ? `<span class="teamtag">Coppia ${i % 2 === 0 ? 'A' : 'B'}</span>` : '';
+      const team = r.n === 4 && !RX.isS40(r.rules) ? `<span class="teamtag">Coppia ${i % 2 === 0 ? 'A' : 'B'}</span>` : '';
       return `<div class="seat">
         <div class="who">${s ? avatarHTML(s.name, i, s.isBot, s.avatar) : '<span class="avatar empty">?</span>'}
         <div>${s ? `<b>${esc(s.name)}</b> ${lvlHTML(s.level)}${me ? ' <span class="badge">tu</span>' : ''}${i === r.host ? ' <span class="badge">host</span>' : ''}${s.connected ? '' : ' <span class="muted">(offline)</span>'}` : '<span class="muted">Posto libero</span>'}<br>${team}</div>

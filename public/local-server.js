@@ -47,13 +47,14 @@
       },
     };
 
-    const E = () => self.BurracoEngine;
-    const Bot = () => self.BurracoBot;
+    const GX = () => self.BurracoGames[room && room.rules && room.rules.game === 'scala40' ? 'scala40' : 'burraco'];
+    const E = () => GX().E;
+    const Bot = () => GX().Bot;
     const Rules = () => self.BurracoRules;
 
     function roomInfo() {
       return {
-        code: 'OFFLINE', host: 0, rules: room.rules, n: room.n, preset: Rules().matchPreset(room.rules),
+        code: 'OFFLINE', host: 0, rules: room.rules, n: room.n, preset: room.rules.game === 'scala40' ? 'scala40' : Rules().matchPreset(room.rules), game: room.rules.game === 'scala40' ? 'scala40' : 'burraco',
         seats: room.seats.map((s) => ({ name: s.name, isBot: !!s.isBot, connected: true, avatar: null })),
         started: !!room.game, ready: room.ready.slice(), botSpeed: room.botSpeed || 'normale',
         hints: !!room.hints, humans: 1, aids: room.aids !== false, music: null, spectators: [],
@@ -67,7 +68,7 @@
       // coach di fine smazzata (calcolato una volta)
       if (g && g.phase === 'handEnd' && g.lastReplay && room.coachKey !== g.handNo) {
         room.coachKey = g.handNo;
-        try { room.coachTips = self.BurracoCoach.analyze(E(), g.lastReplay, 0); } catch (e) { room.coachTips = []; }
+        try { room.coachTips = room.rules.game === 'scala40' ? null : self.BurracoCoach.analyze(E(), g.lastReplay, 0); } catch (e) { room.coachTips = []; }
       }
       fire('state', room ? { room: roomInfo(), game: g ? { ...E().viewFor(g, 0), coach: g.phase === 'handEnd' ? room.coachTips || null : null } : null } : { room: null, game: null });
       store.set(room);
@@ -131,7 +132,8 @@
           return {};
         case 'createRoom': {
           const R = Rules();
-          const rules = R.normalize(d.tutorial ? { ...R.PRESETS[0].rules, players: 2, target: 505 } : d.rules);
+          const rules = d.tutorial ? R.normalize({ ...R.PRESETS[0].rules, players: 2, target: 505 })
+            : d.rules && d.rules.game === 'scala40' ? self.BurracoScala40.normalize(d.rules) : R.normalize(d.rules);
           const free = BOT_NAMES.slice().sort(() => Math.random() - 0.5);
           room = {
             rules, n: rules.players, ready: [], botSpeed: 'normale', botLevel: 'normale', aids: true, hints: false,

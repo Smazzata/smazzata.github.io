@@ -18,8 +18,22 @@
   }
 
   async function act(type, extra = {}) {
+    if (type === 'add' && isS40Game() && extra.cardIds && extra.cardIds.length === 1) {
+      const g = S.game;
+      const m = g.teams.flatMap((t) => t.melds).find((x) => x.id === extra.meldId);
+      const card = g.hand.find((c) => c.id === extra.cardIds[0]);
+      if (m && card && card.r !== 0 && !S40R.analyzeMeld(m.cards.concat([card]), g.cfg.rules, m.type)) {
+        // non si attacca: forse prende il posto di un jolly
+        const swapped = m.cards.map((c, i) => (m.wild[i] ? card : c));
+        if (m.wild.some(Boolean) && m.cards.some((c, i) => m.wild[i] && S40R.analyzeMeld(m.cards.map((x, k) => (k === i ? card : x)), g.cfg.rules, m.type))) {
+          type = 'swap';
+          extra = { meldId: extra.meldId, cardId: card.id };
+        }
+        void swapped;
+      }
+    }
     const r = await emit('action', { type, ...extra });
-    if (r.ok && ['meld', 'add', 'discard', 'takePile', 'undo'].includes(type)) { S.selected.clear(); render(); }
+    if (r.ok && ['meld', 'add', 'swap', 'discard', 'takePile', 'undo'].includes(type)) { S.selected.clear(); render(); }
     return r;
   }
 
@@ -38,7 +52,7 @@
   function setRule(target, key, value) {
     const obj = target === 'edit' ? S.editRules : S.rules;
     obj[key] = value;
-    const n = R.normalize(obj);
+    const n = RX.normalize(obj);
     if (target === 'edit') { S.editRules = n; editRulesModal(); }
     else { S.rules = n; store.set('bur_rules', n); render(); }
   }
@@ -82,8 +96,8 @@
     },
     preset(el) {
       const p = presetById(el.dataset.id);
-      if (S.modalKind === 'editRules') { S.editRules = R.normalize({ ...p.rules, players: S.editRules.players }); editRulesModal(); return; }
-      S.rules = R.normalize({ ...p.rules, players: S.rules.players });
+      if (S.modalKind === 'editRules') { S.editRules = RX.normalize({ ...p.rules, players: S.editRules.players }); editRulesModal(); return; }
+      S.rules = RX.normalize({ ...p.rules, players: S.rules.players });
       store.set('bur_rules', S.rules);
       render();
     },
@@ -185,7 +199,13 @@
       const r = await emit('startDaily');
       if (r.ok) closeModal();
     },
-    editRules() { S.editRules = R.normalize(S.room.rules); editRulesModal(); },
+    editRules() { S.editRules = RX.normalize(S.room.rules); editRulesModal(); },
+    pickGame(el) {
+      const players = S.rules.players;
+      S.rules = el.dataset.game === 'scala40' ? S40R.normalize({ players }) : R.normalize({ ...R.PRESETS[0].rules, players });
+      store.set('bur_rules', S.rules);
+      render();
+    },
     async applyRules() { const r = await emit('configure', { rules: S.editRules }); if (r.ok) { closeModal(); toast('Regole aggiornate'); } },
     gameRules() { rulesModal(S.game.cfg.rules); },
     log() { renderLogModal(); render(); },
@@ -196,7 +216,11 @@
     draw() { act('draw'); },
     takePile() {
       const g = S.game;
-      if (g.cfg.pile === 'closed') {
+      const myT = g.teams.find((t) => t.members.includes(g.you));
+      if (isS40Game() && !myT.opened && g.cfg.rules.pileNeedsOpen) {
+        if (!S.selected.size) return toast(`Non hai ancora aperto: seleziona le carte con cui aprire (almeno ${g.cfg.opening} punti) insieme allo scarto, poi tocca lo scarto`, true);
+        act('takePile', { cardIds: selectedIds() });
+      } else if (g.cfg.pile === 'closed') {
         if (!S.selected.size) return toast('Seleziona le carte della mano da combinare con la carta in cima (oppure tocca una tua combinazione)', true);
         act('takePile', { cardIds: selectedIds() });
       } else act('takePile');

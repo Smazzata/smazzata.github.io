@@ -48,11 +48,14 @@
       return `<div class="rteam ${t.total === best ? 'win' : ''} ${t.members.includes(g.you) ? 'mine' : ''}">
         <div class="rname">${t.total === best ? '★ ' : ''}${esc(names)}</div>
         <div class="rpts ${t.total < 0 ? 'neg' : ''}" data-count="${t.total}" data-sign="1">${signed(t.total)}</div>
-        <div class="rbar"><i style="--from:${pct(tot - t.total)}%;--to:${pct(tot)}%"></i></div>
-        <div class="rtot"><b data-count="${tot}">${tot}</b> / ${g.cfg.target}</div></div>`;
+        ${isS40Game()
+          ? `<div class="rbar pen"><i style="--from:${pct(t.total - tot)}%;--to:${pct(-tot)}%"></i></div>
+        <div class="rtot">penalità <b data-count="${-tot}">${-tot}</b> / ${g.cfg.target}</div></div>`
+          : `<div class="rbar"><i style="--from:${pct(tot - t.total)}%;--to:${pct(tot)}%"></i></div>
+        <div class="rtot"><b data-count="${tot}">${tot}</b> / ${g.cfg.target}</div></div>`}`;
     }).join('');
     // righe del dettaglio: quelle tutte a zero non servono
-    const detail = (label, key, extra) => (hr.teams.some((t) => t[key]) || key === 'meldPts'
+    const detail = (label, key, extra) => (hr.teams.some((t) => t[key]) || (key === 'meldPts' && !isS40Game())
       ? `<tr><td>${label}</td>${hr.teams.map((t) => `<td class="${t[key] < 0 ? 'neg' : t[key] > 0 ? 'pos' : ''}">${signed(t[key])}${extra ? extra(t) : ''}</td>`).join('')}</tr>` : '');
     const kindCls = (b) => ({ clean: 'clean', semi: 'semi', dirty: 'dirty' }[b.kind] || 'real');
     // l'animazione si vede solo la prima volta (la finestra si ridisegna a ogni voto "pronto")
@@ -93,6 +96,8 @@
       if (k < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
+    // sicurezza: se l'animazione non parte (pagina in secondo piano) i numeri finali si scrivono comunque
+    setTimeout(() => { for (const x of targets) x.el.textContent = x.sign ? signed(x.v) : String(x.v); }, dur + 150);
   }
 
   function leftoverHTML(g, hr) {

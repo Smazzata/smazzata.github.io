@@ -618,7 +618,7 @@ function afterAction(room) {
   const g = room.game;
   room.lastActionAt = Date.now();
   // coach: a fine smazzata, consigli per ogni giocatore umano (li vede solo lui)
-  if (g && g.phase === 'handEnd' && g.lastReplay && g.lastReplay.handNo === g.handNo && room.coachKey !== `${room.gameSeq}:${g.handNo}`) {
+  if (g && Games.idOf(room.rules) === 'burraco' && g.phase === 'handEnd' && g.lastReplay && g.lastReplay.handNo === g.handNo && room.coachKey !== `${room.gameSeq}:${g.handNo}`) {
     room.coachKey = `${room.gameSeq}:${g.handNo}`;
     room.coachTips = {};
     room.seats.forEach((s, seat) => {

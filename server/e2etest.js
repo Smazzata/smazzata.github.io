@@ -494,6 +494,34 @@ const step = (t) => console.log('✓ ' + t);
     R1.sock.close(); R2.sock.close();
     step('resa (con il sì del compagno), partita terminata dall\'host, tavolo chiuso');
 
+    // Scala 40: tavolo contro il computer, apertura sotto i 40 rifiutata, smazzata intera, moviola
+    const Q = player('Scalatore'); await Q.hello(); { const rq = await Q.call('setNick', { nick: 'Scalatore' }); assert(rq.ok, 'nickname: ' + rq.error); }
+    assert((await Q.call('createRoom', { rules: { game: 'scala40', players: 2 }, vsBots: true })).ok);
+    const qs = await Q.until((st) => st.game, 'partita di Scala 40');
+    assert(qs.room.game === 'scala40' && qs.game.game === 'scala40' && qs.game.hand.length === 13, 'Scala 40 con 13 carte');
+    const endQ = Date.now() + 60000;
+    let triedLow = false;
+    while (!(Q.state.game && Q.state.game.phase === 'handEnd')) {
+      if (Date.now() > endQ) throw new Error('la smazzata di Scala 40 non finisce');
+      const g = Q.state.game;
+      if (g.turn === g.you && g.phase === 'draw') await Q.call('action', { type: 'draw' });
+      else if (g.turn === g.you && g.phase === 'play') {
+        if (!triedLow) {
+          // tre carte qualsiasi: o non sono un gioco o non arrivano a 40 punti
+          const r = await Q.call('action', { type: 'meld', cardIds: g.hand.slice(0, 3).map((c) => c.id) });
+          assert(!r.ok, 'apertura non valida rifiutata');
+          triedLow = true;
+        }
+        for (const c of g.hand.slice().reverse()) if ((await Q.call('action', { type: 'discard', cardId: c.id })).ok) break;
+      }
+      await wait(20);
+    }
+    const hrQ = Q.state.game.handResult;
+    assert(hrQ.teams.length === 2 && hrQ.teams.every((t) => t.total <= 0), 'penalità a fine smazzata');
+    assert((await Q.call('replay')).ok, 'moviola della Scala 40');
+    Q.sock.close();
+    step(`Scala 40: smazzata giocata, penalità ${hrQ.teams.map((t) => -t.total).join(' e ')}`);
+
     A.sock.close(); B.sock.close();
     console.log('\nProva multigiocatore: tutto OK');
   } finally {

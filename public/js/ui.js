@@ -26,18 +26,18 @@
     if (e.target.id === 'modal' || e.target.closest('.modal-close')) closeModal();
   });
 
-  function presetById(id) { return R.PRESETS.find((p) => p.id === id); }
+  function presetById(id) { return RX.presetById(id); }
 
   function rulesModal(rules, title, backToEdit = false) {
-    const pid = R.matchPreset(rules);
+    const pid = RX.matchPreset(rules);
     const p = pid && presetById(pid);
     openModal('rules', `<div class="rules-text">
       ${backToEdit ? '<button class="btn small" data-act="backEdit">← Torna alla modifica</button>' : ''}
       <h2>${esc(title || (p ? p.name : 'Regole personalizzate'))}</h2>
       ${p ? p.intro : '<p>Regole personalizzate per questa partita. Ecco il riepilogo completo:</p>'}
-      ${R.describe(rules)}
+      ${RX.describe(rules)}
       ${HOW_TO}
-      ${R.OTHER_VARIANTS}
+      ${RX.isS40(rules) ? '' : R.OTHER_VARIANTS}
     </div>`);
   }
 
@@ -57,7 +57,7 @@
   function rulesFormHTML(rules) {
     let html = '<div class="rules-form">';
     let group = null;
-    for (const f of R.SCHEMA) {
+    for (const f of RX.schema(rules)) {
       if (f.group !== group) { group = f.group; html += `<h4>${esc(group)}</h4>`; }
       const disabled = f.requires && !rules[f.requires];
       let input;
@@ -70,15 +70,15 @@
   }
 
   function presetsHTML(rules) {
-    const cur = R.matchPreset(rules);
-    return `<div class="presets">${R.PRESETS.map((p) => `
+    const cur = RX.matchPreset(rules);
+    return `<div class="presets">${RX.presets(rules).map((p) => `
       <button class="preset ${cur === p.id ? 'active' : ''}" data-act="preset" data-id="${p.id}">
         <b>${esc(p.name)}</b><span>${esc(p.tagline)}</span>
       </button>`).join('')}</div>`;
   }
 
   function rulesStatus(rules) {
-    const pid = R.matchPreset(rules);
+    const pid = RX.matchPreset(rules);
     const p = pid && presetById(pid);
     return p ? `<span class="badge gold">${esc(p.name)}</span>` : '<span class="badge gold">Regole personalizzate</span>';
   }

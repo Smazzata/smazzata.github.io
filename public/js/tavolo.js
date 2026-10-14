@@ -20,6 +20,7 @@
     const out = { canAdd: new Set(), newMeld: null };
     if (!myTeam || g.turn !== g.you) return out;
     if (S.room && S.room.aids === false) return out; // aiuti visivi disattivati dall'host
+    if (isS40Game()) return selectionPreviewS40(g, myTeam, out);
     const sel = orderedHand().filter((c) => S.selected.has(c.id));
     const closedDraw = g.phase === 'draw' && g.cfg.pile === 'closed' && g.discard.length;
     if (g.phase !== 'play' && !closedDraw) return out;
@@ -42,6 +43,34 @@
         const v = g.cfg.values;
         const pts = cards.reduce((sum, c) => sum + (c.r === 0 ? v.joker : c.r === 2 ? v.two : c.r === 1 ? v.ace : c.r >= 8 ? v.high : v.low), 0);
         if (pts < vul.min) { ok = false; label = `${pts}/${vul.min} punti`; }
+      }
+      out.newMeld = { ok, label };
+    }
+    return out;
+  }
+
+  /** Scala 40: si attacca a tutti i giochi (dopo aver aperto), un jolly si può sostituire, l'apertura vuole 40 punti */
+  function selectionPreviewS40(g, myTeam, out) {
+    const cfg = g.cfg.rules;
+    const sel = orderedHand().filter((c) => S.selected.has(c.id));
+    const top = g.discard[g.discard.length - 1];
+    const openDraw = g.phase === 'draw' && !myTeam.opened && cfg.pileNeedsOpen && top;
+    if (g.phase !== 'play' && !openDraw) return out;
+    if (!sel.length) return out;
+    const cards = openDraw ? [top, ...sel] : sel;
+    if (myTeam.opened && g.phase === 'play') {
+      for (const m of g.teams.flatMap((t) => t.melds)) {
+        if (S40R.analyzeMeld(m.cards.concat(cards), cfg, m.type)) out.canAdd.add(m.id);
+        else if (cards.length === 1 && cards[0].r !== 0 && cfg.swapJoker && m.cards.some((c, i) => m.wild[i] && S40R.analyzeMeld(m.cards.map((x, k) => (k === i ? cards[0] : x)), cfg, m.type))) out.canAdd.add(m.id);
+      }
+    }
+    if (cards.length >= 3) {
+      const groups = S40R.partitionMelds(cards, cfg);
+      let ok = !!groups;
+      let label = groups ? (groups.length > 1 ? `${groups.length} giochi` : groups[0].type === 'seq' ? 'scala' : 'tris') : '';
+      if (ok && !myTeam.opened) {
+        const pts = groups.reduce((s, an) => s + an.points, 0);
+        if (pts < cfg.opening) { ok = false; label = `${pts}/${cfg.opening} punti`; } else label += ` (${pts} punti)`;
       }
       out.newMeld = { ok, label };
     }
@@ -88,7 +117,7 @@
 
   /** Avviso di fine tallone: quanti giri restano prima che la smazzata finisca */
   function stockWarning(g) {
-    if (g.phase === 'handEnd') return null;
+    if (g.phase === 'handEnd' || isS40Game()) return null; // nella Scala 40 il tallone si rimescola
     if (g.lastTurn) return { level: 3, text: '🔔 Ultimo turno della smazzata!' };
     const r = g.cfg.rules;
     if (r.stockEnd === 'mortoToStock' && g.pozzetti.length) return null; // un pozzetto ricaricherà il tallone
@@ -169,7 +198,7 @@
     return `<div class="seatchip pos-${pos} ${turn ? 'turn' : ''} ${partner ? 'partner' : ''} ${off ? 'offline' : ''}" data-seat="${seat}">
       ${avatarHTML(p.name, seat, p.isBot, rs && rs.avatar)}
       <div class="sinfo"><b>${esc(p.name)} ${lvlHTML(rs && rs.level)}</b>
-        <span class="smeta">${off ? '📴 ' : ''}${partner ? '<span title="compagno">🤝</span> ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` <span class="pz-ok" title="${g.cfg.pozzettoName} preso">✓ ${g.cfg.pozzettoName}</span>` : ''}</span></div>
+        <span class="smeta">${p.out ? '❌ eliminato · ' : ''}${off ? '📴 ' : ''}${partner ? '<span title="compagno">🤝</span> ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` <span class="pz-ok" title="${g.cfg.pozzettoName} preso">✓ ${g.cfg.pozzettoName}</span>` : ''}</span></div>
       <div class="minifan">${fan}</div>
       ${turn ? (S.turnEnd ? '<span class="thinking cdchip" data-cd></span>' : '<span class="thinking"><i></i><i></i><i></i></span>') : ''}
     </div>`;
@@ -190,7 +219,8 @@
 
     // punteggi
     let scores;
-    if (g.n === 3) scores = g.players.map((p) => `<span class="sc ${p.seat === me ? 'me' : ''}">${esc(p.seat === me ? 'Tu' : p.name)} <b>${g.scores[p.seat]}</b></span>`).join('');
+    if (isS40Game()) scores = g.players.map((p) => `<span class="sc ${p.seat === me ? 'me' : ''} ${p.out ? 'out' : ''}" title="Penalità (eliminato a ${g.cfg.target})">${p.out ? '❌ ' : ''}${esc(p.seat === me ? 'Tu' : p.name)} <b>${-g.scores[p.seat]}</b></span>`).join('');
+    else if (g.n === 3) scores = g.players.map((p) => `<span class="sc ${p.seat === me ? 'me' : ''}">${esc(p.seat === me ? 'Tu' : p.name)} <b>${g.scores[p.seat]}</b></span>`).join('');
     else scores = g.teams.map((t) => `<span class="sc ${t === myTeam ? 'me' : ''}">${esc(teamName(g, t))} <b>${g.scores[t.members[0]]}</b></span>`).join('');
 
     const seats = seatPositions(g).map(([s, pos]) => seatHTML(g, s, pos, myTeam)).join('');
@@ -221,14 +251,18 @@
     const zone = (t) => {
       const mine = t === myTeam;
       const label = mine ? (t.members.length > 1 ? `Noi · ${esc(teamName(g, t))}` : 'I tuoi giochi') : esc(teamName(g, t));
-      const flags = [t.pozzettoTaken ? `${P} preso` : `${P} da prendere`];
+      const flags = isS40Game()
+        ? [g.players[t.members[0]].out ? 'eliminato' : t.opened ? 'ha aperto' : `deve aprire (${g.cfg.opening})`]
+        : [t.pozzettoTaken ? `${P} preso` : `${P} da prendere`];
       if (t.canClose) flags.push('può chiudere');
-      const targetable = mine && (playing || (canDraw && g.cfg.pile === 'closed'));
+      // nella Scala 40, dopo l'apertura, si attacca anche ai giochi degli altri
+      const s40open = isS40Game() && myTeam && myTeam.opened && playing;
+      const targetable = (mine && (playing || (canDraw && g.cfg.pile === 'closed'))) || s40open;
       const newSlot = mine && (playing || (canDraw && g.cfg.pile === 'closed'))
         ? `<div class="meld newmeld ${nm ? (nm.ok ? 'ok' : 'bad') : ''} ${S.hint && S.hint.type === 'meld' ? 'hinted' : ''}" data-drop="newmeld" ${playing ? 'data-act="meld"' : ''}><span>${newSlotText}</span></div>` : '';
       return `<div class="teamzone ${mine ? 'mine' : 'theirs'}">
         <div class="hdr"><b>${label}</b><span>${flags.join(' · ')}</span></div>
-        <div class="melds ${targetable ? 'targetable' : ''}">${t.melds.map((m) => meldHTML(m, mine, mine ? preview : null)).join('')}${newSlot}${!t.melds.length && !newSlot ? '<span class="empty">Nessuna combinazione</span>' : ''}</div>
+        <div class="melds ${targetable ? 'targetable' : ''}">${t.melds.map((m) => meldHTML(m, mine || s40open, mine || s40open ? preview : null)).join('')}${newSlot}${!t.melds.length && !newSlot ? '<span class="empty">Nessuna combinazione</span>' : ''}</div>
       </div>`;
     };
     const others = g.teams.filter((t) => t !== myTeam).map(zone).join('');
@@ -246,7 +280,7 @@
 
     return `<div class="game ${myTurn ? 'myturn' : ''}">
       <div class="topbar">
-        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : `<b>${r.slow ? '🐢 ' : ''}${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, si vince a ${g.cfg.target}">smazzata ${g.handNo}</span></span>
+        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : `<b>${r.slow ? '🐢 ' : ''}${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, ${isS40Game() ? `eliminato a ${g.cfg.target}` : `si vince a ${g.cfg.target}`}">${isS40Game() ? 'Scala 40 · ' : ''}smazzata ${g.handNo}</span></span>
         <button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
         ${OFFLINE ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}
         <button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>
