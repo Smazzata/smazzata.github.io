@@ -216,6 +216,7 @@
         const best = game.handResult && Math.max(...game.handResult.teams.map((t) => t.total));
         if (mine && mine.total === best) setTimeout(() => Sound.play('win'), 500);
         if (game.over && game.winners && game.winners.includes(game.you)) setTimeout(() => confetti(), 700);
+        if (game.over && room.series && room.series.champion && room.series.champion.includes(game.you)) setTimeout(() => confetti(260, 4500), 1500);
       } else if (game.phase !== 'handEnd' && S.modalKind === 'result') closeModal();
       else if (S.modalKind === 'result') showResult();
       document.title = game.turn === game.you && game.phase !== 'handEnd' ? '● Tocca a te · Burraco' : 'Burraco Online';
@@ -456,6 +457,7 @@
         : '<p class="muted small">Su questo dispositivo o browser le notifiche non sono disponibili.</p>'}
       <h4>Suoni</h4>
       <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
+      ${S.room && S.room.isHost && (!S.game || S.game.over) ? `<h4>Torneo (si imposta tra una partita e l'altra)</h4>${seriesPickHTML(S.room.series && S.room.series.bestOf)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Tempo per turno</h4>${turnTimeHTML(S.room.turnTime)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Bravura del computer</h4>${botLevelHTML(S.room.botLevel)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Velocità del computer</h4>${botSpeedHTML(S.room.botSpeed)}` : ''}
@@ -616,6 +618,66 @@
         <button class="btn small" data-act="unblock" data-nick="${esc(n)}">Sblocca</button></div>`).join('')}` : ''}`);
   }
 
+  /* ================= Impara a giocare ================= */
+  const mini = (r, s) => cardHTML({ id: -100 - r * 4 - 'SHDCJ'.indexOf(s), r, s }, 'tut');
+  const TUTORIAL = [
+    { t: 'Lo scopo', h: `<p>Si gioca in coppia (o da soli) con due mazzi e i jolly. Lo scopo è <b>calare combinazioni</b>,
+       fare dei <b>burraco</b> (combinazioni di almeno 7 carte), prendere il <b>pozzetto</b> e <b>chiudere</b> prima degli avversari.</p>
+       <div class="tutcards">${mini(7, 'H')}${mini(8, 'H')}${mini(9, 'H')}${mini(10, 'H')}${mini(11, 'H')}${mini(12, 'H')}${mini(13, 'H')}</div><p class="muted small">Un burraco: 7 carte in scala.</p>` },
+    { t: 'Il tuo turno', h: `<ol><li><b>Pesca</b>: tocca il tallone, oppure tocca gli scarti per prenderli <i>tutti</i>.</li>
+       <li><b>Cala</b>: seleziona le carte toccandole e tocca <b>＋</b> sul tavolo (oppure trascinale lì).</li>
+       <li><b>Scarta</b>: seleziona una carta e tocca gli scarti. Il turno finisce sempre con uno scarto.</li></ol>` },
+    { t: 'Le combinazioni', h: `<p><b>Scala</b>: almeno 3 carte in fila dello stesso seme.</p><div class="tutcards">${mini(4, 'S')}${mini(5, 'S')}${mini(6, 'S')}</div>
+       <p><b>Tris</b>: almeno 3 carte uguali.</p><div class="tutcards">${mini(9, 'H')}${mini(9, 'S')}${mini(9, 'D')}</div>
+       <p class="muted small">Puoi attaccare carte alle tue combinazioni in qualsiasi turno.</p>` },
+    { t: 'Le matte', h: `<p>Il <b>jolly</b> e i <b>2 (pinelle)</b> sostituiscono qualsiasi carta, ma al massimo <b>una per combinazione</b>.</p>
+       <div class="tutcards">${mini(5, 'C')}${cardHTML({ id: -199, r: 0, s: 'J' }, 'tut')}${mini(7, 'C')}</div>
+       <p>Un burraco senza matte è <b>pulito</b> (+200), con una matta è <b>sporco</b> (+100).</p>` },
+    { t: 'Il pozzetto', h: `<p>Quando finisci le carte prendi un <b>pozzetto</b>: 11 carte nuove con cui continuare. Ogni coppia ne prende uno.</p>
+       <p>Se a fine smazzata non l'hai preso: <b>−100 punti</b>.</p>` },
+    { t: 'Chiudere e vincere', h: `<p>Per <b>chiudere</b> devi aver preso il pozzetto, avere almeno un burraco e scartare l'ultima carta (non una matta): <b>+100</b>.</p>
+       <p>Contano le carte calate e i bonus; le carte rimaste in mano si sottraggono. Vince chi arriva per primo al punteggio stabilito.</p>
+       <p>Ora prova una partita di allenamento: il computer gioca piano e il pulsante 💡 ti suggerisce la mossa.</p>` },
+  ];
+
+  function tutorialModal(i = 0) {
+    const sl = TUTORIAL[i];
+    openModal('tutorial', `<div class="tutorial">
+      <div class="tutdots">${TUTORIAL.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</div>
+      <h2>${i + 1}. ${sl.t}</h2>${sl.h}
+      <div class="row" style="margin-top:14px">
+        ${i ? `<button class="btn" data-act="tutStep" data-i="${i - 1}">← Indietro</button>` : ''}
+        ${i < TUTORIAL.length - 1 ? `<button class="btn primary grow" data-act="tutStep" data-i="${i + 1}">Avanti →</button>`
+          : '<button class="btn primary grow big" data-act="practice">🎓 Partita di allenamento</button>'}
+      </div></div>`);
+  }
+
+  /** Consiglio dell'allenatore durante la partita di allenamento */
+  function coachTip(g) {
+    if (g.phase === 'handEnd') return 'Guarda il riepilogo: le carte calate e i burraco danno punti, quelle in mano li tolgono.';
+    if (g.turn !== g.you) return 'Ora gioca il computer: osserva cosa cala e cosa scarta.';
+    const myTeam = g.teams.find((t) => t.members.includes(g.you));
+    if (g.phase === 'draw') return g.discardCount > 1 ? 'Pesca dal tallone, oppure prendi tutti gli scarti se ti servono per una combinazione.' : 'Tocca il tallone per pescare una carta.';
+    const sel = S.selected.size;
+    if (myTeam && myTeam.canClose) return 'Puoi chiudere! Cala tutto quello che puoi e scarta l\'ultima carta.';
+    if (sel >= 3) return 'Se la casella ＋ dice "✓ Cala", toccala per calare queste carte.';
+    if (sel === 1) return 'Tocca gli scarti per scartare questa carta, oppure un tuo gioco per attaccarla.';
+    return 'Cerca 3 carte in scala dello stesso seme o 3 uguali e selezionale. Non sai cosa fare? Tocca 💡.';
+  }
+
+  function seriesHTML(r, g) {
+    const sr = r.series;
+    if (!sr) return '';
+    const label = (i) => (g && g.players[i] ? (i === g.you ? 'Tu' : g.players[i].name) : r.seats[i] ? r.seats[i].name : '?');
+    const groups = r.n === 4 ? [[0, 2], [1, 3]] : Array.from({ length: r.n }, (_, i) => [i]);
+    return `🏆 ${groups.map((gr) => `${gr.map(label).map(esc).join(' & ')} <b>${sr.wins[gr[0]]}</b>`).join(' · ')} <span class="muted small">(al meglio di ${sr.bestOf})</span>`;
+  }
+
+  function seriesPickHTML(cur) {
+    return `<div class="row">${[[1, 'Partita singola'], [3, 'Al meglio di 3'], [5, 'Al meglio di 5']]
+      .map(([v, l]) => `<button class="swatch ${(cur || 1) === v ? 'on' : ''}" data-act="series" data-val="${v}">${l}</button>`).join('')}</div>`;
+  }
+
   /* ================= Schermate ================= */
   function render() {
     if (S.drag && S.drag.started) { S.pendingRender = true; return; }
@@ -656,6 +718,7 @@
               <div class="row"><button class="btn primary grow" data-act="claimNick">Conferma nickname</button></div>
               <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a></p>`}
         <div class="row" style="margin-top:10px"><button class="btn primary grow big" data-act="goSetup">Nuova partita</button></div>
+        <div class="row" style="margin-top:8px"><button class="btn grow" data-act="quickMenu">⚡ Gioca subito</button><button class="btn grow" data-act="tutorial">🎓 Impara a giocare</button></div>
         <div class="row" style="margin-top:10px">
           <input type="text" id="joinCode" class="grow codein" maxlength="4" placeholder="Codice tavolo" value="${esc(S.pendingJoin)}">
           <button class="btn" data-act="join">Entra</button>
@@ -729,6 +792,7 @@
       </div>
       <div class="panel">
         <h2>Giocatori (${r.seats.filter(Boolean).length}/${r.n})</h2>
+        ${r.quick ? '<p class="muted">⚡ Tavolo veloce: la partita parte da sola appena il tavolo è pieno. Se non arriva nessuno, l\'host può riempirlo con il computer.</p>' : ''}
         <div class="seats">${seats}</div>
         ${isHost ? `<div class="row" style="margin-top:12px">
             ${full ? '' : '<button class="btn" data-act="fillBots">Riempi con il computer</button>'}
@@ -741,6 +805,7 @@
         <div class="row"><button class="btn small" data-act="music">🎵 Musica del tavolo${r.music ? ' (attiva)' : ''}</button></div>
         <div class="row" style="margin-top:8px"><button class="btn small" data-act="roomRules">📜 Leggi le regole</button>
         ${isHost ? '<button class="btn small" data-act="editRules">✏️ Modifica regole</button>' : ''}</div>
+        ${isHost ? `<h2 style="margin-top:14px">Torneo</h2>${seriesPickHTML(r.series && r.series.bestOf)}` : r.series ? `<p>🏆 Torneo al meglio di ${r.series.bestOf}</p>` : ''}
         ${isHost ? `<h2 style="margin-top:14px">Tempo per turno</h2>${turnTimeHTML(r.turnTime)}
           <p class="muted small">Allo scadere il gioco pesca e scarta al posto del giocatore.</p>` : ''}
         ${isHost ? `<h2 style="margin-top:14px">Bravura del computer</h2>${botLevelHTML(r.botLevel)}` : ''}
@@ -908,7 +973,7 @@
       </div>
       ${g.pozzetti.length ? `<div class="pozz"><div class="pz">${g.pozzetti.map((n, i) => backHTML('', `style="--l:${i}"`)).join('')}</div><span class="lbl">${g.pozzetti.length === 1 ? cap(P) : (P === 'morto' ? 'Morti' : 'Pozzetti')}</span></div>` : ''}
       <div class="pile ${(canDraw && g.discardCount && !g.mustDraw) || (playing && S.selected.size === 1) ? 'active' : ''} ${g.cfg.pile} ${S.hint && (S.hint.type === 'takePile' || S.hint.type === 'discard') ? 'hinted' : ''}" data-drop="discard" ${canDraw && !g.mustDraw ? 'data-act="takePile"' : playing ? 'data-act="discardSel"' : ''}>
-        <div class="pcards">${pileCards || '<div class="card slot"><span>Scarti</span></div>'}</div>
+        <div class="pcards">${pileCards || '<div class="card slot"></div>'}</div>
         <span class="lbl">Scarti${g.discardCount ? ' · ' + g.discardCount : ''}${g.cfg.pile === 'closed' ? ' (chiusi)' : ''}</span>
       </div>
     </div>`;
@@ -953,10 +1018,11 @@
         <button class="iconbtn" data-act="settings" title="Aspetto e suoni">⚙️</button>
         <button class="iconbtn" data-act="leave" title="Esci">⏏</button>
       </div>
-      <div class="scorebar">${scores}</div>
+      <div class="scorebar">${r.series ? `<span class="sc series">${seriesHTML(r, g)}</span>` : ''}${scores}</div>
       <div class="seats-row n${g.n} ${g.you < 0 ? 'spect' : ''}">${seats}</div>
       ${(() => { const w = stockWarning(g); return w ? `<div class="ticker warn w${w.level}">${w.text}</div>` : `<div class="ticker" title="Ultima mossa">${esc(lastMove(g))}</div>`; })()}
       <div class="felt" id="felt">${others}${center}${mineZone}</div>
+      ${r.tutorial && !S.coachOff ? `<div class="coach">🎓 ${coachTip(g)} <button class="ico" data-act="coachOff" title="Nascondi">✕</button></div>` : ''}
       <div class="statusbar ${myTurn ? 'on' : ''}">
         <span class="msg">${S.turnEnd && g.phase !== 'handEnd' && myTurn ? '<b class="cd" data-cd></b> ' : ''}${statusText(g)}</span>
         <div class="btns">${actions}</div>
@@ -1215,6 +1281,13 @@
     let footer;
     if (g.you < 0) {
       footer = g.over ? `<div class="winner">🏆 Vince ${esc(g.winners.map((s) => g.players[s].name).join(' & '))}!</div>` : '<p class="muted">Stai guardando: la prossima smazzata parte quando i giocatori sono pronti.</p>';
+    } else if (g.over && S.room.series) {
+      const sr = S.room.series;
+      const champ = sr.champion ? sr.champion.map((x) => (x === g.you ? 'Tu' : g.players[x].name)) : null;
+      footer = `<div class="winner">${champ ? `🏆 Campione del torneo: ${esc([...new Set(champ)].join(' & '))}!` : `Partita ${sr.games} di ${sr.bestOf} vinta da ${esc(g.winners.map((x) => (x === g.you ? 'Tu' : g.players[x].name)).join(' & '))}`}</div>
+        <p style="text-align:center">${seriesHTML(S.room, g)}</p>
+        <button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Hai votato ✓' : champ ? '🔁 Nuovo torneo' : '▶ Prossima partita del torneo'}</button>
+        ${imReady && waiting.length ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : ''}`;
     } else if (g.over) {
       footer = `<div class="winner">🏆 Vince ${esc(g.winners.map((s) => (s === g.you ? 'Tu' : g.players[s].name)).join(' & '))}!</div>
         <button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Rivincita: hai votato ✓' : '🔁 Rivincita'}</button>
@@ -1440,6 +1513,18 @@
       if (r.ok) { S.nickDraft = null; S.nickCheck = null; toast(`Benvenuto, ${r.nick}!`); render(); }
     },
     profile: profileModal,
+    tutorial() { tutorialModal(0); },
+    tutStep(el) { tutorialModal(Number(el.dataset.i)); },
+    practice() { if (!requireName()) return; closeModal(); emit('createRoom', { tutorial: true }); },
+    coachOff() { S.coachOff = true; render(); },
+    quickMenu() {
+      if (!requireName()) return;
+      openModal('quick', `<div class="result" style="text-align:center"><h2>⚡ Gioca subito</h2>
+        <p>Entri in un tavolo con chi sta cercando una partita adesso. Si parte appena il tavolo è pieno (oppure puoi riempirlo con il computer).</p>
+        <div class="row" style="justify-content:center"><button class="btn primary big" data-act="quick" data-n="2">In 2</button><button class="btn primary big" data-act="quick" data-n="4">In 4 (a coppie)</button></div></div>`);
+    },
+    async quick(el) { const r = await emit('quickPlay', { n: Number(el.dataset.n) }); if (r.ok) closeModal(); },
+    series(el) { emit('setSeries', { bestOf: Number(el.dataset.val) }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     async playerCard(el) {
       const r = await emit('playerCard', { nick: el.dataset.nick });
       if (!r.ok) return;

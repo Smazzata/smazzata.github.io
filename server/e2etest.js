@@ -223,6 +223,10 @@ const step = (t) => console.log('✓ ' + t);
     D2.sock.close();
     step('statistiche sul server, storico partite, scheda amico e classifica tra amici; blocco giocatore');
 
+    // mini-torneo: impostato tra una partita e l'altra, conta le vittorie
+    assert((await A.call('setSeries', { bestOf: 3 })).ok);
+    await B.until((s) => s.room.series && s.room.series.bestOf === 3, 'torneo al meglio di 3');
+
     // rivincita: serve il voto di tutti gli umani
     const seatsBefore = A.state.game.players.map((p) => p.name);
     assert((await A.call('ready')).ok);
@@ -233,6 +237,40 @@ const step = (t) => console.log('✓ ' + t);
     const ng = await A.until((s) => s.game && !s.game.over && s.game.handNo === 1 && s.game.scores.every((x) => x === 0), 'nuova partita');
     assert.deepStrictEqual(ng.game.players.map((p) => p.name), seatsBefore, 'stessi posti');
     step('rivincita con il voto di tutti, stessi posti');
+
+    // seconda partita del torneo: alla fine il conteggio delle vittorie sale
+    const end2 = Date.now() + 120000;
+    while (!(A.state.game && A.state.game.over)) {
+      if (Date.now() > end2) throw new Error('la seconda partita non finisce');
+      for (const p of [A, B]) {
+        const g = p.state.game;
+        if (g && g.phase === 'handEnd' && !g.over && !p.state.room.ready.includes(g.you)) await p.call('ready');
+      }
+      await wait(50);
+    }
+    const sr = (await A.until((s) => s.room.series && s.room.series.games === 1, 'torneo aggiornato')).room.series;
+    assert.strictEqual(sr.wins.reduce((a, b) => a + b, 0) >= 1, true, 'vittorie contate');
+    assert.strictEqual(sr.champion, null, 'dopo una partita su tre nessun campione');
+    step('mini-torneo: vittorie contate partita dopo partita');
+
+    // allenamento: Classico in 2, computer facile, suggerimenti attivi
+    const T = player('Tina'); await T.hello(); assert((await T.call('setNick', { nick: 'Tina' })).ok);
+    assert((await T.call('createRoom', { tutorial: true })).ok);
+    const ts = await T.until((s) => s.game, 'partita di allenamento');
+    assert(ts.room.tutorial && ts.room.hints && ts.room.botLevel === 'facile' && ts.room.n === 2, 'impostazioni dell\'allenamento');
+    T.sock.close();
+    step('allenamento: 2 giocatori, computer facile, suggerimenti attivi');
+
+    // gioca subito: due giocatori cercano un tavolo da 2 e la partita parte da sola
+    const Q1 = player('Quinto'), Q2 = player('Sesto');
+    await Q1.hello(); await Q2.hello();
+    assert((await Q1.call('setNick', { nick: 'Quinto' })).ok); assert((await Q2.call('setNick', { nick: 'Sesto' })).ok);
+    const q1 = await Q1.call('quickPlay', { n: 2 });
+    const q2 = await Q2.call('quickPlay', { n: 2 });
+    assert(q1.ok && q2.ok && q1.code === q2.code, 'stesso tavolo veloce');
+    await Q1.until((s) => s.game && s.room.quick === 2, 'partita veloce avviata');
+    Q1.sock.close(); Q2.sock.close();
+    step('gioca subito: tavolo veloce che parte da solo quando è pieno');
 
     A.sock.close(); B.sock.close();
     console.log('\nProva multigiocatore: tutto OK');

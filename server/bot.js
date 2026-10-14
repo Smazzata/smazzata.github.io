@@ -9,6 +9,7 @@
  * nextAction restituisce UNA azione alla volta, così il server può animarle.
  */
 const E = require('./engine');
+const { partitionMelds } = require('../shared/melds');
 
 function teamMelds(g, seat) {
   return E.teamOf(g, seat).melds;
@@ -112,6 +113,46 @@ function vulnerableOpening(g, seat, hand) {
   return null;
 }
 
+/**
+ * Pianificatore di chiusura: se la squadra può chiudere (o prendere il pozzetto),
+ * cerca una carta da scartare tale che tutte le altre si possano attaccare ai giochi
+ * o calare insieme. Restituisce la prima mossa del piano, oppure null.
+ */
+function closingAction(g, seat, hand) {
+  const team = E.teamOf(g, seat);
+  const pozzetto = E.canTakePozzetto(g, team);
+  if (!(pozzetto || E.canClose(g, team)) || hand.length < 2 || hand.length > 12) return null;
+  const forbidWild = !pozzetto && g.cfg.closeWildForbidden;
+  const discards = hand.filter((c) => !(forbidWild && E.isWild(c)))
+    .sort((a, b) => keepScore(g, seat, a) - keepScore(g, seat, b))
+    .slice(0, 5);
+  for (const d of discards) {
+    // simulazione leggera: solo le carte dei giochi, senza copiare la partita
+    const melds = team.melds.map((m) => ({ id: m.id, type: m.type, cards: m.cards.slice() }));
+    let rest = hand.filter((c) => c.id !== d.id);
+    let first = null;
+    let progress = true;
+    while (progress && rest.length) {
+      progress = false;
+      for (const c of rest.slice().sort((a, b) => E.isWild(a) - E.isWild(b))) {
+        const m = melds.find((mm) => E.analyzeMeld(mm.cards.concat([c]), g.cfg, mm.type));
+        if (!m) continue;
+        m.cards.push(c);
+        first = first || { type: 'add', meldId: m.id, cardIds: [c.id] };
+        rest = rest.filter((x) => x.id !== c.id);
+        progress = true;
+        break;
+      }
+    }
+    let plan = null;
+    if (!rest.length) plan = first;
+    else if (rest.length >= 3 && partitionMelds(rest, g.cfg)) plan = first || { type: 'meld', cardIds: rest.map((c) => c.id) };
+    // solo la prima mossa del piano passa dal motore (con tutte le regole)
+    if (plan && E.isLegal(g, seat, plan)) return plan;
+  }
+  return null;
+}
+
 function tryActions(g, seat, actions) {
   for (const a of actions) if (E.isLegal(g, seat, a)) return a;
   return null;
@@ -210,6 +251,12 @@ function nextAction(g, seat, memo = {}) {
   // fase di gioco: 0) da vulnerabili, apertura da almeno 75 punti con più combinazioni
   const opening = vulnerableOpening(g, seat, hand);
   if (opening) return opening;
+
+  // 0b) se si può chiudere o prendere il pozzetto, segue il piano per arrivarci
+  if (level !== 'facile') {
+    const closing = closingAction(g, seat, hand);
+    if (closing) return closing;
+  }
 
   // 1) attacchi naturali
   const melds = teamMelds(g, seat);

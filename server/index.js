@@ -154,6 +154,9 @@ function roomInfo(room) {
     spectators: (room.spectators || []).filter((t) => isConnected(t)).map((t) => (sessions.get(t) || {}).name || 'Ospite'),
     botLevel: room.botLevel || 'normale',
     turnTime: room.turnTime || 0,
+    tutorial: !!room.tutorial,
+    quick: room.quick || 0,
+    series: room.series || null,
     turnLeft: room.turnDeadline ? Math.max(0, room.turnDeadline - Date.now()) : null,
   };
 }
@@ -290,7 +293,22 @@ function recordLeaderboard(room) {
     leaderboard.set(s.token, e);
   });
   room.recordedHand = handKey;
+  if (g.over && room.recordedGame !== room.gameSeq) recordSeries(room);
   if (g.over) room.recordedGame = room.gameSeq;
+}
+
+/** Mini-torneo: conta le partite vinte da ogni posto; vince chi arriva per primo alla maggioranza */
+function recordSeries(room) {
+  const sr = room.series;
+  const g = room.game;
+  if (!sr || sr.champion) return;
+  sr.games++;
+  for (const s of g.winners) sr.wins[s]++;
+  const need = Math.ceil(sr.bestOf / 2);
+  const top = Math.max(...sr.wins);
+  if (top >= need || sr.games >= sr.bestOf) {
+    sr.champion = sr.wins.map((w, i) => (w === top ? i : -1)).filter((i) => i >= 0);
+  }
 }
 
 /** Statistiche pubblicabili di un giocatore (senza token) */
@@ -367,6 +385,7 @@ function joinRoom(socket, room) {
   socket.join(room.code);
   socket.data.room = room.code;
   sess.room = room.code;
+  if (room.quick && !room.game && room.seats.every(Boolean)) { startGame(room); return; }
   broadcast(room);
 }
 
@@ -438,19 +457,40 @@ io.on('connection', (socket) => {
     }
   }));
 
-  socket.on('createRoom', handler(({ rules, vsBots }) => {
-    const r = Rules.normalize(rules);
+  socket.on('createRoom', handler(({ rules, vsBots, tutorial }) => {
+    // allenamento: Classico in 2 contro un computer facile e lento, con i suggerimenti
+    const r = Rules.normalize(tutorial ? { ...Rules.PRESETS[0].rules, players: 2, target: 505 } : rules);
     const code = newCode();
     const room = {
       code, rules: r, n: r.players, hostToken: socket.data.token,
       seats: Array(r.players).fill(null), game: null, ready: new Set(), botTimer: null, botMemo: {},
     };
+    if (tutorial) Object.assign(room, { tutorial: true, hints: true, botLevel: 'facile', botSpeed: 'lenta' });
     rooms.set(code, room);
     joinRoom(socket, room);
+    if (tutorial) { fillBots(room); startGame(room); return; }
     if (vsBots) {
       fillBots(room);
       startGame(room);
     }
+  }));
+
+  socket.on('quickPlay', handler(({ n }) => {
+    n = Number(n) === 2 ? 2 : 4;
+    const sess = sessions.get(socket.data.token);
+    if (!sess || !sess.nick) throw new E.GameError('Scegli prima il tuo nickname');
+    let room = [...rooms.values()].find((r) => r.quick === n && !r.game && r.seats.some((s) => !s)
+      && seatOfToken(r, socket.data.token) < 0 && r.seats.some((s) => s && !s.isBot && isConnected(s.token)));
+    if (!room) {
+      const r = Rules.normalize({ ...Rules.PRESETS[0].rules, players: n });
+      room = {
+        code: newCode(), rules: r, n, hostToken: socket.data.token, quick: n,
+        seats: Array(n).fill(null), game: null, ready: new Set(), botTimer: null, botMemo: {},
+      };
+      rooms.set(room.code, room);
+    }
+    joinRoom(socket, room);
+    return { code: room.code };
   }));
 
   socket.on('joinRoom', handler(({ code }) => {
@@ -602,6 +642,16 @@ io.on('connection', (socket) => {
     };
   }));
 
+  socket.on('setSeries', handler(({ bestOf }) => {
+    const room = getRoom(socket);
+    requireHost(socket, room);
+    bestOf = Number(bestOf);
+    if (![1, 3, 5].includes(bestOf)) throw new E.GameError('Torneo non valido');
+    if (room.game && !room.game.over) throw new E.GameError('Si cambia il torneo tra una partita e l\'altra');
+    room.series = bestOf > 1 ? { bestOf, wins: Array(room.n).fill(0), games: 0, champion: null } : null;
+    broadcast(room);
+  }));
+
   socket.on('setBotLevel', handler(({ level }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
@@ -701,6 +751,7 @@ function fillBots(room) {
 }
 
 function startGame(room) {
+  if (room.series && room.series.champion) room.series = { ...room.series, wins: Array(room.n).fill(0), games: 0, champion: null };
   clearTimeout(room.botTimer);
   room.botTimer = null;
   room.game = E.createGame({
@@ -745,7 +796,7 @@ function saveNow() {
       leaderboard: [...leaderboard],
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
-        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [],
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series,
       })),
     };
     fs.mkdirSync(DATA_DIR, { recursive: true });
