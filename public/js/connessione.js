@@ -79,7 +79,26 @@
       ${started ? '<p class="muted">La partita è già iniziata: potrai entrare solo se si libera un posto.</p>' : ''}
       <div class="row" style="justify-content:center"><button class="btn primary big" data-act="acceptInvite" data-code="${esc(code)}">Entra</button><button class="btn" data-act="closeModal">No grazie</button></div></div>`);
   });
-  socket.on('state', ({ room, game }) => onState(room, game));
+  socket.on('state', ({ room, game }) => { onState(room, game); hideIntro(); });
+
+  /* ---------- Intro animata all'apertura ---------- */
+  const INTRO_AT = Date.now();
+  (() => {
+    const el = $('#intro');
+    if (!el) return;
+    // arrivo dalla pagina d'ingresso (stessa intro): il ventaglio è già aperto, si continua senza ripartire
+    if (/github\.io/.test(document.referrer)) el.classList.add('cont');
+    // collegamento lento: lo si dice, e dopo un po' si lascia comunque la schermata (con l'avviso di connessione)
+    setTimeout(() => { const m = $('#introMsg'); if (m && !S.connected) m.textContent = t('Connessione al server…'); }, 3500);
+    setTimeout(hideIntro, 12000);
+  })();
+  /** Toglie l'intro (dissolvenza) quando il gioco è pronto, lasciando finire l'animazione delle carte */
+  function hideIntro() {
+    const el = $('#intro');
+    if (!el || el.classList.contains('out')) return;
+    const min = el.classList.contains('cont') ? 400 : 1700;
+    setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 500); }, Math.max(0, min - (Date.now() - INTRO_AT)));
+  }
   socket.on('reaction', ({ seat, emoji }) => showSeatBubble(seat, emoji));
   /** Una nuvoletta (reazione o 🎤) sopra il posto di un giocatore */
   function showSeatBubble(seat, emoji) {

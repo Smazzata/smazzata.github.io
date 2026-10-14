@@ -207,3 +207,6 @@ Lingua · Language ‖ Language ‖ Idioma ‖ Idioma
 · {0} min fa ‖ · {0} min ago ‖ · hace {0} min ‖ · há {0} min
 · {0} giorni fa ‖ · {0} days ago ‖ · hace {0} días ‖ · há {0} dias
 · {0} ora fa ‖ · {0} hour ago ‖ · hace {0} hora ‖ · há {0} hora
+Mescolo le carte… ‖ Shuffling the cards… ‖ Barajando las cartas… ‖ Embaralhando as cartas…
+Sto cercando il tavolo da gioco… ‖ Looking for the game table… ‖ Buscando la mesa de juego… ‖ Procurando a mesa de jogo…
+Burraco · Scala 40 · Canasta · Scopa · Briscola ‖ Burraco · Scala 40 · Canasta · Scopa · Briscola ‖ Burraco · Scala 40 · Canasta · Escoba · Brisca ‖ Burraco · Scala 40 · Canastra · Escopa · Bisca

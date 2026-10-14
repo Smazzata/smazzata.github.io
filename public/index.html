@@ -10,9 +10,24 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="intro.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- intro animata all'apertura: resta finché il gioco è pronto (vedi hideIntro in js/connessione.js) -->
+  <div id="intro" class="intro" aria-hidden="true">
+    <div class="intro-fan">
+      <div class="ic" style="--i:0"><b>A</b><i>♠</i><em>♠</em></div>
+      <div class="ic red" style="--i:1"><b>K</b><i>♥</i><em>♥</em></div>
+      <div class="ic joker" style="--i:2"><b>★</b><em>★</em></div>
+      <div class="ic red" style="--i:3"><b>Q</b><i>♦</i><em>♦</em></div>
+      <div class="ic" style="--i:4"><b>J</b><i>♣</i><em>♣</em></div>
+    </div>
+    <h1 class="intro-title">Burraco</h1>
+    <p class="intro-sub">Burraco · Scala 40 · Canasta · Scopa · Briscola</p>
+    <div class="intro-load"><span>♠</span><span>♥</span><span>♣</span><span>♦</span></div>
+    <p class="intro-msg" id="introMsg">Mescolo le carte…</p>
+  </div>
   <div id="app"></div>
   <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-box">

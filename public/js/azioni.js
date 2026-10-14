@@ -254,6 +254,7 @@
     async applyRules() { const r = await emit('configure', { rules: S.editRules }); if (r.ok) { closeModal(); toast('Regole aggiornate'); } },
     gameRules() { rulesModal(S.game.cfg.rules); },
     log() { renderLogModal(); render(); },
+    zoomTeam(el) { S.zoomTeam = Number(el.dataset.team); zoomModal(); },
     quickChat(el) { emit('chat', { text: el.dataset.text }); },
     playVoice(el) { const m = S.chat[Number(el.dataset.i)]; if (m && m.voice) playVoice(m.voice); },
     scores: showScores,

@@ -320,7 +320,7 @@
       const newSlot = mine && (playing || (canDraw && g.cfg.pile === 'closed'))
         ? `<div class="meld newmeld ${nm ? (nm.ok ? 'ok' : 'bad') : ''} ${S.hint && S.hint.type === 'meld' ? 'hinted' : ''}" data-drop="newmeld" ${playing ? 'data-act="meld"' : ''}><span>${newSlotText}</span></div>` : '';
       return `<div class="teamzone ${mine ? 'mine' : 'theirs'}">
-        <div class="hdr"><b>${label}</b><span>${flags.join(' · ')}</span></div>
+        <div class="hdr" data-act="zoomTeam" data-team="${g.teams.indexOf(t)}" title="Tocca per vedere i giochi in grande"><b>${label} <i class="zoomi">🔍</i></b><span>${flags.join(' · ')}</span></div>
         <div class="melds ${targetable ? 'targetable' : ''}">${t.melds.map((m) => meldHTML(m, mine || s40open, mine || s40open ? preview : null)).join('')}${newSlot}${!t.melds.length && !newSlot ? '<span class="empty">Nessuna combinazione</span>' : ''}</div>
       </div>`;
     };
@@ -413,9 +413,11 @@
   function fitTable() {
     const felt = $('#felt');
     if (!felt) return;
+    const root = felt.parentElement;
+    const theirs = [...felt.querySelectorAll('.teamzone.theirs')];
     felt.classList.remove('compact');
-    felt.style.removeProperty('--mw');
-    felt.style.removeProperty('--pw');
+    root.classList.remove('tight1', 'tight2');
+    for (const el of [felt, ...theirs]) { el.style.removeProperty('--mw'); el.style.removeProperty('--pw'); }
     const fits = () => felt.scrollHeight <= felt.clientHeight + 1;
     if (fits()) {
       // c'è spazio libero: carte delle combinazioni e del tallone più grandi (fino a un limite)
@@ -432,21 +434,34 @@
       }
       return;
     }
+    /*
+     * Non ci sta: si recupera spazio un passo alla volta, tenendo grandi il più possibile le MIE carte.
+     * 1) tutte le combinazioni un po' più piccole; 2) righe sopra il tavolo più strette (riepilogo su una riga,
+     * posti degli avversari compatti); 3) solo le combinazioni degli avversari più piccole; 4) niente riepilogo;
+     * 5) le mie fino a un minimo leggibile; 6) ultima risorsa: combinazioni compattate (si tocca per vederle tutte).
+     */
     const cs = getComputedStyle(felt);
     let mw = parseFloat(cs.getPropertyValue('--mw')) || 30;
     let pw = parseFloat(cs.getPropertyValue('--pw')) || 42;
-    const shrink = (min) => {
-      while (!fits() && mw > min) {
-        mw -= 2;
-        pw = Math.max(32, pw - 2);
-        felt.style.setProperty('--mw', `${mw}px`);
-        felt.style.setProperty('--pw', `${pw}px`);
-      }
+    let tw = mw; // carte degli avversari
+    const setAll = () => {
+      felt.style.setProperty('--mw', `${mw}px`);
+      felt.style.setProperty('--pw', `${pw}px`);
+      for (const z of theirs) z.style.setProperty('--mw', `${Math.min(tw, mw)}px`);
     };
-    shrink(24);
+    const shrinkAll = (min) => { while (!fits() && mw > min) { mw -= 2; tw = Math.min(tw, mw); pw = Math.max(32, pw - 2); setAll(); } };
+    const shrinkTheirs = (min) => { while (!fits() && tw > min) { tw -= 2; setAll(); } };
+    shrinkAll(26);
+    if (fits()) return;
+    root.classList.add('tight1');
+    if (fits()) return;
+    if (theirs.length) { shrinkTheirs(20); if (fits()) return; }
+    root.classList.add('tight2');
+    if (fits()) return;
+    shrinkAll(22);
     if (fits()) return;
     felt.classList.add('compact');
-    shrink(17);
+    shrinkAll(17);
   }
 
   /** Proposta di resa nella mia squadra: il compagno accetta o rifiuta, chi propone può annullare */
@@ -461,7 +476,23 @@
       <button class="btn small danger" data-act="surrender" data-ok="1">Accetta</button><button class="btn small" data-act="surrenderCancel">No, giochiamo</button></div>`;
   }
 
+  /** Vista ingrandita dei giochi di una squadra (toccando il nome della squadra sul tavolo) */
+  function zoomModal() {
+    const g = S.game;
+    const t = g && g.teams[S.zoomTeam];
+    if (!t) { closeModal(); return; }
+    const myTeam = g.teams.find((x) => x.members.includes(g.you));
+    const mine = t === myTeam;
+    const playing = g.turn === g.you && g.phase === 'play';
+    const s40open = isS40Game() && myTeam && myTeam.opened && playing;
+    const canAttach = (mine || s40open) && playing && S.selected.size;
+    openModal('zoom', `<div class="zoomview"><h3>${mine ? 'I tuoi giochi' : esc(teamName(g, t))}</h3>
+      <p class="muted small">${canAttach ? 'Tocca un gioco per attaccare le carte selezionate' : 'Tocca un gioco per vederlo intero'}</p>
+      <div class="melds ${canAttach ? 'targetable' : ''}">${t.melds.map((m) => meldHTML(m, mine || s40open, null)).join('') || '<span class="empty">Nessuna combinazione</span>'}</div></div>`);
+  }
+
   function afterGameRender() {
+    if (S.modalKind === 'zoom') zoomModal();
     layoutHand();
     if (S.dealAnim) { S.dealAnim = false; dealAnimation(); }
     const hand = $('#hand');

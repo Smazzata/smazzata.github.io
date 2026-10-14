@@ -1,0 +1,47 @@
+/* Intro animata all'apertura (stessa grafica nella pagina d'ingresso, launcher/index.html):
+   le carte arrivano e si aprono a ventaglio, poi compare il titolo; i semi saltellano finché il gioco è pronto. */
+.intro {
+  position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 24px 16px; text-align: center; color: #fff; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: radial-gradient(ellipse at 50% 35%, #1f7a4d, #0f5132 55%, #072d1c);
+  transition: opacity .45s ease, transform .45s ease; overflow-y: auto;
+}
+.intro.out { opacity: 0; transform: scale(1.06); pointer-events: none; }
+.intro-fan { position: relative; width: 230px; height: 150px; animation: introFloat 3.2s ease-in-out 1.2s infinite; }
+.intro .ic {
+  position: absolute; left: 50%; bottom: 0; width: 72px; height: 102px; margin-left: -36px; border-radius: 9px;
+  background: linear-gradient(160deg, #fff, #f1ece0); color: #1b1b1b; box-shadow: 0 6px 16px rgba(0,0,0,.35);
+  transform-origin: 50% 125%; opacity: 0;
+  animation: introDeal .6s cubic-bezier(.2,.9,.25,1.15) calc(var(--i) * .12s + .1s) forwards;
+}
+.intro .ic b { position: absolute; top: 6px; left: 8px; font: 700 19px/1 Georgia, "Times New Roman", serif; }
+.intro .ic i { position: absolute; top: 27px; left: 9px; font-style: normal; font-size: 14px; line-height: 1; }
+.intro .ic em { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 42px; }
+.intro .ic.red { color: #c0392b; }
+.intro .ic.joker { background: linear-gradient(160deg, #fff7d6, #f2c14e); color: #7a4b00; }
+.intro-title {
+  font-family: Georgia, "Times New Roman", serif; font-size: 48px; margin: 26px 0 4px; line-height: 1.1;
+  background: linear-gradient(90deg, #f2c14e 0%, #fff6d5 25%, #f2c14e 50%, #fff6d5 75%, #f2c14e 100%); background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent; opacity: 0;
+  animation: introUp .7s ease .75s forwards, introShine 3s linear 1.5s infinite;
+}
+.intro-sub { margin: 0; color: #bcd6c8; font-size: 13px; opacity: 0; animation: introUp .6s ease 1s forwards; }
+.intro-load { margin-top: 26px; display: flex; justify-content: center; gap: 12px; font-size: 21px; }
+.intro-load span { display: inline-block; animation: introHop 1.1s ease-in-out infinite; }
+.intro-load span:nth-child(2) { animation-delay: .15s; color: #ff8c7a; }
+.intro-load span:nth-child(3) { animation-delay: .3s; }
+.intro-load span:nth-child(4) { animation-delay: .45s; color: #ff8c7a; }
+.intro-msg { margin: 10px 0 0; min-height: 1.3em; color: #bcd6c8; font-size: 13px; line-height: 1.45; }
+/* arrivo dalla pagina d'ingresso: il ventaglio è già aperto, nessun "salto" tra le due pagine */
+.intro.cont .ic, .intro.cont .intro-title, .intro.cont .intro-sub { animation-delay: 0s, 0s; animation-duration: .01s, 3s; }
+@keyframes introDeal {
+  from { opacity: 0; transform: translateY(170px) rotate(0deg) scale(.6); }
+  to { opacity: 1; transform: rotate(calc((var(--i) - 2) * 14deg)) translateY(-4px) scale(1); }
+}
+@keyframes introUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes introShine { to { background-position: -200% 0; } }
+@keyframes introFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes introHop { 0%, 60%, 100% { transform: translateY(0); opacity: .55; } 30% { transform: translateY(-9px); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .intro *, .intro { animation-duration: .01s !important; animation-iteration-count: 1 !important; animation-delay: 0s !important; transition: none !important; }
+}

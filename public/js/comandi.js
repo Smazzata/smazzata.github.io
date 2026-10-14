@@ -190,7 +190,8 @@
       const mine = meld.hasAttribute('data-meld');
       const myTurn = g.turn === g.you;
       // con carte selezionate nel proprio turno si attacca; altrimenti si mostrano tutte le carte del gioco
-      if (mine && myTurn && g.phase === 'play' && S.selected.size) act('add', { meldId, cardIds: selectedIds() });
+      const inZoom = !!meld.closest('.zoomview');
+      if (mine && myTurn && g.phase === 'play' && S.selected.size) { if (inZoom) closeModal(); act('add', { meldId, cardIds: selectedIds() }); }
       else if (mine && myTurn && g.phase === 'draw' && g.cfg.pile === 'closed') act('takePile', { meldId, cardIds: selectedIds() });
       else showMeld(meldId);
     }

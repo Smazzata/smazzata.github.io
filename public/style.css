@@ -861,3 +861,28 @@ body.vmelds .felt > .teamzone.theirs { flex: 1 1 auto; }
   padding: 12px 18px; border-radius: 999px; font-weight: 700; font-size: 15px; pointer-events: none; animation: voicepulse 1s ease-in-out infinite alternate; }
 @keyframes voicepulse { from { box-shadow: 0 0 0 0 rgba(231,76,60,.6); } to { box-shadow: 0 0 0 10px rgba(231,76,60,0); } }
 .voiceplay { padding: 2px 8px; }
+
+/* schermi piccoli: quando le carte del tavolo non ci stanno si stringono le righe intorno (vedi fitTable) */
+.tight1 .scorebar { padding-top: 3px; }
+.tight1 .seats-row { padding-top: 3px; gap: 4px; }
+.tight1 .seatchip { padding: 2px 7px 2px 2px; gap: 5px; border-radius: 12px; }
+.tight1 .seatchip .avatar { width: 26px; height: 26px; font-size: 14px; }
+.tight1 .seatchip .smeta .pz-ok { display: inline; margin-left: 4px; }
+.tight1 .recap { margin-top: 2px; padding: 2px 10px; line-height: 1.35; }
+.tight1 .recap div:nth-child(n+2) { display: none; }
+.tight1 .ticker { margin-top: 2px; padding: 2px 10px; }
+.tight1 .felt .teamzone { margin-top: 5px; padding: 4px 6px 6px; }
+.tight1 .felt .teamzone .hdr { margin-bottom: 3px; }
+.tight2 .recap { display: none; }
+.tight2 .felt .center { padding: 4px; }
+/* nome della squadra: si tocca per vedere i giochi in grande */
+.teamzone .hdr[data-act] { cursor: pointer; }
+.teamzone .hdr .zoomi { font-style: normal; font-size: .8em; opacity: .55; }
+.zoomview h3 { margin: 0 0 2px; }
+.zoomview .melds { --mw: 40px; display: flex; flex-wrap: wrap; gap: 14px 10px; align-items: flex-start; margin-top: 10px; }
+.tight2 .seatchip .avatar { display: none; }
+.tight2 .seatchip { padding: 2px 8px; }
+.tight2 .seatchip .sinfo { flex-direction: row; gap: 5px; align-items: baseline; }
+.tight2 .felt .center { gap: 8px; }
+.tight2 .seatchip .sinfo b { flex-shrink: 0; max-width: 72px; }
+.tight2 .seatchip .smeta { min-width: 0; }

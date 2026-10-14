@@ -10,6 +10,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="gioca/intro.css">
   <style>
     :root { --felt-1: #1f7a4d; --felt-2: #0f5132; --felt-3: #072d1c; --gold: #f2c14e; --muted: #bcd6c8; }
     * { box-sizing: border-box; }
@@ -35,11 +36,19 @@
   </style>
 </head>
 <body>
-  <main>
-    <img class="logo" src="icons/icon-512.png" alt="">
-    <h1>Burraco</h1>
-    <p id="msg">Sto cercando il tavolo da gioco…</p>
-    <div class="spinner" id="spin"></div>
+  <!-- intro animata (stessa grafica del gioco, gioca/intro.css): resta mentre si cerca il server -->
+  <main id="intro" class="intro">
+    <div class="intro-fan">
+      <div class="ic" style="--i:0"><b>A</b><i>♠</i><em>♠</em></div>
+      <div class="ic red" style="--i:1"><b>K</b><i>♥</i><em>♥</em></div>
+      <div class="ic joker" style="--i:2"><b>★</b><em>★</em></div>
+      <div class="ic red" style="--i:3"><b>Q</b><i>♦</i><em>♦</em></div>
+      <div class="ic" style="--i:4"><b>J</b><i>♣</i><em>♣</em></div>
+    </div>
+    <h1 class="intro-title">Burraco</h1>
+    <p class="intro-sub">Burraco · Scala 40 · Canasta · Scopa · Briscola</p>
+    <div class="intro-load" id="spin"><span>♠</span><span>♥</span><span>♣</span><span>♦</span></div>
+    <p class="intro-msg" id="msg">Sto cercando il tavolo da gioco…</p>
     <button class="btn hidden" id="retry">Riprova</button>
     <a class="btn offline hidden" id="offline" href="gioca/?offline=1">📴 Gioca senza internet contro il computer</a>
     <a class="btn apk hidden" id="apk" href="https://github.com/simonemuliello010500-web/BurracoByMSF/releases/latest/download/Burraco.apk">📱 Scarica l'app per Android</a>
