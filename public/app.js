@@ -210,7 +210,51 @@
   }
   const backHTML = (cls = '', attrs = '') => `<div class="card back ${cls}" ${attrs}></div>`;
 
+  /**
+   * Ordinamento "Giochi": combinazioni pronte (3+), poi quasi pronte (coppie, scale con un buco),
+   * poi carte sciolte, matte in fondo. Scelta golosa: prima i gruppi più lunghi.
+   */
+  function smartSort(cards) {
+    const allowSets = !S.game || S.game.cfg.rules.allowSets;
+    const nat = cards.filter((c) => !isWild(c));
+    const wilds = sortCards(cards.filter(isWild), 'suit');
+    const groups = [];
+    // scale: carte consecutive dello stesso seme (l'Asso vale sia 1 sia 14)
+    for (const s of ['S', 'H', 'C', 'D']) {
+      const bySlot = new Map();
+      for (const c of nat.filter((x) => x.s === s)) for (const p of c.r === 1 ? [1, 14] : [c.r]) if (!bySlot.has(p)) bySlot.set(p, c);
+      let run = [];
+      for (let p = 1; p <= 15; p++) {
+        const c = bySlot.get(p);
+        if (c && !run.includes(c)) run.push(c);
+        else { if (run.length >= 2) groups.push({ cards: run.slice(), gap: false }); run = c ? [c] : []; }
+      }
+      // quasi-scale con un buco (es. 5 e 7)
+      for (let p = 1; p <= 12; p++) {
+        const a = bySlot.get(p), b = bySlot.get(p + 2);
+        if (a && b && a !== b && !bySlot.has(p + 1)) groups.push({ cards: [a, b], gap: true });
+      }
+    }
+    if (allowSets) {
+      const byRank = new Map();
+      for (const c of nat) { if (!byRank.has(c.r)) byRank.set(c.r, []); byRank.get(c.r).push(c); }
+      for (const list of byRank.values()) if (list.length >= 2) groups.push({ cards: list, gap: false });
+    }
+    // i gruppi completi prima, poi i più lunghi; le quasi-scale per ultime
+    groups.sort((x, y) => (y.cards.length >= 3) - (x.cards.length >= 3) || x.gap - y.gap || y.cards.length - x.cards.length);
+    const used = new Set();
+    const out = [];
+    for (const gr of groups) {
+      if (gr.cards.some((c) => used.has(c.id))) continue;
+      gr.cards.forEach((c) => used.add(c.id));
+      out.push(...gr.cards);
+    }
+    const loose = sortCards(nat.filter((c) => !used.has(c.id)), 'suit');
+    return [...out, ...loose, ...wilds];
+  }
+
   function sortCards(cards, mode) {
+    if (mode === 'smart') return smartSort(cards);
     const suitOrder = { S: 0, H: 1, C: 2, D: 3 };
     const rk = (c) => (c.r === 1 ? 14 : c.r);
     return cards.slice().sort((a, b) => {
@@ -226,7 +270,7 @@
     const ids = game.hand.map((c) => c.id);
     const kept = sameHand ? S.handOrder.filter((id) => ids.includes(id)) : [];
     if (S.sortMode !== 'manual' || kept.length === 0) {
-      S.handOrder = sortCards(game.hand, S.sortMode === 'rank' ? 'rank' : 'suit').map((c) => c.id);
+      S.handOrder = sortCards(game.hand, ['rank', 'smart'].includes(S.sortMode) ? S.sortMode : 'suit').map((c) => c.id);
       if (S.sortMode === 'manual' && !sameHand) S.sortMode = 'suit';
       return;
     }
@@ -670,7 +714,7 @@
     if (g.phase === 'handEnd') actions = '<button class="btn primary small" data-act="result">Risultati</button>';
     if (myTurn && r.hints) actions += '<button class="ico" data-act="hint" title="Suggerimento">💡</button>';
     if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';
-    const sortLbl = S.sortMode === 'rank' ? '⇅ Valore' : S.sortMode === 'suit' ? '⇅ Seme' : '⇅ Ordina';
+    const sortLbl = { rank: '⇅ Valore', suit: '⇅ Seme', smart: '⇅ Giochi' }[S.sortMode] || '⇅ Ordina';
     actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;
 
     return `<div class="game ${myTurn ? 'myturn' : ''}">
@@ -1008,7 +1052,7 @@
     },
     undo() { act('undo'); },
     sort() {
-      S.sortMode = S.sortMode === 'suit' ? 'rank' : 'suit';
+      S.sortMode = { suit: 'rank', rank: 'smart' }[S.sortMode] || 'suit';
       store.set('bur_sort', S.sortMode);
       S.handOrder = sortCards(S.game.hand, S.sortMode).map((c) => c.id);
       render();
