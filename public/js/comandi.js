@@ -212,7 +212,7 @@
     const nat = m.cards.find((c) => !M.isWild(c));
     const what = m.type === 'seq'
       ? `Scala di ${nat ? SUIT[nat.s] : ''}`
-      : `Tris di ${nat ? rankName(nat.r) : ''}`;
+      : `${isS40Game() && m.length === 4 ? 'Poker' : 'Tris'} di ${nat ? rankName(nat.r) : ''}`;
     const owner = team.members.includes(g.you) ? 'La tua squadra' : esc(teamName(g, team));
     openModal('meld', `<div class="meldview">
       <h3>${what} · ${m.length} carte</h3>

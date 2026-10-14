@@ -819,3 +819,11 @@ body[data-theme="notte"] .tmatch { background: #2a302e; border-color: #3a413e; }
 .cbar .cval { text-align: right; font-variant-numeric: tabular-nums; }
 body[data-theme="notte"] .chart .grid { stroke: rgba(255,255,255,.12); }
 body[data-theme="notte"] .cbar .ctrack { background: rgba(255,255,255,.1); }
+
+/* Scala 40: poker completo, mazzetto coperto unico */
+.meld.poker { position: relative; padding-right: 6px; }
+.meld.poker .pstack { position: relative; display: inline-block; width: calc(var(--mw) + 6px); height: calc(var(--mw) * 1.42 + 6px); }
+.meld.poker .pstack .card { --cw: var(--mw); position: absolute; left: calc(var(--l) * 3px); top: calc(var(--l) * 3px); }
+.meld.poker .pstack b { position: absolute; left: 3px; top: 3px; width: var(--mw); height: calc(var(--mw) * 1.42); display: flex; align-items: center; justify-content: center;
+  font: 800 calc(var(--mw) * .55) Georgia, serif; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.6); z-index: 2; }
+.meld.poker .pstack.fresh .card:last-of-type { box-shadow: 0 0 0 2px #ffd34d, 0 0 9px rgba(255,211,77,.85); }

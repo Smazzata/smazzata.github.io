@@ -130,6 +130,14 @@
     const can = preview && preview.canAdd.has(m.id) ? 'can-add' : '';
     const hint = S.hint && S.hint.meldId === m.id ? 'hinted' : '';
     const fr = S.freshCards || new Set();
+    // Scala 40: un poker è completo (non si attacca più): mazzetto coperto unico; toccandolo si vedono le carte
+    if (isS40Game() && m.type === 'set' && m.length === 4) {
+      const nat = m.cards.find((c) => c.r !== 0);
+      const fresh = m.cards.some((c) => fr.has(c.id)) ? 'fresh' : '';
+      return `<div class="meld poker ${S.flashMeld === m.id ? 'flash' : ''} ${can} ${hint}" ${attrs} title="Poker${nat ? ' di ' + rankName(nat.r) : ''}: tocca per vedere le carte">
+        <span class="pstack ${fresh}">${backHTML('mini', 'style="--l:2"')}${backHTML('mini', 'style="--l:1"')}${backHTML('mini', 'style="--l:0"')}<b>${nat ? rankName(nat.r) : ''}</b></span>
+        <span class="tag">Poker${m.wild.some(Boolean) ? ' ★' : ''}</span></div>`;
+    }
     return `<div class="meld ${m.kind ? 'burraco ' + m.kind : ''} ${S.flashMeld === m.id ? 'flash' : ''} ${m.type === 'set' ? 'set' : ''} ${can} ${hint}" ${attrs} title="${esc(m.label || '')}">
       ${m.cards.map((c, i) => {
         // in modalità compatta si vedono solo le prime 2 carte e l'ultima
