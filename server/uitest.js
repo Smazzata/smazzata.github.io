@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 /*
  * Prova automatica dell'interfaccia: avvia un server di prova, apre Chrome/Edge senza finestra a misura
  * di telefono (375×812) e gioca toccando i pulsanti come una persona, tramite il protocollo di debug
@@ -92,7 +92,7 @@ const HELPERS = `
   const browser = spawn(findBrowser(), [
     '--headless=new', `--remote-debugging-port=${DEBUG_PORT}`, ...(process.env.CI ? ['--no-sandbox'] : []), `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check',
     '--window-size=375,812', '--force-device-scale-factor=2', '--lang=it-IT', '--autoplay-policy=no-user-gesture-required', 'about:blank',
-  ], { stdio: 'ignore' });
+  ], { stdio: 'ignore', env: { ...process.env, LANGUAGE: 'it', LANG: 'it_IT.UTF-8' } });
   let cdp;
   const errors = [];
   let shot = async () => {};
@@ -116,7 +116,9 @@ const HELPERS = `
     };
     const open = async (url) => { await cdp.send('Page.navigate', { url }); await wait(1500); await cdp.run(HELPERS); };
 
-    // 1. schermata iniziale e nickname
+    // 1. schermata iniziale e nickname (in italiano anche se il browser è in un'altra lingua)
+    await open(URL);
+    await cdp.run(`localStorage.setItem('bur_prefs', JSON.stringify({ lang: 'it' })); return true;`);
     await open(URL);
     const nick = await cdp.run(`
       const i = document.querySelector('#nick'); i.value = 'Robot_UI'; i.dispatchEvent(new Event('input', { bubbles: true }));
