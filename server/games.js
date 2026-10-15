@@ -7,6 +7,7 @@
  */
 const Rules = require('../shared/rules');
 const S40 = require('../shared/scala40');
+const RAM = require('../shared/ramino');
 const CAN = require('../shared/canasta');
 const SCO = require('../shared/scopa');
 const BRI = require('../shared/briscola');
@@ -26,6 +27,13 @@ const GAMES = {
     E: require('./scala40'), Bot: require('./scala40-bot'),
     normalize: (r) => S40.normalize(r),
     presetOf: () => 'scala40',
+  },
+  // Ramino: motore e computer della Scala 40 con le sue regole (nessun minimo per aprire)
+  ramino: {
+    id: 'ramino', name: 'Ramino',
+    E: require('./scala40'), Bot: require('./scala40-bot'),
+    normalize: (r) => RAM.normalize(r),
+    presetOf: () => 'ramino',
   },
   canasta: {
     id: 'canasta', name: 'Canasta',

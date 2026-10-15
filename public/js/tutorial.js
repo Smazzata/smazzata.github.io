@@ -37,6 +37,14 @@
       { t: 'Il turno', h: `<ol><li><b>Pesca</b> dal tallone (lo scarto si prende solo se lo usi subito).</li><li>Dopo aver aperto puoi <b>attaccare</b> ai giochi di tutti.</li><li><b>Scarta</b> una carta.</li></ol>
          <p>Se un gioco ha un jolly e tu hai la carta che sostituisce, puoi <b>prenderti il jolly</b>.</p>` },
     ] },
+    ramino: { name: '🧩 Ramino', slides: [
+      { t: 'Lo scopo', h: `<p>Ognuno gioca per sé con due mazzi e i jolly. Si cerca di <b>restare senza carte</b>: quelle che ti restano in mano sono punti di penalità, e chi arriva a 101 è fuori.</p>
+         <div class="tutcards">${mini(5, 'S')}${mini(6, 'S')}${mini(7, 'S')}${mini(8, 'S')}</div>` },
+      { t: 'Calare', h: `<p>Si calano <b>scale</b> dello stesso seme e <b>tris</b> di carte uguali di semi diversi. Nel Ramino <b>non c'è un minimo</b>: cali quando vuoi.</p>
+         <div class="tutcards">${mini(9, 'H')}${mini(9, 'S')}${mini(9, 'C')}</div>` },
+      { t: 'Il turno', h: `<ol><li><b>Pesca</b> dal tallone o prendi lo scarto in cima.</li><li><b>Cala</b> o <b>attacca</b> a qualsiasi gioco sul tavolo.</li><li><b>Scarta</b> una carta.</li></ol>
+         <p>Chiude chi resta senza carte. Se cali tutto in un solo turno (<b>chiusura in mano</b>) gli altri pagano il doppio!</p>` },
+    ] },
     canasta: { name: '🎴 Canasta', slides: [
       { t: 'Lo scopo', h: `<p>Due mazzi e i jolly. Si calano <b>tris</b> di carte uguali (non scale!) e si cerca di fare <b>canaste</b>: giochi di almeno 7 carte. Pulita (senza matte) <b>+500</b>, sporca <b>+300</b>.</p>
          <div class="tutcards">${mini(9, 'H')}${mini(9, 'S')}${mini(9, 'D')}${mini(9, 'C')}${mini(9, 'H')}${mini(9, 'S')}${mini(9, 'D')}</div>` },

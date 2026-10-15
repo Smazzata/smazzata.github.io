@@ -693,6 +693,16 @@ async function signup(p, nick, email = mailOf()) {
     Q.sock.close();
     step(`Scala 40: smazzata giocata, penalità ${hrQ.teams.map((t) => -t.total).join(' e ')}`);
 
+    // Ramino: si gioca come la Scala 40 ma con le sue regole e la sua classifica
+    const RM = player('Raminista'); await RM.hello(); { const rr = await signup(RM, 'Raminista'); assert(rr.ok, 'nickname: ' + rr.error); }
+    assert((await RM.call('createRoom', { rules: { game: 'ramino', players: 2 }, vsBots: true })).ok);
+    const rms = await RM.until((st) => st.game, 'partita di Ramino');
+    assert(rms.room.game === 'ramino' && rms.game.game === 'scala40' && rms.game.hand.length === 13 && rms.room.rules.opening === 0, 'Ramino: 13 carte, nessun minimo per aprire');
+    const lbR = await RM.call('leaderboard', { game: 'ramino' });
+    assert(lbR.ok && lbR.game === 'ramino', 'classifica del Ramino');
+    RM.sock.close();
+    step('Ramino: tavolo contro il computer, regole e classifica proprie');
+
     // Canasta: tavolo a coppie contro il computer, una smazzata intera
     const K = player('Canastaro'); await K.hello(); { const rk = await signup(K, 'Canastaro'); assert(rk.ok, 'nickname: ' + rk.error); }
     assert((await K.call('createRoom', { rules: { game: 'canasta', players: 4, target: 2000 }, vsBots: true })).ok);

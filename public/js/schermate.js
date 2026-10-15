@@ -151,7 +151,7 @@
 
   /** elenco dei giochi e delle varianti con la loro descrizione (prima stava nella schermata iniziale) */
   function gamesRulesModal() {
-    const list = R.PRESETS.concat([S40R.PRESET, CANR.PRESET, OTHER.scopa.PRESET, OTHER.scopa.PRESETS[1], OTHER.briscola.PRESET, OTHER.briscola5.PRESET, OTHER.tressette.PRESET, OTHER.rubamazzetto.PRESET]);
+    const list = R.PRESETS.concat([S40R.PRESET, OTHER.ramino.PRESET, CANR.PRESET, OTHER.scopa.PRESET, OTHER.scopa.PRESETS[1], OTHER.briscola.PRESET, OTHER.briscola5.PRESET, OTHER.tressette.PRESET, OTHER.rubamazzetto.PRESET]);
     openModal('gamesRules', `<h2>📖 Regole dei giochi</h2><p class="muted small">Tocca un gioco per leggerne le regole.</p>
       <div class="presets">${list.map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>`);
   }
@@ -159,7 +159,7 @@
   /** gioco scelto nella schermata "Nuova partita" (lo Scopone è una Scopa con un'altra distribuzione) */
   const pickedGame = (r) => (r.game === 'scopa' && r.deal && r.deal !== 3 ? 'scopone' : r.game || 'burraco');
 
-  const GAME_TILES = [['burraco', '🃏', 'Burraco'], ['scala40', '🪜', 'Scala 40'], ['canasta', '🧺', 'Canasta'],
+  const GAME_TILES = [['burraco', '🃏', 'Burraco'], ['scala40', '🪜', 'Scala 40'], ['ramino', '🧩', 'Ramino'], ['canasta', '🧺', 'Canasta'],
     ['scopa', '🧹', 'Scopa'], ['scopone', '🤝', 'Scopone'], ['briscola', '🍷', 'Briscola'],
     ['briscola5', '🖐️', 'Briscola in 5'], ['tressette', '3️⃣', 'Tressette'], ['rubamazzetto', '🦝', 'Rubamazzetto']];
 

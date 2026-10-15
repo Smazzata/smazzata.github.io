@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const MODULES = ['shared/rules', 'shared/melds', 'shared/scala40', 'shared/canasta', 'shared/scopa', 'shared/briscola', 'shared/tressette', 'shared/rubamazzetto', 'shared/briscola5', 'server/engine', 'server/bot', 'server/scala40', 'server/scala40-bot', 'server/canasta', 'server/canasta-bot', 'server/scopa', 'server/scopa-bot', 'server/briscola', 'server/briscola-bot', 'server/tressette', 'server/tressette-bot', 'server/rubamazzetto', 'server/rubamazzetto-bot', 'server/briscola5', 'server/briscola5-bot'];
+const MODULES = ['shared/rules', 'shared/melds', 'shared/scala40', 'shared/ramino', 'shared/canasta', 'shared/scopa', 'shared/briscola', 'shared/tressette', 'shared/rubamazzetto', 'shared/briscola5', 'server/engine', 'server/bot', 'server/scala40', 'server/scala40-bot', 'server/canasta', 'server/canasta-bot', 'server/scopa', 'server/scopa-bot', 'server/briscola', 'server/briscola-bot', 'server/tressette', 'server/tressette-bot', 'server/rubamazzetto', 'server/rubamazzetto-bot', 'server/briscola5', 'server/briscola5-bot'];
 
 function bundle() {
   const defs = MODULES.map((name) => {
@@ -40,6 +40,7 @@ function bundle() {
   self.BurracoGames = {
     burraco: { E: self.BurracoEngine, Bot: self.BurracoBot },
     scala40: { E: load('server/scala40'), Bot: load('server/scala40-bot') },
+    ramino: { E: load('server/scala40'), Bot: load('server/scala40-bot') },
     canasta: { E: load('server/canasta'), Bot: load('server/canasta-bot') },
     scopa: { E: load('server/scopa'), Bot: load('server/scopa-bot') },
     briscola: { E: load('server/briscola'), Bot: load('server/briscola-bot') },

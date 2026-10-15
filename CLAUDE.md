@@ -3,7 +3,7 @@
 Nome dell'app: **Smazzata** (giochi di carte: Burraco, Scala 40, Canasta, Scopa, Briscola). Il nome del progetto su GitHub resta
 `BurracoByMSF`: da lui dipendono l'indirizzo fisso della pagina d'ingresso e il link degli aggiornamenti dell'APK, non cambiarlo.
 
-Giochi: **Burraco**, **Scala 40**, **Canasta** e con le carte italiane **Scopa** (anche Scopone), **Briscola**, **Briscola in 5** (chiamata, asta e socio segreto), **Tressette**, **Rubamazzetto**
+Giochi: **Burraco**, **Scala 40**, **Ramino** (`shared/ramino.js`: motore e computer della Scala 40, nessun minimo per aprire, `rules.game: 'ramino'`), **Canasta** e con le carte italiane **Scopa** (anche Scopone), **Briscola**, **Briscola in 5** (chiamata, asta e socio segreto), **Tressette**, **Rubamazzetto**
 (`shared/<gioco>.js` regole condivise, `server/<gioco>.js` motore, `server/<gioco>-bot.js` computer). Le carte italiane
 hanno i semi in minuscolo (d, c, s, b); i motori a prese espongono `presa: true` e il client usa `presaCenterHTML`. `server/games.js` è il registro dei giochi (motore, computer, regole):
 il server sceglie il gioco da `rules.game` (senza = Burraco). Un nuovo gioco = motore con la stessa interfaccia

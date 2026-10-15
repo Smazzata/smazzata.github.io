@@ -93,3 +93,10 @@ Rivincita: stessi posti e stesse regole, si riparte quando tutti la premono. Tor
 {0} ha riportato il tavolo nella sala d'attesa ‖ {0} took the table back to the waiting room ‖ {0} ha vuelto a llevar la mesa a la sala de espera ‖ {0} levou a mesa de volta à sala de espera
 La partita non è ancora finita ‖ The game is not over yet ‖ La partida aún no ha terminado ‖ A partida ainda não terminou
 Non disponibile qui ‖ Not available here ‖ No disponible aquí ‖ Não disponível aqui
+Ramino ‖ Rummy ‖ Rummy ‖ Rummy
+🧩 Ramino ‖ 🧩 Rummy ‖ 🧩 Rummy ‖ 🧩 Rummy
+Il Rummy all'italiana: scale e tris, si cala quando si vuole, chi arriva a 101 è fuori. ‖ Italian Rummy: runs and sets, meld whenever you like, reach 101 and you are out. ‖ El Rummy a la italiana: escaleras y tríos, bajas cuando quieras, quien llega a 101 queda fuera. ‖ O Rummy à italiana: sequências e trincas, baixe quando quiser, quem chega a 101 está fora.
+Primo Ramino ‖ First Rummy ‖ Primer Rummy ‖ Primeiro Rummy
+Vinci una partita di Ramino ‖ Win a game of Rummy ‖ Gana una partida de Rummy ‖ Vença uma partida de Rummy
+🎓 Allenamento a Ramino ‖ 🎓 Rummy practice ‖ 🎓 Práctica de Rummy ‖ 🎓 Treino de Rummy
+2. Calare ‖ 2. Melding ‖ 2. Bajar ‖ 2. Baixar

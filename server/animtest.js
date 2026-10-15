@@ -69,6 +69,7 @@ const PROBE = `
 const GAMES = [
   ['burraco', '{ ...R.PRESETS[0].rules, players: 2 }'],
   ['scala40', "{ game: 'scala40', players: 2 }"],
+  ['ramino', "{ game: 'ramino', players: 2 }"],
   ['canasta', "{ game: 'canasta', players: 2 }"],
   ['scopa', "{ game: 'scopa', players: 2 }"],
   ['scopone', 'OTHER.scopa.PRESETS[1].rules'],

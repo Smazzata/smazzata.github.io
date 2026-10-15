@@ -162,6 +162,21 @@ function presaTests() {
   const RMB = require('../shared/rubamazzetto');
   const mv = RMB.moves(c(5, 'd', 1), [c(5, 'c', 2)], [[], [c(9, 'b', 3), c(5, 's', 4)]], 0);
   assert.deepStrictEqual(mv.map((m) => m.kind), ['steal', 'table'], 'si può rubare o prendere dal tavolo');
+  // Ramino: motore e computer della Scala 40, ma nessun minimo per aprire e scarto sempre libero
+  {
+    const GR = require('./games').GAMES.ramino;
+    const rr = GR.normalize({ players: 3, opening: 40, pileNeedsOpen: true });
+    assert(rr.game === 'ramino' && rr.opening === 0 && !rr.pileNeedsOpen, 'il Ramino non ha minimo per aprire');
+    for (const n of [2, 4]) {
+      const g = GR.E.createGame({ rules: GR.normalize({ players: n }), players: Array.from({ length: n }, (_, i) => ({ name: 'R' + i, isBot: true })) });
+      let guard = 0;
+      while (!g.over && guard++ < 30000) {
+        if (g.phase === 'handEnd') { GR.E.nextHand(g); continue; }
+        GR.E.apply(g, g.turn, GR.Bot.nextAction(g, g.turn, { level: guard % 2 ? 'difficile' : 'normale' }));
+      }
+      assert(g.over, 'Ramino: la partita finisce');
+    }
+  }
   // Tressette: si risponde al seme; il Tre batte l'Asso; accusi
   const TRS = require('../shared/tressette');
   assert.strictEqual(TRS.winner([c(1, 'd', 1), c(3, 'd', 2), c(3, 'c', 3)]), 1, 'il Tre di denari prende; il Tre di coppe non risponde');

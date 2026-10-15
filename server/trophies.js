@@ -27,6 +27,7 @@ const LIST = [
   { id: 'sfida_primo', e: '🌟', name: 'Re del giorno', desc: 'Primo nella sfida del giorno (almeno 3 partecipanti)' },
   { id: 'campione_lega', e: '🏟️', name: 'Campione del campionato', desc: 'Vinci una stagione di un campionato tra amici' },
   { id: 's40_vittoria', e: '🂡', name: 'Prima Scala 40', desc: 'Vinci una partita di Scala 40' },
+  { id: 'ra_vittoria', e: '🧩', name: 'Primo Ramino', desc: 'Vinci una partita di Ramino' },
   { id: 's40_apertura', e: '⚡', name: 'Apertura lampo', desc: 'Scala 40: apri al tuo primo turno' },
   { id: 's40_mano', e: '🎩', name: 'Chiusura in mano', desc: 'Scala 40: apri e chiudi nello stesso turno' },
   { id: 's40_jolly', e: '🃏', name: 'Ladro di jolly', desc: 'Scala 40: prendi un jolly dal tavolo' },
@@ -70,6 +71,7 @@ function fromHand(mine, gid = 'burraco') {
   if (gid === 'briscola') return mine.points >= 100 ? ['br_cento'] : [];
   if (gid === 'tressette') return mine.napoletana ? ['tr_napoletana'] : [];
   if (gid === 'rubamazzetto') return [];
+  if (gid === 'ramino') return [];
   if (gid === 'briscola5') return mine.solo ? ['b5_solo'] : [];
   const kinds = mine.burraco.map((b) => b.kind);
   if (kinds.includes('clean') || kinds.includes('real13') || kinds.includes('real14')) out.push('pulito');
@@ -105,7 +107,7 @@ function fromGame(g, seat, ctx) {
   const rivals = g.players.filter((p) => !g.teams[myTeamIdx].members.includes(p.seat)).map((p) => g.scores[p.seat]);
   if (rivals.length && rivals.every((s) => myScore - s >= 1000)) out.push('schiacciante');
   if (ctx.allBotsDifficile) out.push('difficile');
-  const first = { scala40: 's40_vittoria', canasta: 'can_vittoria', scopa: 'sc_vittoria', briscola: 'br_vittoria', tressette: 'tr_vittoria', rubamazzetto: 'rb_vittoria', briscola5: 'b5_vittoria' }[ctx.gid];
+  const first = { scala40: 's40_vittoria', ramino: 'ra_vittoria', canasta: 'can_vittoria', scopa: 'sc_vittoria', briscola: 'br_vittoria', tressette: 'tr_vittoria', rubamazzetto: 'rb_vittoria', briscola5: 'b5_vittoria' }[ctx.gid];
   if (first) out.push(first);
   return out;
 }

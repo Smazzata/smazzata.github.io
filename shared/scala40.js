@@ -33,6 +33,8 @@
       }
     }
     out.game = 'scala40';
+    // Ramino (shared/ramino.js): stesso gioco, ma nessun minimo per aprire e scarto sempre libero
+    if (r && r.game === 'ramino') { out.game = 'ramino'; out.opening = 0; out.pileNeedsOpen = false; }
     return out;
   }
 
