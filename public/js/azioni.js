@@ -97,7 +97,6 @@
     async startFill() { const r = await emit('addBot', {}); if (r.ok) emit('start'); },
     // tavolo: menu ☰ con le funzioni meno usate
     tableMenu() { tableMenuModal(); },
-    sortMenu() { closeModal(); handlers.sort(); },
     goHome() { S.screen = 'home'; render(); },
     join() {
       if (!requireName()) return;
