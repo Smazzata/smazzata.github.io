@@ -80,9 +80,8 @@
             Amici, classifica e partite online tornano quando sei collegato.
             <div class="row" style="margin-top:6px"><button class="btn small" data-act="goOnline">🔄 Riprova online</button></div></div>`
         : S.social && S.social.nick
-          ? `<div class="hello"><span class="row">${avatarHTML(S.social.nick, 0, false, S.social.avatar || { e: S.social.nick.charAt(0).toUpperCase(), c: '#f2c14e' })}<span>Ciao, <b>${esc(S.social.nick)}</b>!${S.progress ? `<span class="lvlline">${lvlHTML(S.progress.level)} <em class="xpbar" title="${S.progress.into}/${S.progress.need} punti esperienza"><u style="width:${Math.round((S.progress.into / S.progress.need) * 100)}%"></u></em></span>` : ''}</span></span>
-              <span class="row"><button class="btn small" data-act="profile">👤 Profilo</button>
-              <button class="btn small" data-act="friends">👥 Amici${S.social.reqIn.length ? ` <span class="pill">${S.social.reqIn.length}</span>` : ''}</button></span></div>
+          ? `<div class="hello" data-act="profile" title="Il mio profilo"><span class="row">${avatarHTML(S.social.nick, 0, false, S.social.avatar || { e: S.social.nick.charAt(0).toUpperCase(), c: '#f2c14e' })}<span>Ciao, <b>${esc(S.social.nick)}</b>!${S.progress ? `<span class="lvlline">${lvlHTML(S.progress.level)} <em class="xpbar" title="${S.progress.into}/${S.progress.need} punti esperienza"><u style="width:${Math.round((S.progress.into / S.progress.need) * 100)}%"></u></em></span>` : ''}</span></span>
+</div>
             ${S.social.hasPassword === false ? '<div class="offbanner">⚠️ <b>Il tuo profilo non ha una password.</b> Impostala ora, così puoi sempre rientrare. <button class="btn small" data-act="profile">👤 Imposta</button></div>' : ''}`
           : S.signup ? `<div class="mailbox"><p>📧 Ti abbiamo mandato un codice a <b>${esc(S.signup.email)}</b>.</p>
               <p>Scrivilo qui per creare il profilo <b>${esc(S.signup.nick)}</b>:</p>
@@ -99,17 +98,7 @@
               <p class="muted small" style="margin:0 0 6px">Se dimentichi la password ti mandiamo un codice per sceglierne una nuova. Niente pubblicità.</p>` : ''}
               <div class="row"><button class="btn primary grow" data-act="claimNick">Crea il profilo</button></div>
               <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a> · <a href="privacy.html">Privacy</a></p>`}
-        <div class="row" style="margin-top:10px"><button class="btn primary grow big" data-act="goSetup">Nuova partita</button></div>
-        ${!OFFLINE && store.get('bur_lastroom', '') ? `<div class="row" style="margin-top:8px"><button class="btn primary grow" data-act="rejoin">↩ Torna al tavolo ${esc(store.get('bur_lastroom', ''))}</button></div>` : ''}
-        ${OFFLINE ? '<div class="row" style="margin-top:8px"><button class="btn grow" data-act="tutorial">🎓 Impara a giocare</button></div>'
-        : `<div class="row" style="margin-top:8px"><button class="btn grow" data-act="quickMenu">⚡ Gioca subito</button><button class="btn grow" data-act="tutorial">🎓 Impara a giocare</button></div>
-        <div class="row" style="margin-top:8px"><button class="btn grow dailybtn" data-act="daily">📅 Sfida del giorno</button><button class="btn grow tourbtn" data-act="tournaments">🏆 Tornei</button></div>
-        ${S.tourMatch && !S.room ? `<div class="tourready">🏆 ${esc(S.tourMatch.text)} <button class="btn small primary" data-act="tourPlay" data-code="${esc(S.tourMatch.code)}">▶ Gioca</button></div>` : ''}
-        <div class="row" style="margin-top:10px">
-          <input type="text" id="joinCode" class="grow codein" maxlength="4" placeholder="Codice tavolo" value="${esc(S.pendingJoin)}">
-          <button class="btn" data-act="join">Entra</button>
-        </div>`}
-        ${S.pendingJoin ? '<p class="muted">Sei stato invitato al tavolo: scrivi il tuo nome e premi Entra.</p>' : ''}
+        ${homeButtonsHTML()}
       </div>
       ${!OFFLINE && S.myGames && S.myGames.length ? `<div class="panel"><h2>🐢 Le tue partite con calma</h2>
         ${S.myGames.map((m) => `<button class="slowgame ${m.myTurn ? 'myturn' : ''}" data-act="openSlow" data-code="${esc(m.code)}">
@@ -117,48 +106,87 @@
           <span class="meta">${m.myTurn ? '<b>Tocca a te!</b>' : m.over ? 'Partita finita' : m.started ? `Smazzata ${m.handNo} · ${m.scores.join(' – ')}` : 'In sala d’attesa'}${m.at ? ` · ${agoText(m.at)}` : ''}</span></button>`).join('')}</div>` : ''}
       ${IS_ANDROID && !IN_APP && !OFFLINE ? `<a class="apkbanner" href="${APK_URL}">
         <img src="icons/icon-192.png" alt=""><span><b>📱 Scarica l'app per Android</b><br>Installala e gioca a schermo intero</span></a>` : ''}
-      <div class="panel">
-        <h2>Regole e varianti</h2>
-        <p class="muted">Ogni preset è un punto di partenza: quando crei una partita puoi modificare ogni singola regola.</p>
-        <div class="presets">${R.PRESETS.concat([S40R.PRESET, CANR.PRESET, OTHER.scopa.PRESET, OTHER.scopa.PRESETS[1], OTHER.briscola.PRESET, OTHER.briscola5.PRESET, OTHER.tressette.PRESET, OTHER.rubamazzetto.PRESET]).map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>
-        <div class="row" style="margin-top:10px"><button class="btn ghost small" data-act="howto">Come si gioca nell'app</button><button class="btn ghost small" data-act="settings">⚙️ Aspetto e suoni</button><button class="btn ghost small" data-act="toggleTheme">${S.prefs.theme === 'scuro' ? '☀️ Tema chiaro' : '🌙 Tema scuro'}</button><button class="btn ghost small" data-act="stats">📊 Statistiche</button>${OFFLINE ? '' : '<button class="btn ghost small" data-act="leaders">🏆 Classifica</button><button class="btn ghost small" data-act="report">🐞 Segnala un problema</button>'}</div>
-        <p class="muted small" style="margin:10px 0 0;text-align:center"><a href="privacy.html" style="color:inherit">🔒 Privacy: quali dati usiamo e come cancellarli</a></p>
-      </div>
     </div>`;
+  }
+
+  /** modalità completa (impostazioni): mostra tutte le opzioni come prima, per chi è pratico */
+  const FULL = () => S.prefs.ui === 'completa';
+
+  /**
+   * Pulsanti della schermata iniziale: pochi e grandi. Tutto il resto (sfida del giorno, tornei, classifica,
+   * statistiche, amici, regole, impostazioni…) sta nel menu «☰ Altro».
+   */
+  function homeButtonsHTML() {
+    const last = !OFFLINE && store.get('bur_lastroom', '');
+    const reqs = S.social && S.social.reqIn ? S.social.reqIn.length : 0;
+    return `<div class="homebtns">
+      ${S.pendingJoin && !OFFLINE ? `<div class="invitebox">✉️ Sei stato invitato al tavolo <b>${esc(S.pendingJoin)}</b>
+        <button class="btn primary big grow" data-act="joinCode" data-code="${esc(S.pendingJoin)}">Entra al tavolo</button></div>` : ''}
+      ${last ? `<button class="btn primary big grow" data-act="rejoin">↩ Torna alla partita</button>` : ''}
+      ${S.tourMatch && !S.room ? `<div class="tourready">🏆 ${esc(S.tourMatch.text)} <button class="btn small primary" data-act="tourPlay" data-code="${esc(S.tourMatch.code)}">▶ Gioca</button></div>` : ''}
+      <button class="btn ${last ? '' : 'primary'} big grow homebtn" data-act="playBots"><span>🤖</span>Gioca contro il computer</button>
+      ${OFFLINE ? '' : `<button class="btn big grow homebtn" data-act="playFriends"><span>👥</span>Gioca con gli amici</button>`}
+      <button class="btn big grow homebtn" data-act="tutorial"><span>🎓</span>Impara a giocare</button>
+      ${FULL() && !OFFLINE ? `<div class="row"><button class="btn grow" data-act="quickMenu">⚡ Gioca subito</button><button class="btn grow dailybtn" data-act="daily">📅 Sfida del giorno</button><button class="btn grow tourbtn" data-act="tournaments">🏆 Tornei</button></div>` : ''}
+      <button class="btn ghost grow morebtn" data-act="more">☰ Altro${reqs ? ` <span class="pill">${reqs}</span>` : ''}</button>
+    </div>`;
+  }
+
+  /** menu «Altro»: tutte le funzioni che non servono per iniziare a giocare */
+  function moreModal() {
+    const so = S.social || {};
+    const reqs = so.reqIn ? so.reqIn.length : 0;
+    const item = (act, icon, label, extra = '') => `<button class="menuitem" data-act="${act}"><span>${icon}</span>${label}${extra}</button>`;
+    openModal('more', `<h2>☰ Altro</h2><div class="menulist">
+      ${so.nick ? item('profile', '👤', 'Il mio profilo') + item('friends', '👥', 'Amici', reqs ? ` <span class="pill">${reqs}</span>` : '') : ''}
+      ${OFFLINE ? '' : item('daily', '📅', 'Sfida del giorno') + item('quickMenu', '⚡', 'Gioca subito con chi è online') + item('tournaments', '🏆', 'Tornei') + item('leaders', '🏅', 'Classifica')}
+      ${item('stats', '📊', 'Le mie statistiche')}
+      ${item('gamesRules', '📖', 'Regole dei giochi')}
+      ${item('howto', '❓', 'Come si usa l\'app')}
+      ${item('settings', '⚙️', 'Impostazioni')}
+      ${OFFLINE ? '' : item('report', '🐞', 'Segnala un problema')}
+      <a class="menuitem" href="privacy.html"><span>🔒</span>Privacy</a></div>`);
+  }
+
+  /** elenco dei giochi e delle varianti con la loro descrizione (prima stava nella schermata iniziale) */
+  function gamesRulesModal() {
+    const list = R.PRESETS.concat([S40R.PRESET, CANR.PRESET, OTHER.scopa.PRESET, OTHER.scopa.PRESETS[1], OTHER.briscola.PRESET, OTHER.briscola5.PRESET, OTHER.tressette.PRESET, OTHER.rubamazzetto.PRESET]);
+    openModal('gamesRules', `<h2>📖 Regole dei giochi</h2><p class="muted small">Tocca un gioco per leggerne le regole.</p>
+      <div class="presets">${list.map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>`);
   }
 
   /** gioco scelto nella schermata "Nuova partita" (lo Scopone è una Scopa con un'altra distribuzione) */
   const pickedGame = (r) => (r.game === 'scopa' && r.deal && r.deal !== 3 ? 'scopone' : r.game || 'burraco');
 
+  const GAME_TILES = [['burraco', '🃏', 'Burraco'], ['scala40', '🪜', 'Scala 40'], ['canasta', '🧺', 'Canasta'],
+    ['scopa', '🧹', 'Scopa'], ['scopone', '🤝', 'Scopone'], ['briscola', '🍷', 'Briscola'],
+    ['briscola5', '🖐️', 'Briscola in 5'], ['tressette', '3️⃣', 'Tressette'], ['rubamazzetto', '🦝', 'Rubamazzetto']];
+
+  /**
+   * Nuova partita, in due tocchi: il gioco (griglia di riquadri grandi) e «Inizia».
+   * Varianti e regole personalizzate restano in «Regole e varianti» (aperto in modalità completa).
+   */
   function setupHTML() {
+    const friends = S.playMode === 'friends' && !OFFLINE;
+    const pf = RX.schema(S.rules).find((f) => f.key === 'players');
+    const adv = S.setupAdvanced || FULL();
     return `<div class="page">
       <div class="row"><button class="btn ghost small" data-act="goHome">← Indietro</button></div>
-      <h2>Nuova partita</h2>
+      ${friends ? `<div class="panel joinbox"><b>Un amico ti ha dato un codice?</b>
+        <div class="row" style="margin-top:6px"><input type="text" id="joinCode" class="grow codein" maxlength="4" placeholder="Codice" value="${esc(S.pendingJoin)}"><button class="btn primary" data-act="join">Entra</button></div></div>` : ''}
+      <h2 class="bigtitle">${friends ? 'Oppure crea un tavolo: a cosa giocate?' : 'A cosa vuoi giocare?'}</h2>
+      <div class="gamegrid">${GAME_TILES.map(([id, icon, name]) => `<button class="gtile ${pickedGame(S.rules) === id ? 'on' : ''}" data-act="pickGame" data-game="${id}"><span>${icon}</span>${name}</button>`).join('')}</div>
       <div class="panel">
-        <h2>1. Scegli il gioco</h2>
-        <div class="gamepick">${[['burraco', '🃏 Burraco', 'A coppie o da soli: burraco, pozzetti e tante varianti'],
-          ['scala40', '🂡 Scala 40', 'Ognuno per sé: apri con 40 punti, chi arriva a 101 è fuori'],
-          ['canasta', '🎴 Canasta', 'La classica: carte uguali, canaste, tre rossi e monte congelato'],
-          ['scopa', '🧹 Scopa', 'Carte italiane: prendi, fai scopa, conta denari e primiera'],
-          ['scopone', '🧹 Scopone', 'In quattro a coppie: 10 carte a testa, tavola vuota, napola'],
-          ['briscola', '🍷 Briscola', 'Carte italiane: prese, carichi e briscole, vince chi fa 61'],
-          ['briscola5', '🍷 Briscola in 5', 'La chiamata del Sud: asta, carta chiamata e socio segreto'],
-          ['tressette', '🂱 Tressette', 'Carte italiane a coppie: si risponde al seme, contano Assi, Due, Tre e figure'],
-          ['rubamazzetto', '🃁 Rubamazzetto', 'Facile e veloce: prendi le carte uguali e ruba il mazzetto agli altri']]
-          .map(([id, name, sub]) => `<button class="preset ${pickedGame(S.rules) === id ? 'active' : ''}" data-act="pickGame" data-game="${id}"><b>${name}</b><span>${sub}</span></button>`).join('')}</div>
-        ${RX.isOther(S.rules) ? '' : `<h2 style="margin-top:12px">Variante</h2>${presetsHTML(S.rules)}`}
+        ${pf ? `<h3>Quanti giocatori?</h3><div class="row">${pf.choices.map(([v, l]) => `<button class="swatch big ${Number(S.rules.players) === Number(v) ? 'on' : ''}" data-act="pickPlayers" data-n="${v}">${esc(l)}</button>`).join('')}</div>` : ''}
+        <div class="row" style="margin-top:12px">${friends
+          ? '<button class="btn primary big grow" data-act="create">👥 Crea il tavolo</button>'
+          : '<button class="btn primary big grow" data-act="createBots">▶ Inizia la partita</button>'}</div>
+        <div class="row" style="margin-top:10px;justify-content:center"><button class="btn ghost small" data-act="previewRules">📜 Come si gioca</button><button class="btn ghost small" data-act="setupAdvanced">${adv ? '▴' : '▾'} Regole e varianti</button></div>
+        ${adv ? `${RX.isOther(S.rules) ? '' : `<h3 style="margin-top:12px">Variante</h3>${presetsHTML(S.rules)}`}
         <details class="custom" ${S.customOpen ? 'open' : ''}>
-          <summary>2. Personalizza le regole ${rulesStatus(S.rules)}</summary>
+          <summary>Personalizza le regole ${rulesStatus(S.rules)}</summary>
           ${rulesFormHTML(S.rules)}
-        </details>
-        <div class="row" style="margin-top:12px"><button class="btn ghost small" data-act="previewRules">📜 Leggi le regole di questa partita</button></div>
-      </div>
-      <div class="panel">
-        <h2>3. Gioca</h2>
-        ${OFFLINE ? '<div class="row"><button class="btn primary grow big" data-act="createBots">Gioca contro il computer</button></div>'
-        : `<div class="row"><button class="btn primary grow big" data-act="create">Crea tavolo e invita amici</button></div>
-        <div class="row" style="margin-top:8px"><button class="btn grow" data-act="createBots">Gioca subito contro il computer</button></div>
-        <p class="muted">Nel tavolo online potrai riempire i posti vuoti con giocatori del computer.</p>`}
+        </details>` : ''}
       </div>
     </div>`;
   }
@@ -186,54 +214,58 @@
   function lobbyHTML() {
     const r = S.room;
     const isHost = r.isHost;
+    const full = FULL();
     const seats = r.seats.map((s, i) => {
       const me = i === r.you;
       let right = '';
       if (!s) {
-        right = `<div class="row">${r.you >= 0 ? `<button class="btn small" data-act="sit" data-seat="${i}">Siedi qui</button>` : ''}
-          ${isHost ? `<button class="btn small" data-act="addBot" data-seat="${i}">+ Computer</button>` : ''}</div>`;
-      } else if (s.isBot && isHost) right = `<button class="btn small danger" data-act="removeSeat" data-seat="${i}">Togli</button>`;
+        right = `<div class="row">${full && r.you >= 0 ? `<button class="btn small" data-act="sit" data-seat="${i}">Siedi qui</button>` : ''}
+          ${isHost ? `<button class="btn small" data-act="addBot" data-seat="${i}" title="Metti il computer">🤖 Computer</button>` : ''}</div>`;
+      } else if (s.isBot && isHost) right = `<button class="btn small" data-act="removeSeat" data-seat="${i}">Togli</button>`;
       const team = r.n === 4 && !RX.isS40(r.rules) ? `<span class="teamtag">Coppia ${i % 2 === 0 ? 'A' : 'B'}</span>` : '';
       return `<div class="seat">
         <div class="who">${s ? avatarHTML(s.name, i, s.isBot, s.avatar) : '<span class="avatar empty">?</span>'}
-        <div>${s ? `<b>${esc(s.name)}</b> ${lvlHTML(s.level)}${me ? ' <span class="badge">tu</span>' : ''}${i === r.host ? ' <span class="badge">host</span>' : ''}${s.connected ? '' : ' <span class="muted">(offline)</span>'}` : '<span class="muted">Posto libero</span>'}<br>${team}</div>
+        <div>${s ? `<b>${esc(s.name)}</b> ${lvlHTML(s.level)}${me ? ' <span class="badge">tu</span>' : ''}${s.connected ? '' : ' <span class="muted">(offline)</span>'}` : '<span class="muted">Aspetto un amico…</span>'}<br>${team}</div>
         </div>${right}</div>`;
     }).join('');
-    const full = r.seats.every(Boolean);
+    const filled = r.seats.filter(Boolean).length;
+    const ready = r.seats.every(Boolean);
+    const hostName = r.seats[r.host] ? r.seats[r.host].name : '';
     return `<div class="page">
       <div class="row"><button class="btn ghost small" data-act="leave">← Esci dal tavolo</button></div>
       <div class="panel" style="text-align:center">
-        <div class="muted">Codice tavolo</div>
+        <h2 class="bigtitle">${esc(RX.gameName(r.rules))}: invita gli amici</h2>
+        <div class="muted">Codice del tavolo</div>
         <div class="code">${esc(r.code)}</div>
-        <div class="row" style="justify-content:center"><button class="btn primary" data-act="friends">👥 Invita amici</button><button class="btn" data-act="share">Condividi link</button><button class="btn" data-act="copy">Copia</button></div>
-        <p class="muted">Gli amici aprono il link oppure scrivono il codice nella schermata iniziale.</p>
+        <div class="row" style="justify-content:center"><button class="btn primary big" data-act="share">📤 Manda l'invito</button></div>
+        <div class="row" style="justify-content:center;margin-top:6px"><button class="btn ghost small" data-act="copy">Copia il link</button>${S.social && S.social.nick ? '<button class="btn ghost small" data-act="friends">👥 Dai miei amici</button>' : ''}</div>
       </div>
       <div class="panel">
-        <h2>Giocatori (${r.seats.filter(Boolean).length}/${r.n})</h2>
-        ${r.quick ? '<p class="muted">⚡ Tavolo veloce: la partita parte da sola appena il tavolo è pieno. Se non arriva nessuno, l\'host può riempirlo con il computer.</p>' : ''}
+        <h2>Giocatori (${filled}/${r.n})</h2>
+        ${r.quick ? '<p class="muted">⚡ Tavolo veloce: la partita parte da sola appena il tavolo è pieno.</p>' : ''}
         <div class="seats">${seats}</div>
         ${isHost ? `<div class="row" style="margin-top:12px">
-            ${full ? '' : '<button class="btn" data-act="fillBots">Riempi con il computer</button>'}
-            <button class="btn primary grow" data-act="start" ${full ? '' : 'disabled'}>Avvia partita</button></div>
-          <div class="row" style="margin-top:8px"><button class="btn small" data-act="closeTable">🚪 Chiudi il tavolo</button></div>`
-          : '<p class="muted">In attesa che l\'host avvii la partita…</p>'}
+            <button class="btn primary big grow" data-act="${ready ? 'start' : 'startFill'}">▶ Inizia la partita</button></div>
+            ${ready ? '' : '<p class="muted small" style="text-align:center">I posti ancora vuoti li prende il computer.</p>'}`
+          : `<p class="muted" style="text-align:center">Aspettiamo che ${esc(hostName)} inizi la partita…</p>`}
       </div>
-      <div class="panel">
-        <h2>Regole</h2>
+      <details class="panel tableset" ${full ? 'open' : ''}>
+        <summary>⚙️ Impostazioni del tavolo</summary>
         <p>${rulesStatus(r.rules)} <span class="muted">· ${r.n} giocatori · si vince a ${r.rules.target}</span></p>
         <div class="row"><button class="btn small" data-act="music">🎵 Musica del tavolo${r.music ? ' (attiva)' : ''}</button></div>
         <div class="row" style="margin-top:8px"><button class="btn small" data-act="roomRules">📜 Leggi le regole</button>
         ${isHost ? '<button class="btn small" data-act="editRules">✏️ Modifica regole</button>' : ''}</div>
-        ${isHost ? `<h2 style="margin-top:14px">Torneo</h2>${seriesPickHTML(r.series && r.series.bestOf)}` : r.series ? `<p>🏆 Torneo al meglio di ${r.series.bestOf}</p>` : ''}
-        ${isHost && !r.daily && !r.tutorial ? `<h2 style="margin-top:14px">Ritmo della partita</h2>
+        ${isHost ? `<h3 style="margin-top:14px">Torneo</h3>${seriesPickHTML(r.series && r.series.bestOf)}` : r.series ? `<p>🏆 Torneo al meglio di ${r.series.bestOf}</p>` : ''}
+        ${isHost && !r.daily && !r.tutorial ? `<h3 style="margin-top:14px">Ritmo della partita</h3>
           <div class="row"><button class="swatch ${r.slow ? '' : 'on'}" data-act="setSlow" data-val="0">⚡ Normale</button><button class="swatch ${r.slow ? 'on' : ''}" data-act="setSlow" data-val="1">🐢 Con calma</button></div>
           <p class="muted small">Con calma: ognuno gioca il suo turno quando può, anche ore dopo. Puoi uscire quando vuoi: il posto resta tuo, la partita ti aspetta e ti avvisiamo quando tocca a te.</p>`
           : r.slow ? '<p>🐢 <b>Partita con calma</b>: ognuno gioca quando può, ti avvisiamo quando tocca a te.</p>' : ''}
-        ${isHost ? `<h2 style="margin-top:14px">Aiuto: dove attaccare le carte</h2>${aidsHTML(r.aids !== false)}` : ''}
-        ${isHost ? `<h2 style="margin-top:14px">Tempo per turno</h2>${turnTimeHTML(r.turnTime)}
+        ${isHost ? `<h3 style="margin-top:14px">Aiuto: dove attaccare le carte</h3>${aidsHTML(r.aids !== false)}` : ''}
+        ${isHost ? `<h3 style="margin-top:14px">Tempo per turno</h3>${turnTimeHTML(r.turnTime)}
           <p class="muted small">Allo scadere il gioco pesca e scarta al posto del giocatore.</p>` : ''}
-        ${isHost ? `<h2 style="margin-top:14px">Bravura del computer</h2>${botLevelHTML(r.botLevel)}` : ''}
-        ${isHost ? `<h2 style="margin-top:14px">Velocità del computer</h2>${botSpeedHTML(r.botSpeed)}` : ''}
-      </div>
+        ${isHost ? `<h3 style="margin-top:14px">Bravura del computer</h3>${botLevelHTML(r.botLevel)}` : ''}
+        ${isHost ? `<h3 style="margin-top:14px">Velocità del computer</h3>${botSpeedHTML(r.botSpeed)}` : ''}
+        ${isHost ? '<div class="row" style="margin-top:14px"><button class="btn small" data-act="closeTable">🚪 Chiudi il tavolo</button></div>' : ''}
+      </details>
     </div>`;
   }

@@ -142,3 +142,17 @@
       <div class="row" style="margin-top:12px"><button class="btn ghost dark" data-act="previewEdit">📜 Anteprima regole</button>
       <button class="btn primary grow" data-act="applyRules">Applica</button></div>`);
   }
+
+  /** menu ☰ del tavolo: le funzioni meno usate, con nomi scritti per intero */
+  function tableMenuModal() {
+    const r = S.room || {}, g = S.game;
+    const item = (act, icon, label) => `<button class="menuitem" data-act="${act}"><span>${icon}</span>${label}</button>`;
+    const sortLbl = { rank: 'per valore', suit: 'per seme', smart: 'per giochi' }[S.sortMode] || '';
+    openModal('tableMenu', `<h2>☰ Menu</h2><div class="menulist">
+      ${item('scores', '🏆', 'Punteggi')}
+      ${item('gameRules', '📜', 'Regole del gioco')}
+      ${g && g.you >= 0 ? item('sortMenu', '⇅', `Riordina le carte${sortLbl ? ` <span class="muted small">(ora ${sortLbl})</span>` : ''}`) : ''}
+      ${OFFLINE ? '' : item('music', '🎵', `Musica del tavolo${r.music ? ' (attiva)' : ''}`)}
+      ${item('settings', '⚙️', 'Impostazioni')}
+      ${item('leave', '🚪', 'Esci dalla partita')}</div>`);
+  }

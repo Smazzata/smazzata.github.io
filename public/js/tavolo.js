@@ -392,17 +392,18 @@
     if (g.you >= 0 && voiceAvailable()) actions = '<button class="ico voicebtn" data-voice title="Tieni premuto per parlare">🎤</button>' + actions;
     if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';
     const sortLbl = { rank: '⇅ Valore', suit: '⇅ Seme', smart: '⇅ Giochi' }[S.sortMode] || '⇅ Ordina';
-    if (g.you >= 0) actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;
+    if (g.you >= 0 && FULL()) actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;
 
     return `<div class="game ${myTurn ? 'myturn' : ''}">
       <div class="topbar">
         <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : r.tournament ? '<b>🏆 Torneo</b>' : `<b>${r.slow ? '🐢 ' : ''}${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, ${isS40Game() ? `eliminato a ${g.cfg.target}` : `si vince a ${g.cfg.target}`}">${g.game && g.game !== 'burraco' ? `${RX.gameName(g.cfg.rules)} · ` : ''}smazzata ${g.handNo}</span></span>
-        <button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
-        ${OFFLINE ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}
+        ${FULL() ? `<button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
+        ${OFFLINE ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}` : ''}
         <button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>
-        <button class="iconbtn" data-act="scores" title="Punteggi">🏆</button>
+        ${FULL() ? `<button class="iconbtn" data-act="scores" title="Punteggi">🏆</button>
         <button class="iconbtn" data-act="settings" title="Aspetto e suoni">⚙️</button>
-        <button class="iconbtn" data-act="leave" title="Esci">⏏</button>
+        <button class="iconbtn" data-act="leave" title="Esci">⏏</button>`
+        : `<button class="iconbtn menuico" data-act="tableMenu" title="Menu">☰${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}
       </div>
       <div class="scorebar">${r.series ? `<span class="sc series">${seriesHTML(r, g)}</span>` : ''}${scores}</div>
       <div class="seats-row n${g.n} ${g.you < 0 ? 'spect' : ''}">${seats}</div>

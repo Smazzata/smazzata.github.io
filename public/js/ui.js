@@ -94,7 +94,9 @@
 
   function settingsModal() {
     const opt = (key, val, label, extra = '') => `<button class="swatch ${S.prefs[key] === val ? 'on' : ''}" data-act="pref" data-key="${key}" data-val="${val}" ${extra}>${label}</button>`;
-    openModal('settings', `<h2>Aspetto e suoni</h2>
+    openModal('settings', `<h2>Impostazioni</h2>
+      <h4>Schermate</h4>
+      <div class="row">${opt('ui', 'semplice', '🙂 Semplici')}${opt('ui', 'completa', '🧩 Complete (tutte le opzioni)')}</div>
       <h4>Leggibilità</h4>
       <div class="row">${opt('text', 'normale', 'Testo normale')}${opt('text', 'grande', 'Testo grande')}${opt('text', 'enorme', 'Testo molto grande')}</div>
       <div class="row" style="margin-top:6px">${opt('contrast', false, 'Contrasto normale')}${opt('contrast', true, '◐ Alto contrasto')}</div>

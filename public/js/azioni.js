@@ -86,6 +86,18 @@
       location.href = /\/gioca\//.test(location.pathname) ? '../' : location.pathname;
     },
     goSetup() { if (!requireName()) return; S.screen = 'setup'; render(); },
+    // schermata iniziale semplice: contro il computer, con gli amici, menu «Altro»
+    playBots() { if (!requireName()) return; S.playMode = 'bots'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
+    playFriends() { if (!requireName()) return; S.playMode = 'friends'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
+    more() { moreModal(); },
+    gamesRules() { gamesRulesModal(); },
+    pickPlayers(el) { S.rules = RX.normalize({ ...S.rules, players: Number(el.dataset.n) }); store.set('bur_rules', S.rules); render(); },
+    setupAdvanced() { S.setupAdvanced = !S.setupAdvanced; render(); },
+    joinCode(el) { if (!requireName()) return; joinRoom(el.dataset.code); },
+    async startFill() { const r = await emit('addBot', {}); if (r.ok) emit('start'); },
+    // tavolo: menu ☰ con le funzioni meno usate
+    tableMenu() { tableMenuModal(); },
+    sortMenu() { closeModal(); handlers.sort(); },
     goHome() { S.screen = 'home'; render(); },
     join() {
       if (!requireName()) return;
@@ -152,8 +164,10 @@
       S.screen = 'home';
     },
     share() {
-      if (navigator.share) navigator.share({ title: 'Smazzata', text: t(`Gioca a carte con me su Smazzata! Codice tavolo ${S.room.code}`), url: inviteLink() }).catch(() => {});
-      else copyLink();
+      const text = t(`Gioca a carte con me su Smazzata! Codice tavolo ${S.room.code}`);
+      if (navigator.share) navigator.share({ title: 'Smazzata', text, url: inviteLink() }).catch(() => {});
+      // nell'app Android la condivisione del browser non c'è: si apre WhatsApp con il messaggio pronto
+      else window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + inviteLink()), '_blank');
     },
     copy: copyLink,
     sit(el) { emit('sit', { seat: Number(el.dataset.seat) }); },

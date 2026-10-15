@@ -1,0 +1,57 @@
+# Schermate semplici: home, scelta del gioco, sala d'attesa, menu
+# italiano ‖ English ‖ Español ‖ Português
+Gioca contro il computer ‖ Play against the computer ‖ Jugar contra el ordenador ‖ Jogar contra o computador
+Gioca con gli amici ‖ Play with friends ‖ Jugar con amigos ‖ Jogar com amigos
+☰ Altro ‖ ☰ More ‖ ☰ Más ‖ ☰ Mais
+↩ Torna alla partita ‖ ↩ Back to the game ‖ ↩ Volver a la partida ‖ ↩ Voltar à partida
+✉️ Sei stato invitato al tavolo {0} ‖ ✉️ You have been invited to table {0} ‖ ✉️ Te han invitado a la mesa {0} ‖ ✉️ Você foi convidado para a mesa {0}
+Entra al tavolo ‖ Join the table ‖ Entrar en la mesa ‖ Entrar na mesa
+Il mio profilo ‖ My profile ‖ Mi perfil ‖ Meu perfil
+Gioca subito con chi è online ‖ Play now with people online ‖ Jugar ya con quien está en línea ‖ Jogar agora com quem está online
+Classifica ‖ Leaderboard ‖ Clasificación ‖ Classificação
+Le mie statistiche ‖ My statistics ‖ Mis estadísticas ‖ Minhas estatísticas
+Regole dei giochi ‖ Game rules ‖ Reglas de los juegos ‖ Regras dos jogos
+📖 Regole dei giochi ‖ 📖 Game rules ‖ 📖 Reglas de los juegos ‖ 📖 Regras dos jogos
+Come si usa l'app ‖ How to use the app ‖ Cómo se usa la app ‖ Como usar o app
+Impostazioni ‖ Settings ‖ Ajustes ‖ Configurações
+Privacy ‖ Privacy ‖ Privacidad ‖ Privacidade
+Tocca un gioco per leggerne le regole. ‖ Tap a game to read its rules. ‖ Toca un juego para leer sus reglas. ‖ Toque um jogo para ler as regras.
+Un amico ti ha dato un codice? ‖ Did a friend give you a code? ‖ ¿Un amigo te dio un código? ‖ Um amigo te deu um código?
+Codice ‖ Code ‖ Código ‖ Código
+Oppure crea un tavolo: a cosa giocate? ‖ Or create a table: what are you playing? ‖ O crea una mesa: ¿a qué jugáis? ‖ Ou crie uma mesa: o que vocês vão jogar?
+A cosa vuoi giocare? ‖ What do you want to play? ‖ ¿A qué quieres jugar? ‖ O que você quer jogar?
+Quanti giocatori? ‖ How many players? ‖ ¿Cuántos jugadores? ‖ Quantos jogadores?
+👥 Crea il tavolo ‖ 👥 Create the table ‖ 👥 Crear la mesa ‖ 👥 Criar a mesa
+▶ Inizia la partita ‖ ▶ Start the game ‖ ▶ Empezar la partida ‖ ▶ Começar a partida
+📜 Come si gioca ‖ 📜 How to play ‖ 📜 Cómo se juega ‖ 📜 Como jogar
+▾ Regole e varianti ‖ ▾ Rules and variants ‖ ▾ Reglas y variantes ‖ ▾ Regras e variantes
+▴ Regole e varianti ‖ ▴ Rules and variants ‖ ▴ Reglas y variantes ‖ ▴ Regras e variantes
+Personalizza le regole ‖ Customize the rules ‖ Personaliza las reglas ‖ Personalize as regras
+{0}: invita gli amici ‖ {0}: invite your friends ‖ {0}: invita a tus amigos ‖ {0}: convide seus amigos
+Codice del tavolo ‖ Table code ‖ Código de la mesa ‖ Código da mesa
+📤 Manda l'invito ‖ 📤 Send the invitation ‖ 📤 Enviar la invitación ‖ 📤 Enviar o convite
+Copia il link ‖ Copy the link ‖ Copiar el enlace ‖ Copiar o link
+👥 Dai miei amici ‖ 👥 From my friends ‖ 👥 De mis amigos ‖ 👥 Dos meus amigos
+Aspetto un amico… ‖ Waiting for a friend… ‖ Esperando a un amigo… ‖ Esperando um amigo…
+🤖 Computer ‖ 🤖 Computer ‖ 🤖 Ordenador ‖ 🤖 Computador
+Metti il computer ‖ Add the computer ‖ Poner el ordenador ‖ Colocar o computador
+I posti ancora vuoti li prende il computer. ‖ The computer takes the empty seats. ‖ El ordenador ocupa los puestos vacíos. ‖ O computador ocupa os lugares vazios.
+Aspettiamo che {0} inizi la partita… ‖ Waiting for {0} to start the game… ‖ Esperamos a que {0} empiece la partida… ‖ Esperando {0} começar a partida…
+⚙️ Impostazioni del tavolo ‖ ⚙️ Table settings ‖ ⚙️ Ajustes de la mesa ‖ ⚙️ Configurações da mesa
+Togli ‖ Remove ‖ Quitar ‖ Remover
+☰ Menu ‖ ☰ Menu ‖ ☰ Menú ‖ ☰ Menu
+Menu ‖ Menu ‖ Menú ‖ Menu
+Punteggi ‖ Scores ‖ Puntuaciones ‖ Pontuações
+Regole del gioco ‖ Game rules ‖ Reglas del juego ‖ Regras do jogo
+Riordina le carte ‖ Sort the cards ‖ Ordenar las cartas ‖ Ordenar as cartas
+(ora {0}) ‖ (now {0}) ‖ (ahora {0}) ‖ (agora {0})
+per valore ‖ by value ‖ por valor ‖ por valor
+per seme ‖ by suit ‖ por palo ‖ por naipe
+per giochi ‖ by melds ‖ por combinaciones ‖ por jogos
+Musica del tavolo ‖ Table music ‖ Música de la mesa ‖ Música da mesa
+Musica del tavolo (attiva) ‖ Table music (on) ‖ Música de la mesa (activa) ‖ Música da mesa (ativa)
+Esci dalla partita ‖ Leave the game ‖ Salir de la partida ‖ Sair da partida
+Schermate ‖ Screens ‖ Pantallas ‖ Telas
+🙂 Semplici ‖ 🙂 Simple ‖ 🙂 Sencillas ‖ 🙂 Simples
+🧩 Complete (tutte le opzioni) ‖ 🧩 Complete (all options) ‖ 🧩 Completas (todas las opciones) ‖ 🧩 Completas (todas as opções)
+Il mio profilo ‖ My profile ‖ Mi perfil ‖ Meu perfil

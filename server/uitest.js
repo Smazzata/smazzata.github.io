@@ -63,6 +63,13 @@ const HELPERS = `
     const r = e.getBoundingClientRect(); const o = { bubbles: true, clientX: r.x + r.width / 2, clientY: r.y + r.height / 2, pointerId: 1, isPrimary: true };
     e.dispatchEvent(new PointerEvent('pointerdown', o)); document.dispatchEvent(new PointerEvent('pointerup', o)); e.dispatchEvent(new MouseEvent('click', o)); return true; };
   window.__btn = (t) => [...document.querySelectorAll('button')].find((b) => b.textContent.includes(t));
+  // le funzioni meno usate stanno nei menu: ☰ al tavolo, «Altro» nella schermata iniziale
+  window.__menu = async (act) => {
+    if (!document.querySelector('[data-act="' + act + '"]')) {
+      __tap(document.querySelector('[data-act="tableMenu"]') || document.querySelector('[data-act="more"]')); await __W(350);
+    }
+    return __tap('[data-act="' + act + '"]');
+  };
   window.__status = () => (document.querySelector('.statusbar') || {}).textContent || '';
   /** gioca da solo fino alla fine della smazzata: pesca e scarta l'ultima carta; controlla che il tavolo non scorra */
   window.__playHand = async (maxMs) => {
@@ -135,7 +142,7 @@ const HELPERS = `
     step('schermata iniziale e nickname');
 
     // 2. Burraco contro il computer fino alla fine della smazzata
-    await cdp.run(`__tap(__btn('Nuova partita')); await __W(400); __tap(__btn('Gioca subito contro')); await __W(1500);`);
+    await cdp.run(`__tap('[data-act="playBots"]'); await __W(400); __tap('[data-act="createBots"]'); await __W(1500);`);
     const b = await cdp.run(`
       const hand = document.querySelectorAll('#hand .card').length;
       if (hand !== 11) throw new Error('mano del Burraco: ' + hand + ' carte');
@@ -157,7 +164,7 @@ const HELPERS = `
     // 4. impostazioni: stili delle carte (anteprime)
     const st = await cdp.run(`
       document.querySelector('.modal-close').click(); await __W(300);
-      __tap('[data-act="settings"]'); await __W(500);
+      await __menu('settings'); await __W(500);
       const decks = document.querySelectorAll('#modal .deckprev').length;
       __tap('#modal [data-key="deck"][data-val="francesi"]'); await __W(400);
       const fig = document.querySelectorAll('#hand .card.hasfig, #hand .card.haspips').length;
@@ -169,11 +176,11 @@ const HELPERS = `
 
     // 5. esco (⏏ → Esci) e gioco a Scala 40
     const s40 = await cdp.run(`
-      __tap('[data-act="leave"]'); await __W(400);
+      await __menu('leave'); await __W(400);
       if (document.querySelector('[data-act="leaveNow"]')) { __tap('[data-act="leaveNow"]'); await __W(800); }
-      __tap(__btn('Nuova partita')); await __W(400);
+      __tap('[data-act="playBots"]'); await __W(400);
       __tap('[data-act="pickGame"][data-game="scala40"]'); await __W(400);
-      __tap(__btn('Gioca subito contro')); await __W(1500);
+      __tap('[data-act="createBots"]'); await __W(1500);
       const title = document.querySelector('.topbar .title').textContent;
       const hand = document.querySelectorAll('#hand .card').length;
       if (!/Scala 40/.test(title) || hand !== 13) throw new Error('Scala 40 non partita: ' + title + ' / ' + hand);
@@ -186,12 +193,12 @@ const HELPERS = `
 
     // 5b. Canasta
     const can = await cdp.run(`
-      __tap('[data-act="leave"]'); await __W(400);
+      await __menu('leave'); await __W(400);
       if (document.querySelector('[data-act="leaveNow"]')) { __tap('[data-act="leaveNow"]'); await __W(800); }
-      if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); __tap('[data-act="leave"]'); await __W(800); }
-      __tap(__btn('Nuova partita')); await __W(400);
+      if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); await __menu('leave'); await __W(800); }
+      __tap('[data-act="playBots"]'); await __W(400);
       __tap('[data-act="pickGame"][data-game="canasta"]'); await __W(400);
-      __tap(__btn('Gioca subito contro')); await __W(1500);
+      __tap('[data-act="createBots"]'); await __W(1500);
       const t = document.querySelector('.topbar .title').textContent;
       if (!document.querySelectorAll('#hand .card').length) throw new Error('Canasta non partita: ' + t);
       return __playHand(240000);`, 260000);
@@ -200,12 +207,12 @@ const HELPERS = `
 
     // 5c. Scopa: si gioca toccando le carte (se servono, si sceglie la presa)
     await cdp.run(`
-      __tap('[data-act="leave"]'); await __W(400);
+      await __menu('leave'); await __W(400);
       if (document.querySelector('[data-act="leaveNow"]')) { __tap('[data-act="leaveNow"]'); await __W(800); }
-      if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); __tap('[data-act="leave"]'); await __W(800); }
-      __tap(__btn('Nuova partita')); await __W(400);
+      if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); await __menu('leave'); await __W(800); }
+      __tap('[data-act="playBots"]'); await __W(400);
       __tap('[data-act="pickGame"][data-game="scopa"]'); await __W(400);
-      __tap(__btn('Gioca subito contro')); await __W(1500);
+      __tap('[data-act="createBots"]'); await __W(1500);
       if (document.querySelectorAll('#hand .card.it').length !== 3) throw new Error('Scopa: niente carte italiane in mano');
       return true;`, 30000);
     await shot('04c-scopa-tavolo');
@@ -225,10 +232,10 @@ const HELPERS = `
 
     // 5d. torneo: creazione, riempimento con il computer, avvio, tabellone con «Vai al tavolo»
     const tour = await cdp.run(`
-      __tap('[data-act="leave"]'); await __W(400);
+      await __menu('leave'); await __W(400);
       if (document.querySelector('[data-act="leaveNow"]')) { __tap('[data-act="leaveNow"]'); await __W(800); }
-      if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); __tap('[data-act="leave"]'); await __W(800); }
-      __tap('[data-act="tournaments"]'); await __W(700);
+      if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); await __menu('leave'); await __W(800); }
+      await __menu('tournaments'); await __W(700);
       document.querySelector('#tourname').value = 'Coppa del robot';
       document.querySelector('#toursize').value = '4';
       document.querySelector('#tourform button').click(); await __W(900);
@@ -250,8 +257,8 @@ const HELPERS = `
     await cdp.run(HELPERS);
     const o = await cdp.run(`
       if (!document.querySelector('.offbanner')) throw new Error('niente schermata offline');
-      __tap(__btn('Nuova partita')); await __W(400); __tap('[data-act="pickGame"][data-game="burraco"]'); await __W(300);
-      __tap(__btn('Gioca contro il computer')); await __W(2500);
+      __tap('[data-act="playBots"]'); await __W(400); __tap('[data-act="pickGame"][data-game="burraco"]'); await __W(300);
+      __tap('[data-act="createBots"]'); await __W(2500);
       return { hand: document.querySelectorAll('#hand .card').length, title: document.querySelector('.topbar .title').textContent };`);
     await shot('05-offline');
     if (o.hand !== 11 || !o.title.includes('📴')) throw new Error('offline: ' + JSON.stringify(o));
@@ -272,12 +279,12 @@ const HELPERS = `
     step("app vecchia: avviso di aggiornamento con il link all'APK, «Più tardi» lo nasconde");
 
     // 8. lingue: in inglese, spagnolo e portoghese la schermata iniziale e le regole sono tradotte
-    const LANG_CHECK = { en: ['New game', 'Play now'], es: ['Nueva partida', 'Jugar ya'], pt: ['Nova partida', 'Jogar agora'] };
+    const LANG_CHECK = { en: ['Play against the computer', 'Play with friends'], es: ['Jugar contra el ordenador', 'Jugar con amigos'], pt: ['Jogar contra o computador', 'Jogar com amigos'] };
     for (const [lang, words] of Object.entries(LANG_CHECK)) {
       await cdp.run(`localStorage.setItem('bur_prefs', JSON.stringify({ lang: '${lang}' })); return true;`);
       await open(URL);
       const txt = await cdp.run(`
-        for (let i = 0; i < 40 && !document.querySelector('[data-act="goSetup"]'); i++) await __W(250);
+        for (let i = 0; i < 40 && !document.querySelector('[data-act="playBots"]'); i++) await __W(250);
         await __W(300);
         return { lang: document.documentElement.lang, text: document.body.innerText };`);
       if (txt.lang !== lang || words.some((w) => !txt.text.includes(w))) throw new Error(`lingua ${lang}: testi non tradotti`);
