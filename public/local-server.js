@@ -155,6 +155,7 @@
             rules, n: rules.players, ready: [], botSpeed: 'normale', botLevel: 'normale', aids: true, hints: false,
             seats: Array.from({ length: rules.players }, (_, i) => (i === 0 ? { name: me } : { name: free[i], isBot: true })),
           };
+          if (['facile', 'normale', 'difficile', 'esperto'].includes(d.botLevel)) room.botLevel = d.botLevel;
           if (d.tutorial) Object.assign(room, { tutorial: true, hints: true, botLevel: 'facile', botSpeed: 'lenta' });
           startGame();
           return { code: 'OFFLINE' };

@@ -100,3 +100,8 @@ Primo Ramino ‖ First Rummy ‖ Primer Rummy ‖ Primeiro Rummy
 Vinci una partita di Ramino ‖ Win a game of Rummy ‖ Gana una partida de Rummy ‖ Vença uma partida de Rummy
 🎓 Allenamento a Ramino ‖ 🎓 Rummy practice ‖ 🎓 Práctica de Rummy ‖ 🎓 Treino de Rummy
 2. Calare ‖ 2. Melding ‖ 2. Bajar ‖ 2. Baixar
+Bravura del computer nelle nuove partite ‖ Computer skill in new games ‖ Nivel del ordenador en las partidas nuevas ‖ Nível do computador nas novas partidas
+✨ Automatica ‖ ✨ Automatic ‖ ✨ Automático ‖ ✨ Automático
+Automatica: il computer si adatta a come giochi, per ogni gioco (più bravo se vinci spesso, più facile se perdi). ‖ Automatic: the computer adapts to how you play, for each game (stronger if you win often, easier if you lose). ‖ Automático: el ordenador se adapta a cómo juegas, en cada juego (más fuerte si ganas a menudo, más fácil si pierdes). ‖ Automático: o computador se adapta a como você joga, em cada jogo (mais forte se você ganha muito, mais fácil se perde).
+🤖 Stai vincendo spesso: il computer diventa più bravo ({0}) ‖ 🤖 You are winning often: the computer gets stronger ({0}) ‖ 🤖 Ganas a menudo: el ordenador se vuelve más fuerte ({0}) ‖ 🤖 Você está ganhando muito: o computador fica mais forte ({0})
+🤖 Il computer diventa un po' più facile ({0}) ‖ 🤖 The computer gets a little easier ({0}) ‖ 🤖 El ordenador se vuelve un poco más fácil ({0}) ‖ 🤖 O computador fica um pouco mais fácil ({0})

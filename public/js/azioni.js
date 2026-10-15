@@ -144,11 +144,12 @@
     create() { emit('createRoom', { rules: S.rules }); },
     // contro il computer: online la partita gira sul telefono (mosse istantanee), il server riceve i risultati
     async createBots() {
-      if (OFFLINE) { emit('createRoom', { rules: S.rules, vsBots: true }); return; }
+      const botLevel = autoLevel(Games2.idOf(S.rules));
+      if (OFFLINE) { emit('createRoom', { rules: S.rules, vsBots: true, botLevel }); return; }
       try { await localSocket(); } catch (e) { emit('createRoom', { rules: S.rules, vsBots: true }); return; }
       S.localGame = true; Local.attached = true;
       // la partita nasce sul telefono (non sul server)
-      const r = await new Promise((res) => Local.sock.emit('createRoom', { rules: S.rules, vsBots: true }, res));
+      const r = await new Promise((res) => Local.sock.emit('createRoom', { rules: S.rules, vsBots: true, botLevel }, res));
       if (!r || !r.ok) { S.localGame = false; toast((r && r.error) || 'Partita non avviata', true); }
     },
     leave() {

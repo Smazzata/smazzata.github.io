@@ -11,7 +11,7 @@
     : io({ reconnectionDelay: 300, reconnectionDelayMax: 2000, randomizationFactor: 0.3, autoConnect: false });
   if (OFFLINE) document.body.classList.add('offline');
   // gioco senza internet: i risultati delle smazzate restano in coda e vanno al server alla prossima connessione
-  if (OFFLINE) socket.on('handOver', (p) => queueLocalResult(p));
+  if (OFFLINE) socket.on('handOver', (p) => { autoLevelRecord(p); queueLocalResult(p); });
 
   /*
    * Profilo e indirizzo che cambia: il server gira dietro un tunnel con un indirizzo nuovo a ogni riavvio, e ogni
@@ -219,11 +219,39 @@
         for (const fn of socket.listeners(ev)) fn(p);
       });
     }
-    Local.sock.on('handOver', sendLocalResult);
+    Local.sock.on('handOver', (p) => { autoLevelRecord(p); sendLocalResult(p); });
     Local.ready = new Promise((res, rej) => { Local.sock.on('connect', res); Local.sock.on('connect_error', rej); });
     Local.sock.connect();
     return Local.ready;
   }
+  /*
+   * Livello automatico del computer (partite contro il computer): per ogni gioco si parte da «normale»;
+   * 3 vittorie nelle ultime 4 partite → un livello in più, 3 sconfitte di fila → un livello in meno.
+   */
+  const LEVELS = ['facile', 'normale', 'difficile', 'esperto'];
+  const AUTO_KEY = 'bur_auto_level';
+  function autoLevel(gid) {
+    if (S.prefs.botLevel && S.prefs.botLevel !== 'auto') return S.prefs.botLevel;
+    const a = store.get(AUTO_KEY, {})[gid];
+    return a && LEVELS.includes(a.level) ? a.level : 'normale';
+  }
+  function autoLevelRecord(p) {
+    if (!p || !p.game || !p.game.over || p.tutorial || (S.prefs.botLevel && S.prefs.botLevel !== 'auto')) return;
+    const gid = (p.rules && p.rules.game) || 'burraco';
+    const all = store.get(AUTO_KEY, {});
+    const a = all[gid] || { level: 'normale', res: [] };
+    if (a.last === p.id) return; // la stessa partita conta una volta
+    a.last = p.id;
+    a.res = (a.res || []).concat([(p.game.winners || []).includes(0) ? 1 : 0]).slice(-4);
+    const wins = a.res.reduce((x, y) => x + y, 0);
+    let i = LEVELS.indexOf(a.level);
+    if (a.res.length >= 4 && wins >= 3 && i < LEVELS.length - 1) { i++; a.res = []; toast(`🤖 Stai vincendo spesso: il computer diventa più bravo (${LEVELS[i]})`); }
+    else if (a.res.length >= 3 && a.res.slice(-3).every((x) => !x) && i > 0) { i--; a.res = []; toast(`🤖 Il computer diventa un po' più facile (${LEVELS[i]})`); }
+    a.level = LEVELS[i];
+    all[gid] = a;
+    store.set(AUTO_KEY, all);
+  }
+
   /** c'è una partita sul telefono da riprendere? */
   function savedLocalGame() {
     try { const r = JSON.parse(localStorage.getItem('bur_offline_room') || 'null'); return !!(r && r.game && !r.game.over); } catch (e) { return false; }

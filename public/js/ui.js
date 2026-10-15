@@ -104,6 +104,9 @@
       ${'speechSynthesis' in window ? `<div class="row" style="margin-top:6px">${opt('speak', false, '🔈 Mosse in silenzio')}${opt('speak', true, '🗣️ Leggi le mosse ad alta voce')}</div>` : ''}
       <h4>Messaggi vocali</h4>
       <div class="row">${opt('voice', true, '🎤 Ricevo e mando vocali')}${opt('voice', false, '🔇 Niente vocali')}</div>
+      <h4>Bravura del computer nelle nuove partite</h4>
+      <div class="row">${opt('botLevel', 'auto', '✨ Automatica')}${opt('botLevel', 'facile', '🙂 Facile')}${opt('botLevel', 'normale', 'Normale')}${opt('botLevel', 'difficile', '🧠 Difficile')}${opt('botLevel', 'esperto', '🎓 Esperto')}</div>
+      <p class="muted small">Automatica: il computer si adatta a come giochi, per ogni gioco (più bravo se vinci spesso, più facile se perdi).</p>
       <h4>Lingua · Language</h4>
       <div class="row">${opt('lang', 'auto', '🌐 Automatica')}${Object.entries(LANGS).map(([id, name]) => opt('lang', id, name)).join('')}</div>
       <h4>Tema</h4>

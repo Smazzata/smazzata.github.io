@@ -40,12 +40,14 @@
     gameName: (r) => (r && r.game === 'scopa' && r.deal && r.deal !== 3 ? 'Scopone' : { scala40: 'Scala 40', ramino: 'Ramino', canasta: 'Canasta', scopa: 'Scopa', briscola: 'Briscola', tressette: 'Tressette', rubamazzetto: 'Rubamazzetto', briscola5: 'Briscola in 5' }[r && r.game] || 'Burraco'),
   };
   /** la partita in corso è di Scala 40? di Canasta? */
+  /** gioco delle regole (come Games.idOf sul server; lo Scopone è una Scopa) */
+  const Games2 = { idOf: (r) => (r && r.game && (OTHER[r.game] || r.game === 'scala40') ? r.game : 'burraco') };
   const isS40Game = () => !!(S.game && S.game.game === 'scala40');
   const isCanastaGame = () => !!(S.game && S.game.game === 'canasta');
   /** giochi a prese (carte italiane): Scopa e Briscola */
   const isPresaGame = () => !!(S.game && S.game.presa);
 
-  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche', melds: 'colonna', lang: 'auto', text: 'normale', contrast: false, anim: true, speak: false, voice: true, ui: 'semplice' };
+  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche', melds: 'colonna', lang: 'auto', text: 'normale', contrast: false, anim: true, speak: false, voice: true, ui: 'semplice', botLevel: 'auto' };
   const S = {
     token: store.get('bur_token', null),
     name: store.get('bur_name', ''),
