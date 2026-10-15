@@ -69,6 +69,7 @@
           ? `<div class="hello"><span class="row">${avatarHTML(S.social.nick, 0, false, S.social.avatar || { e: S.social.nick.charAt(0).toUpperCase(), c: '#f2c14e' })}<span>Ciao, <b>${esc(S.social.nick)}</b>!${S.progress ? `<span class="lvlline">${lvlHTML(S.progress.level)} <em class="xpbar" title="${S.progress.into}/${S.progress.need} punti esperienza"><u style="width:${Math.round((S.progress.into / S.progress.need) * 100)}%"></u></em></span>` : ''}</span></span>
               <span class="row"><button class="btn small" data-act="profile">👤 Profilo</button>
               <button class="btn small" data-act="friends">👥 Amici${S.social.reqIn.length ? ` <span class="pill">${S.social.reqIn.length}</span>` : ''}</button></span></div>
+            ${S.mailOn && S.social.hasEmail === false && S.social.hasPassword ? '<div class="offbanner">📧 <b>Conferma la tua email</b>: ti serve per recuperare la password. <button class="btn small" data-act="profile">Conferma</button></div>' : ''}
             ${S.social.hasPassword === false ? '<div class="offbanner">⚠️ <b>Il tuo profilo non ha una password.</b> Impostala ora, così puoi sempre rientrare. <button class="btn small" data-act="profile">👤 Imposta</button></div>' : ''}`
           : `<label class="field"><span>Scegli il tuo nickname</span>
               <input type="text" id="nick" maxlength="16" autocomplete="off" placeholder="Es. Simone_88" value="${esc(S.nickDraft != null ? S.nickDraft : (S.name || ''))}"></label>
@@ -76,9 +77,9 @@
               <label class="field"><span>Scegli una password</span>
               <input type="password" id="nickpw" maxlength="100" autocomplete="new-password" placeholder="Almeno 6 caratteri" value="${esc(S.pwDraft || '')}"></label>
               <p class="muted small" style="margin:0 0 6px">Ti serve per entrare dagli altri tuoi dispositivi.</p>
-              ${S.mailOn ? `<label class="field"><span>Email (facoltativa)</span>
+              ${S.mailOn ? `<label class="field"><span>La tua email</span>
               <input type="email" id="nickmail" maxlength="250" autocomplete="email" placeholder="nome@esempio.it" value="${esc(S.mailDraft || '')}"></label>
-              <p class="muted small" style="margin:0 0 6px">Consigliata: se dimentichi la password ti mandiamo un codice per sceglierne una nuova.</p>` : ''}
+              <p class="muted small" style="margin:0 0 6px">Se dimentichi la password ti mandiamo un codice per sceglierne una nuova. Niente pubblicità.</p>` : ''}
               <div class="row"><button class="btn primary grow" data-act="claimNick">Crea il profilo</button></div>
               <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a> · <a href="privacy.html">Privacy</a></p>`}
         <div class="row" style="margin-top:10px"><button class="btn primary grow big" data-act="goSetup">Nuova partita</button></div>

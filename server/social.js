@@ -126,6 +126,28 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     return crypto.timingSafeEqual(Buffer.from(slot.h), Buffer.from(keyHash(String(code || '').replace(/\D/g, ''))));
   }
 
+  /** controlla un'email per il profilo token (formato e non usata da altri); restituisce l'email in minuscolo */
+  function checkEmail(email, token) {
+    email = String(email || '').trim().toLowerCase();
+    if (!Posta.validEmail(email)) fail('Indirizzo email non valido');
+    const owner = emailIndex.get(email);
+    if (owner && owner !== token) fail('Questa email è già usata da un altro profilo');
+    return email;
+  }
+  /** manda il codice di conferma; restituisce true se l'email è partita */
+  async function sendVerify(s, email) {
+    const code = sixDigits();
+    s.emailCode = { email, h: keyHash(code), exp: Date.now() + 15 * 60000, tries: 0, sent: Date.now() };
+    try {
+      await Posta.send(email, `Smazzata: il tuo codice è ${code}`, `Ciao ${s.nick},\n\nil codice per confermare la tua email è: ${code}\n\nScade tra 15 minuti. Se non hai chiesto tu questo codice, ignora questa email.\n\n— Smazzata`);
+      return true;
+    } catch (e) {
+      console.error('Email non inviata:', e.message);
+      s.emailCode.sent = 0; // si può richiedere subito
+      return false;
+    }
+  }
+
   function setPw(s, password) {
     const pw = String(password || '');
     if (pw.length < 6) fail('La password deve avere almeno 6 caratteri');
@@ -192,13 +214,15 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
 
     socket.on('checkNick', handler(({ nick }) => checkNick(nick, socket.data.token)));
 
-    socket.on('setNick', handler(({ nick, password }) => {
+    socket.on('setNick', handler(async ({ nick, password, email }) => {
       const token = me();
       nick = String(nick || '').trim();
       const ok = checkNick(nick, token);
       if (!ok.available) fail(ok.reason);
       const s = sess(token);
-      // profilo nuovo: la password è obbligatoria (serve per rientrare da un altro dispositivo)
+      const isNew = !s.nick;
+      // profilo nuovo: password ed email obbligatorie (l'email solo se il server sa mandare le email)
+      const mail = isNew && Posta.enabled() ? checkEmail(email, token) : null;
       if (!s.nick || !s.pw) setPw(s, password);
       if (s.nick) nickIndex.delete(s.nick.toLowerCase());
       s.nick = nick;
@@ -206,9 +230,11 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       nickIndex.set(nick.toLowerCase(), token);
       ensureCode(token);
       renamePlayer(token, nick);
+      // la conferma dell'email non blocca: si gioca subito, il codice si può scrivere anche dopo
+      const sent = mail ? await sendVerify(s, mail) : null;
       push(token);
       pushFriends(token);
-      return { nick, code: s.code };
+      return { nick, code: s.code, pending: mail, mailFailed: sent === false };
     }));
 
     socket.on('setAvatar', handler(({ e, c }) => {
@@ -246,7 +272,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     socket.on('profile', handler(() => {
       const token = me();
       const s = sess(token);
-      return { nick: s.nick || null, code: s.nick ? ensureCode(token) : null, hasPassword: !!s.pw, email: s.email || null, emailPending: s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null, mail: Posta.enabled(), avatar: s.avatar || null, emoji: AVATAR_EMOJI, colors: AVATAR_COLORS };
+      return { nick: s.nick || null, code: s.nick ? ensureCode(token) : null, hasPassword: !!s.pw, email: s.email || null, emailPending: s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null, emailLast: s.emailCode ? s.emailCode.email : null, mail: Posta.enabled(), avatar: s.avatar || null, emoji: AVATAR_EMOJI, colors: AVATAR_COLORS };
     }));
 
     socket.on('regenCode', handler(() => {
@@ -308,21 +334,11 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       const s = sess(token);
       if (!s.nick) fail('Scegli prima un nickname');
       if (!Posta.enabled()) fail('Le email non sono attive su questo server');
-      email = String(email || '').trim().toLowerCase();
-      if (!Posta.validEmail(email)) fail('Indirizzo email non valido');
-      const owner = emailIndex.get(email);
-      if (owner && owner !== token) fail('Questa email è già usata da un altro profilo');
+      email = checkEmail(email, token);
       if (s.emailCode && Date.now() - s.emailCode.sent < 60000) fail('Aspetta un minuto prima di chiedere un altro codice');
       limit('mail:' + ip);
-      const code = sixDigits();
-      s.emailCode = { email, h: keyHash(code), exp: Date.now() + 15 * 60000, tries: 0, sent: Date.now() };
-      try {
-        await Posta.send(email, `Smazzata: il tuo codice è ${code}`, `Ciao ${s.nick},\n\nil codice per confermare la tua email è: ${code}\n\nScade tra 15 minuti. Se non hai chiesto tu questo codice, ignora questa email.\n\n— Smazzata`);
-      } catch (e) {
-        s.emailCode = null;
-        console.error('Email non inviata:', e.message);
-        fail("Invio dell'email non riuscito: riprova più tardi");
-      }
+      if (!(await sendVerify(s, email))) fail("Invio dell'email non riuscito: riprova più tardi");
+      push(token);
       return { pending: email };
     }));
 

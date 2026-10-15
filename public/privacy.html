@@ -28,7 +28,8 @@
 
   <h2>In breve</h2>
   <ul>
-    <li>Non chiediamo nome vero, email, numero di telefono o posizione.</li>
+    <li>Per creare un profilo chiediamo solo nickname, password ed email. L'email serve <b>solo</b> per confermare che è tua e per recuperare la password: niente pubblicità, newsletter o messaggi ad altri.</li>
+    <li>Non chiediamo nome vero, numero di telefono o posizione.</li>
     <li>Niente pubblicità, niente tracciamento, niente cookie di terze parti, niente vendita di dati.</li>
     <li>Puoi cancellare il tuo profilo in qualsiasi momento: <b>Profilo → Elimina il mio profilo</b>.</li>
   </ul>
@@ -37,8 +38,9 @@
   <table>
     <tr><th>Dato</th><th>Perché</th></tr>
     <tr><td>Nickname e avatar (emoji e colore)</td><td>Per farti riconoscere al tavolo e dai tuoi amici.</td></tr>
-    <tr><td>Codice personale e un codice segreto del dispositivo</td><td>Per riconoscere il tuo profilo e spostarlo su un altro dispositivo.</td></tr>
-    <tr><td>Password (solo se la imposti)</td><td>Per recuperare il profilo. Non è mai salvata in chiaro: ne teniamo solo un'impronta irreversibile (scrypt).</td></tr>
+    <tr><td>Codice di recupero e una chiave per ogni dispositivo che usi</td><td>Per riconoscere il tuo profilo, spostarlo su un altro dispositivo e scollegare gli altri dispositivi quando cambi password. Delle chiavi teniamo solo un'impronta.</td></tr>
+    <tr><td>Password</td><td>Per entrare nel profilo da qualsiasi dispositivo. Non è mai salvata in chiaro: ne teniamo solo un'impronta irreversibile (scrypt).</td></tr>
+    <tr><td>Email</td><td>Per mandarti il codice di conferma, il codice per scegliere una nuova password e un avviso quando la password cambia. Non è visibile agli altri giocatori.</td></tr>
     <tr><td>Amici, richieste di amicizia, giocatori bloccati</td><td>Per le funzioni Amici e Inviti.</td></tr>
     <tr><td>Statistiche, storico delle ultime 20 partite, classifica</td><td>Per mostrarti come vai e per la classifica.</td></tr>
     <tr><td>Tavoli e partite in corso (anche le partite "con calma", fino a 14 giorni senza mosse)</td><td>Per far riprendere le partite dopo un riavvio del server e per giocare con calma.</td></tr>
@@ -57,7 +59,7 @@
   <ul>
     <li><b>Tutti i giocatori del server</b>: nickname e avatar (per esempio al tavolo e in classifica) e le partite in classifica.</li>
     <li><b>I tuoi amici</b>: se sei online o stai giocando e la tua scheda con statistiche e partite giocate insieme.</li>
-    <li><b>Il gestore del server</b>: i dati della tabella sopra (mai le password, che non sono leggibili) e le segnalazioni.</li>
+    <li><b>Il gestore del server</b>: i dati della tabella sopra, email comprese (mai le password, che non sono leggibili), e le segnalazioni.</li>
     <li><b>Gli spettatori</b> vedono il tavolo, ma mai le carte in mano ai giocatori.</li>
   </ul>
 
@@ -65,6 +67,7 @@
   <ul>
     <li>Il server gira su un dispositivo del gestore. Il collegamento passa attraverso <b>Cloudflare</b>, che rende raggiungibile il server da internet.</li>
     <li>La pagina d'ingresso e l'app Android sono ospitate su <b>GitHub</b>.</li>
+    <li>Le <b>email</b> partono da un indirizzo Gmail del gioco: passano quindi da <b>Google</b>, che riceve il tuo indirizzo email e il testo del messaggio.</li>
     <li>Ogni 6 ore viene fatto un <b>backup cifrato</b> dei dati del server su GitHub (restano quelli degli ultimi 7 giorni): senza la frase segreta del gestore è illeggibile.</li>
     <li>Le <b>notifiche push</b> passano dal servizio di notifiche del tuo browser (per esempio Google per Chrome, Mozilla per Firefox, Apple per Safari), che riceve solo il testo della notifica.</li>
     <li>La <b>musica</b> si ascolta su Spotify, con il tuo account: vale la privacy di Spotify.</li>
@@ -75,7 +78,7 @@
 
   <h2>Cancellare i dati</h2>
   <ul>
-    <li><b>Profilo → Elimina il mio profilo</b> libera il nickname e cancella codice, password, avatar, amicizie, blocchi, statistiche, trofei, posto in classifica e iscrizioni alle notifiche.</li>
+    <li><b>Profilo → Elimina il mio profilo</b> libera il nickname e cancella codice, password, email, avatar, amicizie, blocchi, statistiche, trofei, posto in classifica e iscrizioni alle notifiche.</li>
     <li>Le copie nei backup scompaiono da sole entro 7 giorni.</li>
     <li>Per qualsiasi richiesta (per esempio cancellare una segnalazione) scrivi al gestore con <b>🐞 Segnala un problema</b>.</li>
   </ul>

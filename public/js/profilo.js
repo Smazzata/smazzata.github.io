@@ -70,8 +70,8 @@
       <div class="nickstatus" id="nickStatusEdit"></div>
       ${r.mail ? `<h4>Email ${r.email ? '(confermata ✓)' : ''}</h4>
       <p class="muted small">Serve per ricevere un codice se dimentichi la password, e un avviso se la password cambia.</p>
-      ${r.emailPending ? verifyEmailHTML(r.emailPending) : ''}
-      <form id="emailform" class="row"><input id="emailin" type="email" class="grow" maxlength="250" autocomplete="email" value="${esc(r.email || '')}" placeholder="nome@esempio.it"><button class="btn">${r.email ? 'Cambia' : 'Aggiungi'}</button></form>` : ''}
+      ${r.emailPending ? verifyEmailHTML(r.emailPending) : !r.email && r.emailLast ? '<p class="muted small">⚠️ Email non ancora confermata: premi «Manda il codice» per riceverne uno nuovo.</p>' : ''}
+      <form id="emailform" class="row"><input id="emailin" type="email" class="grow" maxlength="250" autocomplete="email" value="${esc(r.email || r.emailLast || '')}" placeholder="nome@esempio.it"><button class="btn">${r.email ? 'Cambia' : r.emailLast ? 'Manda il codice' : 'Aggiungi'}</button></form>` : ''}
       <h4>Codice di recupero</h4>
       <p class="muted small">Serve se dimentichi la password, oppure per entrare da un altro telefono: inquadra il QR con la sua fotocamera
         o scrivi lì il codice (<i>Hai già un profilo? Recuperalo</i>). <b>Non condividerlo:</b> chi lo ha può usare il tuo profilo.</p>
@@ -95,7 +95,7 @@
   function verifyEmailHTML(email) {
     return `<div class="mailbox"><p>📧 Ti abbiamo mandato un codice a <b>${esc(email)}</b>: scrivilo qui per confermare l'email.</p>
       <form id="verifyform" class="row"><input id="vcode" class="grow" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="123456"><button class="btn primary">Conferma</button></form>
-      <p class="muted small">Non arriva? Guarda anche nello spam.</p></div>`;
+      <p class="muted small">Non arriva? Guarda anche nello spam. Puoi confermarla anche più tardi da 👤 Profilo.</p></div>`;
   }
 
   function recoveryCodeModal(nick, code, pendingEmail) {

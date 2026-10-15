@@ -16,8 +16,10 @@
    con la nostra chiave (`android-app/burraco.p12`), che diventa la *chiave di caricamento*. Non perderla e non cambiarla.
 4. **Scheda dello Store**: copia i testi da `testi.md` e carica icona, immagine in evidenza e almeno 2 schermate.
 5. **Norme sulla privacy**: indirizzo https://simonemuliello010500-web.github.io/BurracoByMSF/gioca/privacy.html
-6. **Sicurezza dei dati**: l'app salva nickname, statistiche e (se scelta) una password cifrata; nessuna pubblicità,
-   nessun dato venduto, eliminazione del profilo dall'app.
+6. **Sicurezza dei dati**: dichiara che l'app raccoglie **indirizzo email** (Informazioni personali → Indirizzo email:
+   obbligatorio, scopo «Gestione dell'account», non condiviso con terzi) e **ID utente** (il nickname). Salva anche
+   statistiche di gioco e una password cifrata; dati cifrati in transito (https); nessuna pubblicità, nessun dato venduto;
+   l'utente può eliminare il profilo dall'app (Profilo → Elimina il mio profilo).
 7. **Classificazione dei contenuti** (questionario): niente violenza né acquisti. Attenzione al **Sette e mezzo**:
    è un gioco d'azzardo *simulato* (fiches finte, nessun premio). Va dichiarato: di solito porta la classificazione
    a PEGI 12 / «Adolescenti». Se preferisci restare «Per tutti», si può nascondere il Sette e mezzo nella versione Play.

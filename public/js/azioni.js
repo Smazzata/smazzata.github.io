@@ -343,13 +343,14 @@
       const password = ($('#nickpw') || {}).value || '';
       if (password.length < 6) { toast('La password deve avere almeno 6 caratteri', true); return; }
       const email = (($('#nickmail') || {}).value || '').trim();
-      const r = await emit('setNick', { nick: nick.trim(), password });
+      if (S.mailOn && !email) { toast('Scrivi la tua email', true); return; }
+      const r = await emit('setNick', { nick: nick.trim(), password, email });
       if (r.ok) {
         S.nickDraft = null; S.nickCheck = null; S.pwDraft = null; S.mailDraft = null;
         render();
-        // l'email si conferma con il codice che arriva nella posta (se l'invio non riesce, la si aggiunge poi dal profilo)
-        const m = email ? await emit('setEmail', { email }) : null;
-        recoveryCodeModal(r.nick, r.code, m && m.ok ? m.pending : null);
+        // l'email si conferma con il codice che arriva nella posta (anche più tardi, dal profilo)
+        if (r.mailFailed) toast("Email non partita: la confermi più tardi dal profilo", true);
+        recoveryCodeModal(r.nick, r.code, r.pending && !r.mailFailed ? r.pending : null);
       }
     },
     profile: profileModal,
