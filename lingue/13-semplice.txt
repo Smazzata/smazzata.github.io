@@ -55,3 +55,30 @@ Schermate ‖ Screens ‖ Pantallas ‖ Telas
 🙂 Semplici ‖ 🙂 Simple ‖ 🙂 Sencillas ‖ 🙂 Simples
 🧩 Complete (tutte le opzioni) ‖ 🧩 Complete (all options) ‖ 🧩 Completas (todas las opciones) ‖ 🧩 Completas (todas as opções)
 Il mio profilo ‖ My profile ‖ Mi perfil ‖ Meu perfil
+Tocca a te: tocca la carta che vuoi giocare ‖ Your turn: tap the card you want to play ‖ Te toca: toca la carta que quieres jugar ‖ Sua vez: toque na carta que quer jogar
+Queste carte non formano un gioco: aggiungine o togline ‖ These cards do not make a meld: add or remove some ‖ Estas cartas no forman una combinación: añade o quita alguna ‖ Estas cartas não formam um jogo: adicione ou tire alguma
+Tocca un tuo gioco per attaccare queste carte ‖ Tap one of your melds to add these cards ‖ Toca una de tus combinaciones para añadir estas cartas ‖ Toque num dos seus jogos para juntar estas cartas
+① Pesca ‖ ① Draw ‖ ① Roba ‖ ① Compre
+✓ Pesca ‖ ✓ Draw ‖ ✓ Roba ‖ ✓ Compre
+② Cala ‖ ② Meld ‖ ② Baja ‖ ② Baixe
+③ Scarta ‖ ③ Discard ‖ ③ Descarta ‖ ③ Descarte
+👆 Pesca qui ‖ 👆 Draw here ‖ 👆 Roba aquí ‖ 👆 Compre aqui
+👆 Scarta qui ‖ 👆 Discard here ‖ 👆 Descarta aquí ‖ 👆 Descarte aqui
+tallone ‖ stock ‖ mazo ‖ monte
+scarti ‖ discard pile ‖ descartes ‖ descarte
+scartare ‖ discard ‖ descartar ‖ descartar
+✓ Cala ‖ ✓ Meld ‖ ✓ Bajar ‖ ✓ Baixar
+
+Aspetta: gioca ‖ Wait: playing now is ‖ Espera: juega ‖ Espere: está jogando
+Tocca a te: pesca una carta dal ‖ Your turn: draw a card from the ‖ Te toca: roba una carta del ‖ Sua vez: compre uma carta do
+Tocca a te: pesca dal ‖ Your turn: draw from the ‖ Te toca: roba del ‖ Sua vez: compre do
+, oppure prendi gli ‖ , or take the ‖ , o coge los ‖ , ou pegue os
+Ora tocca gli ‖ Now tap the ‖ Ahora toca los ‖ Agora toque nos
+per scartarla (o un tuo gioco per attaccarla) ‖ to discard it (or one of your melds to add it) ‖ para descartarla (o una de tus combinaciones para añadirla) ‖ para descartá-la (ou num dos seus jogos para juntá-la)
+Tocca ‖ Tap ‖ Toca ‖ Toque
+per calare queste carte ‖ to meld these cards ‖ para bajar estas cartas ‖ para baixar estas cartas
+Tocca le carte da calare, oppure la carta da ‖ Tap the cards to meld, or the card to ‖ Toca las cartas para bajar, o la carta para ‖ Toque nas cartas para baixar, ou na carta para
+(il monte è bloccato) ‖ (the pile is blocked) ‖ (el pozo está bloqueado) ‖ (o monte está bloqueado)
+, oppure seleziona due carte uguali con quella in cima e tocca il ‖ , or select two equal cards matching the top one and tap the ‖ , o selecciona dos cartas iguales a la de arriba y toca el ‖ , ou selecione duas cartas iguais à de cima e toque no
+, oppure seleziona le carte da usare con quella in cima e tocca il ‖ , or select the cards to use with the top one and tap the ‖ , o selecciona las cartas a usar con la de arriba y toca el ‖ , ou selecione as cartas a usar com a de cima e toque no
+, oppure seleziona carte da combinare con la cima e tocca gli ‖ , or select cards to combine with the top one and tap the ‖ , o selecciona cartas para combinar con la de arriba y toca los ‖ , ou selecione cartas para combinar com a de cima e toque nos

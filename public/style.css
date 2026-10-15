@@ -983,3 +983,13 @@ body.noanim *, body.noanim *::before, body.noanim *::after { animation-duration:
 .statusbar.on .msg { font-weight: 700; color: #fff; }
 .statusbar.on { background: linear-gradient(90deg, rgba(242,193,78,.32), rgba(242,193,78,.5), rgba(242,193,78,.32)); }
 .tight2 .statusbar .msg, .compact .statusbar .msg { font-size: 13.5px; }
+/* passi del turno e «tocca qui»: chi gioca vede sempre cosa fare adesso */
+.statusbar .steps { display: flex; gap: 10px; margin-bottom: 2px; font-size: 12px; font-weight: 600; }
+.statusbar .steps i { font-style: normal; opacity: .55; }
+.statusbar .steps i.now { opacity: 1; color: #fff; text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 3px; }
+.statusbar .steps i.opt { text-decoration-style: dotted; }
+.statusbar .steps i.done { opacity: .8; color: #a9e2b4; }
+.lbl .here { color: var(--gold); font-size: 13px; animation: herePulse 1.2s ease-in-out infinite; display: inline-block; }
+@keyframes herePulse { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .lbl .here { animation: none; } }
+body.noanim .lbl .here { animation: none; }

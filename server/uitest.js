@@ -49,7 +49,7 @@ const HELPERS = `
       if (felt && felt.scrollHeight > felt.clientHeight + 2) scroll++;
       const st = __status();
       const myTurn = /Tocca a te/.test(document.title);
-      if (/tocca il/i.test(st)) __tap('.stock');
+      if (/pesca (dal|una)/i.test(st)) __tap('.stock');
       else if (myTurn) {
         const cs = [...document.querySelectorAll('#hand .card')];
         if (cs.length) { __tap(cs[cs.length - 1]); await __W(120); __tap('.pile'); turns++; }

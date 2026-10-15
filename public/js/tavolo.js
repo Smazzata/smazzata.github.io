@@ -201,25 +201,34 @@
     const me = g.you;
     if (g.phase === 'handEnd') return g.over ? 'Partita terminata' : 'Smazzata terminata';
     const cur = g.players[g.turn];
-    if (g.turn !== me) return `Turno di <b>${esc(cur.name)}</b>${g.lastTurn ? ' · <b>ultimo giro</b>' : ''}`;
+    if (g.turn !== me) return `Aspetta: gioca <b>${esc(cur.name)}</b>${g.lastTurn ? ' · <b>ultimo giro</b>' : ''}`;
     if (g.game === 'briscola5' && g.phase === 'bid') return 'Tocca a te: chiama una carta o passa';
     if (g.game === 'briscola5' && g.phase === 'call') return 'Tocca a te: scegli il seme di briscola';
-    if (g.presa) return 'Tocca a te: tocca una carta per giocarla';
+    if (g.presa) return 'Tocca a te: tocca la carta che vuoi giocare';
     if (g.phase === 'draw') {
-      if (g.mustDraw) return 'Tocca a te: tocca il <b>tallone</b> per pescare';
-      if (isCanastaGame() && g.discardCount) return g.pileBlocked ? 'Tocca a te: tocca il <b>tallone</b> (il monte è bloccato)' : `Tocca a te: tocca il <b>tallone</b>, oppure seleziona ${g.pileFrozen ? 'due carte uguali' : 'le carte da usare'} con quella in cima e tocca il <b>monte</b>`;
-      if (g.cfg.pile === 'closed' && g.discardCount) return 'Tocca il <b>tallone</b>, oppure seleziona carte da combinare con la cima e tocca gli <b>scarti</b>';
-      return 'Tocca a te: tocca il <b>tallone</b> o gli <b>scarti</b>';
+      if (g.mustDraw) return 'Tocca a te: pesca una carta dal <b>tallone</b>';
+      if (isCanastaGame() && g.discardCount) return g.pileBlocked ? 'Tocca a te: pesca dal <b>tallone</b> (il monte è bloccato)' : `Tocca a te: pesca dal <b>tallone</b>, oppure seleziona ${g.pileFrozen ? 'due carte uguali' : 'le carte da usare'} con quella in cima e tocca il <b>monte</b>`;
+      if (g.cfg.pile === 'closed' && g.discardCount) return 'Tocca a te: pesca dal <b>tallone</b>, oppure seleziona carte da combinare con la cima e tocca gli <b>scarti</b>';
+      return 'Tocca a te: pesca dal <b>tallone</b>, oppure prendi gli <b>scarti</b>';
     }
     const myTeam = g.teams.find((t) => t.members.includes(me));
     const sel = S.selected.size;
-    let tip = sel === 1 ? 'Tocca gli <b>scarti</b> per scartare, o un tuo gioco per attaccare'
-      : sel >= 2 ? 'Tocca <b>＋</b> per calare o un tuo gioco per attaccare'
-        : 'Seleziona le carte: cala, attacca e poi <b>scarta</b>';
+    const nm = sel >= 2 ? selectionPreview(g, myTeam).newMeld : null;
+    let tip = sel === 1 ? 'Ora tocca gli <b>scarti</b> per scartarla (o un tuo gioco per attaccarla)'
+      : sel >= 2 ? (nm && nm.ok ? 'Tocca <b>✓ Cala</b> per calare queste carte' : nm ? 'Queste carte non formano un gioco: aggiungine o togline' : 'Tocca un tuo gioco per attaccare queste carte')
+        : 'Tocca le carte da calare, oppure la carta da <b>scartare</b>';
     if (myTeam && myTeam.canClose) tip = 'Puoi <b>chiudere</b>: cala tutto e scarta l\'ultima carta';
     else if (g.hand.length <= 3 && myTeam && myTeam.pozzettoTaken) tip += ` · per chiudere serve ${g.cfg.closeNeeds === 'clean' ? `una ${g.cfg.burracoName} pulita` : `un ${g.cfg.burracoName}`}`;
     if (g.lastTurn) tip += ' · <b>ultimo turno!</b>';
     return tip;
+  }
+
+  /** I passi del mio turno: ① Pesca ② Cala ③ Scarta (giochi in cui si pesca e si scarta) */
+  function stepsHTML(g) {
+    if (g.presa || g.turn !== g.you || (g.phase !== 'draw' && g.phase !== 'play')) return '';
+    const draw = g.phase === 'draw';
+    const st = (n, label, cls) => `<i class="${cls}">${n} ${label}</i>`;
+    return `<span class="steps">${st(draw ? '①' : '✓', 'Pesca', draw ? 'now' : 'done')}${st('②', 'Cala', draw ? '' : 'now opt')}${st('③', 'Scarta', draw ? '' : 'now')}</span>`;
   }
 
   /** Avviso di fine tallone: quanti giri restano prima che la smazzata finisca */
@@ -347,12 +356,12 @@
     const center = `<div class="center">
       <div class="stock ${canDraw && (g.stockCount || g.pozzetti.length) ? 'active' : ''} ${S.hint && S.hint.type === 'draw' ? 'hinted' : ''}" ${canDraw ? 'data-act="draw" data-drag="stock"' : ''}>
         <div class="deck">${g.stockCount ? Array.from({ length: stockLayers }, (_, i) => backHTML('', `style="--l:${i}"`)).join('') : '<div class="card slot"></div>'}</div>
-        <span class="lbl ${stockWarning(g) ? 'lowstock' : ''}">Tallone · ${g.stockCount}</span>
+        <span class="lbl ${stockWarning(g) ? 'lowstock' : ''}">${canDraw && g.stockCount ? '<b class="here">👆 Pesca qui</b>' : `Tallone · ${g.stockCount}`}</span>
       </div>
       ${g.pozzetti.length ? `<div class="pozz"><div class="pz">${g.pozzetti.map((n, i) => backHTML('', `style="--l:${i}"`)).join('')}</div><span class="lbl">${g.pozzetti.length === 1 ? cap(P) : (P === 'morto' ? 'Morti' : 'Pozzetti')}</span></div>` : ''}
       <div class="pile ${(canDraw && g.discardCount && !g.mustDraw) || (playing && S.selected.size === 1) ? 'active' : ''} ${g.cfg.pile} ${S.hint && (S.hint.type === 'takePile' || S.hint.type === 'discard') ? 'hinted' : ''}" data-drop="discard" ${canDraw && !g.mustDraw ? 'data-act="takePile"' : playing ? 'data-act="discardSel"' : ''}>
         <div class="pcards">${pileCards || '<div class="card slot"></div>'}</div>
-        <span class="lbl">${isCanastaGame() ? `Monte${g.discardCount ? ' · ' + g.discardCount : ''}${g.pileBlocked ? ' 🔒' : g.pileFrozen ? ' ❄️' : ''}` : `Scarti${g.discardCount ? ' · ' + g.discardCount : ''}${g.cfg.pile === 'closed' ? ' (chiusi)' : ''}`}</span>
+        <span class="lbl">${playing && S.selected.size === 1 ? '<b class="here">👆 Scarta qui</b>' : isCanastaGame() ? `Monte${g.discardCount ? ' · ' + g.discardCount : ''}${g.pileBlocked ? ' 🔒' : g.pileFrozen ? ' ❄️' : ''}` : `Scarti${g.discardCount ? ' · ' + g.discardCount : ''}${g.cfg.pile === 'closed' ? ' (chiusi)' : ''}`}</span>
       </div>
     </div>`;
 
@@ -416,7 +425,7 @@
       <div class="felt" id="felt">${g.presa ? presaCenterHTML(g) : others + center + mineZone}</div>
       ${r.tutorial && !S.coachOff ? `<div class="coach">🎓 ${coachTip(g)} <button class="ico" data-act="coachOff" title="Nascondi">✕</button></div>` : ''}
       <div class="statusbar ${myTurn ? 'on' : ''}">
-        <span class="msg">${S.turnEnd && g.phase !== 'handEnd' && myTurn ? '<b class="cd" data-cd></b> ' : ''}${statusText(g)}</span>
+        <span class="msg">${stepsHTML(g)}${S.turnEnd && g.phase !== 'handEnd' && myTurn ? '<b class="cd" data-cd></b> ' : ''}${statusText(g)}</span>
         <div class="btns">${actions}</div>
       </div>
       ${S.reactOpen ? `<div class="reactbar">${['👏', '😂', '😱', '🔥', '👍', '😡', '🙏', '😍'].map((e) => `<button data-act="react" data-e="${e}">${e}</button>`).join('')}</div>` : ''}
