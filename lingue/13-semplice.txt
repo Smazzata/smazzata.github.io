@@ -105,3 +105,19 @@ Bravura del computer nelle nuove partite ‖ Computer skill in new games ‖ Niv
 Automatica: il computer si adatta a come giochi, per ogni gioco (più bravo se vinci spesso, più facile se perdi). ‖ Automatic: the computer adapts to how you play, for each game (stronger if you win often, easier if you lose). ‖ Automático: el ordenador se adapta a cómo juegas, en cada juego (más fuerte si ganas a menudo, más fácil si pierdes). ‖ Automático: o computador se adapta a como você joga, em cada jogo (mais forte se você ganha muito, mais fácil se perde).
 🤖 Stai vincendo spesso: il computer diventa più bravo ({0}) ‖ 🤖 You are winning often: the computer gets stronger ({0}) ‖ 🤖 Ganas a menudo: el ordenador se vuelve más fuerte ({0}) ‖ 🤖 Você está ganhando muito: o computador fica mais forte ({0})
 🤖 Il computer diventa un po' più facile ({0}) ‖ 🤖 The computer gets a little easier ({0}) ‖ 🤖 El ordenador se vuelve un poco más fácil ({0}) ‖ 🤖 O computador fica um pouco mais fácil ({0})
+Promemoria ‖ Reminders ‖ Recordatorios ‖ Lembretes
+🔔 Sì, ricordamelo ‖ 🔔 Yes, remind me ‖ 🔔 Sí, recuérdamelo ‖ 🔔 Sim, me lembre
+🔕 No ‖ 🔕 No ‖ 🔕 No ‖ 🔕 Não
+Una notifica gentile se la tua serie di giorni sta per finire, se non giochi da qualche giorno o se i tuoi amici iniziano una partita. Servono le notifiche attive. ‖ A gentle notification if your day streak is about to end, if you have not played for a few days or if your friends start a game. Notifications must be on. ‖ Un aviso amable si tu racha de días está a punto de acabar, si no juegas desde hace unos días o si tus amigos empiezan una partida. Las notificaciones deben estar activas. ‖ Uma notificação gentil se sua sequência de dias está para acabar, se você não joga há alguns dias ou se seus amigos começam uma partida. As notificações devem estar ativas.
+Giorni di gioco di fila ‖ Days played in a row ‖ Días de juego seguidos ‖ Dias de jogo seguidos
+🔥 {0} giorni di fila! Continua così ‖ 🔥 {0} days in a row! Keep it up ‖ 🔥 ¡{0} días seguidos! Sigue así ‖ 🔥 {0} dias seguidos! Continue assim
+Tre giorni di fila ‖ Three days in a row ‖ Tres días seguidos ‖ Três dias seguidos
+Gioca 3 giorni di fila ‖ Play 3 days in a row ‖ Juega 3 días seguidos ‖ Jogue 3 dias seguidos
+Una settimana di fila ‖ A week in a row ‖ Una semana seguida ‖ Uma semana seguida
+Gioca 7 giorni di fila ‖ Play 7 days in a row ‖ Juega 7 días seguidos ‖ Jogue 7 dias seguidos
+Un mese di fila ‖ A month in a row ‖ Un mes seguido ‖ Um mês seguido
+Gioca 30 giorni di fila ‖ Play 30 days in a row ‖ Juega 30 días seguidos ‖ Jogue 30 dias seguidos
+Costante ‖ Steady ‖ Constante ‖ Constante
+Instancabile ‖ Tireless ‖ Incansable ‖ Incansável
+7 giorni di gioco di fila ‖ 7 days of play in a row ‖ 7 días de juego seguidos ‖ 7 dias de jogo seguidos
+30 giorni di gioco di fila ‖ 30 days of play in a row ‖ 30 días de juego seguidos ‖ 30 dias de jogo seguidos

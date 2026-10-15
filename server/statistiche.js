@@ -66,6 +66,8 @@ function recordLeaderboard(room) {
     const won = []; // trofei guadagnati con questa smazzata/partita
     const gid = Games.idOf(room.rules);
     const gs = gameStats(e, gid);
+    // giorni di gioco di fila: conta ogni smazzata finita (una volta al giorno)
+    if (room.recordedHand !== handKey) ctx.markPlayed(e);
     if (room.recordedHand !== handKey) {
       const mine = hr.teams.find((t) => t.members.includes(seat));
       if (mine && hr.reason !== 'surrender') {
@@ -120,7 +122,7 @@ function recordLeaderboard(room) {
     const lv = Levels.levelOf(e);
     if (room.recordedHand !== handKey || gameEnds) {
       const unlocks = Premi.unlockedIds({ level: lv.level, trophies: e.trophies || {} });
-      for (const sock of io.sockets.sockets.values()) if (sock.data.token === s.token) sock.emit('progress', { ...lv, unlocks, up: lv.level > levelBefore });
+      for (const sock of io.sockets.sockets.values()) if (sock.data.token === s.token) sock.emit('progress', { ...lv, unlocks, up: lv.level > levelBefore, streak: ctx.streakOf(e) });
     }
     if (fresh.length) {
       const list = fresh.map((id) => { const t = Trophies.BY_ID.get(id); return { id, e: t.e, name: t.name, desc: t.desc }; });

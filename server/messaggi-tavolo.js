@@ -474,6 +474,13 @@ module.exports.register = function register(socket, handler) {
     return {};
   }));
 
+  // Promemoria (notifiche gentili): attivi o spenti dalle impostazioni
+  socket.on('setRemind', handler(({ on } = {}) => {
+    const sess = sessions.get(socket.data.token);
+    if (sess) sess.remind = !!on;
+    return {};
+  }));
+
   // Vocali: attivati o no nelle impostazioni personali (vale per tutti i tavoli)
   socket.on('voicePref', handler(({ on } = {}) => {
     const sess = sessions.get(socket.data.token);

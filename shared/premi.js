@@ -22,6 +22,8 @@
     { id: 't_campione', kind: 'title', name: 'Campione', need: { trophy: 'torneo' }, how: 'vincere un torneo' },
     { id: 't_giorno', kind: 'title', name: 'Re del giorno', need: { trophy: 'sfida_primo' }, how: 'primo nella sfida del giorno' },
     { id: 't_collezionista', kind: 'title', name: 'Collezionista di trofei', need: { trophies: 15 } },
+    { id: 't_costante', kind: 'title', name: 'Costante', need: { trophy: 'serie_7' }, how: '7 giorni di gioco di fila' },
+    { id: 't_instancabile', kind: 'title', name: 'Instancabile', need: { trophy: 'serie_30' }, how: '30 giorni di gioco di fila' },
     // cornici dell'avatar
     { id: 'f_nessuna', kind: 'frame', name: 'Nessuna', need: {} },
     { id: 'f_argento', kind: 'frame', name: 'Argento', need: { level: 5 } },

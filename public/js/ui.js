@@ -107,6 +107,9 @@
       <h4>Bravura del computer nelle nuove partite</h4>
       <div class="row">${opt('botLevel', 'auto', '✨ Automatica')}${opt('botLevel', 'facile', '🙂 Facile')}${opt('botLevel', 'normale', 'Normale')}${opt('botLevel', 'difficile', '🧠 Difficile')}${opt('botLevel', 'esperto', '🎓 Esperto')}</div>
       <p class="muted small">Automatica: il computer si adatta a come giochi, per ogni gioco (più bravo se vinci spesso, più facile se perdi).</p>
+      ${OFFLINE ? '' : `<h4>Promemoria</h4>
+      <div class="row">${opt('remind', true, '🔔 Sì, ricordamelo')}${opt('remind', false, '🔕 No')}</div>
+      <p class="muted small">Una notifica gentile se la tua serie di giorni sta per finire, se non giochi da qualche giorno o se i tuoi amici iniziano una partita. Servono le notifiche attive.</p>`}
       <h4>Lingua · Language</h4>
       <div class="row">${opt('lang', 'auto', '🌐 Automatica')}${Object.entries(LANGS).map(([id, name]) => opt('lang', id, name)).join('')}</div>
       <h4>Tema</h4>

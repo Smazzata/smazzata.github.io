@@ -996,3 +996,5 @@ body.noanim .lbl .here { animation: none; }
 /* fine partita: tre scelte grandi una sotto l'altra */
 .endopts { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
 .endopts .btn { width: 100%; }
+/* serie di giorni di gioco accanto al nome */
+.hello .streak { display: inline-block; margin-left: 4px; padding: 1px 7px; border-radius: 10px; font-size: 13px; font-weight: 700; background: rgba(255,140,40,.22); color: #ffd39a; }

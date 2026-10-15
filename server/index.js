@@ -31,6 +31,7 @@ const Admin = require('./admin');
 require('./tavoli');
 require('./turni');
 require('./statistiche');
+require('./promemoria');
 require('./gare');
 require('./archivio');
 const TableMessages = require('./messaggi-tavolo');
@@ -72,7 +73,7 @@ ctx.push = createPush({ dataDir: DATA_DIR, sessions, contact: HOME_URL });
 const { social } = ctx;
 const Premi = require('../shared/premi');
 /** livello + premi sbloccati (titoli, cornici, dorsi) */
-const progressOf = (e) => { const lv = Levels.levelOf(e); return { ...lv, unlocks: Premi.unlockedIds({ level: lv.level, trophies: (e && e.trophies) || {} }) }; };
+const progressOf = (e) => { const lv = Levels.levelOf(e); return { ...lv, unlocks: Premi.unlockedIds({ level: lv.level, trophies: (e && e.trophies) || {} }), streak: ctx.streakOf(e) }; };
 
 io.on('connection', (socket) => {
   const handler = (fn) => (data, cb) => {
@@ -88,7 +89,7 @@ io.on('connection', (socket) => {
     } catch (e) { failed(e); }
   };
 
-  socket.on('hello', handler(({ token: key, name, voice, lang }) => {
+  socket.on('hello', handler(({ token: key, name, voice, lang, remind }) => {
     // il dispositivo ha una sua chiave (che si può revocare), collegata al profilo
     let token = key ? social.resolveDevice(key) : null;
     if (!token) {
@@ -101,6 +102,7 @@ io.on('connection', (socket) => {
     // con un nickname il nome mostrato è sempre quello
     if (sess.nick) sess.name = sess.nick; else if (name) sess.name = cleanName(name);
     if (typeof voice === 'boolean') sess.voice = voice;
+    if (typeof remind === 'boolean') sess.remind = remind;
     // lingua del dispositivo: le email arrivano in questa lingua
     if (require('./posta').LANGS.includes(lang)) sess.lang = lang;
     socket.data.token = token;

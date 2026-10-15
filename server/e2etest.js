@@ -257,6 +257,7 @@ async function signup(p, nick, email = mailOf()) {
       assert((await LG.call('localResult', res)).ok, 'lo stesso risultato rimandato non dà errore');
       const ls = await LG.call('myStats');
       assert(ls.stats && ls.stats.hands === 1, 'la smazzata conta una volta sola');
+      assert(LG.progress.some((x) => x.streak && x.streak.streak === 1 && x.streak.today), 'serie di giorni: oggi si è giocato');
       if (lg.over) assert(ls.stats.games === 1 && ls.byGame.briscola && !ls.byGame.briscola.elo, 'partita registrata, Elo invariato');
       const fake = JSON.parse(JSON.stringify(res)); fake.id = 'falso'; fake.game.players[1].isBot = false;
       assert(!(await LG.call('localResult', fake)).ok, 'un risultato con un altro giocatore umano è rifiutato');

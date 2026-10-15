@@ -47,7 +47,7 @@
   /** giochi a prese (carte italiane): Scopa e Briscola */
   const isPresaGame = () => !!(S.game && S.game.presa);
 
-  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche', melds: 'colonna', lang: 'auto', text: 'normale', contrast: false, anim: true, speak: false, voice: true, ui: 'semplice', botLevel: 'auto' };
+  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche', melds: 'colonna', lang: 'auto', text: 'normale', contrast: false, anim: true, speak: false, voice: true, ui: 'semplice', botLevel: 'auto', remind: true };
   const S = {
     token: store.get('bur_token', null),
     name: store.get('bur_name', ''),

@@ -299,6 +299,7 @@ function startGame(room) {
   room.botMemoTurn = -1;
   room.lastTurnSeat = room.game.turn;
   broadcast(room);
+  if (!room.tutorial && !room.daily) ctx.friendsPlaying(room);
 }
 
 // Pulizia dei tavoli abbandonati

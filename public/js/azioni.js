@@ -124,6 +124,7 @@
       if (S.screen === 'game') render();
       if (key === 'sound' && val) { Sound.unlock(); Sound.play('turn'); }
       if (key === 'voice') { emit('voicePref', { on: val }); if (val) voiceAskPermission(); }
+      if (key === 'remind') emit('setRemind', { on: val });
       if (key === 'notify' && val && canNotify && Notification.permission !== 'granted') {
         Notification.requestPermission().then((p) => {
           if (p !== 'granted') { S.prefs.notify = false; applyPrefs(); toast('Notifiche non consentite dal browser', true); } else enablePush();

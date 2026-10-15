@@ -162,6 +162,20 @@ function presaTests() {
   const RMB = require('../shared/rubamazzetto');
   const mv = RMB.moves(c(5, 'd', 1), [c(5, 'c', 2)], [[], [c(9, 'b', 3), c(5, 's', 4)]], 0);
   assert.deepStrictEqual(mv.map((m) => m.kind), ['steal', 'table'], 'si può rubare o prendere dal tavolo');
+  // serie di giorni di gioco (giorni italiani): sale giorno dopo giorno, riparte se se ne salta uno
+  {
+    const PM = require('./promemoria');
+    const today = PM.romeDay(), ieri = PM.dayBefore(today);
+    const e1 = {}; PM.markPlayed(e1);
+    assert(e1.streak === 1 && e1.lastDay === today, 'prima giornata');
+    assert(PM.markPlayed(e1) === false && e1.streak === 1, 'lo stesso giorno conta una volta');
+    const e2 = { lastDay: ieri, streak: 4, bestStreak: 4 }; PM.markPlayed(e2);
+    assert(e2.streak === 5 && e2.bestStreak === 5, 'giorno dopo giorno la serie sale');
+    const e3 = { lastDay: PM.dayBefore(ieri), streak: 9, bestStreak: 9 }; PM.markPlayed(e3);
+    assert(e3.streak === 1 && e3.bestStreak === 9, 'saltato un giorno: si riparte (il record resta)');
+    assert(PM.streakOf({ lastDay: PM.dayBefore(ieri), streak: 9 }).streak === 0, 'serie scaduta');
+    assert(PM.streakOf({ lastDay: ieri, streak: 3 }).streak === 3, 'giocato ieri: la serie è ancora viva');
+  }
   // Ramino: motore e computer della Scala 40, ma nessun minimo per aprire e scarto sempre libero
   {
     const GR = require('./games').GAMES.ramino;

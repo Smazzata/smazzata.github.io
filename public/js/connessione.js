@@ -34,7 +34,7 @@
     if (S.lostConnection) toast('✓ Riconnesso');
     S.lostConnection = false;
     S.connected = true;
-    socket.emit('hello', { token: S.token, name: S.name, voice: S.prefs.voice !== false, lang: LANG });
+    socket.emit('hello', { token: S.token, name: S.name, voice: S.prefs.voice !== false, lang: LANG, remind: S.prefs.remind !== false });
   });
   socket.on('disconnect', () => {
     S.connected = false;
@@ -159,6 +159,9 @@
     setTimeout(() => toast(`${d >= 0 ? '📈' : '📉'} ${t('Punteggio')} ${RX.gameName({ game })}: ${after} (${d >= 0 ? '+' : ''}${d})`), 1800);
   });
   socket.on('progress', (p) => {
+    // serie di giorni: festa quando sale (la prima smazzata di oggi)
+    const before = S.progress && S.progress.streak ? S.progress.streak.streak : null;
+    if (before != null && p.streak && p.streak.today && p.streak.streak > before && p.streak.streak >= 2) { toast(`🔥 ${p.streak.streak} giorni di fila! Continua così`); Sound.play('turn'); }
     S.progress = p;
     if (p.up) {
       const b = document.createElement('div');
