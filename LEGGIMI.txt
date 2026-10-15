@@ -1,2 +1,2 @@
-Backup cifrati di Smazzata.
+Backup cifrati di Burraco Online.
 Ripristino sul telefono: bash ~/burraco/scripts/android-server.sh --restore
