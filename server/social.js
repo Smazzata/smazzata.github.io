@@ -12,6 +12,7 @@ const crypto = require('crypto');
 const { GameError } = require('./engine');
 const Premi = require('../shared/premi');
 const Levels = require('./levels');
+const Posta = require('./posta');
 
 const NICK_RE = /^[A-Za-z0-9_.-]{3,16}$/;
 const CODE_ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -22,13 +23,17 @@ const AVATAR_COLORS = ['#f2c14e', '#64b5f6', '#ef7d7d', '#81c784', '#ba68c8', '#
 module.exports = function createSocial({ io, sessions, isConnected, roomOfToken, renamePlayer, onDelete, notifyOffline }) {
   const nickIndex = new Map(); // nick in minuscolo → token
   const codeIndex = new Map(); // codice personale → token
+  const devIndex = new Map(); // impronta della chiave di un dispositivo → token del profilo
+  const emailIndex = new Map(); // email verificata (minuscolo) → token
   const attempts = new Map(); // limite tentativi di accesso: chiave → { n, until }
 
   function rebuildIndexes() {
-    nickIndex.clear(); codeIndex.clear();
+    nickIndex.clear(); codeIndex.clear(); devIndex.clear(); emailIndex.clear();
     for (const [token, s] of sessions) {
       if (s.nick) nickIndex.set(s.nick.toLowerCase(), token);
       if (s.code) codeIndex.set(s.code, token);
+      if (s.email) emailIndex.set(s.email, token);
+      for (const d of s.devices || []) devIndex.set(d.h, token);
       s.friends = s.friends || []; s.reqIn = s.reqIn || []; s.reqOut = s.reqOut || [];
     }
   }
@@ -67,16 +72,58 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
   }
 
   /** Limita i tentativi di accesso (codice o password) per evitare che vengano indovinati */
-  function limit(key) {
+  function limit(key, max = key.startsWith('ip:') ? 30 : 8) {
     const now = Date.now();
     const a = attempts.get(key);
-    if (a && a.until > now && a.n >= 8) fail('Troppi tentativi: riprova tra qualche minuto');
+    if (a && a.until > now && a.n >= max) fail('Troppi tentativi: riprova tra qualche minuto');
     if (!a || a.until <= now) attempts.set(key, { n: 1, until: now + 10 * 60 * 1000 });
     else a.n++;
   }
 
   function hashPassword(pw, salt) {
     return crypto.scryptSync(pw, salt, 64).toString('hex');
+  }
+
+  /*
+   * Dispositivi: ognuno ha una chiave segreta sua (il server ne tiene solo l'impronta). Cambiando password
+   * si revocano le chiavi degli altri dispositivi, che vengono scollegati.
+   */
+  const keyHash = (key) => crypto.createHash('sha256').update(String(key || '')).digest('hex');
+  function newDevice(token) {
+    const s = sessions.get(token);
+    const key = crypto.randomBytes(18).toString('hex');
+    const h = keyHash(key);
+    s.devices = (s.devices || []).concat([{ h, at: Date.now() }]);
+    while (s.devices.length > 20) devIndex.delete(s.devices.shift().h);
+    devIndex.set(h, token);
+    return key;
+  }
+  const resolveDevice = (key) => devIndex.get(keyHash(key)) || null;
+  /** scollega tutti i dispositivi del profilo tranne quello con impronta keepHash */
+  function revokeDevices(token, keepHash) {
+    const s = sessions.get(token);
+    for (const d of s.devices || []) if (d.h !== keepHash) devIndex.delete(d.h);
+    s.devices = (s.devices || []).filter((d) => d.h === keepHash);
+    for (const so of io.sockets.sockets.values()) {
+      if (so.data.token === token && so.data.devKey !== keepHash) {
+        so.emit('loggedOut', { reason: 'La password del profilo è cambiata: entra di nuovo con la password nuova.' });
+        so.data.token = null;
+        so.disconnect(true);
+      }
+    }
+  }
+
+  /** email (in italiano: il server non conosce la lingua di chi la riceve) */
+  function mailTo(s, subject, text) {
+    if (!s.email || !Posta.enabled()) return;
+    Posta.send(s.email, subject, `Ciao ${s.nick},\n\n${text}\n\n— Smazzata`).catch((e) => console.error('Email non inviata:', e.message));
+  }
+  const sixDigits = () => String(crypto.randomInt(0, 1000000)).padStart(6, '0');
+  /** controlla un codice a 6 cifre (scade, massimo 5 tentativi); restituisce true se giusto */
+  function checkCode(slot, code) {
+    if (!slot || slot.exp < Date.now() || slot.tries >= 5) return false;
+    slot.tries++;
+    return crypto.timingSafeEqual(Buffer.from(slot.h), Buffer.from(keyHash(String(code || '').replace(/\D/g, ''))));
   }
 
   function setPw(s, password) {
@@ -115,6 +162,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     return {
       nick: s.nick || null,
       hasPassword: !!s.pw,
+      hasEmail: !!s.email,
       avatar: s.avatar || null,
       friends: s.friends.filter((t) => nickOf(t)).map(entry).sort((a, b) => b.online - a.online || a.nick.localeCompare(b.nick)),
       reqIn: s.reqIn.map(nickOf).filter(Boolean),
@@ -198,7 +246,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     socket.on('profile', handler(() => {
       const token = me();
       const s = sess(token);
-      return { nick: s.nick || null, code: s.nick ? ensureCode(token) : null, hasPassword: !!s.pw, avatar: s.avatar || null, emoji: AVATAR_EMOJI, colors: AVATAR_COLORS };
+      return { nick: s.nick || null, code: s.nick ? ensureCode(token) : null, hasPassword: !!s.pw, email: s.email || null, emailPending: s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null, mail: Posta.enabled(), avatar: s.avatar || null, emoji: AVATAR_EMOJI, colors: AVATAR_COLORS };
     }));
 
     socket.on('regenCode', handler(() => {
@@ -212,7 +260,12 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     socket.on('setPassword', handler(({ password }) => {
       const s = sess(me());
       if (!s.nick) fail('Scegli prima un nickname');
+      const had = !!s.pw;
       setPw(s, password);
+      if (had) {
+        revokeDevices(me(), socket.data.devKey);
+        mailTo(s, 'Smazzata: password cambiata', "la password del tuo profilo è stata cambiata e gli altri dispositivi sono stati scollegati.\nSe non sei stato tu, usa «Password dimenticata?» nell'app.");
+      }
       push(me());
       return {};
     }));
@@ -222,7 +275,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       limit('ip:' + ip);
       const token = codeIndex.get(normCode(code));
       if (!token) fail('Codice non valido');
-      return { token, nick: nickOf(token) };
+      return { token: newDevice(token), nick: nickOf(token) };
     }));
 
     socket.on('login', handler(({ nick, password }) => {
@@ -233,7 +286,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if (!s || !s.pw) fail('Nickname o password errati');
       const h = hashPassword(String(password || ''), s.pw.salt);
       if (!crypto.timingSafeEqual(Buffer.from(h, 'hex'), Buffer.from(s.pw.hash, 'hex'))) fail('Nickname o password errati');
-      return { token: t, nick: s.nick };
+      return { token: newDevice(t), nick: s.nick };
     }));
 
     // Password dimenticata: nickname + codice di recupero → nuova password
@@ -244,7 +297,78 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if (!t || codeIndex.get(normCode(code)) !== t) fail('Nickname o codice di recupero errati');
       const s = sess(t);
       setPw(s, password);
-      return { token: t, nick: s.nick };
+      revokeDevices(t, null);
+      mailTo(s, 'Smazzata: password cambiata', 'la password del tuo profilo è stata cambiata con il codice di recupero.\nSe non sei stato tu, cambiala subito con il codice di recupero e genera un codice nuovo (👤 Profilo).');
+      return { token: newDevice(t), nick: s.nick };
+    }));
+
+    // --- Email: aggiunta con codice di verifica, recupero della password ---
+    socket.on('setEmail', handler(async ({ email }) => {
+      const token = me();
+      const s = sess(token);
+      if (!s.nick) fail('Scegli prima un nickname');
+      if (!Posta.enabled()) fail('Le email non sono attive su questo server');
+      email = String(email || '').trim().toLowerCase();
+      if (!Posta.validEmail(email)) fail('Indirizzo email non valido');
+      const owner = emailIndex.get(email);
+      if (owner && owner !== token) fail('Questa email è già usata da un altro profilo');
+      if (s.emailCode && Date.now() - s.emailCode.sent < 60000) fail('Aspetta un minuto prima di chiedere un altro codice');
+      limit('mail:' + ip);
+      const code = sixDigits();
+      s.emailCode = { email, h: keyHash(code), exp: Date.now() + 15 * 60000, tries: 0, sent: Date.now() };
+      try {
+        await Posta.send(email, `Smazzata: il tuo codice è ${code}`, `Ciao ${s.nick},\n\nil codice per confermare la tua email è: ${code}\n\nScade tra 15 minuti. Se non hai chiesto tu questo codice, ignora questa email.\n\n— Smazzata`);
+      } catch (e) {
+        s.emailCode = null;
+        console.error('Email non inviata:', e.message);
+        fail("Invio dell'email non riuscito: riprova più tardi");
+      }
+      return { pending: email };
+    }));
+
+    socket.on('verifyEmail', handler(({ code }) => {
+      const token = me();
+      const s = sess(token);
+      const slot = s.emailCode;
+      if (!slot) fail('Prima chiedi il codice');
+      if (!checkCode(slot, code)) fail(slot.tries >= 5 || slot.exp < Date.now() ? 'Codice scaduto: chiedine uno nuovo' : 'Codice sbagliato');
+      const owner = emailIndex.get(slot.email);
+      if (owner && owner !== token) fail('Questa email è già usata da un altro profilo');
+      if (s.email) emailIndex.delete(s.email);
+      s.email = slot.email;
+      s.emailCode = null;
+      emailIndex.set(s.email, token);
+      push(token);
+      return { email: s.email };
+    }));
+
+    // Password dimenticata, via email: si manda un codice all'email verificata (la risposta è sempre la stessa,
+    // così non si scopre quali email sono registrate)
+    socket.on('forgotPassword', handler(({ email }) => {
+      limit('ip:' + ip);
+      email = String(email || '').trim().toLowerCase();
+      if (!Posta.enabled()) fail('Le email non sono attive su questo server');
+      const t = emailIndex.get(email);
+      const s = t && sessions.get(t);
+      if (s && !(s.resetCode && Date.now() - s.resetCode.sent < 60000)) {
+        const code = sixDigits();
+        s.resetCode = { h: keyHash(code), exp: Date.now() + 15 * 60000, tries: 0, sent: Date.now() };
+        Posta.send(email, `Smazzata: codice per la nuova password ${code}`, `Ciao ${s.nick},\n\nil codice per scegliere una nuova password è: ${code}\n\nScade tra 15 minuti. Se non l'hai chiesto tu, ignora questa email: la tua password resta quella di prima.\n\n— Smazzata`)
+          .catch((e) => console.error('Email non inviata:', e.message));
+      }
+      return {};
+    }));
+
+    socket.on('resetWithEmail', handler(({ email, code, password }) => {
+      limit('ip:' + ip);
+      const t = emailIndex.get(String(email || '').trim().toLowerCase());
+      const s = t && sessions.get(t);
+      if (!s || !checkCode(s.resetCode, code)) fail('Codice sbagliato o scaduto');
+      setPw(s, password);
+      s.resetCode = null;
+      revokeDevices(t, null);
+      mailTo(s, 'Smazzata: password cambiata', 'la password del tuo profilo è stata cambiata (con il codice ricevuto via email).\nSe non sei stato tu, rispondi a questa email.');
+      return { token: newDevice(t), nick: s.nick };
     }));
 
     socket.on('social', handler(() => ({ social: socialView(me()) })));
@@ -263,7 +387,8 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       }
       if (s.nick) nickIndex.delete(s.nick.toLowerCase());
       if (s.code) codeIndex.delete(s.code);
-      delete s.nick; delete s.code; delete s.pw; delete s.avatar;
+      if (s.email) emailIndex.delete(s.email);
+      delete s.nick; delete s.code; delete s.pw; delete s.avatar; delete s.email; delete s.emailCode; delete s.resetCode;
       s.friends = []; s.reqIn = []; s.reqOut = []; s.blocked = []; s.name = 'Giocatore';
       if (onDelete) onDelete(token);
       push(token);
@@ -359,5 +484,5 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     }));
   }
 
-  return { rebuildIndexes, register, push, pushFriends, socialView, checkNick, adminNewCode, nicks: () => [...nickIndex.values()].map(nickOf).filter(Boolean).sort((a, b) => a.localeCompare(b)) };
+  return { keyHash, newDevice, resolveDevice, rebuildIndexes, register, push, pushFriends, socialView, checkNick, adminNewCode, nicks: () => [...nickIndex.values()].map(nickOf).filter(Boolean).sort((a, b) => a.localeCompare(b)) };
 };

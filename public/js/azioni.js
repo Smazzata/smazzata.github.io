@@ -342,11 +342,14 @@
       const nick = ($('#nick') || {}).value || '';
       const password = ($('#nickpw') || {}).value || '';
       if (password.length < 6) { toast('La password deve avere almeno 6 caratteri', true); return; }
+      const email = (($('#nickmail') || {}).value || '').trim();
       const r = await emit('setNick', { nick: nick.trim(), password });
       if (r.ok) {
-        S.nickDraft = null; S.nickCheck = null; S.pwDraft = null;
+        S.nickDraft = null; S.nickCheck = null; S.pwDraft = null; S.mailDraft = null;
         render();
-        recoveryCodeModal(r.nick, r.code);
+        // l'email si conferma con il codice che arriva nella posta (se l'invio non riesce, la si aggiunge poi dal profilo)
+        const m = email ? await emit('setEmail', { email }) : null;
+        recoveryCodeModal(r.nick, r.code, m && m.ok ? m.pending : null);
       }
     },
     profile: profileModal,

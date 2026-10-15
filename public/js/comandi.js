@@ -222,6 +222,7 @@
   document.addEventListener('input', (e) => {
     if (e.target.id === 'nick') { S.nickDraft = e.target.value; checkNickLive(e.target.value, '#nickStatus'); }
     if (e.target.id === 'nickpw') S.pwDraft = e.target.value;
+    if (e.target.id === 'nickmail') S.mailDraft = e.target.value;
     if (e.target.id === 'nickEdit') checkNickLive(e.target.value, '#nickStatusEdit');
     if (e.target.id === 'rpRange') replayGo(e.target.value);
   });
@@ -250,6 +251,16 @@
       pwform: async () => { const r = await emit('setPassword', { password: $('#pwin').value }); if (r.ok) { toast('Password salvata'); profileModal(); } },
       codeform: async () => { const r = await emit('importProfile', { code: $('#codein').value }); if (r.ok) adoptProfile(r.token, r.nick); },
       loginform: async () => { const r = await emit('login', { nick: $('#lnick').value, password: $('#lpw').value }); if (r.ok) adoptProfile(r.token, r.nick); },
+      verifyform: async () => {
+        const r = await emit('verifyEmail', { code: $('#vcode').value });
+        if (r.ok) { toast('📧 Email confermata'); if (S.modalKind === 'profile') profileModal(); else { const b = $('.mailbox'); if (b) b.innerHTML = `<p>📧 Email confermata ✓</p>`; } }
+      },
+      emailform: async () => { const r = await emit('setEmail', { email: $('#emailin').value }); if (r.ok) profileModal(); },
+      forgotmailform: async () => { const email = $('#fmail').value.trim(); const r = await emit('forgotPassword', { email }); if (r.ok) forgotModal(email); },
+      mailresetform: async (f) => {
+        const r = await emit('resetWithEmail', { email: f.dataset.email, code: $('#mrcode').value, password: $('#mrpw').value });
+        if (r.ok) { toast('Password cambiata'); adoptProfile(r.token, r.nick); }
+      },
       forgotform: async () => { const r = await emit('resetPassword', { nick: $('#fnick').value.trim(), code: $('#fcode').value, password: $('#fpw').value }); if (r.ok) { toast('Password cambiata'); adoptProfile(r.token, r.nick); } },
       tourform: async () => {
         const r = await emit('tournamentCreate', { name: $('#tourname').value, game: $('#tourgame').value, size: Number($('#toursize').value) });
@@ -271,7 +282,7 @@
       },
       friendform: async () => { const n = $('#friendin').value.trim(); if (!n) return; const r = await emit('friendRequest', { nick: n }); if (r.ok) toast(`Richiesta inviata a ${n}`); },
     };
-    if (forms[e.target.id]) { e.preventDefault(); forms[e.target.id](); return; }
+    if (forms[e.target.id]) { e.preventDefault(); forms[e.target.id](e.target); return; }
     if (e.target.id === 'musicform') {
       e.preventDefault();
       const url = $('#musicin').value.trim();

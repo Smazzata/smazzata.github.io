@@ -76,24 +76,33 @@ const progressOf = (e) => { const lv = Levels.levelOf(e); return { ...lv, unlock
 
 io.on('connection', (socket) => {
   const handler = (fn) => (data, cb) => {
-    try { const res = fn(data || {}); if (typeof cb === 'function') cb({ ok: true, ...(res || {}) }); }
-    catch (e) {
+    const failed = (e) => {
       if (!(e instanceof E.GameError)) console.error(e);
       if (typeof cb === 'function') cb({ ok: false, error: e.message });
-    }
+    };
+    try {
+      const res = fn(data || {});
+      // le risposte che aspettano qualcosa (es. l'invio di un'email) arrivano più tardi
+      if (res && typeof res.then === 'function') res.then((r) => { if (typeof cb === 'function') cb({ ok: true, ...(r || {}) }); }, failed);
+      else if (typeof cb === 'function') cb({ ok: true, ...(res || {}) });
+    } catch (e) { failed(e); }
   };
 
-  socket.on('hello', handler(({ token, name, voice }) => {
-    if (!token || !sessions.has(token)) {
+  socket.on('hello', handler(({ token: key, name, voice }) => {
+    // il dispositivo ha una sua chiave (che si può revocare), collegata al profilo
+    let token = key ? social.resolveDevice(key) : null;
+    if (!token) {
       token = crypto.randomBytes(12).toString('hex');
       sessions.set(token, { name: cleanName(name), room: null });
+      key = social.newDevice(token);
     }
+    socket.data.devKey = social.keyHash(key);
     const sess = sessions.get(token);
     // con un nickname il nome mostrato è sempre quello
     if (sess.nick) sess.name = sess.nick; else if (name) sess.name = cleanName(name);
     if (typeof voice === 'boolean') sess.voice = voice;
     socket.data.token = token;
-    socket.emit('welcome', { token, name: sess.name, nick: sess.nick || null });
+    socket.emit('welcome', { token: key, name: sess.name, nick: sess.nick || null, mail: require('./posta').enabled() });
     socket.emit('progress', progressOf(leaderboard.get(token)));
     socket.emit('myGames', myGames(token));
     social.push(token);

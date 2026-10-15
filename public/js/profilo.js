@@ -68,6 +68,10 @@
       <h4>Cambia nickname</h4>
       <form id="nickform" class="row"><input id="nickEdit" class="grow" maxlength="16" autocomplete="off" value="${esc(r.nick)}"><button class="btn primary">Salva</button></form>
       <div class="nickstatus" id="nickStatusEdit"></div>
+      ${r.mail ? `<h4>Email ${r.email ? '(confermata ✓)' : ''}</h4>
+      <p class="muted small">Serve per ricevere un codice se dimentichi la password, e un avviso se la password cambia.</p>
+      ${r.emailPending ? verifyEmailHTML(r.emailPending) : ''}
+      <form id="emailform" class="row"><input id="emailin" type="email" class="grow" maxlength="250" autocomplete="email" value="${esc(r.email || '')}" placeholder="nome@esempio.it"><button class="btn">${r.email ? 'Cambia' : 'Aggiungi'}</button></form>` : ''}
       <h4>Codice di recupero</h4>
       <p class="muted small">Serve se dimentichi la password, oppure per entrare da un altro telefono: inquadra il QR con la sua fotocamera
         o scrivi lì il codice (<i>Hai già un profilo? Recuperalo</i>). <b>Non condividerlo:</b> chi lo ha può usare il tuo profilo.</p>
@@ -87,8 +91,16 @@
   }
 
   /** Subito dopo la creazione del profilo: il codice di recupero da conservare */
-  function recoveryCodeModal(nick, code) {
+  /** conferma dell'email: il codice a 6 cifre arrivato nella posta */
+  function verifyEmailHTML(email) {
+    return `<div class="mailbox"><p>📧 Ti abbiamo mandato un codice a <b>${esc(email)}</b>: scrivilo qui per confermare l'email.</p>
+      <form id="verifyform" class="row"><input id="vcode" class="grow" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="123456"><button class="btn primary">Conferma</button></form>
+      <p class="muted small">Non arriva? Guarda anche nello spam.</p></div>`;
+  }
+
+  function recoveryCodeModal(nick, code, pendingEmail) {
     openModal('recoveryCode', `<h2>Benvenuto, ${esc(nick)}! 🎉</h2>
+      ${pendingEmail ? verifyEmailHTML(pendingEmail) : ''}
       <p>Questo è il tuo <b>codice di recupero</b>. Se dimentichi la password, con questo ne scegli una nuova.</p>
       <div class="code-box"><span id="pcode">${esc(code || '')}</span><button class="btn small" data-act="copyCode" data-code="${esc(code || '')}">Copia</button></div>
       <p class="muted small">Fai uno screenshot o scrivilo da qualche parte. Non darlo a nessuno: chi lo ha può entrare nel tuo profilo.
@@ -96,8 +108,14 @@
       <div class="row" style="margin-top:8px"><button class="btn primary grow" data-act="savedCode">Ho salvato il codice</button></div>`);
   }
 
-  function forgotModal() {
+  function forgotModal(email) {
     openModal('recover', `<h2>Password dimenticata</h2>
+      ${S.mailOn ? `<h4>Con l'email</h4>
+      ${email ? `<p class="muted small">Se <b>${esc(email)}</b> è l'email di un profilo, ti abbiamo mandato un codice (guarda anche nello spam).</p>
+        <form id="mailresetform" data-email="${esc(email)}"><div class="row"><input id="mrcode" class="grow" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="Codice di 6 cifre"></div>
+        <div class="row" style="margin-top:6px"><input id="mrpw" type="password" class="grow" autocomplete="new-password" placeholder="Nuova password (almeno 6 caratteri)"><button class="btn primary">Salva</button></div></form>`
+      : `<form id="forgotmailform" class="row"><input id="fmail" type="email" class="grow" autocomplete="email" placeholder="La tua email"><button class="btn primary">Mandami il codice</button></form>`}
+      <h4>Con il codice di recupero</h4>` : ''}
       <p class="muted small">Scrivi il tuo nickname, il codice di recupero (te l'abbiamo mostrato quando hai creato il profilo; lo trovi anche in 👤 Profilo
         su un dispositivo dove sei ancora dentro) e una password nuova.</p>
       <form id="forgotform"><div class="row"><input id="fnick" class="grow" autocomplete="username" placeholder="Nickname"></div>

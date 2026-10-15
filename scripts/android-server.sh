@@ -33,6 +33,19 @@ if [ "${1:-}" = "--set-token" ]; then
   exit 0
 fi
 
+if [ "${1:-}" = "--set-mail" ]; then
+  # Gmail dedicato al gioco: manda i codici per confermare l'email e per il recupero della password
+  printf "Indirizzo Gmail del gioco: "
+  read -r mu
+  echo "Ora la «password per le app» di Google (16 lettere, anche con gli spazi). Non si vede mentre scrivi."
+  printf "Password per le app: "
+  stty -echo 2>/dev/null; read -r mp; stty echo 2>/dev/null; echo
+  [ -n "$mu" ] && [ -n "$mp" ] || { echo "Dati mancanti, niente salvato."; exit 1; }
+  printf '%s\n%s\n' "$mu" "$mp" > "$HOME/.burraco-mail" && chmod 600 "$HOME/.burraco-mail"
+  echo "Salvato. Le email si attivano entro un minuto, senza riavviare."
+  exit 0
+fi
+
 if [ "${1:-}" = "--set-backup-pass" ]; then
   echo "Scegli una frase segreta per cifrare i backup (es. 4-5 parole). SALVALA anche altrove:"
   echo "senza di lei il backup non si può ripristinare."

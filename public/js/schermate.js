@@ -76,6 +76,9 @@
               <label class="field"><span>Scegli una password</span>
               <input type="password" id="nickpw" maxlength="100" autocomplete="new-password" placeholder="Almeno 6 caratteri" value="${esc(S.pwDraft || '')}"></label>
               <p class="muted small" style="margin:0 0 6px">Ti serve per entrare dagli altri tuoi dispositivi.</p>
+              ${S.mailOn ? `<label class="field"><span>Email (facoltativa)</span>
+              <input type="email" id="nickmail" maxlength="250" autocomplete="email" placeholder="nome@esempio.it" value="${esc(S.mailDraft || '')}"></label>
+              <p class="muted small" style="margin:0 0 6px">Consigliata: se dimentichi la password ti mandiamo un codice per sceglierne una nuova.</p>` : ''}
               <div class="row"><button class="btn primary grow" data-act="claimNick">Crea il profilo</button></div>
               <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a> · <a href="privacy.html">Privacy</a></p>`}
         <div class="row" style="margin-top:10px"><button class="btn primary grow big" data-act="goSetup">Nuova partita</button></div>

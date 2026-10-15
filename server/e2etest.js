@@ -18,7 +18,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function startServer() {
   const proc = spawn(process.execPath, [path.join(__dirname, 'index.js')], {
-    env: { ...process.env, PORT: String(PORT), DATA_DIR: dataDir, BOT_DELAY: '15', TIMER_SCALE: '0.01' },
+    env: { ...process.env, MAIL_TEST: '1', PORT: String(PORT), DATA_DIR: dataDir, BOT_DELAY: '15', TIMER_SCALE: '0.01' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   proc.stderr.on('data', (d) => process.stderr.write('[server] ' + d));
@@ -170,20 +170,61 @@ const step = (t) => console.log('✓ ' + t);
     const C = player('Nuovo telefono');
     await C.hello();
     let imp = await C.call('importProfile', { code: prof.code.toLowerCase().replace(/-/g, ' ') });
-    assert(imp.ok && imp.token === A.token && imp.nick === 'Anna', 'profilo importato col codice');
+    assert(imp.ok && imp.token && imp.token !== A.token && imp.nick === 'Anna', 'profilo importato col codice');
     assert(!(await C.call('importProfile', { code: 'BUR-AAAA-BBBB-CCCC' })).ok, 'codice sbagliato rifiutato');
     assert(!(await B.call('setPassword', { password: '123' })).ok, 'password troppo corta');
     assert((await B.call('setPassword', { password: 'segreta123' })).ok);
     assert(!(await C.call('login', { nick: 'bruno', password: 'sbagliata' })).ok, 'password errata');
     const lg = await C.call('login', { nick: 'bruno', password: 'segreta123' });
-    assert(lg.ok && lg.token === B.token, 'accesso con nickname e password');
-    // password dimenticata: nickname + codice di recupero → password nuova
-    const codeB = (await B.call('profile')).code;
-    assert(!(await C.call('resetPassword', { nick: 'bruno', code: prof.code, password: 'nuova1234' })).ok, 'codice di un altro rifiutato');
-    const rpw = await C.call('resetPassword', { nick: 'Bruno', code: codeB, password: 'nuova1234' });
-    assert(rpw.ok && rpw.token === B.token, 'password cambiata con il codice di recupero');
-    assert(!(await C.call('login', { nick: 'bruno', password: 'segreta123' })).ok, 'la vecchia password non vale più');
-    assert((await C.call('login', { nick: 'bruno', password: 'nuova1234' })).ok, 'accesso con la nuova password');
+    assert(lg.ok && lg.nick === 'Bruno', 'accesso con nickname e password');
+    // password dimenticata (su un profilo a parte, Zeno, per non scollegare i giocatori delle prove dopo)
+    const Z = player('Zeno'); await Z.hello();
+    assert((await Z.call('setNick', { nick: 'Zeno', password: 'prova123' })).ok);
+    const Z2 = player('Zeno telefono 2'); await Z2.hello();
+    assert((await Z2.call('login', { nick: 'zeno', password: 'prova123' })).ok);
+    const Z2b = player('Zeno telefono 2');
+    const wz = await Z2b.hello((await Z2.call('login', { nick: 'zeno', password: 'prova123' })).token);
+    assert(wz.nick === 'Zeno', 'secondo dispositivo dentro il profilo');
+    const codeZ = (await Z.call('profile')).code;
+    assert(!(await C.call('resetPassword', { nick: 'zeno', code: prof.code, password: 'nuova1234' })).ok, 'codice di un altro rifiutato');
+    let kicked = false; Z2b.sock.on('loggedOut', () => { kicked = true; });
+    const rpw = await C.call('resetPassword', { nick: 'Zeno', code: codeZ, password: 'nuova1234' });
+    assert(rpw.ok && rpw.nick === 'Zeno', 'password cambiata con il codice di recupero');
+    for (let i = 0; i < 50 && !kicked; i++) await wait(20);
+    assert(kicked, 'cambiando password gli altri dispositivi vengono scollegati');
+    assert(!(await C.call('login', { nick: 'zeno', password: 'prova123' })).ok, 'la vecchia password non vale più');
+    assert((await C.call('login', { nick: 'zeno', password: 'nuova1234' })).ok, 'accesso con la nuova password');
+    step('password obbligatoria, codice di recupero, altri dispositivi scollegati');
+
+    // email: conferma con codice e recupero della password via email (in prova le email finiscono in un file)
+    const mailbox = () => { try { return fs.readFileSync(path.join(dataDir, 'posta-inviata.jsonl'), 'utf8').trim().split(/\r?\n/).map((l) => JSON.parse(l)); } catch (e) { return []; } };
+    const lastCode = async (to) => { for (let i = 0; i < 50; i++) { const m = mailbox().filter((x) => x.to === to).pop(); if (m) return (m.subject.match(/(\d{6})/) || [])[1]; await wait(20); } return null; };
+    const Y = player('Ylenia'); await Y.hello();
+    assert((await Y.call('setNick', { nick: 'Ylenia', password: 'prova123' })).ok);
+    assert(!(await Y.call('setEmail', { email: 'non-valida' })).ok, 'email non valida');
+    assert((await Y.call('setEmail', { email: 'Ylenia@Esempio.it' })).ok, 'codice di conferma inviato');
+    const vcode = await lastCode('ylenia@esempio.it');
+    assert(vcode, 'email con il codice');
+    assert(!(await Y.call('verifyEmail', { code: vcode === '000000' ? '111111' : '000000' })).ok, 'codice sbagliato');
+    assert((await Y.call('verifyEmail', { code: vcode })).ok, 'email confermata');
+    assert((await Y.call('profile')).email === 'ylenia@esempio.it');
+    const X = player('Xenia'); await X.hello();
+    assert((await X.call('setNick', { nick: 'Xenia', password: 'prova123' })).ok);
+    assert(!(await X.call('setEmail', { email: 'ylenia@esempio.it' })).ok, 'email già usata da un altro profilo');
+    assert((await C.call('forgotPassword', { email: 'nessuno@esempio.it' })).ok, 'stessa risposta per email sconosciute');
+    const mailsBefore = mailbox().length;
+    assert((await C.call('forgotPassword', { email: 'ylenia@esempio.it' })).ok);
+    let rcode = null; for (let i = 0; i < 50 && !rcode; i++) { const m = mailbox().slice(mailsBefore).filter((x) => x.to === 'ylenia@esempio.it').pop(); rcode = m && (m.subject.match(/(\d{6})/) || [])[1]; await wait(20); }
+    assert(rcode, 'email con il codice per la nuova password');
+    assert(!(await C.call('resetWithEmail', { email: 'ylenia@esempio.it', code: '12345', password: 'altra1234' })).ok, 'codice sbagliato rifiutato');
+    const rm = await C.call('resetWithEmail', { email: 'ylenia@esempio.it', code: rcode, password: 'altra1234' });
+    assert(rm.ok && rm.nick === 'Ylenia', 'password cambiata via email');
+    assert((await C.call('login', { nick: 'ylenia', password: 'altra1234' })).ok);
+    await wait(100);
+    assert(mailbox().some((x) => x.to === 'ylenia@esempio.it' && /password cambiata/.test(x.subject)), 'avviso di password cambiata');
+    for (const x of [Z, Z2, Z2b, Y, X]) x.sock.close();
+    step('email: conferma con codice, recupero della password via email, avviso');
+
     // eliminazione: il nickname torna libero e l'amicizia sparisce
     const D = player('Temporaneo');
     await D.hello();

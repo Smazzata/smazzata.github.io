@@ -52,7 +52,8 @@
     else if (hiddenAt) freshConnection();
   });
   window.addEventListener('online', () => { if (!socket.connected) socket.connect(); });
-  socket.on('welcome', ({ token, name, nick }) => {
+  socket.on('welcome', ({ token, name, nick, mail }) => {
+    S.mailOn = !!mail;
     // offline il codice del profilo salvato non va mai sovrascritto: serve quando si torna online
     if (!OFFLINE) {
       S.token = token;
@@ -81,6 +82,14 @@
     if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
     notify('Smazzata: tocca a te 🐢', text, 'slow-' + code);
     toast(`🐢 ${text}`);
+  });
+  // la password è cambiata da un altro dispositivo: questo viene scollegato
+  socket.on('loggedOut', ({ reason }) => {
+    store.set('bur_token', null);
+    S.token = null;
+    alert(reason || 'Sei stato scollegato dal profilo.');
+    if (ON_TUNNEL) location.replace(HOME_URL + '#salva=');
+    else location.reload();
   });
   socket.on('social', (soc) => {
     S.social = soc;

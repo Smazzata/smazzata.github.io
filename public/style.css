@@ -563,6 +563,8 @@ body[data-theme="notte"] .rteam .rbar { background: rgba(255,255,255,.12); }
 
 /* gioco senza internet */
 .offbanner { background: rgba(0,0,0,.22); border: 1px dashed rgba(255,255,255,.35); border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.45; }
+.mailbox { border: 1px dashed currentColor; border-radius: 12px; padding: 8px 10px; margin: 8px 0; }
+.mailbox p { margin: 0 0 6px; }
 
 /* trofei */
 .trophytoast {
