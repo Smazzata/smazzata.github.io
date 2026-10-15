@@ -998,4 +998,3 @@ body.noanim .lbl .here { animation: none; }
 .endopts .btn { width: 100%; }
 /* serie di giorni di gioco accanto al nome */
 .hello .streak { display: inline-block; margin-left: 4px; padding: 1px 7px; border-radius: 10px; font-size: 13px; font-weight: 700; background: rgba(255,140,40,.22); color: #ffd39a; }
-.shareimg { display: block; width: 100%; max-width: 420px; margin: 6px auto 0; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.35); }

@@ -43,7 +43,6 @@
           ${solo ? '<button class="btn big" data-act="newFromResult">🃏 Nuova partita</button>' : '<button class="btn big" data-act="backToLobby">🪑 Torna al tavolo</button>'}
           <button class="btn big" data-act="leaveNow">🚪 Esci dal tavolo</button>
         </div>
-        <div class="row" style="justify-content:center;margin-top:8px"><button class="btn ghost dark small" data-act="shareResult">📤 Condividi il risultato</button></div>
         ${imReady && waiting.length ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : solo ? '' : '<p class="muted small">Rivincita: stessi posti e stesse regole, si riparte quando tutti la premono. Torna al tavolo: per cambiare regole o giocatori.</p>'}`;
     } else {
       footer = `<button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Pronto ✓' : 'Prossima smazzata'}</button>
@@ -161,87 +160,3 @@
       ${item('settings', '⚙️', 'Impostazioni')}
       ${item('leave', '🚪', 'Esci dalla partita')}</div>`);
   }
-
-  /*
-   * Immagine del risultato da condividere (WhatsApp, social): tavolo verde, ventaglio di carte, chi ha vinto,
-   * i punteggi e la data. Se il telefono lo permette si condivide direttamente l'immagine, altrimenti la si
-   * mostra con «Scarica» e un messaggio pronto per WhatsApp.
-   */
-  function resultImage() {
-    const g = S.game;
-    const W = 1080, H = 1080;
-    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-    const c = cv.getContext('2d');
-    // panno verde con luce al centro e bordo dorato
-    const bg = c.createRadialGradient(W / 2, H * 0.38, 80, W / 2, H / 2, W * 0.75);
-    bg.addColorStop(0, '#1f8a55'); bg.addColorStop(0.55, '#0f5132'); bg.addColorStop(1, '#062b1a');
-    c.fillStyle = bg; c.fillRect(0, 0, W, H);
-    c.strokeStyle = 'rgba(242,193,78,.55)'; c.lineWidth = 6; c.strokeRect(28, 28, W - 56, H - 56);
-    c.strokeStyle = 'rgba(242,193,78,.25)'; c.lineWidth = 2; c.strokeRect(44, 44, W - 88, H - 88);
-    // ventaglio di tre carte
-    const card = (x, y, rot, face) => {
-      c.save(); c.translate(x, y); c.rotate(rot);
-      c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 24; c.shadowOffsetY = 10;
-      const w = 150, h = 210, r = 16;
-      c.beginPath(); c.roundRect(-w / 2, -h, w, h, r);
-      if (face) { c.fillStyle = '#fbf8ef'; c.fill(); c.shadowColor = 'transparent';
-        c.fillStyle = face.red ? '#c0392b' : '#1b1b1b';
-        c.font = 'bold 46px Georgia, serif'; c.textAlign = 'left'; c.fillText(face.r, -w / 2 + 14, -h + 54);
-        c.font = '40px serif'; c.fillText(face.s, -w / 2 + 16, -h + 98);
-        c.font = '96px serif'; c.textAlign = 'center'; c.fillText(face.s, 0, -h / 2 + 36);
-      } else { const gb = c.createLinearGradient(-w / 2, -h, w / 2, 0); gb.addColorStop(0, '#c0303f'); gb.addColorStop(1, '#7d1422'); c.fillStyle = gb; c.fill();
-        c.shadowColor = 'transparent'; c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 4; c.beginPath(); c.roundRect(-w / 2 + 12, -h + 12, w - 24, h - 24, 10); c.stroke(); }
-      c.restore();
-    };
-    card(W / 2 - 120, 400, -0.32, null);
-    card(W / 2 + 120, 400, 0.32, { r: 'A', s: '♦', red: true });
-    card(W / 2, 380, 0, { r: 'A', s: '♠', red: false });
-    // titolo
-    c.textAlign = 'center';
-    c.fillStyle = '#f2c14e'; c.font = 'bold 92px Georgia, serif'; c.fillText('Smazzata', W / 2, 520);
-    const won = g.winners.includes(g.you);
-    c.fillStyle = '#ffffff'; c.font = 'bold 70px system-ui, sans-serif';
-    c.fillText(won ? '🏆 Ho vinto!' : 'Che partita!', W / 2, 630);
-    c.fillStyle = '#bcd6c8'; c.font = '38px system-ui, sans-serif';
-    c.fillText(`${RX.gameName(g.cfg.rules)} · ${g.handNo} ${g.handNo === 1 ? 'smazzata' : 'smazzate'} · ${new Date().toLocaleDateString(LOCALE, { day: 'numeric', month: 'long', year: 'numeric' })}`, W / 2, 690);
-    // squadre e punteggi
-    const s40 = isS40Game();
-    const rows = g.teams.map((t) => ({
-      names: t.members.map((x) => (x === g.you ? (S.social && S.social.nick) || 'Io' : g.players[x].name)).join(' & '),
-      score: s40 ? -g.scores[t.members[0]] : g.scores[t.members[0]], win: t.members.some((x) => g.winners.includes(x)),
-    }));
-    let y = 790;
-    for (const r of rows.slice(0, 5)) {
-      c.fillStyle = r.win ? 'rgba(242,193,78,.22)' : 'rgba(0,0,0,.22)';
-      c.beginPath(); c.roundRect(150, y - 52, W - 300, 72, 18); c.fill();
-      c.textAlign = 'left'; c.fillStyle = '#fff'; c.font = `${r.win ? 'bold ' : ''}38px system-ui, sans-serif`;
-      c.fillText(`${r.win ? '🏆 ' : ''}${r.names}`.slice(0, 34), 180, y - 3);
-      c.textAlign = 'right'; c.fillStyle = r.win ? '#f2c14e' : '#e6efe9'; c.font = 'bold 42px system-ui, sans-serif';
-      c.fillText(String(r.score), W - 180, y - 3);
-      y += 88;
-    }
-    c.textAlign = 'center'; c.fillStyle = 'rgba(255,255,255,.7)'; c.font = '30px system-ui, sans-serif';
-    c.fillText('Gioca con me su Smazzata 🃏', W / 2, H - 70);
-    return cv;
-  }
-
-  async function shareResult() {
-    if (!S.game) return;
-    const cv = resultImage();
-    const g = S.game;
-    const won = g.winners.includes(g.you);
-    const text = t(won ? `Ho vinto a ${RX.gameName(g.cfg.rules)} su Smazzata! Gioca con me:` : `Che partita a ${RX.gameName(g.cfg.rules)} su Smazzata! Gioca con me:`) + ' ' + HOME_URL;
-    const blob = await new Promise((res) => cv.toBlob(res, 'image/png'));
-    const file = blob && typeof File === 'function' ? new File([blob], 'smazzata.png', { type: 'image/png' }) : null;
-    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], text }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
-    }
-    // niente condivisione diretta dell'immagine (es. nell'app Android): la si mostra, si scarica, WhatsApp col testo
-    const url = cv.toDataURL('image/png');
-    openModal('shareImg', `<h2>📤 Condividi il risultato</h2>
-      <img class="shareimg" src="${url}" alt="Risultato della partita">
-      <div class="row" style="justify-content:center;margin-top:10px"><a class="btn primary" href="${url}" download="smazzata.png">⬇ Scarica l'immagine</a>
-      <a class="btn" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">💬 WhatsApp</a></div>
-      <p class="muted small" style="text-align:center">Scarica l'immagine e allegala al messaggio, oppure manda solo il testo con WhatsApp.</p>`);
-  }
-
