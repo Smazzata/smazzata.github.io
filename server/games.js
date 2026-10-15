@@ -12,7 +12,6 @@ const SCO = require('../shared/scopa');
 const BRI = require('../shared/briscola');
 const TRE = require('../shared/tressette');
 const RUB = require('../shared/rubamazzetto');
-const SEM = require('../shared/settemezzo');
 const B5S = require('../shared/briscola5');
 
 const GAMES = {
@@ -57,12 +56,6 @@ const GAMES = {
     E: require('./rubamazzetto'), Bot: require('./rubamazzetto-bot'),
     normalize: (r) => RUB.normalize(r),
     presetOf: () => 'rubamazzetto',
-  },
-  settemezzo: {
-    id: 'settemezzo', name: 'Sette e mezzo',
-    E: require('./settemezzo'), Bot: require('./settemezzo-bot'),
-    normalize: (r) => SEM.normalize(r),
-    presetOf: () => 'settemezzo',
   },
   briscola5: {
     id: 'briscola5', name: 'Briscola in 5',

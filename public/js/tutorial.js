@@ -83,12 +83,6 @@
       { t: 'Rubare il mazzetto', h: `<p>La carta in cima al mazzetto di ognuno si vede. Se hai una carta <b>dello stesso valore</b>, giocala e <b>rubi tutto il mazzetto</b>!</p>
          <p class="muted small">Attento alla carta che lasci in cima al tuo: gli altri possono fare lo stesso.</p>` },
     ] },
-    settemezzo: { name: '🎲 Sette e mezzo', slides: [
-      { t: 'Lo scopo', h: `<p>Avvicinati a <b>7 e mezzo</b> senza superarlo. Dall'Asso al 7 le carte valgono il loro numero, le figure mezzo punto.</p>
-         <div class="tutcards">${it(7, 'c')}${it(10, 's')}</div><p class="muted small">7 + ½ = 7 e mezzo!</p>` },
-      { t: 'Il turno', h: `<p>Hai una carta coperta. Tocca il <b>mazzo</b> per chiederne un'altra, oppure ✋ per fermarti. Se superi 7 e mezzo <b>sballi</b>.</p>
-         <p>Alla fine gioca il <b>banco</b> (passa a turno): chi ha più del banco vince una fiche. Si gioca con fiches finte.</p>` },
-    ] },
   };
 
   function tutorialModal(i = 0, game) {
@@ -130,11 +124,6 @@
       if (g.phase === 'handEnd') return 'Vince chi ha il mazzetto più alto.';
       if (g.turn !== g.you) return 'Ora gioca il computer: guarda se riesce a rubare un mazzetto.';
       return 'Se hai una carta uguale alla cima di un altro mazzetto, giocala per rubarlo! Altrimenti prendi la carta uguale in tavola.';
-    }
-    if (g.game === 'settemezzo') {
-      if (g.phase === 'handEnd') return 'Chi ha più del banco vince, a parità vince il banco.';
-      if (g.turn !== g.you) return 'Ora gioca un altro: guarda le carte scoperte.';
-      return 'Sotto i 5 conviene chiedere carta (tocca il mazzo); da 5 in su di solito è meglio fermarsi con ✋.';
     }
     if (g.game === 'tressette') {
       if (g.phase === 'handEnd') return 'Asso 1 punto, Tre, Due e figure 1/3, l\'ultima presa 1 punto.';

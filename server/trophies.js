@@ -41,8 +41,6 @@ const LIST = [
   { id: 'tr_vittoria', e: '🂱', name: 'Primo Tressette', desc: 'Vinci una partita di Tressette' },
   { id: 'tr_napoletana', e: '🌋', name: 'Napoletana', desc: 'Tressette: accusa una napoletana (Asso, Due e Tre dello stesso seme)' },
   { id: 'rb_vittoria', e: '🃁', name: 'Primo Rubamazzetto', desc: 'Vinci una partita di Rubamazzetto' },
-  { id: 'sm_vittoria', e: '🎲', name: 'Primo Sette e mezzo', desc: 'Vinci una partita di Sette e mezzo' },
-  { id: 'sm_reale', e: '👑', name: 'Sette e mezzo reale', desc: 'Sette e mezzo: fai 7 e mezzo con due sole carte' },
   { id: 'b5_vittoria', e: '📣', name: 'Prima Briscola in 5', desc: 'Vinci una partita di Briscola in 5' },
   { id: 'b5_solo', e: '🦅', name: 'Lupo solitario', desc: 'Briscola in 5: vinci una smazzata giocando da solo contro tutti' },
   { id: 'torneo', e: '🎖️', name: 'Campione di torneo', desc: 'Vinci un torneo a eliminazione' },
@@ -71,7 +69,6 @@ function fromHand(mine, gid = 'burraco') {
   }
   if (gid === 'briscola') return mine.points >= 100 ? ['br_cento'] : [];
   if (gid === 'tressette') return mine.napoletana ? ['tr_napoletana'] : [];
-  if (gid === 'settemezzo') return mine.reale ? ['sm_reale'] : [];
   if (gid === 'rubamazzetto') return [];
   if (gid === 'briscola5') return mine.solo ? ['b5_solo'] : [];
   const kinds = mine.burraco.map((b) => b.kind);
@@ -108,7 +105,7 @@ function fromGame(g, seat, ctx) {
   const rivals = g.players.filter((p) => !g.teams[myTeamIdx].members.includes(p.seat)).map((p) => g.scores[p.seat]);
   if (rivals.length && rivals.every((s) => myScore - s >= 1000)) out.push('schiacciante');
   if (ctx.allBotsDifficile) out.push('difficile');
-  const first = { scala40: 's40_vittoria', canasta: 'can_vittoria', scopa: 'sc_vittoria', briscola: 'br_vittoria', tressette: 'tr_vittoria', rubamazzetto: 'rb_vittoria', settemezzo: 'sm_vittoria', briscola5: 'b5_vittoria' }[ctx.gid];
+  const first = { scala40: 's40_vittoria', canasta: 'can_vittoria', scopa: 'sc_vittoria', briscola: 'br_vittoria', tressette: 'tr_vittoria', rubamazzetto: 'rb_vittoria', briscola5: 'b5_vittoria' }[ctx.gid];
   if (first) out.push(first);
   return out;
 }

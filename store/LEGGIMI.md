@@ -20,10 +20,10 @@
    obbligatorio, scopo «Gestione dell'account», non condiviso con terzi) e **ID utente** (il nickname). Salva anche
    statistiche di gioco e una password cifrata; dati cifrati in transito (https); nessuna pubblicità, nessun dato venduto;
    l'utente può eliminare il profilo dall'app (Profilo → Elimina il mio profilo).
-7. **Classificazione dei contenuti** (questionario): niente violenza né acquisti. Attenzione al **Sette e mezzo**:
-   è un gioco d'azzardo *simulato* (fiches finte, nessun premio). Va dichiarato: di solito porta la classificazione
-   a PEGI 12 / «Adolescenti». Se preferisci restare «Per tutti», si può nascondere il Sette e mezzo nella versione Play.
-8. **Pubblico di destinazione**: 13 anni in su (per via della chat e del gioco d'azzardo simulato).
+7. **Classificazione dei contenuti** (questionario): niente violenza, niente acquisti, **niente gioco d'azzardo
+   simulato** (nessun gioco con puntate o fiches: il Sette e mezzo è stato tolto apposta). Va invece dichiarato che
+   **gli utenti interagiscono** (chat, messaggi vocali, amici), con la possibilità di segnalare e bloccare.
+8. **Pubblico di destinazione**: 13 anni in su (per via della chat tra giocatori).
 9. **Test chiuso**: per i nuovi account personali Google chiede un test chiuso con almeno 12 tester per 14 giorni
    prima della pubblicazione. Bastano amici e parenti: li inviti con la loro email Google.
 10. **Produzione**: dopo il test, «Crea nuova release» → carica `Smazzata.aab` → invia per la revisione (qualche giorno).

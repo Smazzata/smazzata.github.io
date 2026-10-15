@@ -76,6 +76,8 @@ function loadSaved() {
     for (const t of data.tournaments || []) tournaments.set(t.id, t);
     ctx.social.rebuildIndexes();
     for (const r of data.rooms || []) {
+      // tavoli di giochi tolti dall'app (es. Sette e mezzo): non si riaprono
+      if (r.rules && r.rules.game && !require('./games').GAMES[r.rules.game]) continue;
       rooms.set(r.code, { ...r, ready: new Set(r.ready || []), botTimer: null, botMemo: {}, botMemoTurn: -1 });
     }
     for (const room of rooms.values()) scheduleBot(room);

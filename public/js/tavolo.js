@@ -151,19 +151,6 @@
         <div class="pinfo"><span>Mazzo <b>${g.stockCount}</b></span></div>
       </div>`;
     }
-    if (g.game === 'settemezzo') {
-      const SMR = window.BurracoSetteMezzo;
-      const myTurn = g.turn === g.you && g.phase !== 'handEnd';
-      const badge = { stand: '✋ sta bene', bust: '💥 sballato', play: '' };
-      return `<div class="presa sm">
-        ${g.seats.map((x) => `<div class="smrow ${x.seat === g.turn && g.phase !== 'handEnd' ? 'turn' : ''} ${x.status}">
-          <span class="smname">${x.seat === g.banker ? '🏦 ' : ''}${esc(name(x.seat))}</span>
-          <span class="smcards">${x.cards.map((c) => (c.hidden ? backHTML('mini') : cardHTML(c, 'mini'))).join('')}</span>
-          <span class="smtot">${x.full ? `<b>${SMR.fmt(x.total)}</b>` : `? + ${SMR.fmt(x.total)}`} ${badge[x.status] ? `<i>${badge[x.status]}</i>` : ''}</span>
-        </div>`).join('')}
-        <div class="smdeck ${myTurn ? 'can' : ''}" ${myTurn ? 'data-act="smDraw" title="Chiedi carta"' : ''}>${backHTML()}${backHTML('', 'style="--l:1"')}<span>${myTurn ? 'Tocca per una carta' : `Mazzo ${g.stockCount}`}</span></div>
-      </div>`;
-    }
     const trick = g.trick.length ? g.trick : (g.lastTrick ? g.lastTrick.cards : []);
     if (g.game === 'tressette') {
       const win = !g.trick.length && g.lastTrick ? g.lastTrick.winner : null;
@@ -217,7 +204,6 @@
     if (g.turn !== me) return `Turno di <b>${esc(cur.name)}</b>${g.lastTurn ? ' · <b>ultimo giro</b>' : ''}`;
     if (g.game === 'briscola5' && g.phase === 'bid') return 'Tocca a te: chiama una carta o passa';
     if (g.game === 'briscola5' && g.phase === 'call') return 'Tocca a te: scegli il seme di briscola';
-    if (g.game === 'settemezzo') return g.you === g.banker ? 'Tocca a te (banco): tocca il <b>mazzo</b> per una carta, ✋ per stare' : 'Tocca a te: tocca il <b>mazzo</b> per una carta, ✋ per stare';
     if (g.presa) return 'Tocca a te: tocca una carta per giocarla';
     if (g.phase === 'draw') {
       if (g.mustDraw) return 'Tocca a te: tocca il <b>tallone</b> per pescare';
@@ -401,7 +387,6 @@
     let actions = '';
     if (g.phase === 'handEnd') actions = '<button class="btn primary small" data-act="result">Risultati</button>';
     if (myTurn && r.hints) actions += '<button class="ico" data-act="hint" title="Suggerimento">💡</button>';
-    if (myTurn && g.game === 'settemezzo') actions += '<button class="ico" data-act="smStand" title="Sto bene">✋</button>';
     if (g.you >= 0) actions = '<button class="ico" data-act="reactPicker" title="Reazioni">😊</button>' + actions;
     // messaggio vocale: solo se al tavolo c'è almeno un'altra persona
     if (g.you >= 0 && voiceAvailable()) actions = '<button class="ico voicebtn" data-voice title="Tieni premuto per parlare">🎤</button>' + actions;

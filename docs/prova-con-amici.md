@@ -21,7 +21,6 @@ Segna ✅ o ❌ accanto a ogni punto; se qualcosa non va, una foto dello schermo
 ## 4. Giochi nuovi (3 minuti, anche da soli contro il computer)
 - [ ] Tressette: le carte che non rispondono al seme sono più scure e non si possono giocare.
 - [ ] Briscola in 5: si fa l'asta toccando i gettoni, si sceglie il seme, il socio si scopre quando gioca la carta chiamata.
-- [ ] Sette e mezzo: si chiede carta toccando il mazzo, ✋ per stare.
 - [ ] Scopone, Rubamazzetto: almeno una smazzata.
 
 ## 5. Impostazioni (1 minuto)

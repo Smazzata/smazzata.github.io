@@ -17,7 +17,7 @@ Gratis e senza pubblicità.
 • Burraco (Classico FIBUR, Reale, Buraco brasiliano Aberto e Fechado)
 • Scala 40 • Canasta
 • Scopa e Scopone scientifico • Briscola • Tressette (con accusi)
-• Rubamazzetto • Sette e mezzo (con fiches finte)
+• Rubamazzetto
 Ogni regola si può personalizzare: obiettivo, matte, pozzetti, punteggi e molto altro.
 
 👥 CON GLI AMICI
@@ -59,7 +59,7 @@ Free and ad-free.
 • Burraco (Classic FIBUR, Royal, Brazilian Buraco Aberto and Fechado)
 • Scala 40 • Canasta
 • Scopa and Scopone scientifico • Briscola • Tressette (with declarations)
-• Rubamazzetto • Sette e mezzo (with play chips)
+• Rubamazzetto
 Every rule can be customised: target score, wild cards, kitties, scoring and much more.
 
 👥 WITH FRIENDS
@@ -101,7 +101,7 @@ Gratis y sin publicidad.
 • Burraco (Clásico FIBUR, Real, Buraco brasileño Aberto y Fechado)
 • Scala 40 • Canasta
 • Escoba y Scopone científico • Brisca • Tressette (con cantos)
-• Rubamazzetto • Siete y medio (con fichas de juego)
+• Rubamazzetto
 Cada regla se puede personalizar: objetivo, comodines, muertos, puntuación y mucho más.
 
 👥 CON AMIGOS
@@ -143,7 +143,7 @@ Grátis e sem anúncios.
 • Buraco (Aberto e Fechado) e Burraco italiano (Clássico FIBUR, Real)
 • Scala 40 • Canastra
 • Escopa e Scopone científico • Bisca • Tressette (com acusos)
-• Rouba-monte • Sete e meio (com fichas de brincadeira)
+• Rouba-monte
 Cada regra pode ser personalizada: objetivo, curingas, mortos, pontuação e muito mais.
 
 👥 COM OS AMIGOS

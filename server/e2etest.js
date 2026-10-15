@@ -686,11 +686,11 @@ async function signup(p, nick, email = mailOf()) {
 
     // Scopa e Briscola: una smazzata ciascuna contro il computer (si gioca la prima presa possibile)
     const SCm = require('../shared/scopa');
-    for (const gid of ['scopa', 'briscola', 'tressette', 'rubamazzetto', 'settemezzo', 'briscola5']) {
+    for (const gid of ['scopa', 'briscola', 'tressette', 'rubamazzetto', 'briscola5']) {
       const P = player('Presa' + gid); await P.hello(); { const rp = await signup(P, 'Presa_' + gid.slice(0, 9)); assert(rp.ok, 'nickname: ' + rp.error); }
       assert((await P.call('createRoom', { rules: { game: gid, players: 2 }, vsBots: true })).ok);
       const ps = await P.until((st) => st.game, 'partita di ' + gid);
-      assert(ps.room.game === gid && ps.game.presa && ps.game.hand.length === ({ tressette: 10, settemezzo: 1, briscola5: 8 }[gid] || 3), gid + ': carte in mano');
+      assert(ps.room.game === gid && ps.game.presa && ps.game.hand.length === ({ tressette: 10, briscola5: 8 }[gid] || 3), gid + ': carte in mano');
       const endP = Date.now() + 60000;
       while (!(P.state.game && P.state.game.phase === 'handEnd')) {
         if (Date.now() > endP) throw new Error('la smazzata di ' + gid + ' non finisce');
@@ -698,9 +698,6 @@ async function signup(p, nick, email = mailOf()) {
         if (g.turn === g.you && gid === 'briscola5' && g.phase !== 'play') {
           const r = await P.call('action', g.phase === 'bid' ? { type: 'pass' } : { type: 'call', suit: 'd' });
           assert(r.ok, gid + ': asta rifiutata ' + r.error);
-        } else if (g.turn === g.you && g.phase === 'play' && gid === 'settemezzo') {
-          const r = await P.call('action', { type: g.hand.length < 2 ? 'draw' : 'stand' });
-          assert(r.ok, gid + ': giocata rifiutata ' + r.error);
         } else if (g.turn === g.you && g.phase === 'play') {
           const card = g.playable ? g.hand.find((c) => g.playable.includes(c.id)) : g.hand[0];
           const opts = gid === 'scopa' ? SCm.captures(card, g.table, g.cfg.rules) : [];
@@ -714,7 +711,7 @@ async function signup(p, nick, email = mailOf()) {
       assert((await P.call('replay')).ok, 'moviola ' + gid);
       P.sock.close();
     }
-    step('Scopa, Briscola, Briscola in 5, Tressette, Rubamazzetto e Sette e mezzo: una smazzata ciascuna contro il computer');
+    step('Scopa, Briscola, Briscola in 5, Tressette e Rubamazzetto: una smazzata ciascuna contro il computer');
 
     // torneo da 4: iscrizione, riempimento con il computer, avviso della partita, resa, avanzamento fino al campione
     const TT = player('Tornista'); await TT.hello(); { const rt = await signup(TT, 'Tornista'); assert(rt.ok, 'nickname: ' + rt.error); }
