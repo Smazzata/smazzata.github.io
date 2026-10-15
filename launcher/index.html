@@ -91,6 +91,22 @@
     }
 
     const LAST = 'bur_last_server';
+    /*
+     * Il profilo resta anche quando cambia l'indirizzo del server: questa pagina (indirizzo fisso) tiene una copia
+     * del codice segreto del profilo e lo passa al gioco (#tk=…, la parte dopo # non arriva a nessun server).
+     * Il gioco torna qui per un attimo con #salva=… quando il profilo cambia.
+     */
+    const TK = 'bur_token_salvato';
+    const saveMatch = location.hash.match(/^#salva=([A-Za-z0-9]*)$/);
+    if (saveMatch) {
+      try { if (saveMatch[1]) localStorage.setItem(TK, saveMatch[1]); else localStorage.removeItem(TK); } catch (e) { /* niente memoria */ }
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+    function dest(url) {
+      let tk = '';
+      try { tk = localStorage.getItem(TK) || ''; } catch (e) { /* niente memoria */ }
+      return url + '/' + location.search + '#tk=' + tk;
+    }
     async function alive(url, ms) {
       try { const h = await fetch(url + '/health', { cache: 'no-store', signal: withTimeout(ms) }); return h.ok; } catch (e) { return false; }
     }
@@ -104,7 +120,7 @@
       let last = null;
       try { last = localStorage.getItem(LAST); } catch (e) { /* niente memoria */ }
       if (last && await alive(last, 2500)) {
-        location.replace(last + '/' + location.search + location.hash);
+        location.replace(dest(last));
         return;
       }
       let url;
@@ -122,7 +138,7 @@
       }
       try { localStorage.setItem(LAST, url); } catch (e) { /* niente memoria */ }
       $('msg').textContent = 'Trovato! Entro al tavolo…';
-      location.replace(url + '/' + location.search + location.hash);
+      location.replace(dest(url));
     }
 
     $('retry').addEventListener('click', go);

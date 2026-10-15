@@ -92,12 +92,27 @@ function setupStatus(app) {
     res.set('Cache-Control', 'no-store').json(statusData());
   });
 
+  // Un amico ha perso password e codice di recupero: il gestore gli genera un codice nuovo e glielo manda
+  app.post('/stato/recupero', (req, res) => {
+    if (req.query.k !== ADMIN_KEY) return res.status(403).send('Accesso negato');
+    const nick = String(req.query.nick || '');
+    const code = ctx.social.adminNewCode(nick);
+    const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    ctx.scheduleSave();
+    res.set('Cache-Control', 'no-store').send(`<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Codice di recupero</title>
+  <style>body{font-family:system-ui,sans-serif;background:#0f5132;color:#fff;margin:0;padding:16px}b.c{display:block;font-size:22px;color:#f2c14e;margin:12px 0;user-select:all}a{color:#f2c14e}</style></head><body>
+  ${code ? `<h2>Nuovo codice di recupero per ${esc(nick)}</h2><b class="c">${esc(code)}</b>
+  <p>Mandalo a ${esc(nick)}: nell'app, «Hai già un profilo? Recuperalo» → «Password dimenticata?», con nickname, questo codice e una password nuova.
+  Il codice vecchio non vale più.</p>` : `<h2>Nickname «${esc(nick)}» non trovato</h2>`}
+  <p><a href="/stato?k=${encodeURIComponent(req.query.k)}">← Torna alla pagina di stato</a></p></body></html>`);
+  });
+
   app.get('/stato', (req, res) => {
     if (req.query.k !== ADMIN_KEY) return res.status(403).send('Accesso negato');
     const d = statusData();
     const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     res.set('Cache-Control', 'no-store').send(`<!doctype html><html lang="it"><head><meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="10"><title>Stato Burraco</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"><title>Stato Burraco</title>
   <style>body{font-family:system-ui,sans-serif;background:#0f5132;color:#fff;margin:0;padding:16px}h1{margin:0 0 12px}
   .box{background:rgba(0,0,0,.25);border-radius:12px;padding:12px;margin:10px 0}.k{display:inline-block;margin:4px 14px 4px 0}
   .k b{display:block;font-size:22px;color:#f2c14e}table{width:100%;border-collapse:collapse;font-size:14px}td,th{text-align:left;padding:5px;border-bottom:1px solid rgba(255,255,255,.15)}
@@ -113,8 +128,11 @@ function setupStatus(app) {
   ${r.chat && r.chat.length ? `<pre style="color:#ffe">${r.chat.map(esc).join('\n')}</pre>` : ''}
   ${r.table && r.table.game ? `<pre style="color:#cfe">smazzata ${r.table.game.hand} · fase ${esc(r.table.game.phase)} · turno ${r.table.game.turn} · posto ${r.table.seat} · tallone ${r.table.game.stock} · scarti ${r.table.game.discard} · carte in mano ${r.table.game.myCards}
   ${r.table.game.log.map(esc).join('\n')}</pre>` : ''}<span class="m">${esc(r.device)}</span></div>`).join('') : '<p class="m">Nessuna segnalazione.</p>'}</div>
+  <div class="box"><b>Profili</b> <span class="m">· «Codice» genera un nuovo codice di recupero da mandare a chi ha perso password e codice</span>
+  ${ctx.social.nicks().map((n) => `<form method="post" action="/stato/recupero?k=${encodeURIComponent(req.query.k)}&nick=${encodeURIComponent(n)}" style="display:inline-block;margin:4px 8px 4px 0"
+  onsubmit="return confirm('Nuovo codice di recupero per ${esc(n)}?')"><span>${esc(n)}</span> <button>Codice</button></form>`).join('') || '<p class="m">Nessun profilo.</p>'}</div>
   <div class="box"><b>Ultimi errori</b>${d.errori.length ? d.errori.map((e) => `<pre>${esc(e.quando)} — ${esc(e.testo)}</pre>`).join('') : '<p class="m">Nessun errore 🎉</p>'}</div>
-  <p class="m">La pagina si aggiorna ogni 10 secondi. 🟢 online · ⚪ offline · 🤖 computer</p></body></html>`);
+  <p class="m">Ricarica la pagina per aggiornarla. 🟢 online · ⚪ offline · 🤖 computer</p></body></html>`);
   });
 }
 

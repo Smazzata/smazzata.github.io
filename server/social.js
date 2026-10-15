@@ -3,8 +3,9 @@
  * Profili e amici.
  * Un profilo è la "sessione" del dispositivo (token segreto) arricchita con:
  *  - nick: nickname univoco (senza distinzione maiuscole/minuscole)
- *  - code: codice personale per spostare il profilo su un altro dispositivo (anche via QR)
- *  - pw:   password facoltativa, salvata solo come hash scrypt con sale
+ *  - code: codice personale (anche via QR): sposta il profilo su un altro dispositivo e fa da
+ *          "codice di recupero" se si dimentica la password
+ *  - pw:   password (obbligatoria per i profili nuovi), salvata solo come hash scrypt con sale
  *  - friends / reqIn / reqOut: token degli amici e delle richieste
  */
 const crypto = require('crypto');
@@ -78,6 +79,31 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     return crypto.scryptSync(pw, salt, 64).toString('hex');
   }
 
+  function setPw(s, password) {
+    const pw = String(password || '');
+    if (pw.length < 6) fail('La password deve avere almeno 6 caratteri');
+    if (pw.length > 100) fail('Password troppo lunga');
+    const salt = crypto.randomBytes(16).toString('hex');
+    s.pw = { salt, hash: hashPassword(pw, salt) };
+  }
+
+  /** codice scritto a mano: con o senza trattini, minuscolo, con o senza "BUR" */
+  function normCode(code) {
+    let c = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (c.length === 15 && c.startsWith('BUR')) c = c.slice(3);
+    return 'BUR-' + c.replace(/(.{4})(?=.)/g, '$1-');
+  }
+
+  /** nuovo codice di recupero per un nickname (dal gestore, pagina di stato): il vecchio smette di valere */
+  function adminNewCode(nick) {
+    const token = nickIndex.get(String(nick || '').toLowerCase());
+    if (!token) return null;
+    const s = sess(token);
+    if (s.code) codeIndex.delete(s.code);
+    s.code = null;
+    return ensureCode(token);
+  }
+
   /** Stato social del profilo, inviato a tutti i suoi dispositivi */
   function socialView(token) {
     const s = withLists(sessions.get(token));
@@ -88,6 +114,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     };
     return {
       nick: s.nick || null,
+      hasPassword: !!s.pw,
       avatar: s.avatar || null,
       friends: s.friends.filter((t) => nickOf(t)).map(entry).sort((a, b) => b.online - a.online || a.nick.localeCompare(b.nick)),
       reqIn: s.reqIn.map(nickOf).filter(Boolean),
@@ -117,12 +144,14 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
 
     socket.on('checkNick', handler(({ nick }) => checkNick(nick, socket.data.token)));
 
-    socket.on('setNick', handler(({ nick }) => {
+    socket.on('setNick', handler(({ nick, password }) => {
       const token = me();
       nick = String(nick || '').trim();
       const ok = checkNick(nick, token);
       if (!ok.available) fail(ok.reason);
       const s = sess(token);
+      // profilo nuovo: la password è obbligatoria (serve per rientrare da un altro dispositivo)
+      if (!s.nick || !s.pw) setPw(s, password);
       if (s.nick) nickIndex.delete(s.nick.toLowerCase());
       s.nick = nick;
       s.name = nick;
@@ -131,7 +160,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       renamePlayer(token, nick);
       push(token);
       pushFriends(token);
-      return { nick };
+      return { nick, code: s.code };
     }));
 
     socket.on('setAvatar', handler(({ e, c }) => {
@@ -183,22 +212,15 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     socket.on('setPassword', handler(({ password }) => {
       const s = sess(me());
       if (!s.nick) fail('Scegli prima un nickname');
-      const pw = String(password || '');
-      if (pw.length < 6) fail('La password deve avere almeno 6 caratteri');
-      if (pw.length > 100) fail('Password troppo lunga');
-      const salt = crypto.randomBytes(16).toString('hex');
-      s.pw = { salt, hash: hashPassword(pw, salt) };
+      setPw(s, password);
+      push(me());
       return {};
     }));
 
     // Spostare il profilo su questo dispositivo: col codice personale o con nickname + password
     socket.on('importProfile', handler(({ code }) => {
       limit('ip:' + ip);
-      // accetta il codice con o senza trattini, minuscolo, con o senza "BUR"
-      let c = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-      if (c.length === 15 && c.startsWith('BUR')) c = c.slice(3);
-      const norm = 'BUR-' + c.replace(/(.{4})(?=.)/g, '$1-');
-      const token = codeIndex.get(norm);
+      const token = codeIndex.get(normCode(code));
       if (!token) fail('Codice non valido');
       return { token, nick: nickOf(token) };
     }));
@@ -211,6 +233,17 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if (!s || !s.pw) fail('Nickname o password errati');
       const h = hashPassword(String(password || ''), s.pw.salt);
       if (!crypto.timingSafeEqual(Buffer.from(h, 'hex'), Buffer.from(s.pw.hash, 'hex'))) fail('Nickname o password errati');
+      return { token: t, nick: s.nick };
+    }));
+
+    // Password dimenticata: nickname + codice di recupero → nuova password
+    socket.on('resetPassword', handler(({ nick, code, password }) => {
+      limit('ip:' + ip);
+      limit('nick:' + String(nick || '').toLowerCase());
+      const t = nickIndex.get(String(nick || '').trim().toLowerCase());
+      if (!t || codeIndex.get(normCode(code)) !== t) fail('Nickname o codice di recupero errati');
+      const s = sess(t);
+      setPw(s, password);
       return { token: t, nick: s.nick };
     }));
 
@@ -326,5 +359,5 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     }));
   }
 
-  return { rebuildIndexes, register, push, pushFriends, socialView, checkNick };
+  return { rebuildIndexes, register, push, pushFriends, socialView, checkNick, adminNewCode, nicks: () => [...nickIndex.values()].map(nickOf).filter(Boolean).sort((a, b) => a.localeCompare(b)) };
 };

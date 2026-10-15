@@ -68,11 +68,15 @@
         : S.social && S.social.nick
           ? `<div class="hello"><span class="row">${avatarHTML(S.social.nick, 0, false, S.social.avatar || { e: S.social.nick.charAt(0).toUpperCase(), c: '#f2c14e' })}<span>Ciao, <b>${esc(S.social.nick)}</b>!${S.progress ? `<span class="lvlline">${lvlHTML(S.progress.level)} <em class="xpbar" title="${S.progress.into}/${S.progress.need} punti esperienza"><u style="width:${Math.round((S.progress.into / S.progress.need) * 100)}%"></u></em></span>` : ''}</span></span>
               <span class="row"><button class="btn small" data-act="profile">👤 Profilo</button>
-              <button class="btn small" data-act="friends">👥 Amici${S.social.reqIn.length ? ` <span class="pill">${S.social.reqIn.length}</span>` : ''}</button></span></div>`
+              <button class="btn small" data-act="friends">👥 Amici${S.social.reqIn.length ? ` <span class="pill">${S.social.reqIn.length}</span>` : ''}</button></span></div>
+            ${S.social.hasPassword === false ? '<div class="offbanner">⚠️ <b>Il tuo profilo non ha una password.</b> Impostala ora, così puoi sempre rientrare. <button class="btn small" data-act="profile">👤 Imposta</button></div>' : ''}`
           : `<label class="field"><span>Scegli il tuo nickname</span>
               <input type="text" id="nick" maxlength="16" autocomplete="off" placeholder="Es. Simone_88" value="${esc(S.nickDraft != null ? S.nickDraft : (S.name || ''))}"></label>
               <div class="nickstatus" id="nickStatus">${nickStatusHTML()}</div>
-              <div class="row"><button class="btn primary grow" data-act="claimNick">Conferma nickname</button></div>
+              <label class="field"><span>Scegli una password</span>
+              <input type="password" id="nickpw" maxlength="100" autocomplete="new-password" placeholder="Almeno 6 caratteri" value="${esc(S.pwDraft || '')}"></label>
+              <p class="muted small" style="margin:0 0 6px">Ti serve per entrare dagli altri tuoi dispositivi.</p>
+              <div class="row"><button class="btn primary grow" data-act="claimNick">Crea il profilo</button></div>
               <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a> · <a href="privacy.html">Privacy</a></p>`}
         <div class="row" style="margin-top:10px"><button class="btn primary grow big" data-act="goSetup">Nuova partita</button></div>
         ${!OFFLINE && store.get('bur_lastroom', '') ? `<div class="row" style="margin-top:8px"><button class="btn primary grow" data-act="rejoin">↩ Torna al tavolo ${esc(store.get('bur_lastroom', ''))}</button></div>` : ''}

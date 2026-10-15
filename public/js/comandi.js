@@ -221,6 +221,7 @@
 
   document.addEventListener('input', (e) => {
     if (e.target.id === 'nick') { S.nickDraft = e.target.value; checkNickLive(e.target.value, '#nickStatus'); }
+    if (e.target.id === 'nickpw') S.pwDraft = e.target.value;
     if (e.target.id === 'nickEdit') checkNickLive(e.target.value, '#nickStatusEdit');
     if (e.target.id === 'rpRange') replayGo(e.target.value);
   });
@@ -249,6 +250,7 @@
       pwform: async () => { const r = await emit('setPassword', { password: $('#pwin').value }); if (r.ok) { toast('Password salvata'); profileModal(); } },
       codeform: async () => { const r = await emit('importProfile', { code: $('#codein').value }); if (r.ok) adoptProfile(r.token, r.nick); },
       loginform: async () => { const r = await emit('login', { nick: $('#lnick').value, password: $('#lpw').value }); if (r.ok) adoptProfile(r.token, r.nick); },
+      forgotform: async () => { const r = await emit('resetPassword', { nick: $('#fnick').value.trim(), code: $('#fcode').value, password: $('#fpw').value }); if (r.ok) { toast('Password cambiata'); adoptProfile(r.token, r.nick); } },
       tourform: async () => {
         const r = await emit('tournamentCreate', { name: $('#tourname').value, game: $('#tourgame').value, size: Number($('#toursize').value) });
         if (r.ok) { toast('Torneo creato: invita gli amici a iscriversi!'); tournamentsModal(r.id); }

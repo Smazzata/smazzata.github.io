@@ -180,6 +180,8 @@
     scopaTake(el) { closeModal(); act('play', { cardId: Number(el.dataset.card), take: el.dataset.take.split(',').map(Number) }); },
     appUpdateLater() { store.set('bur_apk_later', S.appUpdate.n); S.appUpdate.dismissed = true; render(); },
     playerMenu(el) { playerMenu(el.dataset.nick); },
+    savedCode() { closeModal(); syncLauncher(); },
+    forgot(el, e) { if (e) e.preventDefault(); forgotModal(); },
     async voiceMute(el) {
       const on = el.dataset.on === '1';
       const r = await emit('voiceMute', { seat: Number(el.dataset.seat), on });
@@ -338,8 +340,14 @@
     stats: statsModal,
     async claimNick() {
       const nick = ($('#nick') || {}).value || '';
-      const r = await emit('setNick', { nick: nick.trim() });
-      if (r.ok) { S.nickDraft = null; S.nickCheck = null; toast(`Benvenuto, ${r.nick}!`); render(); }
+      const password = ($('#nickpw') || {}).value || '';
+      if (password.length < 6) { toast('La password deve avere almeno 6 caratteri', true); return; }
+      const r = await emit('setNick', { nick: nick.trim(), password });
+      if (r.ok) {
+        S.nickDraft = null; S.nickCheck = null; S.pwDraft = null;
+        render();
+        recoveryCodeModal(r.nick, r.code);
+      }
     },
     profile: profileModal,
     tutorial() { tutorialModal(0); },

@@ -68,15 +68,15 @@
       <h4>Cambia nickname</h4>
       <form id="nickform" class="row"><input id="nickEdit" class="grow" maxlength="16" autocomplete="off" value="${esc(r.nick)}"><button class="btn primary">Salva</button></form>
       <div class="nickstatus" id="nickStatusEdit"></div>
-      <h4>Usa il profilo su un altro dispositivo</h4>
-      <p class="muted small">Inquadra il QR con la fotocamera del nuovo telefono, oppure inserisci lì il codice personale (<i>Hai già un profilo? Recuperalo</i>).
-        <b>Non condividerlo:</b> chi lo ha può usare il tuo profilo.</p>
+      <h4>Codice di recupero</h4>
+      <p class="muted small">Serve se dimentichi la password, oppure per entrare da un altro telefono: inquadra il QR con la sua fotocamera
+        o scrivi lì il codice (<i>Hai già un profilo? Recuperalo</i>). <b>Non condividerlo:</b> chi lo ha può usare il tuo profilo.</p>
       ${qr ? `<div class="qr"><img src="${qr}" alt="QR del profilo"></div>` : ''}
       <div class="code-box"><span id="pcode" class="masked">${esc(r.code)}</span>
         <button class="btn small" data-act="toggleCode">Mostra</button><button class="btn small" data-act="copyCode" data-code="${esc(r.code)}">Copia</button></div>
       <button class="btn small ghost dark" style="margin-top:6px" data-act="regenCode">Genera un nuovo codice (il vecchio smette di funzionare)</button>
-      <h4>Password ${r.hasPassword ? '(impostata ✓)' : '(facoltativa)'}</h4>
-      <p class="muted small">Con nickname e password puoi recuperare il profilo anche senza il codice.</p>
+      <h4>Password ${r.hasPassword ? '(impostata ✓)' : '⚠️ (da impostare)'}</h4>
+      <p class="muted small">Con nickname e password entri nel tuo profilo da qualsiasi dispositivo.</p>
       <form id="pwform" class="row"><input id="pwin" type="password" class="grow" minlength="6" autocomplete="new-password" placeholder="${r.hasPassword ? 'Nuova password' : 'Almeno 6 caratteri'}"><button class="btn">${r.hasPassword ? 'Cambia' : 'Imposta'}</button></form>
       <h4>Altro profilo</h4>
       <button class="btn small" data-act="recover">Usa un altro profilo su questo dispositivo</button>
@@ -84,6 +84,26 @@
       <button class="btn small danger" data-act="deleteProfile">Elimina il mio profilo</button>
       <p class="muted small">Libera il nickname e cancella codice, password, amicizie e classifica. Le statistiche su questo dispositivo restano.
         <a href="privacy.html">Leggi l'informativa privacy</a>.</p>`);
+  }
+
+  /** Subito dopo la creazione del profilo: il codice di recupero da conservare */
+  function recoveryCodeModal(nick, code) {
+    openModal('recoveryCode', `<h2>Benvenuto, ${esc(nick)}! 🎉</h2>
+      <p>Questo è il tuo <b>codice di recupero</b>. Se dimentichi la password, con questo ne scegli una nuova.</p>
+      <div class="code-box"><span id="pcode">${esc(code || '')}</span><button class="btn small" data-act="copyCode" data-code="${esc(code || '')}">Copia</button></div>
+      <p class="muted small">Fai uno screenshot o scrivilo da qualche parte. Non darlo a nessuno: chi lo ha può entrare nel tuo profilo.
+        Lo ritrovi sempre in 👤 Profilo.</p>
+      <div class="row" style="margin-top:8px"><button class="btn primary grow" data-act="savedCode">Ho salvato il codice</button></div>`);
+  }
+
+  function forgotModal() {
+    openModal('recover', `<h2>Password dimenticata</h2>
+      <p class="muted small">Scrivi il tuo nickname, il codice di recupero (te l'abbiamo mostrato quando hai creato il profilo; lo trovi anche in 👤 Profilo
+        su un dispositivo dove sei ancora dentro) e una password nuova.</p>
+      <form id="forgotform"><div class="row"><input id="fnick" class="grow" autocomplete="username" placeholder="Nickname"></div>
+        <div class="row" style="margin-top:6px"><input id="fcode" class="grow" autocomplete="off" placeholder="BUR-XXXX-XXXX-XXXX" style="text-transform:uppercase"></div>
+        <div class="row" style="margin-top:6px"><input id="fpw" type="password" class="grow" autocomplete="new-password" placeholder="Nuova password (almeno 6 caratteri)"><button class="btn primary">Salva</button></div></form>
+      <p class="muted small" style="margin-top:12px">Hai perso anche il codice? Chiedi a chi gestisce il gioco: può mandarti un codice nuovo.</p>`);
   }
 
   function recoverModal() {
@@ -94,6 +114,7 @@
       <h4>Con nickname e password</h4>
       <form id="loginform"><div class="row"><input id="lnick" class="grow" autocomplete="username" placeholder="Nickname"></div>
         <div class="row" style="margin-top:6px"><input id="lpw" type="password" class="grow" autocomplete="current-password" placeholder="Password"><button class="btn primary">Accedi</button></div></form>
+      <p class="small" style="margin-top:6px"><a href="#" data-act="forgot">Password dimenticata?</a></p>
       ${S.social && S.social.nick ? `<p class="muted small" style="margin-top:12px">Questo dispositivo ora usa il profilo <b>${esc(S.social.nick)}</b>: per tornarci ti servirà il suo codice personale (lo trovi nel Profilo).</p>` : ''}`);
   }
 
@@ -102,7 +123,7 @@
     store.set('bur_token', token);
     if (nick) store.set('bur_name', nick);
     toast(`Benvenuto, ${nick || 'giocatore'}!`);
-    setTimeout(() => { location.href = location.pathname; }, 600);
+    setTimeout(() => { if (!syncLauncher(token)) location.href = location.pathname; }, 600);
   }
 
   function askImport(code) {

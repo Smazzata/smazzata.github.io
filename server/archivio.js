@@ -4,7 +4,14 @@
  * un secondo dopo ogni modifica e alla chiusura; all'avvio si ripristina, partite in corso comprese.
  */
 const { openStore } = require('./store');
+const fs = require('fs');
+const path = require('path');
 const { DATA_DIR } = require('./config');
+/**
+ * "Epoca" dei profili: alzandola (es. a 2), al prossimo avvio si riparte da zero (profili, amici, classifica,
+ * tavoli, gare). Una copia dei dati vecchi resta in data/prima-del-reset-*.json. Per ora nessun azzeramento.
+ */
+const ACCOUNTS_EPOCH = 1;
 const ctx = require('./contesto');
 const { sessions, rooms, leaderboard, daily, leagues, tournaments } = ctx;
 // funzioni degli altri moduli (lette dal contesto al momento della chiamata)
@@ -21,6 +28,7 @@ function saveNow() {
   try {
     const data = {
       savedAt: Date.now(),
+      accountsEpoch: ACCOUNTS_EPOCH,
       sessions: [...sessions],
       leaderboard: [...leaderboard],
       reports: ctx.reports,
@@ -46,6 +54,13 @@ function loadSaved() {
     const data = store.load();
     console.log(`Archivio dati: ${store.kind === 'sqlite' ? 'database SQLite (data/burraco.db)' : 'file data/stato.json'}`);
     if (!data) return;
+    if ((data.accountsEpoch || 1) < ACCOUNTS_EPOCH) {
+      const copy = path.join(DATA_DIR, `prima-del-reset-${new Date().toISOString().slice(0, 10)}.json`);
+      try { fs.writeFileSync(copy, JSON.stringify(data)); } catch (e) { /* la copia è solo per sicurezza */ }
+      console.log(`Profili azzerati (nuova epoca ${ACCOUNTS_EPOCH}): copia dei dati vecchi in ${copy}`);
+      setTimeout(saveNow, 0);
+      return;
+    }
     for (const [token, sess] of data.sessions || []) sessions.set(token, sess);
     for (const [token, e] of data.leaderboard || []) {
       // prima delle statistiche per gioco si giocava solo a Burraco

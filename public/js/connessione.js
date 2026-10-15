@@ -10,6 +10,24 @@
     // autoConnect: false — ci si collega solo quando tutti i file dell'interfaccia sono caricati (vedi comandi.js)
     : io({ reconnectionDelay: 300, reconnectionDelayMax: 2000, randomizationFactor: 0.3, autoConnect: false });
   if (OFFLINE) document.body.classList.add('offline');
+
+  /*
+   * Profilo e indirizzo che cambia: il server gira dietro un tunnel con un indirizzo nuovo a ogni riavvio, e ogni
+   * indirizzo ha la sua memoria. La pagina d'ingresso fissa tiene una copia del codice del profilo e ce lo passa
+   * con #tk=…; se qui il profilo è diverso, si passa un attimo da lei (#salva=…) per aggiornarla.
+   */
+  const ON_TUNNEL = /\.trycloudflare\.com$/.test(location.hostname);
+  const LAUNCHER = { came: /^#tk=/.test(location.hash), tk: (location.hash.match(/^#tk=([A-Za-z0-9]*)$/) || [])[1] || '' };
+  if (LAUNCHER.came) {
+    history.replaceState(null, '', location.pathname + location.search);
+    if (!S.token && LAUNCHER.tk && !OFFLINE) { S.token = LAUNCHER.tk; store.set('bur_token', LAUNCHER.tk); }
+  }
+  function syncLauncher(token = S.token) {
+    if (!ON_TUNNEL || OFFLINE || !token || (LAUNCHER.came && LAUNCHER.tk === token)) return false;
+    try { if (sessionStorage.getItem('bur_sync') === token) return false; sessionStorage.setItem('bur_sync', token); } catch (e) { return false; }
+    location.replace(HOME_URL + '#salva=' + token);
+    return true;
+  }
   socket.on('connect', () => {
     if (S.lostConnection) toast('✓ Riconnesso');
     S.lostConnection = false;
@@ -66,6 +84,8 @@
   });
   socket.on('social', (soc) => {
     S.social = soc;
+    // all'apertura: la pagina d'ingresso non conosce ancora questo profilo
+    if (!S.launcherChecked && soc && soc.nick) { S.launcherChecked = true; if (!S.modalKind && syncLauncher()) return; }
     if (soc && soc.nick) { S.name = soc.nick; if (!OFFLINE) store.set('bur_name', soc.nick); }
     if (S.modalKind === 'friends') friendsModal();
     if (S.screen === 'home' || S.screen === 'lobby') render();
