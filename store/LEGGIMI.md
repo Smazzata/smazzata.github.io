@@ -8,6 +8,13 @@
 - Il pacchetto da caricare (**Smazzata.aab**) viene creato da GitHub a ogni nuova versione dell'app,
   nella pagina *Releases* del progetto, accanto a `Burraco.apk`.
 
+## Prima di pubblicare (da non dimenticare)
+- **Cambiare la chiave della pagina di stato** (è stata scritta in una chat): in Termux, in una nuova sessione,
+  `rm ~/burraco/data/admin-key.txt`, poi `pkill -f "node server/index.js"` (lo script riavvia il server con una
+  chiave nuova), poi `cat ~/burraco/data/admin-key.txt` per leggerla. Salvarla solo tra i preferiti, mai in chat.
+- Nella versione per il Play Store togliere l'avviso «scarica la nuova app» (Google non permette aggiornamenti fuori dallo Store).
+- Decidere il server: il telefono di casa va bene per gli amici, con utenti sconosciuti serve qualcosa di più stabile.
+
 ## Cosa devi fare tu (una volta sola)
 1. **Account sviluppatore Google Play**: https://play.google.com/console — costo unico di 25 dollari.
    Serve un documento d'identità; Google può chiedere di verificare un numero di telefono.
