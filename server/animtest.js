@@ -88,7 +88,7 @@ const GAMES = [
   });
   await new Promise((res) => server.stdout.on('data', (d) => { if (String(d).includes('ascolto')) res(); }));
   const browser = spawn(findBrowser(), [
-    '--headless=new', `--remote-debugging-port=${DEBUG_PORT}`, ...(process.env.CI ? ['--no-sandbox'] : []), `--user-data-dir=${profile}`, '--no-first-run',
+    '--headless=new', '--mute-audio', `--remote-debugging-port=${DEBUG_PORT}`, ...(process.env.CI ? ['--no-sandbox'] : []), `--user-data-dir=${profile}`, '--no-first-run',
     `--window-size=${VW},${VH}`, `--force-device-scale-factor=${DPR}`, '--lang=it-IT', 'about:blank',
   ], { stdio: 'ignore', env: { ...process.env, LANGUAGE: 'it', LANG: 'it_IT.UTF-8' } });
   let cdp;

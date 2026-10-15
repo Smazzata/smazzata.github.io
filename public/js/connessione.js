@@ -204,7 +204,8 @@
    * quindi tutto è istantaneo. A fine smazzata il risultato va al server vero (statistiche, livello, trofei);
    * senza internet aspetta sul telefono e parte appena ci si ricollega.
    */
-  const Local = { sock: null, ready: null };
+  // attached: la partita sul telefono è quella sullo schermo (uscendo resta in sottofondo, salvata)
+  const Local = { sock: null, ready: null, attached: false };
   const LOCAL_EVENTS = new Set(['action', 'hint', 'surrender', 'endGame', 'closeTable', 'replay', 'ready', 'leaveRoom',
     'setBotSpeed', 'setBotLevel', 'setHints', 'setAids', 'setTurnTime', 'react', 'chat', 'sync']);
   function localSocket() {
@@ -213,7 +214,8 @@
     if (OFFLINE) { Local.ready = Promise.resolve(); return Local.ready; }
     for (const ev of ['state', 'chat', 'reaction']) {
       Local.sock.on(ev, (p) => {
-        if (ev === 'state') { S.localGame = !!(p && p.room); p = { ...p, __local: true }; }
+        if (!Local.attached) return;
+        if (ev === 'state') { S.localGame = !!(p && p.room); if (!S.localGame) Local.attached = false; p = { ...p, __local: true }; }
         for (const fn of socket.listeners(ev)) fn(p);
       });
     }
@@ -291,6 +293,7 @@
       S.screen = game ? 'game' : 'lobby';
       if (location.search) history.replaceState(null, '', location.pathname);
     }
+    if (game && game.over && room && store.get('bur_lastroom', '') === room.code) store.set('bur_lastroom', '');
     if (game) {
       const ids = new Set(game.hand.map((c) => c.id));
       for (const id of [...S.selected]) if (!ids.has(id)) S.selected.delete(id);

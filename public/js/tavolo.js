@@ -199,7 +199,7 @@
 
   function statusText(g) {
     const me = g.you;
-    if (g.phase === 'handEnd') return g.over ? 'Partita terminata' : 'Smazzata terminata';
+    if (g.phase === 'handEnd') return g.over ? 'Partita finita: tocca <b>Risultati</b> per la rivincita o per uscire' : 'Smazzata finita: tocca <b>Risultati</b>';
     const cur = g.players[g.turn];
     if (g.turn !== me) return `Aspetta: gioca <b>${esc(cur.name)}</b>${g.lastTurn ? ' · <b>ultimo giro</b>' : ''}`;
     if (g.game === 'briscola5' && g.phase === 'bid') return 'Tocca a te: chiama una carta o passa';

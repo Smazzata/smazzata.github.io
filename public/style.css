@@ -993,3 +993,6 @@ body.noanim *, body.noanim *::before, body.noanim *::after { animation-duration:
 @keyframes herePulse { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 @media (prefers-reduced-motion: reduce) { .lbl .here { animation: none; } }
 body.noanim .lbl .here { animation: none; }
+/* fine partita: tre scelte grandi una sotto l'altra */
+.endopts { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.endopts .btn { width: 100%; }

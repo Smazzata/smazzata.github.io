@@ -117,6 +117,7 @@
    * statistiche, amici, regole, impostazioni…) sta nel menu «☰ Altro».
    */
   function homeButtonsHTML() {
+    if (store.get('bur_lastroom', '') === '🤖') store.set('bur_lastroom', ''); // codice delle partite sul telefono: non è un tavolo
     const last = !OFFLINE && (store.get('bur_lastroom', '') || (savedLocalGame() ? '🤖' : ''));
     const reqs = S.social && S.social.reqIn ? S.social.reqIn.length : 0;
     return `<div class="homebtns">

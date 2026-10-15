@@ -146,7 +146,7 @@
     async createBots() {
       if (OFFLINE) { emit('createRoom', { rules: S.rules, vsBots: true }); return; }
       try { await localSocket(); } catch (e) { emit('createRoom', { rules: S.rules, vsBots: true }); return; }
-      S.localGame = true;
+      S.localGame = true; Local.attached = true;
       // la partita nasce sul telefono (non sul server)
       const r = await new Promise((res) => Local.sock.emit('createRoom', { rules: S.rules, vsBots: true }, res));
       if (!r || !r.ok) { S.localGame = false; toast((r && r.error) || 'Partita non avviata', true); }
@@ -168,6 +168,12 @@
     },
     leaveNow() {
       closeModal();
+      if (S.room && S.room.onDevice) {
+        // partita sul telefono: finita si chiude, altrimenti resta salvata e si riprende dalla schermata iniziale
+        if (S.game && S.game.over) emit('leaveRoom');
+        Local.attached = false; S.localGame = false; S.room = null; S.game = null; S.screen = 'home'; render();
+        return;
+      }
       if (S.room && S.room.slow && S.game && !S.game.over && S.game.you >= 0) {
         toast('🐢 La partita ti aspetta: la trovi nella schermata iniziale');
       } else if (S.game && !S.game.over && S.game.you >= 0) {
@@ -176,6 +182,10 @@
       emit('leaveRoom');
       S.screen = 'home';
     },
+    // fine partita: di nuovo nella sala d'attesa dello stesso tavolo (per cambiare regole o giocatori)
+    async backToLobby() { const r = await emit('backToLobby'); if (r.ok) closeModal(); },
+    // fine partita contro il computer: si sceglie un'altra partita
+    newFromResult() { closeModal(); emit('leaveRoom'); Local.attached = false; S.localGame = false; S.room = null; S.game = null; S.playMode = 'bots'; S.screen = 'setup'; render(); },
     share() {
       const text = t(`Gioca a carte con me su Smazzata! Codice tavolo ${S.room.code}`);
       if (navigator.share) navigator.share({ title: 'Smazzata', text, url: inviteLink() }).catch(() => {});
@@ -400,7 +410,7 @@
       // partita sul telefono da riprendere
       if (!store.get('bur_lastroom', '') && savedLocalGame()) {
         try { await localSocket(); } catch (e) { return; }
-        S.localGame = true;
+        S.localGame = true; Local.attached = true;
         emit('sync');
         return;
       }

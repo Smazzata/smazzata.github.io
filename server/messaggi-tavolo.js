@@ -308,6 +308,23 @@ module.exports.register = function register(socket, handler) {
     broadcast(room);
   }));
 
+  // Partita finita: chiunque sia seduto può riportare il tavolo nella sala d'attesa (regole, posti, computer)
+  socket.on('backToLobby', handler(() => {
+    const room = getRoom(socket);
+    const seat = seatOfToken(room, socket.data.token);
+    if (seat < 0) throw new E.GameError('Solo chi è seduto al tavolo può farlo');
+    if (!room.game || !room.game.over) throw new E.GameError('La partita non è ancora finita');
+    if (room.daily || room.tournament) throw new E.GameError('Non disponibile qui');
+    clearTimeout(room.botTimer); room.botTimer = null;
+    room.game = null;
+    room.ready = new Set();
+    room.surrenderVotes = null;
+    room.series = null;
+    room.seats = room.seats.map((s) => (s && s.leftToken ? null : s));
+    io.to(room.code).emit('notice', { text: `${room.seats[seat].name} ha riportato il tavolo nella sala d'attesa` });
+    broadcast(room);
+  }));
+
   // L'host chiude il tavolo: tutti alla schermata iniziale, il tavolo sparisce
   socket.on('closeTable', handler(() => {
     const room = getRoom(socket);

@@ -13,7 +13,8 @@
     "load": "node server/loadtest.js",
     "ui": "node server/uitest.js",
     "test:rapido": "node -e \"process.env.TEST_RAPIDO=1;require('./server/selftest.js')\"",
-    "anim": "node server/animtest.js"
+    "anim": "node server/animtest.js",
+    "suoni": "node scripts/suoni-wav.js"
   },
   "engines": {
     "node": ">=18"

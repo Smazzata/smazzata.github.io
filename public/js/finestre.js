@@ -35,9 +35,15 @@
       footer = `<div class="winner">${g.winners.includes(g.you) ? '🎉 Passi al turno successivo!' : 'Fuori dal torneo, alla prossima!'}</div>
         <div class="row"><button class="btn primary grow" data-act="tourBack" data-id="${esc(S.room.tournament.id)}">🏆 Torna al tabellone</button></div>`;
     } else if (g.over) {
+      // fine partita: tre strade chiare (rivincita, di nuovo al tavolo, uscire)
+      const solo = S.room.onDevice || S.room.offline || humans.length <= 1;
       footer = `<div class="winner">🏆 Vince ${esc(g.winners.map((s) => (s === g.you ? 'Tu' : g.players[s].name)).join(' & '))}!</div>
-        <button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Rivincita: hai votato ✓' : '🔁 Rivincita'}</button>
-        ${imReady && waiting.length ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : '<p class="muted">Stessi posti, stesse regole: si riparte quando tutti premono Rivincita.</p>'}`;
+        <div class="endopts">
+          <button class="btn primary big" data-act="ready" ${imReady ? 'disabled' : ''}>${imReady ? 'Rivincita: hai votato ✓' : '🔁 Rivincita'}</button>
+          ${solo ? '<button class="btn big" data-act="newFromResult">🃏 Nuova partita</button>' : '<button class="btn big" data-act="backToLobby">🪑 Torna al tavolo</button>'}
+          <button class="btn big" data-act="leaveNow">🚪 Esci dal tavolo</button>
+        </div>
+        ${imReady && waiting.length ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : solo ? '' : '<p class="muted small">Rivincita: stessi posti e stesse regole, si riparte quando tutti la premono. Torna al tavolo: per cambiare regole o giocatori.</p>'}`;
     } else {
       footer = `<button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Pronto ✓' : 'Prossima smazzata'}</button>
         ${waiting.length && imReady ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : ''}`;

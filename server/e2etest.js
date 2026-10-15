@@ -652,6 +652,12 @@ async function signup(p, nick, email = mailOf()) {
     await R1.until((st) => st.game && !st.game.over, 'partita 1 contro 1');
     assert((await R1.call('surrender')).done, 'da soli la resa è immediata');
     await R1.until((st) => st.game.over && st.game.winners.length === 1 && st.game.winners[0] === 1, 'vince il computer');
+    // fine partita: «Torna al tavolo» riporta il tavolo nella sala d'attesa (a partita in corso no)
+    assert((await R1.call('backToLobby')).ok, 'torna al tavolo a fine partita');
+    await R1.until((st) => st.room && !st.game, "di nuovo nella sala d'attesa");
+    assert((await R1.call('start')).ok);
+    await R1.until((st) => st.game && !st.game.over, "nuova partita dalla sala d'attesa");
+    assert(!(await R1.call('backToLobby')).ok, 'a partita in corso non si torna al tavolo');
     R1.sock.close(); R2.sock.close();
     step('resa (con il sì del compagno), partita terminata dall\'host, tavolo chiuso');
 

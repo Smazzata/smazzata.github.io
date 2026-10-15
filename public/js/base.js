@@ -79,48 +79,99 @@
     justDragged: 0,
   };
 
-  /* ================= Suoni (sintetizzati, nessun file) ================= */
+  /* ================= Suoni (sintetizzati, nessun file) =================
+   * Imitano suoni veri: lo schiocco della carta (fruscio che scende di tono + piccolo colpo sul tavolo, ogni
+   * volta un po' diverso), la sfogliata del mazzo, note morbide tipo marimba per «tocca a te» e le feste.
+   * Tutto passa da un leggero riverbero e da un limitatore, così niente è secco o troppo forte. */
   const Sound = {
-    ctx: null,
+    ctx: null, out: null,
     unlock() {
       if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
-      try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { this.ctx = null; }
+      try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { this.ctx = null; return; }
+      const c = this.ctx;
+      // uscita: limitatore (niente picchi) + un po' di riverbero (stanza piccola)
+      const comp = c.createDynamicsCompressor();
+      comp.threshold.value = -18; comp.knee.value = 12; comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.2;
+      comp.connect(c.destination);
+      const dry = c.createGain(); dry.gain.value = 0.9; dry.connect(comp);
+      const rev = c.createConvolver();
+      const len = Math.floor(c.sampleRate * 0.9), ir = c.createBuffer(2, len, c.sampleRate);
+      for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 3; }
+      rev.buffer = ir;
+      const wet = c.createGain(); wet.gain.value = 0.16;
+      rev.connect(wet).connect(comp);
+      this.out = c.createGain();
+      this.out.connect(dry); this.out.connect(rev);
+      // fruscio bianco riutilizzato da tutti i suoni di carta
+      const nb = c.createBuffer(1, c.sampleRate, c.sampleRate), nd = nb.getChannelData(0);
+      for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+      this.noiseBuf = nb;
     },
-    tone(freq, dur, type = 'sine', vol = 0.12, delay = 0) {
+    /** inviluppo morbido: sale in fretta (senza «clic») e si spegne */
+    env(g, t, vol, attack, decay) {
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol, t + attack);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + attack + decay);
+    },
+    /** nota tipo marimba / campanello: fondamentale + armoniche che si spengono prima */
+    note(freq, delay = 0, vol = 0.09, decay = 0.6) {
+      const c = this.ctx; if (!c) return;
+      const t = c.currentTime + delay;
+      [[1, 1, decay], [4, 0.25, decay * 0.25], [2.76, 0.12, decay * 0.4]].forEach(([mul, v, d]) => {
+        const o = c.createOscillator(), g = c.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(freq * mul, t);
+        this.env(g, t, vol * v, 0.006, d);
+        o.connect(g).connect(this.out);
+        o.start(t); o.stop(t + d + 0.05);
+      });
+    },
+    /** schiocco di una carta: fruscio che scende di tono, più un piccolo colpo sul tavolo */
+    flick(delay = 0, vol = 0.5, bright = 1) {
+      const c = this.ctx; if (!c) return;
+      const t = c.currentTime + delay;
+      const v = 0.85 + Math.random() * 0.3; // ogni carta un po' diversa
+      const src = c.createBufferSource(); src.buffer = this.noiseBuf;
+      const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 900;
+      const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.1;
+      bp.frequency.setValueAtTime(5200 * bright * v, t);
+      bp.frequency.exponentialRampToValueAtTime(1500 * bright, t + 0.05);
+      const g = c.createGain(); this.env(g, t, vol * v, 0.003, 0.06);
+      src.connect(hp).connect(bp).connect(g).connect(this.out);
+      src.start(t, Math.random() * 0.5, 0.1);
+      // il «tac» della carta che tocca il tavolo
+      const o = c.createOscillator(), og = c.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(190 * v, t + 0.012); o.frequency.exponentialRampToValueAtTime(90, t + 0.07);
+      this.env(og, t + 0.012, vol * 0.35, 0.002, 0.06);
+      o.connect(og).connect(this.out); o.start(t + 0.012); o.stop(t + 0.1);
+    },
+    /** colpo sordo (errore): nota bassa che scende, discreta */
+    thud(delay = 0) {
       const c = this.ctx; if (!c) return;
       const t = c.currentTime + delay;
       const o = c.createOscillator(), g = c.createGain();
-      o.type = type; o.frequency.setValueAtTime(freq, t);
-      g.gain.setValueAtTime(vol, t);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      o.connect(g).connect(c.destination);
-      o.start(t); o.stop(t + dur + 0.02);
-    },
-    noise(dur = 0.09, vol = 0.18, freq = 2400, delay = 0) {
-      const c = this.ctx; if (!c) return;
-      const len = Math.floor(c.sampleRate * dur);
-      const buf = c.createBuffer(1, len, c.sampleRate);
-      const d = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 2;
-      const src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
-      f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 0.8;
-      g.gain.value = vol;
-      src.buffer = buf; src.connect(f).connect(g).connect(c.destination); src.start(c.currentTime + delay);
+      o.type = 'sine'; o.frequency.setValueAtTime(240, t); o.frequency.exponentialRampToValueAtTime(130, t + 0.14);
+      this.env(g, t, 0.32, 0.005, 0.16);
+      o.connect(g).connect(this.out); o.start(t); o.stop(t + 0.2);
     },
     play(kind) {
       if (!S.prefs.sound || !this.ctx) return;
       switch (kind) {
-        case 'select': this.tone(1500, 0.04, 'triangle', 0.05); break;
-        case 'card': this.noise(0.08, 0.22, 2600); break;
-        case 'meld': this.noise(0.06, 0.18, 1800); this.noise(0.06, 0.15, 2200); break;
-        case 'turn': this.tone(660, 0.18, 'sine', 0.1); this.tone(880, 0.25, 'sine', 0.1, 0.12); break;
-        case 'burraco': [523, 659, 784, 1047].forEach((f, i) => this.tone(f, 0.25, 'triangle', 0.1, i * 0.09)); break;
-        case 'error': this.tone(180, 0.18, 'square', 0.05); break;
-        // mescolata: una raffica di fruscii (come le carte che si intrecciano)
-        case 'shuffle': for (let i = 0; i < 16; i++) this.noise(0.035, 0.1 + Math.random() * 0.06, 3200 + Math.random() * 1500, i * 0.035 + Math.random() * 0.01); break;
-        case 'deal': this.noise(0.05, 0.14, 2900); break;
-        case 'pile': this.noise(0.14, 0.26, 1500); this.noise(0.1, 0.18, 2400, 0.06); break;
-        case 'win': [523, 659, 784, 659, 1047].forEach((f, i) => this.tone(f, 0.3, 'triangle', 0.1, i * 0.12)); break;
+        case 'select': this.flick(0, 0.3, 1.4); break; // carta sollevata: un fruscio leggero
+        case 'card': this.flick(0, 1.1); break;
+        case 'deal': this.flick(0, 0.7, 1.1); break;
+        case 'pile': for (let i = 0; i < 4; i++) this.flick(i * 0.045, 0.75 - i * 0.1); break;
+        case 'meld': this.flick(0, 0.9); this.flick(0.07, 0.8); this.flick(0.14, 0.7); break;
+        case 'turn': this.note(659.25, 0, 0.08, 0.7); this.note(987.77, 0.13, 0.07, 0.9); break; // mi - si
+        case 'burraco': [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => this.note(f, i * 0.09, 0.08, 0.9)); this.note(1567.98, 0.4, 0.04, 1.2); break;
+        case 'win': [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => this.note(f, i * 0.11, 0.08, 1)); [523.25, 659.25, 783.99].forEach((f) => this.note(f, 0.62, 0.06, 1.6)); break;
+        case 'error': this.thud(); break;
+        // mescolata: le carte si intrecciano sempre più fitte, poi il mazzo si ricompatta
+        case 'shuffle': {
+          let t = 0;
+          for (let i = 0; i < 22; i++) { this.flick(t, 0.35 + Math.random() * 0.15, 1.2); t += 0.045 - i * 0.0012; }
+          this.flick(t + 0.08, 0.9, 0.8);
+          break;
+        }
       }
     },
   };

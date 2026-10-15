@@ -69,7 +69,7 @@ const HELPERS = `
   });
   await new Promise((res) => server.stdout.on('data', (d) => { if (String(d).includes('ascolto')) res(); }));
   const browser = spawn(findBrowser(), [
-    '--headless=new', `--remote-debugging-port=${DEBUG_PORT}`, ...(process.env.CI ? ['--no-sandbox'] : []), `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check',
+    '--headless=new', '--mute-audio', `--remote-debugging-port=${DEBUG_PORT}`, ...(process.env.CI ? ['--no-sandbox'] : []), `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check',
     `--window-size=${VW},${VH}`, `--force-device-scale-factor=${DPR}`, '--lang=it-IT', '--autoplay-policy=no-user-gesture-required', 'about:blank',
   ], { stdio: 'ignore', env: { ...process.env, LANGUAGE: 'it', LANG: 'it_IT.UTF-8' } });
   let cdp;
@@ -226,7 +226,8 @@ const HELPERS = `
 
     // 6. gioco senza internet
     const off = await cdp.run(`
-      location.href = '/?offline=1'; return true;`).catch(() => true);
+      // senza internet si riprende anche la partita lasciata a metà sul telefono: qui si parte da zero
+      localStorage.removeItem('bur_offline_room'); location.href = '/?offline=1'; return true;`).catch(() => true);
     void off;
     await wait(1500);
     await cdp.run(HELPERS);

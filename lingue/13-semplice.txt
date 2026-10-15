@@ -82,3 +82,14 @@ Tocca le carte da calare, oppure la carta da ‖ Tap the cards to meld, or the c
 , oppure seleziona due carte uguali con quella in cima e tocca il ‖ , or select two equal cards matching the top one and tap the ‖ , o selecciona dos cartas iguales a la de arriba y toca el ‖ , ou selecione duas cartas iguais à de cima e toque no
 , oppure seleziona le carte da usare con quella in cima e tocca il ‖ , or select the cards to use with the top one and tap the ‖ , o selecciona las cartas a usar con la de arriba y toca el ‖ , ou selecione as cartas a usar com a de cima e toque no
 , oppure seleziona carte da combinare con la cima e tocca gli ‖ , or select cards to combine with the top one and tap the ‖ , o selecciona cartas para combinar con la de arriba y toca los ‖ , ou selecione cartas para combinar com a de cima e toque nos
+Partita finita: tocca ‖ Game over: tap ‖ Partida terminada: toca ‖ Partida terminada: toque em
+per la rivincita o per uscire ‖ for a rematch or to leave ‖ para la revancha o para salir ‖ para a revanche ou para sair
+Smazzata finita: tocca ‖ Hand over: tap ‖ Mano terminada: toca ‖ Mão terminada: toque em
+Risultati ‖ Results ‖ Resultados ‖ Resultados
+🃏 Nuova partita ‖ 🃏 New game ‖ 🃏 Nueva partida ‖ 🃏 Nova partida
+🪑 Torna al tavolo ‖ 🪑 Back to the table ‖ 🪑 Volver a la mesa ‖ 🪑 Voltar à mesa
+🚪 Esci dal tavolo ‖ 🚪 Leave the table ‖ 🚪 Salir de la mesa ‖ 🚪 Sair da mesa
+Rivincita: stessi posti e stesse regole, si riparte quando tutti la premono. Torna al tavolo: per cambiare regole o giocatori. ‖ Rematch: same seats and rules, it starts when everyone presses it. Back to the table: to change rules or players. ‖ Revancha: mismos puestos y reglas, empieza cuando todos la pulsan. Volver a la mesa: para cambiar reglas o jugadores. ‖ Revanche: mesmos lugares e regras, recomeça quando todos apertarem. Voltar à mesa: para mudar regras ou jogadores.
+{0} ha riportato il tavolo nella sala d'attesa ‖ {0} took the table back to the waiting room ‖ {0} ha vuelto a llevar la mesa a la sala de espera ‖ {0} levou a mesa de volta à sala de espera
+La partita non è ancora finita ‖ The game is not over yet ‖ La partida aún no ha terminado ‖ A partida ainda não terminou
+Non disponibile qui ‖ Not available here ‖ No disponible aquí ‖ Não disponível aqui
