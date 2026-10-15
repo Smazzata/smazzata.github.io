@@ -1,5 +1,7 @@
 /*
- * Gioco senza internet: un piccolo "server" che gira nel browser, solo per le partite contro il computer.
+ * Partite contro il computer sul dispositivo: un piccolo "server" che gira nel browser. Si usa senza internet
+ * e anche online (mosse istantanee, senza il ritardo del server vero): a ogni fine smazzata manda «handOver»
+ * con la partita completa, che l'interfaccia inoltra al server per statistiche, livello e trofei.
  * Offre all'interfaccia gli stessi eventi del server vero (come socket.io) e usa lo stesso motore
  * (engine.js, generato da scripts/bundle-engine.js). La partita in corso resta salvata sul dispositivo.
  */
@@ -21,7 +23,7 @@
     });
   }
 
-  function createSocket({ engineUrl, name }) {
+  function createSocket({ engineUrl, name, onDevice = false }) {
     const handlers = {};
     const me = name || 'Tu';
     let room = null;
@@ -60,23 +62,32 @@
 
     function roomInfo() {
       return {
-        code: 'OFFLINE', host: 0, rules: room.rules, n: room.n, preset: self.BurracoGames[room.rules.game] && room.rules.game !== 'burraco' ? room.rules.game : Rules().matchPreset(room.rules), game: self.BurracoGames[room.rules.game] ? room.rules.game : 'burraco',
+        code: onDevice ? '🤖' : 'OFFLINE', host: 0, rules: room.rules, n: room.n, preset: self.BurracoGames[room.rules.game] && room.rules.game !== 'burraco' ? room.rules.game : Rules().matchPreset(room.rules), game: self.BurracoGames[room.rules.game] ? room.rules.game : 'burraco',
         seats: room.seats.map((s) => ({ name: s.name, isBot: !!s.isBot, connected: true, avatar: null })),
         started: !!room.game, ready: room.ready.slice(), botSpeed: room.botSpeed || 'normale',
         hints: !!room.hints, humans: 1, aids: room.aids !== false, music: null, spectators: [],
         botLevel: room.botLevel || 'normale', turnTime: 0, tutorial: !!room.tutorial, quick: 0, series: null,
-        turnLeft: null, you: 0, isHost: true, offline: true,
+        turnLeft: null, you: 0, isHost: true, offline: !onDevice, onDevice,
       };
     }
 
     function broadcast() {
       const g = room && room.game;
+      // fine smazzata: la partita completa va al server (una volta sola) per statistiche, livello e trofei
+      if (g && g.phase === 'handEnd' && g.handResult) {
+        const key = `${room.localId}:${g.handNo}:${g.over ? 1 : 0}`;
+        if (room.reportedHand !== key) {
+          room.reportedHand = key;
+          fire('handOver', { id: room.localId, rules: room.rules, botLevel: room.botLevel || 'normale', tutorial: !!room.tutorial, game: JSON.parse(JSON.stringify(g)) });
+        }
+      }
       fire('state', room ? { room: roomInfo(), game: g ? E().viewFor(g, 0) : null } : { room: null, game: null });
       store.set(room);
       scheduleBot();
     }
 
     function startGame() {
+      room.localId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8); // ogni partita ha il suo codice
       room.game = E().createGame({ rules: room.rules, players: room.seats.map((s) => ({ name: s.name, isBot: !!s.isBot })) });
       room.ready = [];
       room.turnCounter = 0;
@@ -126,6 +137,9 @@
 
     function handle(ev, d) {
       switch (ev) {
+        case 'sync':
+          broadcast();
+          return {};
         case 'hello':
           fire('welcome', { token: 'offline', name: me, nick: me });
           fire('social', { nick: me, avatar: null, friends: [], reqIn: [], reqOut: [], blocked: [], offline: true });

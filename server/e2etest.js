@@ -245,6 +245,25 @@ async function signup(p, nick, email = mailOf()) {
     await wait(100);
     assert(mailbox().some((x) => x.to === 'ylenia@esempio.it' && /password cambiata/.test(x.subject)), 'avviso di password cambiata');
     for (const x of [Z, Z2, Z2b, Y, X]) x.sock.close();
+    // partite contro il computer giocate sul telefono: a fine smazzata il risultato arriva al server
+    {
+      const GB = require('./games').GAMES.briscola;
+      const LG = player('Lucio'); await LG.hello();
+      assert((await signup(LG, 'Lucio')).ok);
+      const lg = GB.E.createGame({ rules: { game: 'briscola', players: 2 }, players: [{ name: 'Lucio' }, { name: 'Zio Gino', isBot: true }] });
+      for (let i = 0; lg.phase !== 'handEnd' && i < 500; i++) { const st = lg.turn; GB.E.apply(lg, st, GB.Bot.nextAction(lg, st, { level: 'normale' })); }
+      const res = { id: 'prova-telefono', rules: lg.cfg.rules, botLevel: 'normale', game: JSON.parse(JSON.stringify(lg)) };
+      assert((await LG.call('localResult', res)).ok, 'risultato dal telefono accettato');
+      assert((await LG.call('localResult', res)).ok, 'lo stesso risultato rimandato non dà errore');
+      const ls = await LG.call('myStats');
+      assert(ls.stats && ls.stats.hands === 1, 'la smazzata conta una volta sola');
+      if (lg.over) assert(ls.stats.games === 1 && ls.byGame.briscola && !ls.byGame.briscola.elo, 'partita registrata, Elo invariato');
+      const fake = JSON.parse(JSON.stringify(res)); fake.id = 'falso'; fake.game.players[1].isBot = false;
+      assert(!(await LG.call('localResult', fake)).ok, 'un risultato con un altro giocatore umano è rifiutato');
+      LG.sock.close();
+      step('partite sul telefono: statistiche dal risultato inviato, una volta sola, senza Elo');
+    }
+
     // l'email arriva nella lingua del dispositivo
     const Es = player('Elena'); await Es.hello(undefined, 'es');
     assert((await Es.call('startSignup', { nick: 'Elena', password: 'prova123', email: 'elena@esempio.es' })).ok);

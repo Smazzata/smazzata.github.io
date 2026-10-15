@@ -10,6 +10,8 @@
     // autoConnect: false — ci si collega solo quando tutti i file dell'interfaccia sono caricati (vedi comandi.js)
     : io({ reconnectionDelay: 300, reconnectionDelayMax: 2000, randomizationFactor: 0.3, autoConnect: false });
   if (OFFLINE) document.body.classList.add('offline');
+  // gioco senza internet: i risultati delle smazzate restano in coda e vanno al server alla prossima connessione
+  if (OFFLINE) socket.on('handOver', (p) => queueLocalResult(p));
 
   /*
    * Profilo e indirizzo che cambia: il server gira dietro un tunnel con un indirizzo nuovo a ogni riavvio, e ogni
@@ -93,6 +95,7 @@
   });
   socket.on('social', (soc) => {
     S.social = soc;
+    if (soc && soc.nick) flushLocalResults();
     // solo all'apertura della pagina: la pagina d'ingresso non conosce ancora questo profilo
     // (dopo una registrazione invece si passa da lei con «Ho salvato il codice», senza interrompere)
     if (!S.launcherChecked) { S.launcherChecked = true; if (soc && soc.nick && !S.modalKind && syncLauncher()) return; }
@@ -109,7 +112,11 @@
       ${started ? '<p class="muted">La partita è già iniziata: potrai entrare solo se si libera un posto.</p>' : ''}
       <div class="row" style="justify-content:center"><button class="btn primary big" data-act="acceptInvite" data-code="${esc(code)}">Entra</button><button class="btn" data-act="closeModal">No grazie</button></div></div>`);
   });
-  socket.on('state', ({ room, game }) => { onState(room, game); hideIntro(); });
+  socket.on('state', ({ room, game, __local }) => {
+    // mentre si gioca sul telefono contro il computer, lo stato del server (es. al ricollegamento) non conta
+    if (S.localGame && !__local) { hideIntro(); return; }
+    onState(room, game); hideIntro();
+  });
 
   /* ---------- Intro animata all'apertura ---------- */
   const INTRO_AT = Date.now();
@@ -192,9 +199,55 @@
     else if (S.room && m.seat !== S.room.you) { S.unread++; toast(`💬 ${m.name}: ${m.text}`); render(); }
   });
 
+  /* ---------- Partite contro il computer sul telefono (anche online) ----------
+   * Le mosse non viaggiano fino al server: il "server nel telefono" (public/local-server.js) gioca la partita,
+   * quindi tutto è istantaneo. A fine smazzata il risultato va al server vero (statistiche, livello, trofei);
+   * senza internet aspetta sul telefono e parte appena ci si ricollega.
+   */
+  const Local = { sock: null, ready: null };
+  const LOCAL_EVENTS = new Set(['action', 'hint', 'surrender', 'endGame', 'closeTable', 'replay', 'ready', 'leaveRoom',
+    'setBotSpeed', 'setBotLevel', 'setHints', 'setAids', 'setTurnTime', 'react', 'chat', 'sync']);
+  function localSocket() {
+    if (Local.ready) return Local.ready;
+    Local.sock = OFFLINE ? socket : LocalServer.createSocket({ engineUrl: 'engine.js', name: S.name || 'Tu', onDevice: true });
+    if (OFFLINE) { Local.ready = Promise.resolve(); return Local.ready; }
+    for (const ev of ['state', 'chat', 'reaction']) {
+      Local.sock.on(ev, (p) => {
+        if (ev === 'state') { S.localGame = !!(p && p.room); p = { ...p, __local: true }; }
+        for (const fn of socket.listeners(ev)) fn(p);
+      });
+    }
+    Local.sock.on('handOver', sendLocalResult);
+    Local.ready = new Promise((res, rej) => { Local.sock.on('connect', res); Local.sock.on('connect_error', rej); });
+    Local.sock.connect();
+    return Local.ready;
+  }
+  /** c'è una partita sul telefono da riprendere? */
+  function savedLocalGame() {
+    try { const r = JSON.parse(localStorage.getItem('bur_offline_room') || 'null'); return !!(r && r.game && !r.game.over); } catch (e) { return false; }
+  }
+  /** risultati delle smazzate giocate sul telefono: al server, o in coda finché non c'è la connessione */
+  const RESULTS_KEY = 'bur_local_results';
+  function queueLocalResult(p) {
+    const q = store.get(RESULTS_KEY, []).filter((x) => !(x.id === p.id && x.game.handNo === p.game.handNo && !!x.game.over === !!p.game.over));
+    store.set(RESULTS_KEY, q.concat([p]).slice(-20));
+  }
+  function sendLocalResult(p) {
+    if (OFFLINE || !S.connected || !S.social || !S.social.nick) { queueLocalResult(p); return; }
+    socket.emit('localResult', p, (r) => { if (!r || !r.ok) queueLocalResult(p); });
+  }
+  function flushLocalResults() {
+    if (OFFLINE || !S.connected || !S.social || !S.social.nick) return;
+    const q = store.get(RESULTS_KEY, []);
+    if (!q.length) return;
+    store.set(RESULTS_KEY, []);
+    for (const p of q) socket.emit('localResult', p, (r) => { if (!r || !r.ok) queueLocalResult(p); });
+  }
+
   function emit(ev, data) {
     return new Promise((res) => {
-      socket.emit(ev, data, (r) => {
+      const target = S.localGame && LOCAL_EVENTS.has(ev) && Local.sock ? Local.sock : socket;
+      target.emit(ev, data, (r) => {
         if (r && !r.ok) { toast(r.error, true); Sound.play('error'); }
         res(r || { ok: false });
       });

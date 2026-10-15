@@ -142,7 +142,15 @@
     previewEdit() { rulesModal(S.editRules, null, true); },
     backEdit() { editRulesModal(); },
     create() { emit('createRoom', { rules: S.rules }); },
-    createBots() { emit('createRoom', { rules: S.rules, vsBots: true }); },
+    // contro il computer: online la partita gira sul telefono (mosse istantanee), il server riceve i risultati
+    async createBots() {
+      if (OFFLINE) { emit('createRoom', { rules: S.rules, vsBots: true }); return; }
+      try { await localSocket(); } catch (e) { emit('createRoom', { rules: S.rules, vsBots: true }); return; }
+      S.localGame = true;
+      // la partita nasce sul telefono (non sul server)
+      const r = await new Promise((res) => Local.sock.emit('createRoom', { rules: S.rules, vsBots: true }, res));
+      if (!r || !r.ok) { S.localGame = false; toast((r && r.error) || 'Partita non avviata', true); }
+    },
     leave() {
       // in partita: una finestrella con tutte le scelte (uscire, arrendersi, terminare, chiudere)
       if (S.game && !S.game.over && S.game.you >= 0 && S.modalKind !== 'leave') {
@@ -389,6 +397,13 @@
       setTimeout(() => { const t = $('#reportin'); if (t) t.focus(); }, 50);
     },
     async rejoin() {
+      // partita sul telefono da riprendere
+      if (!store.get('bur_lastroom', '') && savedLocalGame()) {
+        try { await localSocket(); } catch (e) { return; }
+        S.localGame = true;
+        emit('sync');
+        return;
+      }
       const code = store.get('bur_lastroom', '');
       store.set('bur_lastroom', '');
       const r = await emit('joinRoom', { code });

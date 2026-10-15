@@ -50,7 +50,8 @@ function recordLeaderboard(room) {
   if (gameEnds) recordSeries(room);
   // punteggio Elo: si calcola una volta per partita, con i punteggi di tutti prima della partita
   const eloGid = Games.idOf(room.rules);
-  const eloDelta = gameEnds && !room.tutorial ? Elo.deltas(
+  // le partite giocate sul telefono (risultato mandato dal dispositivo) non cambiano l'Elo: si potrebbero falsificare
+  const eloDelta = gameEnds && !room.tutorial && !room.localGame ? Elo.deltas(
     room.seats.map((s) => {
       if (!s || s.isBot || !s.token) return { human: false, rating: Elo.BOT_RATING[room.botLevel || 'normale'] || Elo.START, games: 0 };
       const x = ((leaderboard.get(s.token) || {}).byGame || {})[eloGid] || {};

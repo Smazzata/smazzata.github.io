@@ -15,7 +15,7 @@
       app.innerHTML = gameHTML();
       afterGameRender();
     }
-    if (!S.connected) {
+    if (!S.connected && !S.localGame) {
       app.insertAdjacentHTML('afterbegin', `<div class="offline"><span class="spin"></span>${S.lostConnection ? '📡 Connessione persa: mi ricollego…' : 'Connessione al server…'}</div>`);
       const gm = $('.game');
       if (gm) gm.classList.add('offline-lock');
@@ -117,7 +117,7 @@
    * statistiche, amici, regole, impostazioni…) sta nel menu «☰ Altro».
    */
   function homeButtonsHTML() {
-    const last = !OFFLINE && store.get('bur_lastroom', '');
+    const last = !OFFLINE && (store.get('bur_lastroom', '') || (savedLocalGame() ? '🤖' : ''));
     const reqs = S.social && S.social.reqIn ? S.social.reqIn.length : 0;
     return `<div class="homebtns">
       ${S.pendingJoin && !OFFLINE ? `<div class="invitebox">✉️ Sei stato invitato al tavolo <b>${esc(S.pendingJoin)}</b>

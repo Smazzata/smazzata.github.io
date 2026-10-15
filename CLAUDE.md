@@ -30,6 +30,7 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 - `public/` — interfaccia: tavolo mobile-first, trascinamento carte, animazioni, suoni sintetizzati, tema chiaro/scuro a scelta dell'utente, statistiche personali in localStorage.
 - Lingue (it/en/es/pt): l'interfaccia resta scritta in italiano; `public/js/lingue.js` traduce al volo i testi che compaiono (dizionario `public/lingue/xx.js`, generato da `lingue/*.txt` con `node scripts/lingue.js`; righe `italiano ‖ English ‖ Español ‖ Português`, `{0}` = parte variabile). Per un testo nuovo aggiungi la riga e rigenera (npm test controlla). In console `[...I18N.missing]` mostra i testi visti senza traduzione.
 - `launcher/` — pagina d'ingresso su GitHub Pages (link fisso) che legge l'indirizzo del server dal ramo `indirizzo` (`server.json`).
+- Partite contro il computer **sul telefono** anche online (mosse istantanee): `createBots` usa `public/local-server.js` (`onDevice`), le mosse vanno lì (`LOCAL_EVENTS` in connessione.js) e a ogni fine smazzata il risultato completo va al server con `localResult` (statistiche, livello, trofei; niente Elo), in coda se manca la rete.
 - Gioco senza internet: `public/local-server.js` è un "server" nel browser (stessi eventi di socket.io) che usa motore e computer
   impacchettati da `scripts/bundle-engine.js` (il server li offre su `/engine.js`). Si attiva da solo se socket.io non si carica,
   o con `?offline=1`. `scripts/build-pages.js` pubblica su GitHub Pages la pagina d'ingresso + una copia del gioco in `gioca/`;
@@ -60,6 +61,7 @@ Computer: 3 livelli + apertura da vulnerabile con più combinazioni + pianificat
 - `npm run e2e` — prova multigiocatore end-to-end su un server di prova (porta 3999).
 - `npm run bench` — forza relativa dei livelli del computer.
 - `npm run load [tavoli] [secondi]` — prova di carico (tavoli simulati insieme: tempi di risposta, ritardo, CPU, memoria).
+- `npm run anim` — prova delle animazioni delle carte in tutti i giochi con il ritardo del server simulato: atterraggi al pixel, mosse rifiutate senza voli, fotogrammi in `test-output/animazioni/`.
 - `npm run ui` — prova dell'interfaccia in un vero browser senza finestra (Chrome/Edge, 375×812): gioca toccando Burraco e Scala 40, moviola, impostazioni, offline; schermate in `test-output/`.
 - `npm run playtest [partite] [varianti]` — statistiche su partite simulate in massa (durata, finali, punteggi, dati inviati).
 - Controlla le modifiche visive nel browser a misura di telefono (375×812).

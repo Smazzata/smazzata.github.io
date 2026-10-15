@@ -117,8 +117,14 @@ const HELPERS = `
       if (hand !== 11) throw new Error('mano del Burraco: ' + hand + ' carte');
       return __playHand(240000);`, 260000);
     await shot('02-burraco-fine-smazzata');
+    // la partita contro il computer gira sul telefono; il risultato della smazzata arriva comunque al server
+    const onDev = await cdp.run(`
+      if (!S.room || !S.room.onDevice) return 'non sul telefono';
+      for (let i = 0; i < 40; i++) { const r = await emit('myStats'); if (r.ok && r.stats && r.stats.hands >= 1) return 'ok'; await __W(250); }
+      return 'risultato non arrivato al server';`);
+    if (onDev !== 'ok') throw new Error('partita sul telefono: ' + onDev);
     if (b.scroll > 3) throw new Error(`il tavolo del Burraco scorre (${b.scroll} volte)`);
-    step(`Burraco: smazzata giocata toccando (${b.turns} turni), il tavolo non scorre`);
+    step(`Burraco sul telefono: smazzata giocata toccando (${b.turns} turni), il tavolo non scorre, risultato arrivato al server`);
 
     // 3. moviola dalla fine della smazzata
     const mv = await cdp.run(`

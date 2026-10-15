@@ -429,6 +429,34 @@ module.exports.register = function register(socket, handler) {
     for (const sk of to) sk.emit('voice', { seat, name, audio: buf, mime: type, ms: dur });
   }));
 
+  /*
+   * Smazzata finita di una partita contro il computer giocata sul telefono (public/local-server.js): si registrano
+   * statistiche, livello e trofei come per le partite sul server (non l'Elo). Una volta sola per smazzata.
+   */
+  socket.on('localResult', handler(({ id, rules, botLevel, tutorial, game } = {}) => {
+    const token = socket.data.token;
+    const sess = sessions.get(token);
+    if (!sess || !sess.nick) return {}; // senza profilo non c'è niente da registrare
+    const g = game;
+    if (!g || typeof g !== 'object' || g.phase !== 'handEnd' || !g.handResult || !Array.isArray(g.players) || !Array.isArray(g.teams)) throw new E.GameError('Risultato non valido');
+    if (JSON.stringify(g).length > 600 * 1024) throw new E.GameError('Risultato troppo grande');
+    if (g.players.length < 2 || g.players.length > 6 || g.players[0].isBot || g.players.slice(1).some((p) => !p.isBot)) throw new E.GameError('Risultato non valido');
+    const gid = Games.idOf(rules);
+    if (!rules || (rules.game && rules.game !== gid)) throw new E.GameError('Gioco sconosciuto');
+    const lid = String(id || '').slice(0, 40);
+    const rec = sess.localRec && sess.localRec.id === lid ? sess.localRec : { id: lid, gameSeq: 1 };
+    const room = {
+      code: 'LOCALE', rules, n: g.players.length, game: g, localGame: true, tutorial: !!tutorial,
+      botLevel: ['facile', 'normale', 'difficile', 'esperto'].includes(botLevel) ? botLevel : 'normale',
+      seats: g.players.map((p, i) => (i === 0 ? { token, name: sess.nick } : { isBot: true, name: String(p.name || 'Computer').slice(0, 30) })),
+      gameSeq: rec.gameSeq, recordedHand: rec.recordedHand, recordedGame: rec.recordedGame,
+    };
+    try { ctx.recordLeaderboard(room); } catch (e) { console.error('Risultato dal telefono non registrato:', e.message); throw new E.GameError('Risultato non valido'); }
+    sess.localRec = { id: lid, gameSeq: room.gameSeq, recordedHand: room.recordedHand, recordedGame: room.recordedGame };
+    ctx.scheduleSave();
+    return {};
+  }));
+
   // Vocali: attivati o no nelle impostazioni personali (vale per tutti i tavoli)
   socket.on('voicePref', handler(({ on } = {}) => {
     const sess = sessions.get(socket.data.token);
