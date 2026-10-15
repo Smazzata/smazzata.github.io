@@ -145,7 +145,11 @@
     // copia della pagina e del gioco sul dispositivo: senza internet si gioca contro il computer
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
     // nel browser Android si propone l'app; dentro l'app (user agent "BurracoApp") no
-    if (/android/i.test(navigator.userAgent) && !/BurracoApp/.test(navigator.userAgent)) $('apk').classList.remove('hidden');
+    // i tablet Android spesso si presentano come computer (Chrome «versione desktop»): Linux + schermo touch = Android
+    const isAndroid = /android/i.test(navigator.userAgent)
+      || (navigator.userAgentData && /android/i.test(navigator.userAgentData.platform || ''))
+      || (/Linux/.test(navigator.platform || navigator.userAgent) && !/CrOS/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+    if (isAndroid && !/BurracoApp/.test(navigator.userAgent)) $('apk').classList.remove('hidden');
     if (/iphone|ipad/i.test(navigator.userAgent) && !navigator.standalone) $('tip').classList.remove('hidden');
     go();
   </script>

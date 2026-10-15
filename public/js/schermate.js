@@ -23,7 +23,10 @@
   }
 
   const APK_URL = 'https://github.com/simonemuliello010500-web/BurracoByMSF/releases/latest/download/Burraco.apk';
-  const IS_ANDROID = /android/i.test(navigator.userAgent);
+  // i tablet Android spesso si presentano come computer (Chrome «versione desktop»): Linux + schermo touch = Android
+  const IS_ANDROID = /android/i.test(navigator.userAgent)
+    || (navigator.userAgentData && /android/i.test(navigator.userAgentData.platform || ''))
+    || (/Linux/.test(navigator.platform || navigator.userAgent) && !/CrOS/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
   const IN_APP = /BurracoApp/.test(navigator.userAgent);
   // versione dell'app installata (0 = APK vecchio, senza numero)
   const APP_VERSION = IN_APP ? Number((navigator.userAgent.match(/BurracoApp\/(\d+)/) || [])[1] || 0) : null;
