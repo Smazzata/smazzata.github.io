@@ -41,7 +41,7 @@ function player(name) {
     while (Date.now() < end) { if (p.state && fn(p.state)) return p.state; await wait(25); }
     throw new Error(`${name}: tempo scaduto aspettando ${what}`);
   };
-  p.hello = (token) => new Promise((res) => { sock.emit('hello', { name, token }); sock.once('welcome', (w) => { p.token = w.token; res(w); }); });
+  p.hello = (token, lang) => new Promise((res) => { sock.emit('hello', { name, token, lang }); sock.once('welcome', (w) => { p.token = w.token; res(w); }); });
   return p;
 }
 
@@ -245,7 +245,13 @@ async function signup(p, nick, email = mailOf()) {
     await wait(100);
     assert(mailbox().some((x) => x.to === 'ylenia@esempio.it' && /password cambiata/.test(x.subject)), 'avviso di password cambiata');
     for (const x of [Z, Z2, Z2b, Y, X]) x.sock.close();
-    step('email: conferma con codice, recupero della password via email, avviso');
+    // l'email arriva nella lingua del dispositivo
+    const Es = player('Elena'); await Es.hello(undefined, 'es');
+    assert((await Es.call('startSignup', { nick: 'Elena', password: 'prova123', email: 'elena@esempio.es' })).ok);
+    let esMail = null; for (let i = 0; i < 50 && !esMail; i++) { esMail = mailbox().find((x) => x.to === 'elena@esempio.es'); await wait(20); }
+    assert(esMail && /tu código es \d{6}/.test(esMail.subject) && /Hola Elena/.test(esMail.text), 'email in spagnolo');
+    Es.sock.close();
+    step('email: conferma con codice, recupero della password via email, avviso, nella lingua di chi la riceve');
 
     // eliminazione: il nickname torna libero e l'amicizia sparisce
     const D = player('Temporaneo');

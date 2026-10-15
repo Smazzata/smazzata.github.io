@@ -115,10 +115,14 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
   }
 
   /** email (in italiano: il server non conosce la lingua di chi la riceve) */
-  function mailTo(s, subject, text) {
+  /** email al profilo, nella sua lingua (vedi server/posta.js per i testi) */
+  function mailTo(s, kind) {
     if (!s.email || !Posta.enabled()) return;
-    Posta.send(s.email, subject, `Ciao ${s.nick},\n\n${text}\n\n— Smazzata`).catch((e) => console.error('Email non inviata:', e.message));
+    const m = Posta.compose(kind, s.lang, { nick: s.nick });
+    Posta.send(s.email, m.subject, m.text).catch((e) => console.error('Email non inviata:', e.message));
   }
+  /** invia un'email con un codice (nella lingua lang) */
+  const sendCode = (kind, lang, to, nick, code) => { const m = Posta.compose(kind, lang, { nick, code }); return Posta.send(to, m.subject, m.text); };
   const sixDigits = () => String(crypto.randomInt(0, 1000000)).padStart(6, '0');
   /** controlla un codice a 6 cifre (scade, massimo 5 tentativi); restituisce true se giusto */
   function checkCode(slot, code) {
@@ -140,7 +144,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     const code = sixDigits();
     s.emailCode = { email, h: keyHash(code), exp: Date.now() + 15 * 60000, tries: 0, sent: Date.now() };
     try {
-      await Posta.send(email, `Smazzata: il tuo codice è ${code}`, `Ciao ${s.nick},\n\nil codice per confermare la tua email è: ${code}\n\nScade tra 15 minuti. Se non hai chiesto tu questo codice, ignora questa email.\n\n— Smazzata`);
+      await sendCode('verify', s.lang, email, s.nick, code);
       return true;
     } catch (e) {
       console.error('Email non inviata:', e.message);
@@ -289,7 +293,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       setPw(s, password);
       if (had) {
         revokeDevices(me(), socket.data.devKey);
-        mailTo(s, 'Smazzata: password cambiata', "la password del tuo profilo è stata cambiata e gli altri dispositivi sono stati scollegati.\nSe non sei stato tu, usa «Password dimenticata?» nell'app.");
+        mailTo(s, 'changedInside');
       }
       push(me());
       return {};
@@ -323,7 +327,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       const s = sess(t);
       setPw(s, password);
       revokeDevices(t, null);
-      mailTo(s, 'Smazzata: password cambiata', 'la password del tuo profilo è stata cambiata con il codice di recupero.\nSe non sei stato tu, cambiala subito con il codice di recupero e genera un codice nuovo (👤 Profilo).');
+      mailTo(s, 'changedByCode');
       return { token: newDevice(t), nick: s.nick };
     }));
 
@@ -344,7 +348,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       const code = sixDigits();
       s.signup = { nick, pw: tmp.pw, email, h: keyHash(code), exp: Date.now() + 15 * 60000, tries: 0, sent: Date.now() };
       try {
-        await Posta.send(email, `Smazzata: il tuo codice è ${code}`, `Ciao ${nick},\n\nil codice per creare il tuo profilo è: ${code}\n\nScade tra 15 minuti. Se non hai chiesto tu questo codice, ignora questa email.\n\n— Smazzata`);
+        await sendCode('signup', s.lang, email, nick, code);
       } catch (e) {
         s.signup = null;
         console.error('Email non inviata:', e.message);
@@ -419,7 +423,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if (s && !(s.resetCode && Date.now() - s.resetCode.sent < 60000)) {
         const code = sixDigits();
         s.resetCode = { h: keyHash(code), exp: Date.now() + 15 * 60000, tries: 0, sent: Date.now() };
-        Posta.send(email, `Smazzata: codice per la nuova password ${code}`, `Ciao ${s.nick},\n\nil codice per scegliere una nuova password è: ${code}\n\nScade tra 15 minuti. Se non l'hai chiesto tu, ignora questa email: la tua password resta quella di prima.\n\n— Smazzata`)
+        sendCode('reset', s.lang, email, s.nick, code)
           .catch((e) => console.error('Email non inviata:', e.message));
       }
       return {};
@@ -433,7 +437,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       setPw(s, password);
       s.resetCode = null;
       revokeDevices(t, null);
-      mailTo(s, 'Smazzata: password cambiata', 'la password del tuo profilo è stata cambiata (con il codice ricevuto via email).\nSe non sei stato tu, rispondi a questa email.');
+      mailTo(s, 'changedByEmail');
       return { token: newDevice(t), nick: s.nick };
     }));
 

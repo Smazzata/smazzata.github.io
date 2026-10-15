@@ -32,7 +32,7 @@
     if (S.lostConnection) toast('✓ Riconnesso');
     S.lostConnection = false;
     S.connected = true;
-    socket.emit('hello', { token: S.token, name: S.name, voice: S.prefs.voice !== false });
+    socket.emit('hello', { token: S.token, name: S.name, voice: S.prefs.voice !== false, lang: LANG });
   });
   socket.on('disconnect', () => {
     S.connected = false;
