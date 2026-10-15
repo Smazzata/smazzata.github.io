@@ -64,6 +64,35 @@ function setup(app) {
 }
 
 /* ---------- Pagina di stato (solo con la chiave) ---------- */
+/** email mascherata per la pagina di stato: ma***@gmail.com */
+function maskEmail(e) {
+  if (!e) return '';
+  const [u, d] = String(e).split('@');
+  return `${u.length <= 2 ? u[0] + '*' : u.slice(0, 2) + '***'}@${d || ''}`;
+}
+
+/** iscritti: chi è online, livello, partite, ultimo giorno di gioco, serie, email confermata, notifiche */
+function playersData(online) {
+  const PM = require('./promemoria');
+  const Levels = require('./levels');
+  const today = PM.romeDay();
+  const week = new Set([today]);
+  let d = today;
+  for (let i = 0; i < 6; i++) { d = PM.dayBefore(d); week.add(d); }
+  const list = [...sessions].filter(([, s]) => s.nick).map(([t, s]) => {
+    const e = ctx.leaderboard.get(t) || {};
+    return {
+      nick: s.nick, email: maskEmail(s.email), emailOk: !!s.email, online: online.has(t),
+      livello: Levels.levelOf(e).level, partite: e.games || 0, vinte: e.wins || 0,
+      ultimoGiorno: e.lastDay || null, serie: PM.streakOf(e).streak, notifiche: !!(s.push && s.push.length),
+    };
+  }).sort((a, b) => (b.online - a.online) || String(b.ultimoGiorno || '').localeCompare(String(a.ultimoGiorno || '')) || a.nick.localeCompare(b.nick));
+  return {
+    totali: { iscritti: list.length, online: list.filter((x) => x.online).length, oggi: list.filter((x) => x.ultimoGiorno === today).length, settimana: list.filter((x) => week.has(x.ultimoGiorno)).length },
+    lista: list, oggi: today, ieri: PM.dayBefore(today),
+  };
+}
+
 function statusData() {
   const online = new Set([...io.sockets.sockets.values()].map((so) => so.data.token).filter(Boolean));
   return {
@@ -74,6 +103,7 @@ function statusData() {
     ritardo_ms: { medio: Math.round(loopDelay.mean / 1e5) / 10, p99: Math.round(loopDelay.percentile(99) / 1e5) / 10, massimo: Math.round(loopDelay.max / 1e5) / 10 },
     connessi: online.size,
     profili: [...sessions.values()].filter((x) => x.nick).length,
+    iscritti: playersData(online),
     tavoli: [...rooms.values()].map((r) => ({
       codice: r.code,
       regole: Games.of(r).presetOf(r.rules) || 'personalizzate',
@@ -112,7 +142,7 @@ function setupStatus(app) {
     const d = statusData();
     const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     res.set('Cache-Control', 'no-store').send(`<!doctype html><html lang="it"><head><meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1"><title>Stato Burraco</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"><title>Stato Smazzata</title>
   <style>body{font-family:system-ui,sans-serif;background:#0f5132;color:#fff;margin:0;padding:16px}h1{margin:0 0 12px}
   .box{background:rgba(0,0,0,.25);border-radius:12px;padding:12px;margin:10px 0}.k{display:inline-block;margin:4px 14px 4px 0}
   .k b{display:block;font-size:22px;color:#f2c14e}table{width:100%;border-collapse:collapse;font-size:14px}td,th{text-align:left;padding:5px;border-bottom:1px solid rgba(255,255,255,.15)}
@@ -128,9 +158,15 @@ function setupStatus(app) {
   ${r.chat && r.chat.length ? `<pre style="color:#ffe">${r.chat.map(esc).join('\n')}</pre>` : ''}
   ${r.table && r.table.game ? `<pre style="color:#cfe">smazzata ${r.table.game.hand} · fase ${esc(r.table.game.phase)} · turno ${r.table.game.turn} · posto ${r.table.seat} · tallone ${r.table.game.stock} · scarti ${r.table.game.discard} · carte in mano ${r.table.game.myCards}
   ${r.table.game.log.map(esc).join('\n')}</pre>` : ''}<span class="m">${esc(r.device)}</span></div>`).join('') : '<p class="m">Nessuna segnalazione.</p>'}</div>
-  <div class="box"><b>Profili</b> <span class="m">· «Codice» genera un nuovo codice di recupero da mandare a chi ha perso password e codice</span>
-  ${ctx.social.nicks().map((n) => `<form method="post" action="/stato/recupero?k=${encodeURIComponent(req.query.k)}&nick=${encodeURIComponent(n)}" style="display:inline-block;margin:4px 8px 4px 0"
-  onsubmit="return confirm('Nuovo codice di recupero per ${esc(n)}?')"><span>${esc(n)}</span> <button>Codice</button></form>`).join('') || '<p class="m">Nessun profilo.</p>'}</div>
+  <div class="box"><b>Iscritti</b>
+  <div><span class="k">Iscritti<b>${d.iscritti.totali.iscritti}</b></span><span class="k">Online ora<b>${d.iscritti.totali.online}</b></span><span class="k">Hanno giocato oggi<b>${d.iscritti.totali.oggi}</b></span><span class="k">Ultimi 7 giorni<b>${d.iscritti.totali.settimana}</b></span></div>
+  ${d.iscritti.lista.length ? `<div style="overflow-x:auto"><table><tr><th></th><th>Nickname</th><th>Email</th><th>Liv.</th><th>Partite</th><th>Ultimo gioco</th><th>🔥</th><th>🔔</th><th></th></tr>
+  ${d.iscritti.lista.map((p) => `<tr><td>${p.online ? '🟢' : '⚪'}</td><td><b>${esc(p.nick)}</b></td><td>${p.emailOk ? `✓ <span class="m">${esc(p.email)}</span>` : '<span class="m">—</span>'}</td>
+  <td>${p.livello}</td><td>${p.partite}${p.partite ? ` <span class="m">(${p.vinte} vinte)</span>` : ''}</td>
+  <td>${p.ultimoGiorno === d.iscritti.oggi ? 'oggi' : p.ultimoGiorno === d.iscritti.ieri ? 'ieri' : p.ultimoGiorno ? esc(p.ultimoGiorno.split('-').reverse().join('/')) : '<span class="m">mai</span>'}</td>
+  <td>${p.serie >= 2 ? p.serie : ''}</td><td>${p.notifiche ? '✓' : ''}</td>
+  <td><form method="post" action="/stato/recupero?k=${encodeURIComponent(req.query.k)}&nick=${encodeURIComponent(p.nick)}" style="margin:0" onsubmit="return confirm('Nuovo codice di recupero per ${esc(p.nick)}?')"><button title="Nuovo codice di recupero da mandare a chi ha perso password e codice">Codice</button></form></td></tr>`).join('')}</table></div>
+  <p class="m">🟢 online · ✓ email confermata · 🔥 giorni di gioco di fila · 🔔 notifiche attive · «Codice»: nuovo codice di recupero per chi ha perso password e codice</p>` : '<p class="m">Nessun iscritto.</p>'}</div>
   <div class="box"><b>Ultimi errori</b>${d.errori.length ? d.errori.map((e) => `<pre>${esc(e.quando)} — ${esc(e.testo)}</pre>`).join('') : '<p class="m">Nessun errore 🎉</p>'}</div>
   <p class="m">Ricarica la pagina per aggiornarla. 🟢 online · ⚪ offline · 🤖 computer</p></body></html>`);
   });
