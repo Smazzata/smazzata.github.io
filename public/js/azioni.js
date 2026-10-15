@@ -184,6 +184,7 @@
       emit('leaveRoom');
       S.screen = 'home';
     },
+    shareResult() { shareResult(); },
     // fine partita: di nuovo nella sala d'attesa dello stesso tavolo (per cambiare regole o giocatori)
     async backToLobby() { const r = await emit('backToLobby'); if (r.ok) closeModal(); },
     // fine partita contro il computer: si sceglie un'altra partita
