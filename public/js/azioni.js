@@ -31,7 +31,6 @@
       }
     }
     if (g.playable && !g.playable.includes(cardId)) { toast('Devi rispondere al seme'); Sound.play('error'); return; }
-    Sound.play('card');
     act('play', { cardId });
   }
 
@@ -50,8 +49,11 @@
         void swapped;
       }
     }
+    anticipate(type, extra);
     const r = await emit('action', { type, ...extra });
     if (r.ok && ['meld', 'add', 'swap', 'discard', 'takePile', 'undo'].includes(type)) { S.selected.clear(); render(); }
+    // mossa rifiutata: le carte nascoste dall'anticipo tornano al loro posto
+    if (!r.ok) { S.antic = null; render(); }
     return r;
   }
 

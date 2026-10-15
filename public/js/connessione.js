@@ -339,6 +339,9 @@
   document.addEventListener('visibilitychange', () => { if (wantWake) keepScreenOn(true); });
 
   function eventSound(prev, game, ev) {
+    // il suono della mia mossa anticipata si è già sentito al tocco
+    const a = S.antic;
+    if (ev.seat === game.you && a && Date.now() - a.at < 4000 && ({ draw: ['draw'], pile: ['takePile'], discard: ['discard', 'play'] }[ev.type] || []).includes(a.type)) return;
     if (ev.type === 'meld' || ev.type === 'add') {
       const before = prev && prev.teams.flatMap((t) => t.melds).find((m) => m.id === ev.meldId);
       const now = game.teams.flatMap((t) => t.melds).find((m) => m.id === ev.meldId);

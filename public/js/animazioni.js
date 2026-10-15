@@ -50,10 +50,57 @@
     setTimeout(() => cards.forEach((c) => { c.classList.remove('dealin'); c.style.animationDelay = ''; }), 450 + cards.length * 55 + 500);
   }
 
+  /**
+   * Mossa anticipata: al tocco la carta parte subito verso la sua destinazione, mentre la mossa viaggia fino al
+   * server (con il server sul telefono servono 0,1-0,3 secondi). Le carte che lasciano la mano si nascondono
+   * subito; se il server rifiuta la mossa, il tavolo si ridisegna com'era. Dopo un trascinamento la carta è già
+   * arrivata col dito: niente volo, si nasconde soltanto.
+   */
+  function anticipate(type, extra = {}) {
+    const g = S.game;
+    if (!g || g.you < 0 || g.turn !== g.you) return;
+    // niente anticipo se la mossa è di sicuro fuori fase (es. scartare prima di pescare)
+    if ((type === 'draw' || type === 'takePile') ? g.phase !== 'draw' : !g.presa && g.phase !== 'play') return;
+    const dragged = S.justDragged && Date.now() - S.justDragged < 400;
+    const anim = S.prefs.anim !== false && !reducedMotion;
+    const handCard = (id) => $(`#hand .card[data-card="${id}"]`);
+    const leave = (ids, target, opts = {}) => {
+      ids.forEach((id, i) => {
+        const el = handCard(id);
+        const c = g.hand.find((x) => x.id === id);
+        if (!el) return;
+        if (anim && !dragged && target && c) fly(el, target, cardHTML(c), { dur: 360, delay: i * 45, ...opts });
+        el.style.visibility = 'hidden';
+      });
+    };
+    S.antic = { type, at: Date.now() };
+    if (type === 'draw') {
+      if (anim && !dragged) fly($('.stock .deck') || $('.stock'), $('#hand'), backHTML(), { dur: 380 });
+      Sound.play('card');
+    } else if (type === 'takePile') {
+      const n = Math.min(g.discardCount || (g.discard || []).length || 1, 5);
+      if (anim && !dragged) for (let i = 0; i < n; i++) fly($('.pile .pcards') || $('.pile'), $('#hand'), backHTML(), { delay: i * 60, dur: 380 });
+      Sound.play('pile');
+    } else if (type === 'discard') {
+      leave([extra.cardId], $('.pile .card.top') || $('.pile .pcards') || $('.pile'));
+      Sound.play('card');
+    } else if (type === 'meld') {
+      leave(extra.cardIds || [], $('.newmeld') || $('#felt'));
+    } else if (type === 'add' || type === 'swap') {
+      leave(extra.cardIds || (extra.cardId != null ? [extra.cardId] : []), $(`[data-meld="${extra.meldId}"]`) || $('#felt'));
+    } else if (type === 'play') {
+      leave([extra.cardId], $('.ptrick') || $('.ptable') || $('#felt'));
+      Sound.play('card');
+    } else S.antic = null;
+  }
+
   function animateEvent(ev) {
     const g = S.game;
     if (!g) return;
     const mine = ev.seat === g.you;
+    // la mia pescata è già volata al tocco (mossa anticipata): non si ripete
+    if (mine && S.antic && Date.now() - S.antic.at < 4000
+      && ((ev.type === 'draw' && S.antic.type === 'draw') || (ev.type === 'pile' && S.antic.type === 'takePile'))) { S.antic = null; return; }
     const seatEl = mine ? $('#hand') : $(`.seatchip[data-seat="${ev.seat}"]`);
     const stock = $('.stock .deck');
     const pile = $('.pile .pcards');
