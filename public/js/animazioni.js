@@ -6,26 +6,91 @@
   /* ================= Animazioni ================= */
   function rectOf(el) { return el && el.getBoundingClientRect(); }
 
-  function fly(fromEl, toEl, html, { delay = 0, dur = 420 } = {}) {
-    if (S.prefs.anim === false) return; // animazioni disattivate (accessibilità)
+  function fly(fromEl, toEl, html, { delay = 0, dur = 420, hold = false } = {}) {
+    if (S.prefs.anim === false) return null; // animazioni disattivate (accessibilità)
     const a = rectOf(fromEl), b = rectOf(toEl);
-    if (!a || !b || !a.width || !b.width) return;
+    if (!a || !b || !a.width || !b.width) return null;
     const el = document.createElement('div');
     el.className = 'flyer';
+    // stessa misura delle carte sul tavolo (il tavolo la adatta allo schermo in #felt)
+    const felt = $('#felt');
+    if (felt && felt.style.getPropertyValue('--pw')) el.style.setProperty('--pw', felt.style.getPropertyValue('--pw'));
     el.innerHTML = html;
     document.body.appendChild(el);
     const card = el.firstElementChild;
-    const w = card.offsetWidth || 50;
-    const sx = a.left + a.width / 2 - w / 2, sy = a.top + a.height / 2 - w * 0.7;
-    const ex = b.left + b.width / 2 - w / 2, ey = b.top + b.height / 2 - w * 0.7;
-    el.style.transform = `translate(${sx}px, ${sy}px) scale(.8)`;
-    el.style.opacity = '0';
+    const w = card.offsetWidth || 50, h = card.offsetHeight || 70;
+    // parte grande come la carta di partenza e arriva grande come quella d'arrivo (se sono carte)
+    const isCard = (x) => x && x.classList && x.classList.contains('card');
+    const s0 = isCard(fromEl) ? a.width / w : 0.8, s1 = isCard(toEl) ? b.width / w : 1;
+    // .flyer ruota e scala dall'angolo in alto a sinistra: si centra la carta sul riquadro
+    const pos = (r, sc) => `translate(${r.left + r.width / 2 - (w * sc) / 2}px, ${r.top + r.height / 2 - (h * sc) / 2}px) scale(${sc})`;
+    el.style.transform = pos(a, s0);
+    el.style.opacity = isCard(fromEl) ? '1' : '0';
     setTimeout(() => {
+      if (el.dataset.landed) return; // già fatta atterrare
       el.style.transition = `transform ${dur}ms cubic-bezier(.2,.8,.2,1), opacity 150ms`;
       el.style.opacity = '1';
-      el.style.transform = `translate(${ex}px, ${ey}px) scale(1) rotate(${(Math.random() - 0.5) * 16}deg)`;
+      el.style.transform = pos(b, s1) + (hold ? '' : ` rotate(${(Math.random() - 0.5) * 16}deg)`);
     }, 20 + delay);
-    setTimeout(() => el.remove(), dur + delay + 120);
+    if (!hold) setTimeout(() => el.remove(), dur + delay + 120);
+    return el;
+  }
+
+  /**
+   * Fa atterrare una carta in volo esattamente sopra la carta vera (target), da dove si trova adesso.
+   * faceHTML: la carta si gira a metà strada (la pescata parte coperta e arriva scoperta).
+   */
+  function landFlyer(el, target, faceHTML) {
+    if (!el || !el.isConnected) return;
+    el.dataset.landed = '1';
+    const card = el.firstElementChild;
+    const w = card.offsetWidth || 50;
+    // la carta vera non fa la sua animazione d'arrivo (salto, ingrandimento): ci arriva volando.
+    // Va fermata prima di misurarla, altrimenti si misura la carta già alzata o ingrandita
+    target.classList.remove('newc', 'dealin', 'landed');
+    target.style.animation = 'none';
+    void target.offsetWidth;
+    // il riquadro della carta adesso (in volo, già trasformato) e quello della carta vera
+    const cur = card.getBoundingClientRect();
+    const t = target.getBoundingClientRect();
+    const sc = t.width / w;
+    // .flyer ha transform-origin in alto a sinistra: si posiziona l'angolo e si scala; sx < 1 stringe la carta
+    // attorno al suo centro (per girarla)
+    const at = (r, scale, sx = 1) => `translate(${r.left + (r.width * (1 - sx)) / 2}px, ${r.top}px) scale(${scale * sx}, ${scale})`;
+    // ferma il volo dov'è adesso, poi riparte verso il posto giusto
+    el.style.transition = 'none';
+    el.style.opacity = '1';
+    el.style.transform = at(cur, cur.width / w);
+    void el.offsetWidth;
+    target.style.visibility = 'hidden';
+    const finish = () => { target.style.visibility = ''; target.style.animation = ''; el.remove(); };
+    if (faceHTML) {
+      // girata: si stringe, cambia faccia, si riapre arrivando
+      const mid = { left: (cur.left + t.left) / 2, top: (cur.top + t.top) / 2, width: (cur.width + t.width) / 2, height: (cur.height + t.height) / 2 };
+      el.style.transition = 'transform 100ms ease-in';
+      el.style.transform = at(mid, mid.width / w, 0.05);
+      setTimeout(() => {
+        el.innerHTML = faceHTML;
+        el.style.transition = 'transform 150ms ease-out';
+        el.style.transform = at(t, sc);
+        setTimeout(finish, 160);
+      }, 105);
+    } else {
+      el.style.transition = 'transform 170ms ease-out';
+      el.style.transform = at(t, sc);
+      setTimeout(finish, 180);
+    }
+  }
+
+  /** carte in volo che non trovano un posto (es. la carta presa nella Scopa): si dissolvono */
+  function fadeFlyers(list) {
+    for (const el of list) {
+      if (!el || !el.isConnected) continue;
+      el.dataset.landed = '1';
+      el.style.transition = 'opacity 180ms';
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 200);
+    }
   }
 
   /** Distribuzione: qualche carta vola dal tallone a ogni giocatore, la mia mano entra carta per carta */
@@ -60,38 +125,103 @@
     const g = S.game;
     if (!g || g.you < 0 || g.turn !== g.you) return;
     // niente anticipo se la mossa è di sicuro fuori fase (es. scartare prima di pescare)
-    if ((type === 'draw' || type === 'takePile') ? g.phase !== 'draw' : !g.presa && g.phase !== 'play') return;
+    if (type === 'draw' ? g.phase !== 'draw' : !g.presa && g.phase !== 'play') return;
+    // si anticipa solo ciò che di sicuro è valido: il server potrebbe rifiutare il resto
+    const ok = anticipateSafe(g, type, extra);
+    if (!ok) return;
+    clearAnticipated();
     const dragged = S.justDragged && Date.now() - S.justDragged < 400;
     const anim = S.prefs.anim !== false && !reducedMotion;
+    const flyers = [];
     const handCard = (id) => $(`#hand .card[data-card="${id}"]`);
-    const leave = (ids, target, opts = {}) => {
+    const leave = (ids, target) => {
       ids.forEach((id, i) => {
         const el = handCard(id);
         const c = g.hand.find((x) => x.id === id);
         if (!el) return;
-        if (anim && !dragged && target && c) fly(el, target, cardHTML(c), { dur: 360, delay: i * 45, ...opts });
+        if (anim && !dragged && target && c) flyers.push(fly(el, target, cardHTML(c), { dur: 320, delay: i * 45, hold: true }));
         el.style.visibility = 'hidden';
       });
     };
+    let ids = [];
     S.antic = { type, at: Date.now() };
     if (type === 'draw') {
-      if (anim && !dragged) fly($('.stock .deck') || $('.stock'), $('#hand'), backHTML(), { dur: 380 });
+      if (anim && !dragged) flyers.push(fly($('.stock .deck') || $('.stock'), $('#hand'), backHTML(), { dur: 320, hold: true }));
       Sound.play('card');
-    } else if (type === 'takePile') {
-      const n = Math.min(g.discardCount || (g.discard || []).length || 1, 5);
-      if (anim && !dragged) for (let i = 0; i < n; i++) fly($('.pile .pcards') || $('.pile'), $('#hand'), backHTML(), { delay: i * 60, dur: 380 });
-      Sound.play('pile');
     } else if (type === 'discard') {
-      leave([extra.cardId], $('.pile .card.top') || $('.pile .pcards') || $('.pile'));
+      ids = [extra.cardId];
+      leave(ids, $('.pile .card.top') || $('.pile .pcards') || $('.pile'));
       Sound.play('card');
     } else if (type === 'meld') {
-      leave(extra.cardIds || [], $('.newmeld') || $('#felt'));
+      ids = extra.cardIds || [];
+      leave(ids, $('.newmeld') || $('#felt'));
     } else if (type === 'add' || type === 'swap') {
-      leave(extra.cardIds || (extra.cardId != null ? [extra.cardId] : []), $(`[data-meld="${extra.meldId}"]`) || $('#felt'));
+      ids = extra.cardIds || (extra.cardId != null ? [extra.cardId] : []);
+      leave(ids, $(`[data-meld="${extra.meldId}"]`) || $('#felt'));
     } else if (type === 'play') {
-      leave([extra.cardId], $('.ptrick') || $('.ptable') || $('#felt'));
+      ids = [extra.cardId];
+      leave(ids, $('.ptrick') || $('.ptable') || $('#felt'));
       Sound.play('card');
-    } else S.antic = null;
+    } else { S.antic = null; return; }
+    const list = flyers.filter(Boolean);
+    list.forEach((el) => el.classList.add('antic')); // le carte delle mosse anticipate (per le prove)
+    if (!list.length) return;
+    S.anticFly = { type, ids, flyers: list, hand: g.hand.length, at: Date.now() };
+    // se la risposta non arriva, le carte in volo non restano appese
+    setTimeout(() => { if (S.anticFly && S.anticFly.flyers === list) clearAnticipated(); }, 2500);
+  }
+
+  /**
+   * La mossa è di sicuro valida? (altrimenti niente anticipo: la carta non deve partire e poi tornare indietro)
+   * - pescare dal mazzo: basta che ci siano carte
+   * - scartare: non la carta appena presa dagli scarti, non l'ultima carta (chiudere ha le sue regole)
+   * - calare / attaccare: solo se l'anteprima del tavolo dice che il gioco è valido
+   * - raccogliere gli scarti: mai (le regole cambiano molto da gioco a gioco)
+   * - giochi a prese: la carta deve essere giocabile
+   */
+  function anticipateSafe(g, type, extra) {
+    if (type === 'draw') return !!(g.stockCount || (g.pozzetti && g.pozzetti.length));
+    if (type === 'play') return !g.playable || g.playable.includes(extra.cardId);
+    if (type === 'discard') return extra.cardId !== S.tookTopId && g.hand.length > 2;
+    if (type !== 'meld' && type !== 'add' && type !== 'swap') return false;
+    const myTeam = g.teams && g.teams.find((t) => t.members.includes(g.you));
+    if (!myTeam) return false;
+    const ids = extra.cardIds || (extra.cardId != null ? [extra.cardId] : []);
+    if (!ids.length || g.hand.length - ids.length < 1) return false;
+    const keep = S.selected;
+    S.selected = new Set(ids);
+    let p;
+    try { p = selectionPreview(g, myTeam); } finally { S.selected = keep; }
+    return type === 'meld' ? !!(p.newMeld && p.newMeld.ok) : p.canAdd.has(extra.meldId);
+  }
+
+  function clearAnticipated() {
+    if (S.anticFly) fadeFlyers(S.anticFly.flyers);
+    S.anticFly = null;
+  }
+
+  /**
+   * Dopo ogni disegno del tavolo: se è arrivata la risposta alla mossa anticipata, le carte in volo atterrano
+   * sopra le carte vere (la pescata nel suo posto nella mano, lo scarto in cima agli scarti, i giochi calati…).
+   */
+  function landAnticipated() {
+    const a = S.anticFly, g = S.game;
+    if (!a || !g) return;
+    let targets;
+    if (a.type === 'draw') {
+      if (g.hand.length <= a.hand) return; // risposta non ancora arrivata
+      targets = $$('#hand .card.newc');
+    } else {
+      if (a.ids.some((id) => g.hand.some((c) => c.id === id))) return; // le carte sono ancora in mano: si aspetta
+      targets = a.ids.map((id) => $(`#felt .card[data-card="${id}"]`));
+    }
+    S.anticFly = null;
+    a.flyers.forEach((el, i) => {
+      const t = targets[i];
+      if (!t) { fadeFlyers([el]); return; }
+      const c = a.type === 'draw' ? g.hand.find((x) => String(x.id) === t.dataset.card) : null;
+      landFlyer(el, t, c ? cardHTML(c) : null);
+    });
   }
 
   function animateEvent(ev) {

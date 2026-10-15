@@ -28,6 +28,11 @@
     <div class="intro-load"><span>♠</span><span>♥</span><span>♣</span><span>♦</span></div>
     <p class="intro-msg" id="introMsg">Mescolo le carte…</p>
   </div>
+  <script>
+    // arrivo dalla pagina d'ingresso (che passa #tk=…): la stessa intro è già partita lì, qui si continua ferma
+    // (deciso prima che l'animazione cominci; nell'app Android la pagina di provenienza non è nota)
+    if (/^#tk=/.test(location.hash) || /github\.io/.test(document.referrer)) document.getElementById('intro').classList.add('cont');
+  </script>
   <div id="app"></div>
   <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-box">

@@ -280,7 +280,7 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .drag-ghost .card { margin-right: calc(var(--cw) * -0.6); }
 .drag-ghost .card:last-child { margin-right: 0; }
 #insmark { position: fixed; width: 4px; border-radius: 4px; background: var(--gold); z-index: 89; pointer-events: none; box-shadow: 0 0 8px var(--gold); display: none; }
-.flyer { position: fixed; left: 0; top: 0; z-index: 85; pointer-events: none; }
+.flyer { position: fixed; left: 0; top: 0; z-index: 85; pointer-events: none; width: max-content; transform-origin: 0 0; }
 .flyer .card { --cw: var(--pw); }
 
 /* barra di stato e azioni */

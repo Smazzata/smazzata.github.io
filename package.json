@@ -12,7 +12,8 @@
     "playtest": "node server/playtest.js",
     "load": "node server/loadtest.js",
     "ui": "node server/uitest.js",
-    "test:rapido": "node -e \"process.env.TEST_RAPIDO=1;require('./server/selftest.js')\""
+    "test:rapido": "node -e \"process.env.TEST_RAPIDO=1;require('./server/selftest.js')\"",
+    "anim": "node server/animtest.js"
   },
   "engines": {
     "node": ">=18"

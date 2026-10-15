@@ -573,5 +573,6 @@
     const pc = $('.pile .pcards');
     if (pc) pc.scrollLeft = pc.scrollWidth;
     if (S.animEvent) { animateEvent(S.animEvent); S.animEvent = null; }
+    landAnticipated();
     if (S.burracoFx) { burracoFx(S.burracoFx); S.burracoFx = null; }
   }

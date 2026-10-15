@@ -116,8 +116,7 @@
   (() => {
     const el = $('#intro');
     if (!el) return;
-    // arrivo dalla pagina d'ingresso (stessa intro): il ventaglio è già aperto, si continua senza ripartire
-    if (/github\.io/.test(document.referrer)) el.classList.add('cont');
+    // (arrivo dalla pagina d'ingresso: la classe «cont» la mette già index.html, subito dopo l'intro)
     // collegamento lento: lo si dice, e dopo un po' si lascia comunque la schermata (con l'avviso di connessione)
     setTimeout(() => { const m = $('#introMsg'); if (m && !S.connected) m.textContent = t('Connessione al server…'); }, 3500);
     setTimeout(hideIntro, 12000);

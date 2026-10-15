@@ -50,10 +50,14 @@
       }
     }
     anticipate(type, extra);
+    // la carta presa dagli scarti non si può riscartare subito: si ricorda per non anticiparne lo scarto
+    const pileTop = type === 'takePile' && S.game && S.game.discard ? S.game.discard[S.game.discard.length - 1] : null;
     const r = await emit('action', { type, ...extra });
+    if (r.ok && type === 'takePile') S.tookTopId = pileTop ? pileTop.id : null;
+    if (r.ok && (type === 'draw' || type === 'discard')) S.tookTopId = null;
     if (r.ok && ['meld', 'add', 'swap', 'discard', 'takePile', 'undo'].includes(type)) { S.selected.clear(); render(); }
     // mossa rifiutata: le carte nascoste dall'anticipo tornano al loro posto
-    if (!r.ok) { S.antic = null; render(); }
+    if (!r.ok) { S.antic = null; clearAnticipated(); render(); }
     return r;
   }
 
