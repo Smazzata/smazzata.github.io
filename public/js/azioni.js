@@ -96,6 +96,8 @@
     playBots() { if (!requireName()) return; S.playMode = 'bots'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
     playFriends() { if (!requireName()) return; S.playMode = 'friends'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
     more() { moreModal(); },
+    turnHelp() { turnHelp(); },
+    turnLog() { turnLogModal(); },
     gamesRules() { gamesRulesModal(); },
     pickPlayers(el) { S.rules = RX.normalize({ ...S.rules, players: Number(el.dataset.n) }); store.set('bur_rules', S.rules); render(); },
     setupAdvanced() { S.setupAdvanced = !S.setupAdvanced; render(); },

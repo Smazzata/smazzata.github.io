@@ -127,3 +127,8 @@ Instancabile ‖ Tireless ‖ Incansable ‖ Incansável
 Scarica l'immagine e allegala al messaggio, oppure manda solo il testo con WhatsApp. ‖ Download the image and attach it to your message, or just send the text with WhatsApp. ‖ Descarga la imagen y adjúntala al mensaje, o envía solo el texto por WhatsApp. ‖ Baixe a imagem e anexe à mensagem, ou envie só o texto pelo WhatsApp.
 Ho vinto a {0} su Smazzata! Gioca con me: ‖ I won at {0} on Smazzata! Play with me: ‖ ¡He ganado a {0} en Smazzata! Juega conmigo: ‖ Ganhei no {0} no Smazzata! Jogue comigo:
 Che partita a {0} su Smazzata! Gioca con me: ‖ What a game of {0} on Smazzata! Play with me: ‖ ¡Qué partida de {0} en Smazzata! Juega conmigo: ‖ Que partida de {0} no Smazzata! Jogue comigo:
+Storico dei turni ‖ Turn history ‖ Historial de turnos ‖ Histórico de jogadas
+🕘 Storico dei turni ‖ 🕘 Turn history ‖ 🕘 Historial de turnos ‖ 🕘 Histórico de jogadas
+Cosa devo fare? ‖ What should I do? ‖ ¿Qué tengo que hacer? ‖ O que devo fazer?
+🏆 Risultati ‖ 🏆 Results ‖ 🏆 Resultados ‖ 🏆 Resultados
+Ancora nessuna mossa ‖ No moves yet ‖ Aún no hay jugadas ‖ Ainda nenhuma jogada

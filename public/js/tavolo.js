@@ -256,39 +256,6 @@
     return g.events.filter((e) => e.seat !== g.you && e.n > myLast);
   }
 
-  /** Riassunto, una riga per giocatore: "Gegè: raccoglie 3 scarti · cala 4 · scarta K♦" */
-  function recapHTML(g, fresh) {
-    const bySeat = new Map();
-    for (const e of fresh) {
-      if (!bySeat.has(e.seat)) bySeat.set(e.seat, []);
-      const parts = bySeat.get(e.seat);
-      const k = (e.cardIds || []).length;
-      const prevPart = parts[parts.length - 1];
-      if (e.type === 'pile') parts.push(e.count === 1 ? 'raccoglie lo scarto' : `raccoglie <b>${e.count}</b> scarti`);
-      else if (e.type === 'meld') {
-        const ids = e.meldIds || [e.meldId];
-        if (prevPart && prevPart.melds) prevPart.melds.push(...ids); else parts.push({ melds: ids.slice() });
-      } else if (e.type === 'add') {
-        if (prevPart && prevPart.k != null) prevPart.k += k; else parts.push({ k });
-      } else if (e.type === 'pozzetto') parts.push(`prende il ${esc(g.cfg.pozzettoName)}`);
-      else if (e.type === 'discard' && e.card) {
-        const red = e.card.s === 'H' || e.card.s === 'D';
-        parts.push(`scarta <span class="${red ? 'rs' : ''}">${e.card.r === 0 ? 'Jolly' : rankName(e.card.r) + SUIT[e.card.s]}</span>`);
-      }
-    }
-    const allMelds = g.teams.flatMap((t) => t.melds);
-    const say = (x) => {
-      if (typeof x === 'string') return x;
-      if (x.k != null) return `attacca <b>${x.k}</b> ${x.k === 1 ? 'carta' : 'carte'}`;
-      if (x.melds.length > 1) return `cala <b>${x.melds.length}</b> giochi`;
-      const m = allMelds.find((mm) => mm.id === x.melds[0]);
-      return `cala ${m && m.type === 'set' ? 'un <b>tris</b>' : 'una <b>scala</b>'}`;
-    };
-    const lines = [...bySeat].filter(([, parts]) => parts.length)
-      .map(([seat, parts]) => `<div><b>${esc(g.players[seat].name)}</b>: ${parts.map(say).join(' · ')}</div>`);
-    return lines.length ? `<div class="recap" data-act="log" title="Cosa hanno fatto gli altri (tocca per la cronaca)">${lines.join('')}</div>` : '';
-  }
-
   function lastMove(g) {
     for (let i = g.log.length - 1; i >= 0; i--) {
       if (!g.log[i].startsWith('—')) return g.log[i];
@@ -391,10 +358,10 @@
     const others = g.teams.filter((t) => t !== myTeam).map(zone).join('');
     const mineZone = myTeam ? zone(myTeam) : '';
 
-    // niente pulsanti grandi: si gioca toccando/trascinando sul tavolo; restano piccole icone
+    // niente fasce di testo sul tavolo: piccole icone che galleggiano sopra la mano, così le carte hanno più spazio.
+    // ❓ dice cosa fare (si apre al tocco e sparisce da sola); 🕘 in alto apre lo storico dei turni
     const sel = S.selected.size;
     let actions = '';
-    if (g.phase === 'handEnd') actions = '<button class="btn primary small" data-act="result">Risultati</button>';
     if (myTurn && r.hints) actions += '<button class="ico" data-act="hint" title="Suggerimento">💡</button>';
     if (g.you >= 0) actions = '<button class="ico" data-act="reactPicker" title="Reazioni">😊</button>' + actions;
     // messaggio vocale: solo se al tavolo c'è almeno un'altra persona
@@ -402,12 +369,16 @@
     if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';
     const sortLbl = { rank: '⇅ Valore', suit: '⇅ Seme', smart: '⇅ Giochi' }[S.sortMode] || '⇅ Ordina';
     if (g.you >= 0) actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;
+    const left = g.phase === 'handEnd'
+      ? '<button class="btn primary small" data-act="result">🏆 Risultati</button>'
+      : `<button class="ico helpico ${myTurn ? 'pulse' : ''}" data-act="turnHelp" title="Cosa devo fare?">❓</button>${S.turnEnd && myTurn ? '<b class="cd chip" data-cd></b>' : ''}`;
 
     return `<div class="game ${myTurn ? 'myturn' : ''}">
       <div class="topbar">
         <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : r.tournament ? '<b>🏆 Torneo</b>' : `<b>${r.slow ? '🐢 ' : ''}${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, ${isS40Game() ? `eliminato a ${g.cfg.target}` : `si vince a ${g.cfg.target}`}">${g.game && g.game !== 'burraco' ? `${RX.gameName(g.cfg.rules)} · ` : ''}smazzata ${g.handNo}</span></span>
         ${FULL() ? `<button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
         ${OFFLINE ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}` : ''}
+        <button class="iconbtn" data-act="turnLog" title="Storico dei turni">🕘</button>
         <button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>
         ${FULL() ? `<button class="iconbtn" data-act="scores" title="Punteggi">🏆</button>
         <button class="iconbtn" data-act="settings" title="Aspetto e suoni">⚙️</button>
@@ -416,18 +387,11 @@
       </div>
       <div class="scorebar">${r.series ? `<span class="sc series">${seriesHTML(r, g)}</span>` : ''}${scores}</div>
       <div class="seats-row n${g.n} ${g.you < 0 ? 'spect' : ''}">${seats}</div>
-      ${(() => {
-        const w = stockWarning(g);
-        const recap = canDraw ? recapHTML(g, fresh) : '';
-        return (w ? `<div class="ticker warn w${w.level}">${w.text}</div>` : recap ? '' : `<div class="ticker" data-act="log" title="Ultima mossa (tocca per la cronaca)">${esc(lastMove(g))}</div>`) + recap;
-      })()}
       ${surrenderBarHTML(g, r)}
       <div class="felt" id="felt">${g.presa ? presaCenterHTML(g) : others + center + mineZone}</div>
       ${r.tutorial && !S.coachOff ? `<div class="coach">🎓 ${coachTip(g)} <button class="ico" data-act="coachOff" title="Nascondi">✕</button></div>` : ''}
-      <div class="statusbar ${myTurn ? 'on' : ''}">
-        <span class="msg">${stepsHTML(g)}${S.turnEnd && g.phase !== 'handEnd' && myTurn ? '<b class="cd" data-cd></b> ' : ''}${statusText(g)}</span>
-        <div class="btns">${actions}</div>
-      </div>
+      <div class="sr-only" id="turnmsg" aria-live="polite">${statusText(g).replace(/<[^>]+>/g, '')}</div>
+      <div class="floatbar"><span class="fl">${left}</span><span class="fr">${actions}</span></div>
       ${S.reactOpen ? `<div class="reactbar">${['👏', '😂', '😱', '🔥', '👍', '😡', '🙏', '😍'].map((e) => `<button data-act="react" data-e="${e}">${e}</button>`).join('')}</div>` : ''}
       ${g.you < 0 ? `<div class="watching">👁 Stai guardando la partita · le carte in mano non sono visibili <button class="btn small" data-act="leave">Esci</button></div>`
         : `<div class="handwrap" data-drop="hand"><div class="hand" id="hand">${handHTML(g)}</div></div>`}
@@ -582,6 +546,10 @@
     const pc = $('.pile .pcards');
     if (pc) pc.scrollLeft = pc.scrollWidth;
     if (S.animEvent) { animateEvent(S.animEvent); S.animEvent = null; }
+    const g0 = S.game, w = g0 && stockWarning(g0);
+    const wkey = w ? `${g0.handNo}:${w.level}` : null;
+    if (wkey && S.stockWarnKey !== wkey) toast(w.text);
+    S.stockWarnKey = wkey;
     landAnticipated();
     if (S.burracoFx) { burracoFx(S.burracoFx); S.burracoFx = null; }
   }

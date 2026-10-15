@@ -39,7 +39,8 @@ const HELPERS = `
     }
     return __tap('[data-act="' + act + '"]');
   };
-  window.__status = () => (document.querySelector('.statusbar') || {}).textContent || '';
+  // il messaggio del turno non è più una fascia visibile: sta nascosto per la lettura ad alta voce (#turnmsg)
+  window.__status = () => (document.querySelector('#turnmsg') || {}).textContent || '';
   /** gioca da solo fino alla fine della smazzata: pesca e scarta l'ultima carta; controlla che il tavolo non scorra */
   window.__playHand = async (maxMs) => {
     const end = Date.now() + maxMs; let turns = 0, scroll = 0;

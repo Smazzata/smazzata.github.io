@@ -160,3 +160,26 @@
       ${item('settings', '⚙️', 'Impostazioni')}
       ${item('leave', '🚪', 'Esci dalla partita')}</div>`);
   }
+
+  /** ❓ al tavolo: cosa fare adesso (passi del turno e suggerimento), in una nuvoletta che sparisce da sola */
+  function turnHelp() {
+    const g = S.game;
+    if (!g) return;
+    const old = $('#turnhelp');
+    if (old) { old.remove(); return; }
+    const b = document.createElement('div');
+    b.id = 'turnhelp';
+    b.className = 'turnhelp';
+    b.innerHTML = `${stepsHTML(g)}<div>${statusText(g)}</div>`;
+    document.body.appendChild(b);
+    const close = () => { b.classList.add('out'); setTimeout(() => b.remove(), 250); document.removeEventListener('pointerdown', close, true); };
+    setTimeout(() => document.addEventListener('pointerdown', close, true), 50);
+    setTimeout(close, 5000);
+  }
+
+  /** 🕘 storico dei turni: la cronaca della smazzata, dalla mossa più recente */
+  function turnLogModal() {
+    const g = S.game;
+    openModal('turnLog', `<h2>🕘 Storico dei turni</h2><div class="log turnlog">${g && g.log.length ? g.log.slice().reverse().map((l) => `<div>${esc(l)}</div>`).join('') : '<div class="muted">Ancora nessuna mossa</div>'}</div>`);
+  }
+
