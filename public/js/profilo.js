@@ -188,7 +188,13 @@
 
   /** Menu di un giocatore (toccando il suo nome al tavolo o in chat): amicizia, blocco, segnalazione */
   function playerMenu(nick) {
-    if (!nick || !S.social || !S.social.nick || nick === S.social.nick) return;
+    if (!nick || (S.social && nick === S.social.nick)) return;
+    // al tavolo: silenziare i suoi messaggi vocali
+    const seat = S.room ? S.room.seats.findIndex((x) => x && !x.isBot && x.name === nick) : -1;
+    const muted = seat >= 0 && (S.room.muted || []).includes(seat);
+    const mute = seat >= 0 && seat !== S.room.you && S.room.you >= 0 && S.prefs.voice !== false && (muted || S.room.seats[seat].voice)
+      ? `<button class="btn" data-act="voiceMute" data-seat="${seat}" data-on="${muted ? 0 : 1}" data-nick="${esc(nick)}">${muted ? '🔊 Ascolta i suoi vocali' : '🔇 Silenzia i suoi vocali'}</button>` : '';
+    if (!S.social || !S.social.nick) { if (mute) openModal('playerMenu', `<h2>${esc(nick)}</h2><div class="leaveopts">${mute}</div>`); return; }
     const so = S.social;
     const isFriend = so.friends.some((f) => f.nick === nick);
     const pending = so.reqOut.includes(nick);
@@ -196,6 +202,7 @@
     openModal('playerMenu', `<h2>${esc(nick)}</h2><div class="leaveopts">
       ${isFriend ? `<button class="btn" data-act="playerCard" data-nick="${esc(nick)}">👤 Vedi la scheda</button>`
         : pending ? '<p class="muted">Richiesta di amicizia inviata</p>' : `<button class="btn primary" data-act="addFriendNick" data-nick="${esc(nick)}">👥 Aggiungi agli amici</button>`}
+      ${mute}
       ${blocked ? `<button class="btn" data-act="unblock" data-nick="${esc(nick)}">Sblocca</button>` : `<button class="btn" data-act="block" data-nick="${esc(nick)}">🚫 Blocca</button>`}
       <button class="btn danger" data-act="reportPlayer" data-nick="${esc(nick)}">⚠️ Segnala</button></div>`);
   }

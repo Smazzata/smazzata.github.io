@@ -100,6 +100,8 @@
       <div class="row" style="margin-top:6px">${opt('contrast', false, 'Contrasto normale')}${opt('contrast', true, '◐ Alto contrasto')}</div>
       <div class="row" style="margin-top:6px">${opt('anim', true, '✨ Animazioni')}${opt('anim', false, 'Senza animazioni')}</div>
       ${'speechSynthesis' in window ? `<div class="row" style="margin-top:6px">${opt('speak', false, '🔈 Mosse in silenzio')}${opt('speak', true, '🗣️ Leggi le mosse ad alta voce')}</div>` : ''}
+      <h4>Messaggi vocali</h4>
+      <div class="row">${opt('voice', true, '🎤 Ricevo e mando vocali')}${opt('voice', false, '🔇 Niente vocali')}</div>
       <h4>Lingua · Language</h4>
       <div class="row">${opt('lang', 'auto', '🌐 Automatica')}${Object.entries(LANGS).map(([id, name]) => opt('lang', id, name)).join('')}</div>
       <h4>Tema</h4>

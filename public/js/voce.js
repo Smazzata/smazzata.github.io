@@ -1,12 +1,55 @@
 /* Burraco — Messaggi vocali al tavolo.
  * Si tiene premuta l'icona 🎤 (al tavolo o nella chat): si registra finché il dito resta giù (max 15 s),
  * lasciando il messaggio parte verso gli altri giocatori. Chi lo riceve lo sente subito (se i suoni sono
- * attivi) e lo ritrova nella chat. Il server lo inoltra soltanto, non lo salva.
+ * attivi) e lo ritrova nella chat. Nelle impostazioni si possono spegnere i vocali; al tavolo si può silenziare
+ * un giocatore (dal menu sul suo nome). Il server lo inoltra soltanto, non lo salva.
  * File caricato in ordine da index.html insieme agli altri di public/js. */
 'use strict';
 
   const VOICE_MAX_MS = 15000;
   const Voice = { rec: null, stream: null, chunks: [], start: 0, held: false, cancel: false, timer: null, tick: null };
+
+  /** prima versione dell'app Android con il permesso del microfono */
+  const APP_MIC_VERSION = 5;
+
+  /**
+   * Il 🎤 compare solo se ho i vocali attivi e al tavolo c'è almeno un'altra persona collegata che li ascolta:
+   * così non si mandano vocali al nulla.
+   */
+  function voiceAvailable() {
+    const r = S.room;
+    if (!r || r.you < 0 || S.prefs.voice === false) return false;
+    return r.seats.some((x, i) => x && !x.isBot && i !== r.you && x.connected && x.voice);
+  }
+
+  /** spiega come dare il permesso del microfono (app vecchia, permesso negato, nessun microfono) */
+  function micHelp(err) {
+    const name = err && err.name;
+    let body;
+    if (IN_APP && APP_VERSION < APP_MIC_VERSION) {
+      body = `<p>La versione dell'app che hai non può usare il microfono. Scarica quella nuova e installala sopra: profilo e partite restano.</p>
+        <div class="row"><a class="btn primary" href="${APK_URL}">📲 Scarica l'app nuova</a></div>`;
+    } else if (name === 'NotFoundError' || name === 'NotReadableError') {
+      body = "<p>Il microfono non risponde: forse è usato da un'altra app (una chiamata?). Riprova tra poco.</p>";
+    } else if (IN_APP) {
+      body = `<p>Il telefono ha bloccato il microfono per Smazzata. Per sbloccarlo:</p>
+        <ol><li>apri le Impostazioni del telefono</li><li>App → Smazzata</li><li>Autorizzazioni → Microfono → Consenti</li></ol>
+        <p class="muted small">Poi torna qui e tieni premuto 🎤.</p>`;
+    } else {
+      body = "<p>Il browser ha bloccato il microfono. Tocca il lucchetto 🔒 accanto all'indirizzo, poi Autorizzazioni → Microfono → Consenti, e ricarica la pagina.</p>";
+    }
+    openModal('micHelp', `<h2>🎤 Microfono</h2>${body}`);
+  }
+
+  /** chiede subito il permesso (quando si attivano i vocali nelle impostazioni), senza registrare */
+  async function voiceAskPermission() {
+    if (!voiceSupported()) return;
+    if (IN_APP && APP_VERSION < APP_MIC_VERSION) { micHelp(); return; }
+    try {
+      const st = await navigator.mediaDevices.getUserMedia({ audio: true });
+      for (const tr of st.getTracks()) tr.stop();
+    } catch (e) { micHelp(e); }
+  }
 
   const voiceSupported = () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && typeof MediaRecorder !== 'undefined');
 
@@ -31,10 +74,12 @@
   async function voiceStart() {
     if (Voice.rec) return;
     if (!voiceSupported()) { toast('Su questo dispositivo i messaggi vocali non sono disponibili', true); return; }
+    if (IN_APP && APP_VERSION < APP_MIC_VERSION) { Voice.held = false; micHelp(); return; }
     try {
       Voice.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
     } catch (e) {
-      toast('Serve il permesso del microfono per i messaggi vocali', true);
+      Voice.held = false;
+      micHelp(e);
       return;
     }
     // il dito si è già alzato mentre il telefono chiedeva il permesso: niente registrazione
@@ -106,6 +151,7 @@
   document.addEventListener('contextmenu', (e) => { if (e.target.closest && e.target.closest('[data-voice]')) e.preventDefault(); });
 
   socket.on('voice', ({ seat, name, audio, mime, ms }) => {
+    if (S.prefs.voice === false || (S.room && (S.room.muted || []).includes(seat))) return;
     const url = URL.createObjectURL(new Blob([audio], { type: mime }));
     S.chat.push({ name, seat, voice: url, ms });
     trimChat();

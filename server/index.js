@@ -83,7 +83,7 @@ io.on('connection', (socket) => {
     }
   };
 
-  socket.on('hello', handler(({ token, name }) => {
+  socket.on('hello', handler(({ token, name, voice }) => {
     if (!token || !sessions.has(token)) {
       token = crypto.randomBytes(12).toString('hex');
       sessions.set(token, { name: cleanName(name), room: null });
@@ -91,6 +91,7 @@ io.on('connection', (socket) => {
     const sess = sessions.get(token);
     // con un nickname il nome mostrato è sempre quello
     if (sess.nick) sess.name = sess.nick; else if (name) sess.name = cleanName(name);
+    if (typeof voice === 'boolean') sess.voice = voice;
     socket.data.token = token;
     socket.emit('welcome', { token, name: sess.name, nick: sess.nick || null });
     socket.emit('progress', progressOf(leaderboard.get(token)));

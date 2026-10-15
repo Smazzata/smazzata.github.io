@@ -324,7 +324,7 @@
       ${avatarHTML(p.name, seat, p.isBot, rs && rs.avatar)}
       <div class="sinfo"><b ${rs && !rs.isBot && !p.isBot ? `data-act="playerMenu" data-nick="${esc(p.name)}"` : ''}>${esc(p.name)} ${lvlHTML(rs && rs.level)}</b>
         ${rs && rs.avatar && rs.avatar.t ? `<span class="stitle">${esc(rs.avatar.t)}</span>` : ''}
-        <span class="smeta">${p.out ? '❌ eliminato · ' : ''}${off ? '📴 ' : ''}${partner ? '<span title="compagno">🤝</span> ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` <span class="pz-ok" title="${g.cfg.pozzettoName} preso">✓ ${g.cfg.pozzettoName}</span>` : ''}</span></div>
+        <span class="smeta">${p.out ? '❌ eliminato · ' : ''}${off ? '📴 ' : ''}${S.room && (S.room.muted || []).includes(seat) ? '<span title="silenziato">🔇</span> ' : ''}${partner ? '<span title="compagno">🤝</span> ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` <span class="pz-ok" title="${g.cfg.pozzettoName} preso">✓ ${g.cfg.pozzettoName}</span>` : ''}</span></div>
       <div class="minifan">${fan}</div>
       ${turn ? (S.turnEnd ? '<span class="thinking cdchip" data-cd></span>' : '<span class="thinking"><i></i><i></i><i></i></span>') : ''}
     </div>`;
@@ -404,7 +404,7 @@
     if (myTurn && g.game === 'settemezzo') actions += '<button class="ico" data-act="smStand" title="Sto bene">✋</button>';
     if (g.you >= 0) actions = '<button class="ico" data-act="reactPicker" title="Reazioni">😊</button>' + actions;
     // messaggio vocale: solo se al tavolo c'è almeno un'altra persona
-    if (g.you >= 0 && S.room.humans > 1) actions = '<button class="ico voicebtn" data-voice title="Tieni premuto per parlare">🎤</button>' + actions;
+    if (g.you >= 0 && voiceAvailable()) actions = '<button class="ico voicebtn" data-voice title="Tieni premuto per parlare">🎤</button>' + actions;
     if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';
     const sortLbl = { rank: '⇅ Valore', suit: '⇅ Seme', smart: '⇅ Giochi' }[S.sortMode] || '⇅ Ordina';
     if (g.you >= 0) actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;

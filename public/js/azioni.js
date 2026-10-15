@@ -107,6 +107,7 @@
       settingsModal();
       if (S.screen === 'game') render();
       if (key === 'sound' && val) { Sound.unlock(); Sound.play('turn'); }
+      if (key === 'voice') { emit('voicePref', { on: val }); if (val) voiceAskPermission(); }
       if (key === 'notify' && val && canNotify && Notification.permission !== 'granted') {
         Notification.requestPermission().then((p) => {
           if (p !== 'granted') { S.prefs.notify = false; applyPrefs(); toast('Notifiche non consentite dal browser', true); } else enablePush();
@@ -179,6 +180,11 @@
     scopaTake(el) { closeModal(); act('play', { cardId: Number(el.dataset.card), take: el.dataset.take.split(',').map(Number) }); },
     appUpdateLater() { store.set('bur_apk_later', S.appUpdate.n); S.appUpdate.dismissed = true; render(); },
     playerMenu(el) { playerMenu(el.dataset.nick); },
+    async voiceMute(el) {
+      const on = el.dataset.on === '1';
+      const r = await emit('voiceMute', { seat: Number(el.dataset.seat), on });
+      if (r.ok) { closeModal(); toast(on ? `🔇 Non sentirai più i vocali di ${el.dataset.nick}` : `🔊 Senti di nuovo i vocali di ${el.dataset.nick}`); }
+    },
     async addFriendNick(el) {
       const r = await emit('friendRequest', { nick: el.dataset.nick });
       if (r.ok) { toast(`Richiesta inviata a ${el.dataset.nick}`); closeModal(); }

@@ -60,6 +60,7 @@ function roomInfo(room) {
     seats: room.seats.map((s) => (s ? {
       name: s.name, isBot: !!s.isBot, connected: s.isBot || isConnected(s.token), avatar: s.isBot ? null : s.avatar || null,
       level: s.isBot ? null : Levels.levelOf(leaderboard.get(s.token)).level,
+      voice: !s.isBot && (sessions.get(s.token) || {}).voice !== false, // ascolta i messaggi vocali
     } : null)),
     started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
     hints: !!room.hints && humanCount(room) <= 1, humans: humanCount(room),
@@ -95,7 +96,7 @@ function broadcast(room) {
     if (s.data.room !== room.code) continue;
     const seat = seatOfToken(room, s.data.token);
     s.emit('state', {
-      room: { ...roomInfo(room), you: seat, isHost: s.data.token === room.hostToken },
+      room: { ...roomInfo(room), you: seat, isHost: s.data.token === room.hostToken, muted: seat >= 0 ? room.seats[seat].muted || [] : [] },
       game: room.game ? GE(room).viewFor(room.game, seat) : null,
     });
   }

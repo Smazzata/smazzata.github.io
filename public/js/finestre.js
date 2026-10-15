@@ -125,7 +125,7 @@
       ? `<button class="btn small voiceplay" data-act="playVoice" data-i="${i}">▶ 🎤 ${Math.max(1, Math.round(m.ms / 1000))} s</button>` : esc(m.text)}</div>`).join('');
     openModal('log', `<h2>Chat</h2>
       <div class="log" id="chatlog">${chat || '<div class="muted">Nessun messaggio</div>'}</div>
-      <form id="chatform" class="row" style="margin:8px 0"><input id="chatin" class="grow" maxlength="140" placeholder="Scrivi un messaggio" autocomplete="off"><button class="btn primary">Invia</button>${S.room && S.room.humans > 1 ? '<button type="button" class="btn voicebtn" data-voice title="Tieni premuto per parlare">🎤</button>' : ''}</form>
+      <form id="chatform" class="row" style="margin:8px 0"><input id="chatin" class="grow" maxlength="140" placeholder="Scrivi un messaggio" autocomplete="off"><button class="btn primary">Invia</button>${voiceAvailable() ? '<button type="button" class="btn voicebtn" data-voice title="Tieni premuto per parlare">🎤</button>' : ''}</form>
       <div class="row quick">${['Bella!', 'Tocca a te 😉', 'Che fortuna!', 'Ops…', 'Ben giocato 👏'].map((t) => `<button class="btn small" data-act="quickChat" data-text="${esc(t)}">${esc(t)}</button>`).join('')}</div>
       <h2>Cronaca</h2><div class="log">${g ? g.log.slice().reverse().map((l) => `<div>${esc(l)}</div>`).join('') : ''}</div>`);
     const cl = $('#chatlog');

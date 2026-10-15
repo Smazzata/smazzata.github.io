@@ -114,6 +114,23 @@ const step = (t) => console.log('✓ ' + t);
     assert(!(await A.call('voice', { audio: Buffer.alloc(400 * 1024), mime: 'audio/webm', ms: 1000 })).ok, 'troppo lungo');
     step('messaggi vocali: inoltrati al tavolo, con limiti di formato, dimensione e frequenza');
 
+    // silenziare un giocatore e spegnere i vocali: i messaggi non partono verso chi non li ascolta
+    assert((await B.call('voiceMute', { seat: 0, on: true })).ok, 'silenzia');
+    await wait(2100);
+    assert(!(await A.call('voice', { audio, mime: 'audio/webm', ms: 1000 })).ok, 'nessuno ascolta: silenziato');
+    assert((await B.call('voiceMute', { seat: 0, on: false })).ok, 'riattiva');
+    assert((await B.call('voicePref', { on: false })).ok, 'vocali spenti');
+    await A.until((s) => s.room.seats.some((x, i) => i !== 0 && x && !x.isBot && x.voice === false), 'vocali spenti visibili al tavolo');
+    assert(!(await A.call('voice', { audio, mime: 'audio/webm', ms: 1000 })).ok, 'nessuno ascolta: vocali spenti');
+    assert((await B.call('voicePref', { on: true })).ok, 'vocali riaccesi');
+    await wait(2100);
+    const before = voices.length;
+    assert((await A.call('voice', { audio, mime: 'audio/webm', ms: 1000 })).ok, 'di nuovo inviato');
+    const vEnd2 = Date.now() + 3000;
+    while (voices.length === before && Date.now() < vEnd2) await wait(20);
+    assert(voices.length === before + 1, 'di nuovo ricevuto');
+    step('vocali: silenzia un giocatore, vocali spenti nelle impostazioni');
+
     // stile: un titolo bloccato è rifiutato, quello di partenza va bene e arriva agli altri al tavolo
     assert(!(await A.call('setLook', { title: 't_maestro' })).ok, 'titolo bloccato');
     assert((await A.call('setLook', { frame: 'f_nessuna', title: 't_principiante' })).ok, 'stile di partenza');
