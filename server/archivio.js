@@ -10,9 +10,9 @@ const { DATA_DIR } = require('./config');
 /**
  * "Epoca" dei profili: alzandola (es. a 2), al prossimo avvio si riparte da zero (profili, amici, classifica,
  * tavoli, gare). Una copia dei dati vecchi resta in data/prima-del-reset-*.json.
- * 2 = ottobre 2026: password obbligatoria, email, chiavi per dispositivo.
+ * 2 = ottobre 2026: password obbligatoria, email, chiavi per dispositivo. 3 = di nuovo, per riprovare la registrazione con conferma via email.
  */
-const ACCOUNTS_EPOCH = 2;
+const ACCOUNTS_EPOCH = 3;
 const ctx = require('./contesto');
 const { sessions, rooms, leaderboard, daily, leagues, tournaments } = ctx;
 // funzioni degli altri moduli (lette dal contesto al momento della chiamata)
