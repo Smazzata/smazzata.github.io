@@ -251,6 +251,15 @@
       pwform: async () => { const r = await emit('setPassword', { password: $('#pwin').value }); if (r.ok) { toast('Password salvata'); profileModal(); } },
       codeform: async () => { const r = await emit('importProfile', { code: $('#codein').value }); if (r.ok) adoptProfile(r.token, r.nick); },
       loginform: async () => { const r = await emit('login', { nick: $('#lnick').value, password: $('#lpw').value }); if (r.ok) adoptProfile(r.token, r.nick); },
+      signupform: async () => {
+        const r = await emit('finishSignup', { code: $('#sucode').value });
+        if (r.ok) { S.signup = null; S.nickDraft = null; S.nickCheck = null; S.pwDraft = null; S.mailDraft = null; render(); recoveryCodeModal(r.nick, r.code); }
+      },
+      gatemailform: async () => {
+        const email = $('#gatemail').value.trim();
+        const r = await emit('setEmail', { email });
+        if (r.ok) { S.gatePending = r.pending; toast('📧 Codice inviato'); render(); }
+      },
       verifyform: async () => {
         const r = await emit('verifyEmail', { code: $('#vcode').value });
         if (r.ok) { toast('📧 Email confermata'); if (S.modalKind === 'profile') profileModal(); else { const b = $('.mailbox'); if (b) b.innerHTML = `<p>📧 Email confermata ✓</p>`; } }

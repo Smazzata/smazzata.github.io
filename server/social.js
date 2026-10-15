@@ -72,7 +72,8 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
   }
 
   /** Limita i tentativi di accesso (codice o password) per evitare che vengano indovinati */
-  function limit(key, max = key.startsWith('ip:') ? 30 : 8) {
+  // per indirizzo IP il limite è più largo (famiglie e amici dietro la stessa connessione); IP_LIMIT solo per le prove
+  function limit(key, max = key.startsWith('ip:') ? Number(process.env.IP_LIMIT) || 30 : 8) {
     const now = Date.now();
     const a = attempts.get(key);
     if (a && a.until > now && a.n >= max) fail('Troppi tentativi: riprova tra qualche minuto');
@@ -185,6 +186,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       nick: s.nick || null,
       hasPassword: !!s.pw,
       hasEmail: !!s.email,
+      emailPending: !s.email && s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null,
       avatar: s.avatar || null,
       friends: s.friends.filter((t) => nickOf(t)).map(entry).sort((a, b) => b.online - a.online || a.nick.localeCompare(b.nick)),
       reqIn: s.reqIn.map(nickOf).filter(Boolean),
@@ -214,15 +216,14 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
 
     socket.on('checkNick', handler(({ nick }) => checkNick(nick, socket.data.token)));
 
-    socket.on('setNick', handler(async ({ nick, password, email }) => {
+    socket.on('setNick', handler(({ nick, password }) => {
       const token = me();
       nick = String(nick || '').trim();
       const ok = checkNick(nick, token);
       if (!ok.available) fail(ok.reason);
       const s = sess(token);
-      const isNew = !s.nick;
-      // profilo nuovo: password ed email obbligatorie (l'email solo se il server sa mandare le email)
-      const mail = isNew && Posta.enabled() ? checkEmail(email, token) : null;
+      // con le email attive un profilo nuovo nasce solo confermando l'email (startSignup → finishSignup)
+      if (!s.nick && Posta.enabled()) fail("Conferma l'email per creare il profilo");
       if (!s.nick || !s.pw) setPw(s, password);
       if (s.nick) nickIndex.delete(s.nick.toLowerCase());
       s.nick = nick;
@@ -230,11 +231,9 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       nickIndex.set(nick.toLowerCase(), token);
       ensureCode(token);
       renamePlayer(token, nick);
-      // la conferma dell'email non blocca: si gioca subito, il codice si può scrivere anche dopo
-      const sent = mail ? await sendVerify(s, mail) : null;
       push(token);
       pushFriends(token);
-      return { nick, code: s.code, pending: mail, mailFailed: sent === false };
+      return { nick, code: s.code };
     }));
 
     socket.on('setAvatar', handler(({ e, c }) => {
@@ -328,6 +327,57 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       return { token: newDevice(t), nick: s.nick };
     }));
 
+    // --- Registrazione con email: il profilo nasce solo dopo aver scritto il codice arrivato per email ---
+    socket.on('startSignup', handler(async ({ nick, password, email }) => {
+      const token = me();
+      const s = sess(token);
+      if (s.nick) fail('Hai già un profilo');
+      if (!Posta.enabled()) fail('Le email non sono attive su questo server');
+      nick = String(nick || '').trim();
+      const ok = checkNick(nick, token);
+      if (!ok.available) fail(ok.reason);
+      const tmp = {};
+      setPw(tmp, password);
+      email = checkEmail(email, token);
+      if (s.signup && s.signup.email === email && Date.now() - s.signup.sent < 60000) fail('Aspetta un minuto prima di chiedere un altro codice');
+      limit('ip:mail:' + ip);
+      const code = sixDigits();
+      s.signup = { nick, pw: tmp.pw, email, h: keyHash(code), exp: Date.now() + 15 * 60000, tries: 0, sent: Date.now() };
+      try {
+        await Posta.send(email, `Smazzata: il tuo codice è ${code}`, `Ciao ${nick},\n\nil codice per creare il tuo profilo è: ${code}\n\nScade tra 15 minuti. Se non hai chiesto tu questo codice, ignora questa email.\n\n— Smazzata`);
+      } catch (e) {
+        s.signup = null;
+        console.error('Email non inviata:', e.message);
+        fail("Invio dell'email non riuscito: controlla l'indirizzo o riprova più tardi");
+      }
+      return { email };
+    }));
+
+    socket.on('finishSignup', handler(({ code }) => {
+      const token = me();
+      const s = sess(token);
+      const su = s.signup;
+      if (s.nick) fail('Hai già un profilo');
+      if (!su) fail('Prima chiedi il codice');
+      if (!checkCode(su, code)) fail(su.tries >= 5 || su.exp < Date.now() ? 'Codice scaduto: chiedine uno nuovo' : 'Codice sbagliato');
+      // nel frattempo nickname o email potrebbero essere stati presi
+      const ok = checkNick(su.nick, token);
+      if (!ok.available) { s.signup = null; fail(ok.reason); }
+      checkEmail(su.email, token);
+      s.nick = su.nick;
+      s.name = su.nick;
+      s.pw = su.pw;
+      s.email = su.email;
+      s.signup = null;
+      nickIndex.set(s.nick.toLowerCase(), token);
+      emailIndex.set(s.email, token);
+      ensureCode(token);
+      renamePlayer(token, s.nick);
+      push(token);
+      pushFriends(token);
+      return { nick: s.nick, code: s.code };
+    }));
+
     // --- Email: aggiunta con codice di verifica, recupero della password ---
     socket.on('setEmail', handler(async ({ email }) => {
       const token = me();
@@ -336,7 +386,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if (!Posta.enabled()) fail('Le email non sono attive su questo server');
       email = checkEmail(email, token);
       if (s.emailCode && Date.now() - s.emailCode.sent < 60000) fail('Aspetta un minuto prima di chiedere un altro codice');
-      limit('mail:' + ip);
+      limit('ip:mail:' + ip);
       if (!(await sendVerify(s, email))) fail("Invio dell'email non riuscito: riprova più tardi");
       push(token);
       return { pending: email };

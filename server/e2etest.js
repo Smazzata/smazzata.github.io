@@ -18,7 +18,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function startServer() {
   const proc = spawn(process.execPath, [path.join(__dirname, 'index.js')], {
-    env: { ...process.env, MAIL_TEST: '1', PORT: String(PORT), DATA_DIR: dataDir, BOT_DELAY: '15', TIMER_SCALE: '0.01' },
+    env: { ...process.env, MAIL_TEST: '1', IP_LIMIT: '1000', PORT: String(PORT), DATA_DIR: dataDir, BOT_DELAY: '15', TIMER_SCALE: '0.01' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   proc.stderr.on('data', (d) => process.stderr.write('[server] ' + d));
@@ -49,6 +49,20 @@ const step = (t) => console.log('✓ ' + t);
 /** email sempre diversa per i profili di prova (con le email attive è obbligatoria) */
 let mailN = 0;
 const mailOf = () => `prova${++mailN}@esempio.it`;
+/** email "inviate" dal server di prova (MAIL_TEST=1 le scrive in un file) */
+const mailbox = () => { try { return fs.readFileSync(path.join(dataDir, 'posta-inviata.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l.trim())); } catch (e) { return []; } };
+/** ultimo codice a 6 cifre arrivato a quell'indirizzo (dopo la email numero «from») */
+async function codeFor(to, from = 0) {
+  for (let i = 0; i < 100; i++) { const m = mailbox().slice(from).filter((x) => x.to === to).pop(); if (m) return (m.subject.match(/(\d{6})/) || [])[1]; await wait(20); }
+  return null;
+}
+/** registrazione completa: dati → codice per email → profilo */
+async function signup(p, nick, email = mailOf()) {
+  const n = mailbox().length;
+  const st = await p.call('startSignup', { nick, password: 'prova123', email });
+  if (!st.ok) return st;
+  return p.call('finishSignup', { code: await codeFor(email.toLowerCase(), n) });
+}
 
 (async () => {
   const server = await startServer();
@@ -73,17 +87,18 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
 
     // --- profili: nickname univoco ---
     let ck = await A.call('checkNick', { nick: 'Anna' });
-    assert(!(await A.call('setNick', { nick: 'Anna' })).ok, 'senza password il profilo non si crea');
-    assert(!(await A.call('setNick', { nick: 'Anna', password: 'prova123' })).ok, 'senza email il profilo non si crea');
-    assert(!(await A.call('setNick', { nick: 'Anna', password: 'prova123', email: 'non-valida' })).ok, 'email non valida');
-    assert(!(await A.call('setNick', { nick: 'Anna', password: '12345' })).ok, 'password troppo corta');
+    assert(!(await A.call('setNick', { nick: 'Anna', password: 'prova123' })).ok, "senza conferma dell'email il profilo non si crea");
+    assert(!(await A.call('startSignup', { nick: 'Anna' })).ok, 'senza password niente codice');
+    assert(!(await A.call('startSignup', { nick: 'Anna', password: '12345', email: mailOf() })).ok, 'password troppo corta');
+    assert(!(await A.call('startSignup', { nick: 'Anna', password: 'prova123' })).ok, 'senza email niente codice');
+    assert(!(await A.call('startSignup', { nick: 'Anna', password: 'prova123', email: 'non-valida' })).ok, 'email non valida');
     assert(ck.ok && ck.available, 'Anna disponibile');
-    assert((await A.call('setNick', { nick: 'Anna', password: 'prova123', email: mailOf() })).ok);
+    assert((await signup(A, 'Anna')).ok);
     ck = await B.call('checkNick', { nick: 'ANNA' });
     assert(ck.ok && !ck.available, 'nickname già preso (maiuscole/minuscole non contano)');
-    assert(!(await B.call('setNick', { nick: 'anna', password: 'prova123', email: mailOf() })).ok, 'non si può prendere un nick occupato');
+    assert(!(await signup(B, 'anna')).ok, 'non si può prendere un nick occupato');
     assert(!(await B.call('checkNick', { nick: 'a' })).available, 'nick troppo corto');
-    assert((await B.call('setNick', { nick: 'Bruno', password: 'prova123', email: mailOf() })).ok);
+    assert((await signup(B, 'Bruno')).ok);
     step('nickname univoco con controllo disponibile / non disponibile');
 
     // --- segnalazione di un problema: arriva nella pagina di stato con la situazione del tavolo ---
@@ -184,7 +199,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     assert(lg.ok && lg.nick === 'Bruno', 'accesso con nickname e password');
     // password dimenticata (su un profilo a parte, Zeno, per non scollegare i giocatori delle prove dopo)
     const Z = player('Zeno'); await Z.hello();
-    assert((await Z.call('setNick', { nick: 'Zeno', password: 'prova123', email: mailOf() })).ok);
+    assert((await signup(Z, 'Zeno')).ok);
     const Z2 = player('Zeno telefono 2'); await Z2.hello();
     assert((await Z2.call('login', { nick: 'zeno', password: 'prova123' })).ok);
     const Z2b = player('Zeno telefono 2');
@@ -202,20 +217,22 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     step('password obbligatoria, codice di recupero, altri dispositivi scollegati');
 
     // email: conferma con codice e recupero della password via email (in prova le email finiscono in un file)
-    const mailbox = () => { try { return fs.readFileSync(path.join(dataDir, 'posta-inviata.jsonl'), 'utf8').trim().split(/\r?\n/).map((l) => JSON.parse(l)); } catch (e) { return []; } };
-    const lastCode = async (to) => { for (let i = 0; i < 50; i++) { const m = mailbox().filter((x) => x.to === to).pop(); if (m) return (m.subject.match(/(\d{6})/) || [])[1]; await wait(20); } return null; };
+    const lastCode = (to) => codeFor(to);
     const Y = player('Ylenia'); await Y.hello();
-    const ry = await Y.call('setNick', { nick: 'Ylenia', password: 'prova123', email: 'Ylenia@Esempio.it' });
-    assert(ry.ok && ry.pending === 'ylenia@esempio.it', 'codice di conferma inviato alla registrazione');
-    assert(!(await Y.call('setEmail', { email: 'non-valida' })).ok, 'email non valida');
+    assert((await Y.call('startSignup', { nick: 'Ylenia', password: 'prova123', email: 'Ylenia@Esempio.it' })).ok, 'codice inviato alla registrazione');
     const vcode = await lastCode('ylenia@esempio.it');
     assert(vcode, 'email con il codice');
-    assert(!(await Y.call('verifyEmail', { code: vcode === '000000' ? '111111' : '000000' })).ok, 'codice sbagliato');
-    assert((await Y.call('verifyEmail', { code: vcode })).ok, 'email confermata');
-    assert((await Y.call('profile')).email === 'ylenia@esempio.it');
+    assert(!(await Y.call('finishSignup', { code: vcode === '000000' ? '111111' : '000000' })).ok, 'codice sbagliato');
+    assert(!(await Y.call('social')).social.nick, 'senza il codice giusto il profilo non esiste');
+    assert((await Y.call('finishSignup', { code: vcode })).ok, 'profilo creato con il codice');
+    assert((await Y.call('profile')).email === 'ylenia@esempio.it', 'email già confermata');
+    assert(!(await Y.call('setEmail', { email: 'non-valida' })).ok, 'email non valida');
     const X = player('Xenia'); await X.hello();
-    assert((await X.call('setNick', { nick: 'Xenia', password: 'prova123', email: mailOf() })).ok);
+    assert((await signup(X, 'Xenia')).ok);
     assert(!(await X.call('setEmail', { email: 'ylenia@esempio.it' })).ok, 'email già usata da un altro profilo');
+    const X2 = player('Xavier'); await X2.hello();
+    assert(!(await X2.call('startSignup', { nick: 'Xavier', password: 'prova123', email: 'YLENIA@esempio.it' })).ok, 'registrazione con email già usata');
+    X2.sock.close();
     assert((await C.call('forgotPassword', { email: 'nessuno@esempio.it' })).ok, 'stessa risposta per email sconosciute');
     const mailsBefore = mailbox().length;
     assert((await C.call('forgotPassword', { email: 'ylenia@esempio.it' })).ok);
@@ -233,7 +250,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     // eliminazione: il nickname torna libero e l'amicizia sparisce
     const D = player('Temporaneo');
     await D.hello();
-    assert((await D.call('setNick', { nick: 'Tempo', password: 'prova123', email: mailOf() })).ok);
+    assert((await signup(D, 'Tempo')).ok);
     assert((await D.call('friendRequest', { nick: 'Anna' })).ok);
     assert.deepStrictEqual((await socialOf(A)).reqIn, ['Tempo']);
     assert((await D.call('deleteProfile')).ok);
@@ -280,7 +297,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     // spettatore: entra a partita iniziata, vede il tavolo ma non le carte, non può giocare
     const W = player('Walter');
     await W.hello();
-    assert((await W.call('setNick', { nick: 'Walter', password: 'prova123', email: mailOf() })).ok);
+    assert((await signup(W, 'Walter')).ok);
     assert((await W.call('joinRoom', { code })).ok, 'ingresso come spettatore');
     const ws = await W.until((s) => s.game, 'vista dello spettatore');
     assert.strictEqual(ws.room.you, -1, 'senza posto');
@@ -362,7 +379,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     assert(card.ok && card.together.games === 1 && card.stats.games === 1, 'scheda di Bruno con la partita giocata insieme');
     assert.strictEqual(card.together.asPartners, 0, 'Anna e Bruno erano avversari');
     assert(card.trophies.some((t) => t.id === 'amici'), 'i trofei di Bruno nella sua scheda');
-    const D2 = player('Estraneo'); await D2.hello(); assert((await D2.call('setNick', { nick: 'Estraneo', password: 'prova123', email: mailOf() })).ok);
+    const D2 = player('Estraneo'); await D2.hello(); assert((await signup(D2, 'Estraneo')).ok);
     assert(!(await D2.call('playerCard', { nick: 'Anna' })).ok, 'scheda visibile solo agli amici');
     const lf = await A.call('leaderboard', { friends: true });
     assert(lf.ok && lf.list.length === 2, 'classifica tra amici');
@@ -411,18 +428,18 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     step('mini-torneo: vittorie contate partita dopo partita');
 
     // allenamento: Classico in 2, computer facile, suggerimenti attivi
-    const T = player('Tina'); await T.hello(); assert((await T.call('setNick', { nick: 'Tina', password: 'prova123', email: mailOf() })).ok);
+    const T = player('Tina'); await T.hello(); assert((await signup(T, 'Tina')).ok);
     assert((await T.call('createRoom', { tutorial: true })).ok);
     const ts = await T.until((s) => s.game, 'partita di allenamento');
     assert(ts.room.tutorial && ts.room.hints && ts.room.botLevel === 'facile' && ts.room.n === 2, 'impostazioni dell\'allenamento');
     T.sock.close();
-    const T4 = player('Tilde'); await T4.hello(); assert((await T4.call('setNick', { nick: 'Tilde', password: 'prova123', email: mailOf() })).ok);
+    const T4 = player('Tilde'); await T4.hello(); assert((await signup(T4, 'Tilde')).ok);
     assert((await T4.call('createRoom', { tutorial: true, rules: { game: 'scala40' } })).ok);
     const t4 = await T4.until((st) => st.game, 'allenamento di Scala 40');
     assert(t4.room.tutorial && t4.room.game === 'scala40' && t4.room.n === 2 && t4.room.hints, 'allenamento di Scala 40');
     T4.sock.close();
     for (const gm of ['canasta', 'scopa', 'briscola']) {
-      const Tx = player('Allievo ' + gm); await Tx.hello(); assert((await Tx.call('setNick', { nick: 'Allievo_' + gm, password: 'prova123', email: mailOf() })).ok);
+      const Tx = player('Allievo ' + gm); await Tx.hello(); assert((await signup(Tx, 'Allievo_' + gm)).ok);
       assert((await Tx.call('createRoom', { tutorial: true, rules: { game: gm } })).ok);
       const tx = await Tx.until((st) => st.game, 'allenamento di ' + gm);
       assert(tx.room.tutorial && tx.room.game === gm && tx.room.n === 2, 'allenamento di ' + gm);
@@ -431,7 +448,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     step('allenamento (tutti i giochi): 2 giocatori, computer facile, suggerimenti attivi');
 
     // sfida del giorno: un tentativo, stesse carte per tutti, punteggio in classifica, niente rivincita
-    const Dd = player('Dora'); await Dd.hello(); assert((await Dd.call('setNick', { nick: 'Dora', password: 'prova123', email: mailOf() })).ok);
+    const Dd = player('Dora'); await Dd.hello(); assert((await signup(Dd, 'Dora')).ok);
     const info = await Dd.call('daily');
     assert(info.ok && info.title && [2, 4].includes(info.rules.players) && info.mine === null, 'informazioni sulla sfida');
     assert((await Dd.call('startDaily')).ok);
@@ -456,7 +473,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     const after = await Dd.call('daily');
     assert(after.mine && after.mine.score != null && after.myPos === 1 && after.top[0].name === 'Dora', 'punteggio nella classifica del giorno');
     // stesse carte per tutti: un secondo giocatore riceve la stessa mano iniziale
-    const Ee = player('Elio'); await Ee.hello(); assert((await Ee.call('setNick', { nick: 'Elio', password: 'prova123', email: mailOf() })).ok);
+    const Ee = player('Elio'); await Ee.hello(); assert((await signup(Ee, 'Elio')).ok);
     assert((await Ee.call('startDaily')).ok);
     const es = await Ee.until((st) => st.game, 'sfida di Elio');
     assert.strictEqual(es.game.hand.map((c) => `${c.r}${c.s}`).sort().join(), firstHand, 'stessa mano iniziale');
@@ -466,7 +483,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     // gioca subito: due giocatori cercano un tavolo da 2 e la partita parte da sola
     const Q1 = player('Quinto'), Q2 = player('Sesto');
     await Q1.hello(); await Q2.hello();
-    assert((await Q1.call('setNick', { nick: 'Quinto', password: 'prova123', email: mailOf() })).ok); assert((await Q2.call('setNick', { nick: 'Sesto', password: 'prova123', email: mailOf() })).ok);
+    assert((await signup(Q1, 'Quinto')).ok); assert((await signup(Q2, 'Sesto')).ok);
     const q1 = await Q1.call('quickPlay', { n: 2 });
     const q2 = await Q2.call('quickPlay', { n: 2 });
     assert(q1.ok && q2.ok && q1.code === q2.code, 'stesso tavolo veloce');
@@ -477,7 +494,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     // giocatore offline: senza timer, il computer gioca al suo posto e il tavolo non si blocca
     const O1 = player('Ottavio'), O2 = player('Nora');
     await O1.hello(); await O2.hello();
-    assert((await O1.call('setNick', { nick: 'Ottavio', password: 'prova123', email: mailOf() })).ok); assert((await O2.call('setNick', { nick: 'Nora', password: 'prova123', email: mailOf() })).ok);
+    assert((await signup(O1, 'Ottavio')).ok); assert((await signup(O2, 'Nora')).ok);
     assert((await O1.call('createRoom', { rules: { players: 2 } })).ok);
     const oc = (await O1.until((s) => s.room, 'tavolo')).room.code;
     assert((await O2.call('joinRoom', { code: oc })).ok);
@@ -518,7 +535,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     // partita con calma: chi esce tiene il posto, nessuno gioca al suo posto, avviso "tocca a te", rientro
     const S1 = player('Sara'), S2 = player('Ugo');
     await S1.hello(); await S2.hello();
-    assert((await S1.call('setNick', { nick: 'Sara', password: 'prova123', email: mailOf() })).ok); assert((await S2.call('setNick', { nick: 'Ugo', password: 'prova123', email: mailOf() })).ok);
+    assert((await signup(S1, 'Sara')).ok); assert((await signup(S2, 'Ugo')).ok);
     S2.turnAlerts = [];
     S2.sock.on('yourTurn', (x) => S2.turnAlerts.push(x));
     S2.games = null;
@@ -574,7 +591,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     // resa, partita terminata dall'host, tavolo chiuso
     const R1 = player('Rita'), R2 = player('Remo');
     await R1.hello(); await R2.hello();
-    assert((await R1.call('setNick', { nick: 'Rita', password: 'prova123', email: mailOf() })).ok); assert((await R2.call('setNick', { nick: 'Remo', password: 'prova123', email: mailOf() })).ok);
+    assert((await signup(R1, 'Rita')).ok); assert((await signup(R2, 'Remo')).ok);
     R2.notices = [];
     R2.sock.on('notice', (x) => R2.notices.push(x.text));
     // 4 giocatori: Rita (posto 0) e Remo (posto 2) compagni, gli avversari sono computer
@@ -614,7 +631,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     step('resa (con il sì del compagno), partita terminata dall\'host, tavolo chiuso');
 
     // Scala 40: tavolo contro il computer, apertura sotto i 40 rifiutata, smazzata intera, moviola
-    const Q = player('Scalatore'); await Q.hello(); { const rq = await Q.call('setNick', { nick: 'Scalatore', password: 'prova123', email: mailOf() }); assert(rq.ok, 'nickname: ' + rq.error); }
+    const Q = player('Scalatore'); await Q.hello(); { const rq = await signup(Q, 'Scalatore'); assert(rq.ok, 'nickname: ' + rq.error); }
     assert((await Q.call('createRoom', { rules: { game: 'scala40', players: 2 }, vsBots: true })).ok);
     const qs = await Q.until((st) => st.game, 'partita di Scala 40');
     assert(qs.room.game === 'scala40' && qs.game.game === 'scala40' && qs.game.hand.length === 13, 'Scala 40 con 13 carte');
@@ -646,7 +663,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     step(`Scala 40: smazzata giocata, penalità ${hrQ.teams.map((t) => -t.total).join(' e ')}`);
 
     // Canasta: tavolo a coppie contro il computer, una smazzata intera
-    const K = player('Canastaro'); await K.hello(); { const rk = await K.call('setNick', { nick: 'Canastaro', password: 'prova123', email: mailOf() }); assert(rk.ok, 'nickname: ' + rk.error); }
+    const K = player('Canastaro'); await K.hello(); { const rk = await signup(K, 'Canastaro'); assert(rk.ok, 'nickname: ' + rk.error); }
     assert((await K.call('createRoom', { rules: { game: 'canasta', players: 4, target: 2000 }, vsBots: true })).ok);
     const ks = await K.until((st) => st.game, 'partita di Canasta');
     assert(ks.room.game === 'canasta' && ks.game.game === 'canasta' && ks.game.hand.length >= 11, 'Canasta con 11 carte (più i tre rossi pescati)');
@@ -670,7 +687,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     // Scopa e Briscola: una smazzata ciascuna contro il computer (si gioca la prima presa possibile)
     const SCm = require('../shared/scopa');
     for (const gid of ['scopa', 'briscola', 'tressette', 'rubamazzetto', 'settemezzo', 'briscola5']) {
-      const P = player('Presa' + gid); await P.hello(); { const rp = await P.call('setNick', { nick: 'Presa_' + gid.slice(0, 9), password: 'prova123', email: mailOf() }); assert(rp.ok, 'nickname: ' + rp.error); }
+      const P = player('Presa' + gid); await P.hello(); { const rp = await signup(P, 'Presa_' + gid.slice(0, 9)); assert(rp.ok, 'nickname: ' + rp.error); }
       assert((await P.call('createRoom', { rules: { game: gid, players: 2 }, vsBots: true })).ok);
       const ps = await P.until((st) => st.game, 'partita di ' + gid);
       assert(ps.room.game === gid && ps.game.presa && ps.game.hand.length === ({ tressette: 10, settemezzo: 1, briscola5: 8 }[gid] || 3), gid + ': carte in mano');
@@ -700,7 +717,7 @@ const mailOf = () => `prova${++mailN}@esempio.it`;
     step('Scopa, Briscola, Briscola in 5, Tressette, Rubamazzetto e Sette e mezzo: una smazzata ciascuna contro il computer');
 
     // torneo da 4: iscrizione, riempimento con il computer, avviso della partita, resa, avanzamento fino al campione
-    const TT = player('Tornista'); await TT.hello(); { const rt = await TT.call('setNick', { nick: 'Tornista', password: 'prova123', email: mailOf() }); assert(rt.ok, 'nickname: ' + rt.error); }
+    const TT = player('Tornista'); await TT.hello(); { const rt = await signup(TT, 'Tornista'); assert(rt.ok, 'nickname: ' + rt.error); }
     TT.match = null;
     TT.sock.on('tournamentMatch', (x) => { TT.match = x; });
     const tc = await TT.call('tournamentCreate', { name: 'Coppa di prova', game: 'briscola', size: 4 });

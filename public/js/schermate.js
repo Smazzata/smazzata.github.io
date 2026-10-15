@@ -52,7 +52,21 @@
     if (S.screen === 'home') render();
   }
 
+  /** profilo senza email confermata (creato prima che fosse obbligatoria): prima si conferma, poi si gioca */
+  function emailGateHTML() {
+    const so = S.social;
+    const pending = S.gatePending || so.emailPending;
+    return `<div class="page">
+      <div class="logo"><h1>Smazzata</h1></div>
+      <div class="panel gate"><h3>📧 Conferma la tua email</h3>
+        <p>Per usare il profilo <b>${esc(so.nick)}</b> conferma la tua email: ti mandiamo un codice di 6 cifre. Serve per recuperare la password.</p>
+        <form id="gatemailform" class="row"><input id="gatemail" type="email" class="grow" maxlength="250" autocomplete="email" placeholder="nome@esempio.it" value="${esc(pending || '')}"><button class="btn">${pending ? 'Manda di nuovo' : 'Manda il codice'}</button></form>
+        ${pending ? verifyEmailHTML(pending) : ''}
+        <p class="muted small" style="margin-top:10px"><a href="#" data-act="recover">Usa un altro profilo</a></p></div></div>`;
+  }
+
   function homeHTML() {
+    if (!OFFLINE && S.mailOn && S.social && S.social.nick && S.social.hasEmail === false) return emailGateHTML();
     const fan = [{ r: 1, s: 'S' }, { r: 13, s: 'H' }, { r: 0, s: 'J' }, { r: 2, s: 'D' }, { r: 7, s: 'C' }]
       .map((c, i) => cardHTML({ ...c, id: -1 - i }, 'logo-card', `style="--i:${i - 2}"`)).join('');
     return `<div class="page">
@@ -69,8 +83,11 @@
           ? `<div class="hello"><span class="row">${avatarHTML(S.social.nick, 0, false, S.social.avatar || { e: S.social.nick.charAt(0).toUpperCase(), c: '#f2c14e' })}<span>Ciao, <b>${esc(S.social.nick)}</b>!${S.progress ? `<span class="lvlline">${lvlHTML(S.progress.level)} <em class="xpbar" title="${S.progress.into}/${S.progress.need} punti esperienza"><u style="width:${Math.round((S.progress.into / S.progress.need) * 100)}%"></u></em></span>` : ''}</span></span>
               <span class="row"><button class="btn small" data-act="profile">👤 Profilo</button>
               <button class="btn small" data-act="friends">👥 Amici${S.social.reqIn.length ? ` <span class="pill">${S.social.reqIn.length}</span>` : ''}</button></span></div>
-            ${S.mailOn && S.social.hasEmail === false && S.social.hasPassword ? '<div class="offbanner">📧 <b>Conferma la tua email</b>: ti serve per recuperare la password. <button class="btn small" data-act="profile">Conferma</button></div>' : ''}
             ${S.social.hasPassword === false ? '<div class="offbanner">⚠️ <b>Il tuo profilo non ha una password.</b> Impostala ora, così puoi sempre rientrare. <button class="btn small" data-act="profile">👤 Imposta</button></div>' : ''}`
+          : S.signup ? `<div class="mailbox"><p>📧 Ti abbiamo mandato un codice a <b>${esc(S.signup.email)}</b>.</p>
+              <p>Scrivilo qui per creare il profilo <b>${esc(S.signup.nick)}</b>:</p>
+              <form id="signupform" class="row"><input id="sucode" class="grow" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="123456"><button class="btn primary">Crea il profilo</button></form>
+              <p class="muted small">Non arriva? Guarda anche nello spam, oppure <a href="#" data-act="resendSignup">mandalo di nuovo</a> · <a href="#" data-act="signupBack">cambia i dati</a></p></div>`
           : `<label class="field"><span>Scegli il tuo nickname</span>
               <input type="text" id="nick" maxlength="16" autocomplete="off" placeholder="Es. Simone_88" value="${esc(S.nickDraft != null ? S.nickDraft : (S.name || ''))}"></label>
               <div class="nickstatus" id="nickStatus">${nickStatusHTML()}</div>

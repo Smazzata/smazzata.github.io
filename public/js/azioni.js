@@ -181,6 +181,11 @@
     appUpdateLater() { store.set('bur_apk_later', S.appUpdate.n); S.appUpdate.dismissed = true; render(); },
     playerMenu(el) { playerMenu(el.dataset.nick); },
     savedCode() { closeModal(); syncLauncher(); },
+    async resendSignup() {
+      const r = await emit('startSignup', { nick: S.signup.nick, password: S.pwDraft || '', email: S.signup.email });
+      if (r.ok) toast('📧 Codice inviato di nuovo');
+    },
+    signupBack() { S.signup = null; render(); },
     forgot(el, e) { if (e) e.preventDefault(); forgotModal(); },
     async voiceMute(el) {
       const on = el.dataset.on === '1';
@@ -343,14 +348,18 @@
       const password = ($('#nickpw') || {}).value || '';
       if (password.length < 6) { toast('La password deve avere almeno 6 caratteri', true); return; }
       const email = (($('#nickmail') || {}).value || '').trim();
-      if (S.mailOn && !email) { toast('Scrivi la tua email', true); return; }
-      const r = await emit('setNick', { nick: nick.trim(), password, email });
+      if (S.mailOn) {
+        // con le email: prima arriva il codice, il profilo nasce quando lo si scrive
+        if (!email) { toast('Scrivi la tua email', true); return; }
+        const st = await emit('startSignup', { nick: nick.trim(), password, email });
+        if (st.ok) { S.signup = { nick: nick.trim(), email: st.email }; render(); setTimeout(() => { const i = $('#sucode'); if (i) i.focus(); }, 50); }
+        return;
+      }
+      const r = await emit('setNick', { nick: nick.trim(), password });
       if (r.ok) {
         S.nickDraft = null; S.nickCheck = null; S.pwDraft = null; S.mailDraft = null;
         render();
-        // l'email si conferma con il codice che arriva nella posta (anche più tardi, dal profilo)
-        if (r.mailFailed) toast("Email non partita: la confermi più tardi dal profilo", true);
-        recoveryCodeModal(r.nick, r.code, r.pending && !r.mailFailed ? r.pending : null);
+        recoveryCodeModal(r.nick, r.code);
       }
     },
     profile: profileModal,

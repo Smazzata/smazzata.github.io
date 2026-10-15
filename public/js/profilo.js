@@ -95,7 +95,7 @@
   function verifyEmailHTML(email) {
     return `<div class="mailbox"><p>📧 Ti abbiamo mandato un codice a <b>${esc(email)}</b>: scrivilo qui per confermare l'email.</p>
       <form id="verifyform" class="row"><input id="vcode" class="grow" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="123456"><button class="btn primary">Conferma</button></form>
-      <p class="muted small">Non arriva? Guarda anche nello spam. Puoi confermarla anche più tardi da 👤 Profilo.</p></div>`;
+      <p class="muted small">Non arriva? Guarda anche nello spam.</p></div>`;
   }
 
   function recoveryCodeModal(nick, code, pendingEmail) {

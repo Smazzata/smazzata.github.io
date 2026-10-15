@@ -93,8 +93,9 @@
   });
   socket.on('social', (soc) => {
     S.social = soc;
-    // all'apertura: la pagina d'ingresso non conosce ancora questo profilo
-    if (!S.launcherChecked && soc && soc.nick) { S.launcherChecked = true; if (!S.modalKind && syncLauncher()) return; }
+    // solo all'apertura della pagina: la pagina d'ingresso non conosce ancora questo profilo
+    // (dopo una registrazione invece si passa da lei con «Ho salvato il codice», senza interrompere)
+    if (!S.launcherChecked) { S.launcherChecked = true; if (soc && soc.nick && !S.modalKind && syncLauncher()) return; }
     if (soc && soc.nick) { S.name = soc.nick; if (!OFFLINE) store.set('bur_name', soc.nick); }
     if (S.modalKind === 'friends') friendsModal();
     if (S.screen === 'home' || S.screen === 'lobby') render();
