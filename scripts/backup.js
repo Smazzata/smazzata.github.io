@@ -51,16 +51,28 @@ function decrypt(text, pass) {
 
 module.exports = { encrypt, decrypt };
 
+/** se la frase non è salvata, la si chiede a chi usa il terminale (senza mostrarla mentre si scrive) */
+function askPassphrase() {
+  try { return Promise.resolve(passphrase()); } catch (e) { if (!process.stdin.isTTY) throw e; }
+  const rl = require('readline').createInterface({ input: process.stdin, output: process.stdout, terminal: true });
+  return new Promise((resolve) => {
+    rl.question('Frase segreta del backup: ', (p) => { rl.close(); console.log(); resolve(p.trim()); });
+    rl._writeToOutput = (str) => { if (/Frase segreta/.test(str)) process.stdout.write(str); };
+  });
+}
+
 if (require.main === module) {
   const [cmd, from, to] = process.argv.slice(2);
-  try {
+  (async () => {
     if (cmd === 'crea') {
       // dati dal database (se c'è) o da stato.json, nello stesso formato
       const plain = Buffer.from(JSON.stringify(require('../server/store').exportData(path.dirname(from))));
-      fs.writeFileSync(to, encrypt(plain, passphrase()));
+      const pass = await askPassphrase();
+      if (pass.length < 12) throw new Error('Frase troppo corta (almeno 12 caratteri)');
+      fs.writeFileSync(to, encrypt(plain, pass));
       console.log(`Backup cifrato creato: ${to} (${plain.length} byte di dati)`);
     } else if (cmd === 'ripristina') {
-      const plain = decrypt(fs.readFileSync(from, 'utf8'), passphrase());
+      const plain = decrypt(fs.readFileSync(from, 'utf8'), await askPassphrase());
       JSON.parse(plain);
       if (fs.existsSync(to)) fs.copyFileSync(to, to + '.prima-del-ripristino');
       fs.writeFileSync(to, plain);
@@ -69,8 +81,8 @@ if (require.main === module) {
       console.log('Uso: node scripts/backup.js crea <dati> <backup> | ripristina <backup> <dati>');
       process.exitCode = 1;
     }
-  } catch (e) {
+  })().catch((e) => {
     console.error('Errore:', e.message);
     process.exitCode = 1;
-  }
+  });
 }
