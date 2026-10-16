@@ -8,13 +8,17 @@
     if (S.drag && S.drag.started) { S.pendingRender = true; return; }
     S.pendingRender = false;
     const app = $('#app');
+    const changed = S.lastScreen !== S.screen;
+    S.lastScreen = S.screen;
     if (S.screen === 'home') app.innerHTML = homeHTML();
     else if (S.screen === 'setup') app.innerHTML = setupHTML();
     else if (S.screen === 'lobby') app.innerHTML = lobbyHTML();
     else if (S.screen === 'game') {
+      S.flipFrom = changed ? null : cardRects();
       app.innerHTML = gameHTML();
       afterGameRender();
     }
+    if (changed && app.firstElementChild) app.firstElementChild.classList.add('enter');
     if (!S.connected && !S.localGame) {
       app.insertAdjacentHTML('afterbegin', `<div class="offline"><span class="spin"></span>${S.lostConnection ? '📡 Connessione persa: mi ricollego…' : 'Connessione al server…'}</div>`);
       const gm = $('.game');

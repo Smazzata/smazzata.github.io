@@ -132,3 +132,5 @@ Storico dei turni ‖ Turn history ‖ Historial de turnos ‖ Histórico de jog
 Cosa devo fare? ‖ What should I do? ‖ ¿Qué tengo que hacer? ‖ O que devo fazer?
 🏆 Risultati ‖ 🏆 Results ‖ 🏆 Resultados ‖ 🏆 Resultados
 Ancora nessuna mossa ‖ No moves yet ‖ Aún no hay jugadas ‖ Ainda nenhuma jogada
+Vibrazioni ‖ Vibration ‖ Vibración ‖ Vibração
+📳 Sì ‖ 📳 Yes ‖ 📳 Sí ‖ 📳 Sim

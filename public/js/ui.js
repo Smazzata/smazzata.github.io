@@ -13,15 +13,43 @@
     toastTimer = setTimeout(() => t.classList.add('hidden'), error ? 3200 : 2200);
   }
 
+  let modalTimer = null;
   function openModal(kind, html) {
+    const m = $('#modal');
+    const already = !m.classList.contains('hidden') && !m.classList.contains('closing');
+    clearTimeout(modalTimer);
     S.modalKind = kind;
     $('#modal .modal-content').innerHTML = html;
-    $('#modal').classList.remove('hidden');
+    m.classList.remove('hidden', 'closing');
+    $('#modal .modal-box').style.transform = '';
+    // da una finestra all'altra: niente nuova salita, solo il contenuto che cambia
+    m.classList.toggle('swap', already);
   }
   function closeModal() {
     S.modalKind = null;
-    $('#modal').classList.add('hidden');
+    const m = $('#modal');
+    if (m.classList.contains('hidden')) return;
+    m.classList.add('closing');
+    clearTimeout(modalTimer);
+    modalTimer = setTimeout(() => { m.classList.add('hidden'); m.classList.remove('closing'); }, S.prefs.anim === false ? 0 : 200);
   }
+  // trascinare giù la finestra (dalla maniglia in alto) la chiude
+  (() => {
+    const box = $('#modal .modal-box');
+    let y0 = null, dy = 0;
+    box.addEventListener('pointerdown', (e) => {
+      if (!e.target.closest('.sheet-handle') && box.scrollTop > 0) return;
+      if (!e.target.closest('.sheet-handle') && e.clientY - box.getBoundingClientRect().top > 60) return;
+      y0 = e.clientY; dy = 0; box.style.transition = 'none';
+    });
+    window.addEventListener('pointermove', (e) => { if (y0 == null) return; dy = Math.max(0, e.clientY - y0); box.style.transform = `translateY(${dy}px)`; });
+    window.addEventListener('pointerup', () => {
+      if (y0 == null) return;
+      box.style.transition = '';
+      if (dy > 90) closeModal(); else box.style.transform = '';
+      y0 = null;
+    });
+  })();
   $('#modal').addEventListener('click', (e) => {
     if (e.target.id === 'modal' || e.target.closest('.modal-close')) closeModal();
   });
@@ -104,6 +132,8 @@
       ${'speechSynthesis' in window ? `<div class="row" style="margin-top:6px">${opt('speak', false, '🔈 Mosse in silenzio')}${opt('speak', true, '🗣️ Leggi le mosse ad alta voce')}</div>` : ''}
       <h4>Messaggi vocali</h4>
       <div class="row">${opt('voice', true, '🎤 Ricevo e mando vocali')}${opt('voice', false, '🔇 Niente vocali')}</div>
+      ${navigator.vibrate ? `<h4>Vibrazioni</h4>
+      <div class="row">${opt('haptic', true, '📳 Sì')}${opt('haptic', false, 'No')}</div>` : ''}
       <h4>Bravura del computer nelle nuove partite</h4>
       <div class="row">${opt('botLevel', 'auto', '✨ Automatica')}${opt('botLevel', 'facile', '🙂 Facile')}${opt('botLevel', 'normale', 'Normale')}${opt('botLevel', 'difficile', '🧠 Difficile')}${opt('botLevel', 'esperto', '🎓 Esperto')}</div>
       <p class="muted small">Automatica: il computer si adatta a come giochi, per ogni gioco (più bravo se vinci spesso, più facile se perdi).</p>

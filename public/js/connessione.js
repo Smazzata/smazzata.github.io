@@ -337,6 +337,11 @@
       const newEvent = ev && (!prev || !prev.lastEvent || prev.lastEvent.n !== ev.n);
       S.flashMeld = newEvent && ev.meldId ? ev.meldId : null;
       S.animEvent = newEvent ? ev : null;
+      // giochi a prese: verso chi volano le carte che spariscono dal tavolo
+      if (game.presa && prev) {
+        if (newEvent && ev.type === 'take') S.sweepTo = ev.seat;
+        else if (prev.lastTrick && (!game.lastTrick || game.lastTrick !== prev.lastTrick) && !(prev.trick || []).length && (game.trick || []).length) S.sweepTo = prev.lastTrick.winner;
+      }
       if (newEvent || game.turn !== game.you) S.hint = null;
       if (game.phase === 'handEnd') S.selected.clear();
       keepScreenOn(game.phase !== 'handEnd' || !game.over);

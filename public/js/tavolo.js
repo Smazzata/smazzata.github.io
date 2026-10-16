@@ -522,6 +522,75 @@
       <div class="melds ${canAttach ? 'targetable' : ''}">${t.melds.map((m) => meldHTML(m, mine || s40open, null)).join('') || '<span class="empty">Nessuna combinazione</span>'}</div></div>`);
   }
 
+  /** posizione attuale delle carte (mano e tavolo), per farle scivolare dopo il ridisegno */
+  function cardRects() {
+    if (S.prefs.anim === false || (S.drag && S.drag.started)) return null;
+    const m = new Map();
+    for (const el of document.querySelectorAll('#hand .card[data-card], #felt .card[data-card]')) {
+      const r = el.getBoundingClientRect();
+      const inHand = !!el.closest('#hand');
+      if (r.width) m.set(inHand ? 'h' + el.dataset.card : 'f' + el.dataset.card, { r, html: inHand ? null : el.outerHTML });
+    }
+    return m;
+  }
+  /** le carte che si sono spostate partono dalla vecchia posizione e arrivano con una molla nella nuova */
+  function flipCards(from) {
+    if (!from || !from.size) return;
+    const moved = [];
+    for (const el of document.querySelectorAll('#hand .card[data-card], #felt .card[data-card]')) {
+      const key = (el.closest('#hand') ? 'h' : 'f') + el.dataset.card;
+      const a = from.get(key) && from.get(key).r;
+      if (!a || el.style.visibility === 'hidden') continue;
+      const b = el.getBoundingClientRect();
+      const dx = a.left - b.left, dy = a.top - b.top;
+      if (Math.abs(dx) < 1.5 && Math.abs(dy) < 1.5) continue;
+      moved.push([el, dx, dy]);
+    }
+    sweepTaken(from);
+    if (!moved.length) return;
+    for (const [el, dx, dy] of moved) {
+      el.style.transition = 'none';
+      el.style.translate = `${dx}px ${dy}px`;
+    }
+    void document.body.offsetWidth;
+    for (const [el] of moved) {
+      el.style.transition = 'translate .42s var(--spring), transform .22s var(--spring), box-shadow .2s';
+      el.style.translate = '0px 0px';
+    }
+    setTimeout(() => { for (const [el] of moved) { el.style.transition = ''; el.style.translate = ''; } }, 460);
+  }
+
+  /*
+   * Giochi a prese: le carte che spariscono dal tavolo (una presa, il giro della Briscola) volano verso chi le
+   * ha prese, rimpicciolendo, invece di sparire di colpo.
+   */
+  function sweepTaken(from) {
+    const g = S.game;
+    if (!g || !g.presa || S.sweepTo == null || S.prefs.anim === false) return;
+    const now = new Set([...document.querySelectorAll('#felt .card[data-card]')].map((el) => el.dataset.card));
+    const gone = [...from].filter(([k, v]) => k[0] === 'f' && !now.has(k.slice(1)) && v.html).slice(0, 10);
+    const target = S.sweepTo === g.you ? $('#hand') : $(`.seatchip[data-seat="${S.sweepTo}"]`);
+    S.sweepTo = null;
+    if (!gone.length || !target) return;
+    const t = target.getBoundingClientRect();
+    gone.forEach(([, v], i) => {
+      const el = document.createElement('div');
+      el.className = 'flyer';
+      el.innerHTML = v.html;
+      document.body.appendChild(el);
+      const c = el.firstElementChild;
+      c.classList.remove('fresh');
+      const w = c.offsetWidth || 40, sc = v.r.width / w;
+      el.style.transform = `translate(${v.r.left}px, ${v.r.top}px) scale(${sc})`;
+      setTimeout(() => {
+        el.style.transition = 'transform .5s cubic-bezier(.5,0,.75,0), opacity .5s ease-in';
+        el.style.transform = `translate(${t.left + t.width / 2 - w * 0.2}px, ${t.top + t.height / 2 - w * 0.3}px) scale(${sc * 0.4}) rotate(${(i % 2 ? 1 : -1) * 12}deg)`;
+        el.style.opacity = '0';
+      }, 30 + i * 45);
+      setTimeout(() => el.remove(), 620 + i * 45);
+    });
+  }
+
   function afterGameRender() {
     if (S.modalKind === 'zoom') zoomModal();
     layoutHand();
@@ -545,6 +614,12 @@
     if (felt && S.feltScroll != null) felt.scrollTop = S.feltScroll;
     const pc = $('.pile .pcards');
     if (pc) pc.scrollLeft = pc.scrollWidth;
+    flipCards(S.flipFrom);
+    S.flipFrom = null;
+    const ev = S.animEvent;
+    if (ev && (ev.type === 'meld' || ev.type === 'add') && S.prefs.anim !== false) {
+      for (const id of ev.cardIds || []) { const c = $(`#felt .card[data-card="${id}"]`); if (c) c.classList.add('snap'); }
+    }
     if (S.animEvent) { animateEvent(S.animEvent); S.animEvent = null; }
     const g0 = S.game, w = g0 && stockWarning(g0);
     const wkey = w ? `${g0.handNo}:${w.level}` : null;

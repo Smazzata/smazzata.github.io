@@ -500,6 +500,8 @@ I18N.load({"Per calare servono almeno 3 carte: selezionale e trascinale insieme"
 "Cosa devo fare?":"O que devo fazer?",
 "🏆 Risultati":"🏆 Resultados",
 "Ancora nessuna mossa":"Ainda nenhuma jogada",
+"Vibrazioni":"Vibração",
+"📳 Sì":"📳 Sim",
 "⚡ Gioca subito":"⚡ Jogar agora",
 "📅 Sfida del giorno":"📅 Desafio do dia",
 "🏆 Tornei":"🏆 Torneios",

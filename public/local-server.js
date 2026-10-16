@@ -81,7 +81,9 @@
           fire('handOver', { id: room.localId, rules: room.rules, botLevel: room.botLevel || 'normale', tutorial: !!room.tutorial, game: JSON.parse(JSON.stringify(g)) });
         }
       }
-      fire('state', room ? { room: roomInfo(), game: g ? E().viewFor(g, 0) : null } : { room: null, game: null });
+      // copia completa (come quando i dati viaggiano in rete): la vista non deve condividere pezzi con la partita,
+      // altrimenti le mosse successive cambierebbero anche lo stato precedente che l'interfaccia confronta
+      fire('state', room ? { room: roomInfo(), game: g ? JSON.parse(JSON.stringify(E().viewFor(g, 0))) : null } : { room: null, game: null });
       store.set(room);
       scheduleBot();
     }

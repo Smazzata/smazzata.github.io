@@ -47,7 +47,7 @@
   /** giochi a prese (carte italiane): Scopa e Briscola */
   const isPresaGame = () => !!(S.game && S.game.presa);
 
-  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche', melds: 'colonna', lang: 'auto', text: 'normale', contrast: false, anim: true, speak: false, voice: true, ui: 'semplice', botLevel: 'auto', remind: true };
+  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, big: false, theme: 'chiaro', deck: 'classiche', melds: 'colonna', lang: 'auto', text: 'normale', contrast: false, anim: true, speak: false, voice: true, ui: 'semplice', botLevel: 'auto', remind: true, haptic: true };
   const S = {
     token: store.get('bur_token', null),
     name: store.get('bur_name', ''),
@@ -156,6 +156,7 @@
       o.connect(g).connect(this.out); o.start(t); o.stop(t + 0.2);
     },
     play(kind) {
+      Haptic.forSound(kind); // ogni suono ha la sua vibrazione (anche a suoni spenti)
       if (!S.prefs.sound || !this.ctx) return;
       switch (kind) {
         case 'select': this.flick(0, 0.3, 1.4); break; // carta sollevata: un fruscio leggero
@@ -177,6 +178,30 @@
       }
     },
   };
+
+  /* ================= Vibrazioni (feedback tattile) =================
+   * Brevi e diverse per ogni azione, come nelle app di giochi curate. Il telefono vibra solo dopo il primo tocco
+   * dell'utente (regola dei browser); si spengono in Impostazioni. */
+  const Haptic = {
+    touched: false,
+    v(p) { if (S.prefs.haptic === false || !this.touched || !navigator.vibrate) return; try { navigator.vibrate(p); } catch (e) { /* niente */ } },
+    tap() { this.v(6); },
+    select() { this.v(10); },
+    play() { this.v(16); },
+    success() { this.v([14, 40, 22]); },
+    error() { this.v([28, 45, 28]); },
+    turn() { this.v([18, 70, 18]); },
+    big() { this.v([24, 50, 24, 50, 60]); },
+    forSound(kind) {
+      const m = { select: 'select', card: 'play', deal: null, pile: 'play', meld: 'success', turn: 'turn', burraco: 'big', win: 'big', error: 'error', shuffle: null }[kind];
+      if (m) this[m]();
+    },
+  };
+  // un tocco leggerissimo su pulsanti e riquadri (il primo tocco abilita anche le vibrazioni)
+  document.addEventListener('pointerdown', (e) => {
+    Haptic.touched = true;
+    if (e.target.closest && e.target.closest('.btn, .ico, .iconbtn, .menuitem, .gtile, .swatch, .preset, .seatchip')) Haptic.tap();
+  }, true);
 
   /* ================= Preferenze grafiche ================= */
   function applyPrefs() {

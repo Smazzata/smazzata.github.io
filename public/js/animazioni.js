@@ -425,30 +425,62 @@
     if (fx.mine) confetti(60, 1600);
   }
 
+  /**
+   * Coriandoli di festa: due «cannoni» dagli angoli in basso, pezzi di forme diverse (strisce, cerchi e piccoli
+   * semi delle carte dorati) che ondeggiano in 3D, scintille; disegnati nitidi anche sugli schermi ad alta densità.
+   */
   function confetti(count = 160, duration = 3200) {
-    if (reducedMotion) return;
+    if (reducedMotion || S.prefs.anim === false) return;
     const cv = document.createElement('canvas');
     cv.className = 'confetti';
     document.body.appendChild(cv);
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const W = innerWidth, H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
     const ctx = cv.getContext('2d');
-    const W = (cv.width = innerWidth), H = (cv.height = innerHeight);
-    const colors = ['#f2c14e', '#e53935', '#43a047', '#1e88e5', '#ffffff', '#8e63d6'];
-    const ps = Array.from({ length: count }, () => ({
-      x: W / 2 + (Math.random() - 0.5) * W * 0.3, y: H * 0.35,
-      vx: (Math.random() - 0.5) * 9, vy: -Math.random() * 11 - 4,
-      r: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.3,
-      w: 6 + Math.random() * 6, h: 8 + Math.random() * 8, c: colors[Math.floor(Math.random() * colors.length)],
-    }));
+    ctx.scale(dpr, dpr);
+    const colors = ['#f2c14e', '#ffd86b', '#e53935', '#43a047', '#1e88e5', '#ffffff', '#8e63d6', '#ff8a65'];
+    const suits = ['♠', '♥', '♦', '♣'];
+    const ps = Array.from({ length: count }, (_, i) => {
+      const left = i % 2 === 0;
+      const ang = (left ? -1 : 1) * (Math.PI / 2 - (0.25 + Math.random() * 0.55)); // verso l'alto e il centro
+      const sp = 11 + Math.random() * 9;
+      const kind = Math.random() < 0.12 ? 'suit' : Math.random() < 0.3 ? 'dot' : 'strip';
+      return {
+        x: left ? -10 : W + 10, y: H * 0.92, vx: Math.sin(ang) * sp * -1 * (left ? -1 : 1) * (left ? 1 : -1), vy: -Math.cos(ang) * sp,
+        r: Math.random() * Math.PI * 2, vr: (Math.random() - 0.5) * 0.35, flip: Math.random() * Math.PI * 2, vf: 0.12 + Math.random() * 0.2,
+        w: 6 + Math.random() * 6, h: 9 + Math.random() * 9, c: kind === 'suit' ? '#f2c14e' : colors[i % colors.length], kind,
+        s: suits[i % 4], delay: Math.random() * 260,
+      };
+    });
+    // spinta: in alto fino a sopra il titolo e verso il centro dello schermo
+    for (const p of ps) { p.vy = -(Math.sqrt(H) * 0.62 + Math.random() * 9); p.vx = (p.x < 0 ? 1 : -1) * (2.5 + Math.random() * W / 70); }
+    const sparks = Array.from({ length: 26 }, () => ({ x: W * (0.2 + Math.random() * 0.6), y: H * (0.15 + Math.random() * 0.4), t: Math.random() * 900 }));
     const t0 = performance.now();
     (function frame(t) {
-      const k = (t - t0) / duration;
+      const el = t - t0, k = el / duration;
       ctx.clearRect(0, 0, W, H);
-      ctx.globalAlpha = Math.max(0, 1 - Math.max(0, k - 0.7) / 0.3);
+      ctx.globalAlpha = Math.max(0, 1 - Math.max(0, k - 0.72) / 0.28);
       for (const p of ps) {
-        p.vy += 0.25; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
-        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
-        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.r * 2))); ctx.restore();
+        if (el < p.delay) continue;
+        p.vy += 0.3; p.vx *= 0.988; p.vy *= 0.994; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.flip += p.vf;
+        if (p.vy > 2.2) { p.vy = 2.2 + (p.vy - 2.2) * 0.9; p.x += Math.sin(p.flip) * 0.8; } // cadono ondeggiando
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r);
+        const fs = Math.cos(p.flip); // rotazione in 3D: la faccia si stringe e si allarga
+        ctx.fillStyle = p.c;
+        if (p.kind === 'strip') { ctx.scale(1, fs); ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); }
+        else if (p.kind === 'dot') { ctx.scale(fs, 1); ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill(); }
+        else { ctx.scale(fs, 1); ctx.font = `bold ${p.h + 6}px Georgia, serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(p.s, 0, 0); }
+        ctx.restore();
+      }
+      // scintille dorate che brillano qua e là
+      for (const sp of sparks) {
+        const a = Math.sin(Math.max(0, el - sp.t) / 140);
+        if (el < sp.t || a <= 0) continue;
+        ctx.save(); ctx.translate(sp.x, sp.y); ctx.rotate(Math.PI / 4); ctx.fillStyle = `rgba(255,236,170,${a})`;
+        ctx.fillRect(-1, -7 * a, 2, 14 * a); ctx.fillRect(-7 * a, -1, 14 * a, 2); ctx.restore();
       }
       if (k < 1) requestAnimationFrame(frame); else cv.remove();
     })(t0);
   }
+
