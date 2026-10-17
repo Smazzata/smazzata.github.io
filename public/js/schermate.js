@@ -26,7 +26,7 @@
     }
   }
 
-  const APK_URL = 'https://github.com/simonemuliello010500-web/BurracoByMSF/releases/latest/download/Burraco.apk';
+  const APK_URL = 'https://github.com/smazzata/smazzata.github.io/releases/latest/download/Burraco.apk';
   // i tablet Android spesso si presentano come computer (Chrome «versione desktop»): Linux + schermo touch = Android
   const IS_ANDROID = /android/i.test(navigator.userAgent)
     || (navigator.userAgentData && /android/i.test(navigator.userAgentData.platform || ''))
@@ -48,7 +48,7 @@
     if (cached && Date.now() - cached.at < 6 * 3600 * 1000) latest = cached.n;
     else {
       try {
-        const r = await fetch('https://api.github.com/repos/simonemuliello010500-web/BurracoByMSF/releases/latest', { cache: 'no-store' });
+        const r = await fetch('https://api.github.com/repos/smazzata/smazzata.github.io/releases/latest', { cache: 'no-store' });
         const tag = r.ok ? (await r.json()).tag_name : '';
         latest = Number((String(tag).match(/apk-(\d+)/) || [])[1] || 0) || null;
         if (latest) store.set('bur_apk_latest', { n: latest, at: Date.now() });

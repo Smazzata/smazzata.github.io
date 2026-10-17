@@ -1,7 +1,9 @@
 # Smazzata (ex Burraco Online) — guida per Claude Code
 
-Nome dell'app: **Smazzata** (giochi di carte: Burraco, Scala 40, Canasta, Scopa, Briscola). Il nome del progetto su GitHub resta
-`BurracoByMSF`: da lui dipendono l'indirizzo fisso della pagina d'ingresso e il link degli aggiornamenti dell'APK, non cambiarlo.
+Nome dell'app: **Smazzata** (giochi di carte: Burraco, Scala 40, Canasta, Scopa, Briscola). Il progetto su GitHub è
+`smazzata/smazzata.github.io` (organizzazione `smazzata`, ex `simonemuliello010500-web/BurracoByMSF`): da lui dipendono l'indirizzo fisso
+della pagina d'ingresso (https://smazzata.github.io/), il link degli aggiornamenti dell'APK e il ramo `indirizzo`, non cambiarlo.
+Identificativo dell'app Android: `it.smazzata.app` (fisso per sempre dopo il primo caricamento sul Play Store).
 
 Giochi: **Burraco**, **Scala 40**, **Ramino** (`shared/ramino.js`: motore e computer della Scala 40, nessun minimo per aprire, `rules.game: 'ramino'`), **Canasta** e con le carte italiane **Scopa** (anche Scopone), **Briscola**, **Briscola in 5** (chiamata, asta e socio segreto), **Tressette**, **Rubamazzetto**
 (`shared/<gioco>.js` regole condivise, `server/<gioco>.js` motore, `server/<gioco>-bot.js` computer). Le carte italiane
@@ -52,7 +54,7 @@ Computer: 3 livelli + apertura da vulnerabile con più combinazioni + pianificat
 
 ## Hosting e pubblicazione
 - Il server gira su un telefono Android con Termux e un tunnel Cloudflare gratuito (indirizzo che cambia). Un `git push` su `main` aggiorna il gioco sul telefono entro ~5 minuti; le partite in corso riprendono dopo il riavvio.
-- Link fisso: https://simonemuliello010500-web.github.io/BurracoByMSF/ — APK: https://github.com/simonemuliello010500-web/BurracoByMSF/releases/latest/download/Burraco.apk
+- Link fisso: https://smazzata.github.io/ — APK: https://github.com/smazzata/smazzata.github.io/releases/latest/download/Burraco.apk
 - Workflow: `.github/workflows/pages.yml` (pagina d'ingresso + gioco offline in `gioca/`, quando cambiano launcher, public, shared, motore o computer), `.github/workflows/apk.yml` (APK, solo se cambia `android-app/`).
 - Render, Hugging Face e Koyeb sono stati scartati (carta richiesta / quota zero / iscrizioni bloccate).
 

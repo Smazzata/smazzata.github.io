@@ -27,12 +27,12 @@
    Non usare `android-app/burraco.p12` per il Play Store: è nel progetto pubblico, serve solo all'APK del sito.
    Tieni una copia della cartella delle chiavi; se si perde, Google permette di chiedere una nuova chiave di caricamento.
 4. **Scheda dello Store**: copia i testi da `testi.md` e carica icona, immagine in evidenza e almeno 2 schermate.
-5. **Norme sulla privacy**: indirizzo https://simonemuliello010500-web.github.io/BurracoByMSF/gioca/privacy.html
+5. **Norme sulla privacy**: indirizzo https://smazzata.github.io/gioca/privacy.html
 6. **Sicurezza dei dati**: dichiara che l'app raccoglie **indirizzo email** (Informazioni personali → Indirizzo email:
    obbligatorio, scopo «Gestione dell'account», non condiviso con terzi) e **ID utente** (il nickname). Salva anche
    statistiche di gioco e una password cifrata; dati cifrati in transito (https); nessun dato venduto;
    l'utente può eliminare il profilo dall'app (Profilo → Elimina il mio profilo).
-   **Link per eliminare l'account** (richiesto da Google): https://simonemuliello010500-web.github.io/BurracoByMSF/gioca/elimina-profilo.html
+   **Link per eliminare l'account** (richiesto da Google): https://smazzata.github.io/gioca/elimina-profilo.html
 7. **Classificazione dei contenuti** (questionario): niente violenza, niente acquisti, **niente gioco d'azzardo
    simulato** (nessun gioco con puntate o fiches: il Sette e mezzo è stato tolto apposta). Va invece dichiarato che
    **gli utenti interagiscono** (chat, messaggi vocali, amici), con la possibilità di segnalare e bloccare.
@@ -44,6 +44,8 @@
 10. **Produzione**: dopo il test, «Crea nuova release» → carica `Smazzata.aab` → invia per la revisione (qualche giorno).
 
 ## Da sapere
+- **Identificativo dell'app**: `it.smazzata.app` (prima `it.msf.burraco`). Non si cambia più dopo il primo caricamento.
+  Chi aveva il vecchio APK si ritrova un'app nuova accanto alla vecchia: disinstalla la vecchia ed entra con nickname e password.
 - **Pubblicità (in arrivo)**: quando la aggiungi, nella Console vanno aggiornati «Contiene annunci» (sì),
   «Sicurezza dei dati» (ID pubblicità e dati raccolti dal servizio di annunci) e la pagina sulla privacy
   (`public/privacy.html`, con il nome del servizio); in Europa serve anche la richiesta di consenso.

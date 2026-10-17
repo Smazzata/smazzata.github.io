@@ -43,7 +43,7 @@ Il gioco è pensato per girare su un **telefono Android con Termux** (gratis, se
 e scarica da solo gli aggiornamenti pubblicati su GitHub ogni 5 minuti.
 
 ```bash
-pkg install -y git && git clone https://github.com/simonemuliello010500-web/BurracoByMSF.git ~/burraco && bash ~/burraco/scripts/android-server.sh
+pkg install -y git && git clone https://github.com/smazzata/smazzata.github.io.git ~/burraco && bash ~/burraco/scripts/android-server.sh
 ```
 
 Con `--install-boot` (app Termux:Boot) il server riparte da solo quando il telefono si riaccende.
@@ -52,10 +52,10 @@ Le partite vengono salvate in `data/stato.json` (cartella configurabile con `DAT
 
 ## Link fisso e app Android
 
-- **Link per tutti**: https://simonemuliello010500-web.github.io/BurracoByMSF/ — pagina d'ingresso (cartella `launcher/`,
+- **Link per tutti**: https://smazzata.github.io/ — pagina d'ingresso (cartella `launcher/`,
   pubblicata da `.github/workflows/pages.yml`) che legge l'indirizzo attuale del server dal ramo `indirizzo`
   (file `server.json`, scritto dallo script Android) e porta al tavolo. Su iPhone si aggiunge alla schermata Home.
-- **App Android**: https://github.com/simonemuliello010500-web/BurracoByMSF/releases/latest/download/Burraco.apk —
+- **App Android**: https://github.com/smazzata/smazzata.github.io/releases/latest/download/Burraco.apk —
   guscio Capacitor (`android-app/`) che apre la pagina d'ingresso; lo costruisce e pubblica `.github/workflows/apk.yml`.
   Va ricostruito solo se cambia `android-app/`: gli aggiornamenti del gioco arrivano dal server.
 - Lo script Android pubblica l'indirizzo se trova il token in `~/.burraco-github-token`

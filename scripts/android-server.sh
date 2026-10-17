@@ -9,7 +9,7 @@
 # Lo script: installa ciò che serve, aggiorna il gioco da GitHub, avvia il server
 # (riavviandolo se si ferma), controlla gli aggiornamenti ogni 5 minuti e apre il tunnel.
 
-REPO_URL="https://github.com/simonemuliello010500-web/BurracoByMSF.git"
+REPO_URL="https://github.com/smazzata/smazzata.github.io.git"
 DIR="$HOME/burraco"
 PORT=3000
 URL_FILE="$HOME/burraco-indirizzo.txt"
@@ -17,7 +17,7 @@ PID_FILE="$HOME/.burraco-server.pid"
 UPDATE_EVERY=300
 # token GitHub (solo permesso "Contents" su questo repository) per pubblicare l'indirizzo del tunnel
 TOKEN_FILE="$HOME/.burraco-github-token"
-GH_REPO="simonemuliello010500-web/BurracoByMSF"
+GH_REPO="smazzata/smazzata.github.io"
 # frase segreta del backup cifrato (scelta da te: senza, il backup non si può ripristinare)
 PASS_FILE="$HOME/.burraco-backup-pass"
 BACKUP_EVERY=21600
@@ -229,7 +229,7 @@ while true; do
       echo "  Indirizzo da condividere:"
       echo "  $url"
       echo "  Link fisso per tutti:"
-      echo "  https://simonemuliello010500-web.github.io/BurracoByMSF/"
+      echo "  https://smazzata.github.io/"
       [ -f "$DIR/data/admin-key.txt" ] && echo "  Stato del server (solo per te): $url/stato?k=$(cat "$DIR/data/admin-key.txt")"
       echo "=============================================="
       echo ""

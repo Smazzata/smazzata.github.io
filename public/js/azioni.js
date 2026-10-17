@@ -62,7 +62,7 @@
   }
 
   // dietro il tunnel l'indirizzo cambia: gli inviti passano dalla pagina d'ingresso fissa
-  const HOME_URL = 'https://simonemuliello010500-web.github.io/BurracoByMSF/';
+  const HOME_URL = 'https://smazzata.github.io/';
   function inviteLink() {
     const base = /\.trycloudflare\.com$/.test(location.hostname) ? HOME_URL : `${location.origin}/`;
     return `${base}?t=${S.room.code}`;

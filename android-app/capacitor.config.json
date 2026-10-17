@@ -1,5 +1,5 @@
 {
-  "appId": "it.msf.burraco",
+  "appId": "it.smazzata.app",
   "appName": "Smazzata",
   "webDir": "www",
   "appendUserAgent": "BurracoApp SmazzataLocale",
@@ -9,7 +9,7 @@
     "hostname": "localhost",
     "allowNavigation": [
       "*.trycloudflare.com",
-      "simonemuliello010500-web.github.io"
+      "smazzata.github.io"
     ]
   }
 }
