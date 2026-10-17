@@ -3,7 +3,10 @@ name: App Android (APK)
 on:
   push:
     branches: [main]
-    paths: ['android-app/**', '.github/workflows/apk.yml']
+    # il gioco online arriva sempre aggiornato dal server: l'app si ricompila solo se cambia il guscio o la pagina
+    # d'ingresso (che sono dentro l'app). La copia per giocare senza internet si rinnova a ogni nuova versione;
+    # per rinnovarla apposta: Actions → «App Android (APK)» → Run workflow.
+    paths: ['android-app/**', 'launcher/**', 'scripts/build-pages.js', '.github/workflows/apk.yml']
   workflow_dispatch:
 
 permissions:
@@ -22,13 +25,21 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      # i file del gioco dentro l'app: pagina d'ingresso + copia del gioco in gioca/ (motore e computer per l'offline)
+      - name: File del gioco (www)
+        run: |
+          node scripts/build-pages.js android-app/www
+          test -f android-app/www/index.html && test -f android-app/www/gioca/engine.js
+          # niente "server.url": l'app apre i file che ha dentro, non un sito
+          ! grep -q '"url"' android-app/capacitor.config.json
+
       - name: Progetto Android con Capacitor
         working-directory: android-app
         run: |
           npm install --no-audit --no-fund
           # numero di versione nel "nome" dell'app (BurracoApp/N): il gioco lo confronta con l'ultima Release
-          sed -i 's/"appendUserAgent": "BurracoApp"/"appendUserAgent": "BurracoApp\/${{ github.run_number }}"/' capacitor.config.json
-          grep appendUserAgent capacitor.config.json
+          sed -i 's/"appendUserAgent": "BurracoApp /"appendUserAgent": "BurracoApp\/${{ github.run_number }} /' capacitor.config.json
+          grep 'BurracoApp/${{ github.run_number }} SmazzataLocale' capacitor.config.json
           npx cap add android
           # microfono per i messaggi vocali al tavolo, vibrazione per il feedback tattile
           sed -i 's#<uses-permission android:name="android.permission.INTERNET" />#&\n    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-permission android:name="android.permission.VIBRATE" />#' android/app/src/main/AndroidManifest.xml
@@ -60,6 +71,10 @@ jobs:
         working-directory: android-app
         run: |
           # Google Play vuole il "bundle" (.aab), firmato con la stessa chiave (chiave di caricamento)
+          # la versione dello Store si aggiorna dallo Store: con "SmazzataStore" il gioco non propone di scaricare l'APK
+          sed -i 's/SmazzataLocale"/SmazzataLocale SmazzataStore"/' capacitor.config.json
+          npx cap copy android
+          grep SmazzataStore android/app/src/main/assets/capacitor.config.json
           npx cap build android --androidreleasetype AAB --signing-type jarsigner             --keystorepath "$PWD/burraco.p12" --keystorepass burraco-amici             --keystorealias burraco --keystorealiaspass burraco-amici
           aab=$(find android/app/build/outputs/bundle/release -name '*.aab' | head -1)
           echo "AAB: $aab"
@@ -79,4 +94,4 @@ jobs:
             Scarica **Burraco.apk** qui sotto e aprilo dal telefono Android (il file ha ancora il vecchio nome, così gli aggiornamenti continuano a funzionare).
             **Smazzata.aab** serve solo per caricare l'app sul Play Store.
             Se Android lo chiede, consenti l'installazione di app da questa fonte (browser o file).
-            L'app apre il gioco dalla pagina fissa https://simonemuliello010500-web.github.io/BurracoByMSF/
+            Il gioco è dentro l'app: senza internet si gioca contro il computer; da collegati l'app trova il server da sola.

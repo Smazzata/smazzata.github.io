@@ -1,7 +1,7 @@
 {
   "name": "burraco-android",
   "private": true,
-  "description": "Guscio Android (Capacitor) che apre Smazzata dalla pagina d'ingresso fissa",
+  "description": "App Android (Capacitor) di Smazzata: pagina d'ingresso e gioco senza internet dentro l'app (www/, da npm run app:www)",
   "dependencies": {
     "@capacitor/android": "^7.0.0",
     "@capacitor/core": "^7.0.0"

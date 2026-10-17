@@ -255,6 +255,17 @@ const HELPERS = `
     if (later) throw new Error("«Più tardi» non nasconde l'avviso");
     step("app vecchia: avviso di aggiornamento con il link all'APK, «Più tardi» lo nasconde");
 
+    // 7b. app del Play Store (stessa versione vecchia): si aggiorna dallo Store, quindi nessun avviso per l'APK
+    await cdp.send('Emulation.setUserAgentOverride', { userAgent: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130 Mobile Safari/537.36 BurracoApp/1 SmazzataLocale SmazzataStore' });
+    await cdp.run(`sessionStorage.clear(); localStorage.clear(); localStorage.setItem('bur_apk_latest', JSON.stringify({ n: 999, at: Date.now() })); return true;`);
+    await open(URL);
+    const storeUpd = await cdp.run(`
+      for (let i = 0; i < 40 && !document.querySelector('[data-act="playBots"]'); i++) await __W(250);
+      await __W(1500);
+      return !!document.querySelector('.apkbanner');`);
+    if (storeUpd) throw new Error("versione Play Store: compare l'avviso per scaricare l'APK");
+    step("app del Play Store: nessun avviso per scaricare l'APK");
+
     // 8. lingue: in inglese, spagnolo e portoghese la schermata iniziale e le regole sono tradotte
     const LANG_CHECK = { en: ['Play against the computer', 'Play with friends'], es: ['Jugar contra el ordenador', 'Jugar con amigos'], pt: ['Jogar contra o computador', 'Jogar com amigos'] };
     for (const [lang, words] of Object.entries(LANG_CHECK)) {
