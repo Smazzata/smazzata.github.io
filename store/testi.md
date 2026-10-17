@@ -15,8 +15,8 @@ Gratis.
 
 🃏 TANTI GIOCHI, UN SOLO TAVOLO
 • Burraco (Classico FIBUR, Reale, Buraco brasiliano Aberto e Fechado)
-• Scala 40 • Canasta
-• Scopa e Scopone scientifico • Briscola • Tressette (con accusi)
+• Scala 40 • Ramino • Canasta
+• Scopa e Scopone scientifico • Briscola e Briscola in 5 (a chiamata) • Tressette (con accusi)
 • Rubamazzetto
 Ogni regola si può personalizzare: obiettivo, matte, pozzetti, punteggi e molto altro.
 
@@ -57,8 +57,8 @@ Free to play.
 
 🃏 MANY GAMES, ONE TABLE
 • Burraco (Classic FIBUR, Royal, Brazilian Buraco Aberto and Fechado)
-• Scala 40 • Canasta
-• Scopa and Scopone scientifico • Briscola • Tressette (with declarations)
+• Scala 40 • Ramino (rummy) • Canasta
+• Scopa and Scopone scientifico • Briscola and Briscola in 5 (with a called partner) • Tressette (with declarations)
 • Rubamazzetto
 Every rule can be customised: target score, wild cards, kitties, scoring and much more.
 
@@ -99,8 +99,8 @@ Gratis.
 
 🃏 MUCHOS JUEGOS, UNA SOLA MESA
 • Burraco (Clásico FIBUR, Real, Buraco brasileño Aberto y Fechado)
-• Scala 40 • Canasta
-• Escoba y Scopone científico • Brisca • Tressette (con cantos)
+• Scala 40 • Ramino (rummy) • Canasta
+• Escoba y Scopone científico • Brisca y Briscola in 5 (con socio llamado) • Tressette (con cantos)
 • Rubamazzetto
 Cada regla se puede personalizar: objetivo, comodines, muertos, puntuación y mucho más.
 
@@ -141,8 +141,8 @@ Grátis.
 
 🃏 MUITOS JOGOS, UMA SÓ MESA
 • Buraco (Aberto e Fechado) e Burraco italiano (Clássico FIBUR, Real)
-• Scala 40 • Canastra
-• Escopa e Scopone científico • Bisca • Tressette (com acusos)
+• Scala 40 • Ramino (rummy) • Canastra
+• Escopa e Scopone científico • Bisca e Briscola in 5 (com parceiro chamado) • Tressette (com acusos)
 • Rouba-monte
 Cada regra pode ser personalizada: objetivo, curingas, mortos, pontuação e muito mais.
 
