@@ -86,16 +86,14 @@ jobs:
           sed -i 's/SmazzataLocale"/SmazzataLocale SmazzataStore"/' capacitor.config.json
           npx cap copy android
           grep SmazzataStore android/app/src/main/assets/capacitor.config.json
-          npx cap build android --androidreleasetype AAB --signing-type jarsigner             --keystorepath "$RUNNER_TEMP/caricamento-play.p12" --keystorepass "$PLAY_UPLOAD_KEY_PASSWORD"             --keystorealias caricamento --keystorealiaspass "$PLAY_UPLOAD_KEY_PASSWORD"
+          # si compila senza firmare e si firma qui con SHA-256: la firma di Capacitor (SHA-1) per Java 21 non vale
+          (cd android && ./gradlew --no-daemon -q bundleRelease)
+          aab=android/app/build/outputs/bundle/release/app-release.aab
+          jarsigner -sigalg SHA256withRSA -digestalg SHA-256 -keystore "$RUNNER_TEMP/caricamento-play.p12"             -storepass "$PLAY_UPLOAD_KEY_PASSWORD" -keypass "$PLAY_UPLOAD_KEY_PASSWORD"             -signedjar Smazzata.aab "$aab" caricamento
           rm -f "$RUNNER_TEMP/caricamento-play.p12"
-          # Capacitor lascia sia app-release.aab (non firmato) sia app-release-signed.aab: serve quello firmato
-          aab=$(find android/app/build/outputs/bundle/release -name '*-signed.aab' | head -1)
-          echo "AAB: $aab"
-          [ -n "$aab" ] || { echo "::error::Pacchetto firmato non trovato"; exit 1; }
-          verifica=$(jarsigner -verify "$aab" 2>&1 || true)
+          verifica=$(jarsigner -verify Smazzata.aab 2>&1 || true)
           echo "$verifica" | tail -3
           [[ "$verifica" == *"jar verified"* ]] || { echo "::error::Smazzata.aab non risulta firmato"; exit 1; }
-          cp "$aab" Smazzata.aab
           ls -la Smazzata.aab
 
       - name: Pubblica nelle Releases
