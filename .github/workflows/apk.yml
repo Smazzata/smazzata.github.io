@@ -92,7 +92,9 @@ jobs:
           aab=$(find android/app/build/outputs/bundle/release -name '*-signed.aab' | head -1)
           echo "AAB: $aab"
           [ -n "$aab" ] || { echo "::error::Pacchetto firmato non trovato"; exit 1; }
-          jarsigner -verify "$aab" | grep -q "jar verified" || { echo "::error::Smazzata.aab non risulta firmato"; exit 1; }
+          verifica=$(jarsigner -verify "$aab" 2>&1 || true)
+          echo "$verifica" | tail -3
+          [[ "$verifica" == *"jar verified"* ]] || { echo "::error::Smazzata.aab non risulta firmato"; exit 1; }
           cp "$aab" Smazzata.aab
           ls -la Smazzata.aab
 
