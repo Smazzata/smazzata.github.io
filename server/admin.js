@@ -4,6 +4,7 @@
  * da chiave (/stato?k=…) e /health per la pagina d'ingresso.
  */
 const Games = require('./games');
+const Parole = require('../shared/parole');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
@@ -85,6 +86,8 @@ function playersData(online) {
       nick: s.nick, email: maskEmail(s.email), emailOk: !!s.email, online: online.has(t),
       livello: Levels.levelOf(e).level, partite: e.games || 0, vinte: e.wins || 0,
       ultimoGiorno: e.lastDay || null, serie: PM.streakOf(e).streak, notifiche: !!(s.push && s.push.length),
+      // moderazione: nickname contro le regole (profili creati prima del filtro), avviso, chat bloccata
+      nickVietato: Parole.nickVietato(s.nick), avvisato: !!s.warn, chatBloccata: !!(s.chatBan && s.chatBan > Date.now()),
     };
   }).sort((a, b) => (b.online - a.online) || String(b.ultimoGiorno || '').localeCompare(String(a.ultimoGiorno || '')) || a.nick.localeCompare(b.nick));
   return {
@@ -137,6 +140,21 @@ function setupStatus(app) {
   <p><a href="/stato?k=${encodeURIComponent(req.query.k)}">← Torna alla pagina di stato</a></p></body></html>`);
   });
 
+  // Moderazione (regole di comportamento): avviso, chat bloccata, nickname cambiato, profilo eliminato
+  const MODERA = { avviso: '⚠️ Avviso', muta7: '🔇 Chat bloccata 7 giorni', muta: '🔇 Chat bloccata per sempre', smuta: '💬 Chat sbloccata', rinomina: '✏️ Nickname cambiato', elimina: '🗑️ Profilo eliminato' };
+  app.post('/stato/modera', require('express').urlencoded({ extended: false }), (req, res) => {
+    if (req.query.k !== ADMIN_KEY) return res.status(403).send('Accesso negato');
+    const nick = String(req.query.nick || '');
+    const action = String((req.body && req.body.azione) || req.query.azione || '');
+    const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const msg = MODERA[action] ? ctx.social.adminModerate(nick, action) : 'Azione sconosciuta';
+    ctx.scheduleSave();
+    res.set('Cache-Control', 'no-store').send(`<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Moderazione</title>
+  <style>body{font-family:system-ui,sans-serif;background:#0f5132;color:#fff;margin:0;padding:16px}a{color:#f2c14e}</style></head><body>
+  <h2>${msg ? esc(MODERA[action] || '') : `Nickname «${esc(nick)}» non trovato`}</h2><p>${esc(msg || '')}</p>
+  <p><a href="/stato?k=${encodeURIComponent(req.query.k)}">← Torna alla pagina di stato</a></p></body></html>`);
+  });
+
   app.get('/stato', (req, res) => {
     if (req.query.k !== ADMIN_KEY) return res.status(403).send('Accesso negato');
     const d = statusData();
@@ -160,13 +178,15 @@ function setupStatus(app) {
   ${r.table.game.log.map(esc).join('\n')}</pre>` : ''}<span class="m">${esc(r.device)}</span></div>`).join('') : '<p class="m">Nessuna segnalazione.</p>'}</div>
   <div class="box"><b>Iscritti</b>
   <div><span class="k">Iscritti<b>${d.iscritti.totali.iscritti}</b></span><span class="k">Online ora<b>${d.iscritti.totali.online}</b></span><span class="k">Hanno giocato oggi<b>${d.iscritti.totali.oggi}</b></span><span class="k">Ultimi 7 giorni<b>${d.iscritti.totali.settimana}</b></span></div>
-  ${d.iscritti.lista.length ? `<div style="overflow-x:auto"><table><tr><th></th><th>Nickname</th><th>Email</th><th>Liv.</th><th>Partite</th><th>Ultimo gioco</th><th>🔥</th><th>🔔</th><th></th></tr>
-  ${d.iscritti.lista.map((p) => `<tr><td>${p.online ? '🟢' : '⚪'}</td><td><b>${esc(p.nick)}</b></td><td>${p.emailOk ? `✓ <span class="m">${esc(p.email)}</span>` : '<span class="m">—</span>'}</td>
+  ${d.iscritti.lista.length ? `<div style="overflow-x:auto"><table><tr><th></th><th>Nickname</th><th>Email</th><th>Liv.</th><th>Partite</th><th>Ultimo gioco</th><th>🔥</th><th>🔔</th><th></th><th>Moderazione</th></tr>
+  ${d.iscritti.lista.map((p) => `<tr><td>${p.online ? '🟢' : '⚪'}</td><td><b>${esc(p.nick)}</b>${p.nickVietato ? ' <span title="nickname contro le regole">🚩</span>' : ''}${p.avvisato ? ' <span title="avvisato">⚠️</span>' : ''}${p.chatBloccata ? ' <span title="chat bloccata">🔇</span>' : ''}</td><td>${p.emailOk ? `✓ <span class="m">${esc(p.email)}</span>` : '<span class="m">—</span>'}</td>
   <td>${p.livello}</td><td>${p.partite}${p.partite ? ` <span class="m">(${p.vinte} vinte)</span>` : ''}</td>
   <td>${p.ultimoGiorno === d.iscritti.oggi ? 'oggi' : p.ultimoGiorno === d.iscritti.ieri ? 'ieri' : p.ultimoGiorno ? esc(p.ultimoGiorno.split('-').reverse().join('/')) : '<span class="m">mai</span>'}</td>
   <td>${p.serie >= 2 ? p.serie : ''}</td><td>${p.notifiche ? '✓' : ''}</td>
-  <td><form method="post" action="/stato/recupero?k=${encodeURIComponent(req.query.k)}&nick=${encodeURIComponent(p.nick)}" style="margin:0" onsubmit="return confirm('Nuovo codice di recupero per ${esc(p.nick)}?')"><button title="Nuovo codice di recupero da mandare a chi ha perso password e codice">Codice</button></form></td></tr>`).join('')}</table></div>
-  <p class="m">🟢 online · ✓ email confermata · 🔥 giorni di gioco di fila · 🔔 notifiche attive · «Codice»: nuovo codice di recupero per chi ha perso password e codice</p>` : '<p class="m">Nessun iscritto.</p>'}</div>
+  <td><form method="post" action="/stato/recupero?k=${encodeURIComponent(req.query.k)}&nick=${encodeURIComponent(p.nick)}" style="margin:0" onsubmit="return confirm('Nuovo codice di recupero per ${esc(p.nick)}?')"><button title="Nuovo codice di recupero da mandare a chi ha perso password e codice">Codice</button></form></td>
+  <td><form method="post" action="/stato/modera?k=${encodeURIComponent(req.query.k)}&nick=${encodeURIComponent(p.nick)}" style="margin:0;white-space:nowrap" onsubmit="return confirm(this.azione.options[this.azione.selectedIndex].text + ' per ${esc(p.nick)}?')"><select name="azione">
+  <option value="avviso">⚠️ Avviso</option><option value="muta7">🔇 Chat 7 giorni</option><option value="muta">🔇 Chat per sempre</option><option value="smuta">💬 Sblocca chat</option><option value="rinomina">✏️ Cambia nickname</option><option value="elimina">🗑️ Elimina profilo</option></select> <button>OK</button></form></td></tr>`).join('')}</table></div>
+  <p class="m">🟢 online · ✓ email confermata · 🔥 giorni di gioco di fila · 🔔 notifiche attive · «Codice»: nuovo codice di recupero per chi ha perso password e codice · 🚩 nickname contro le regole · ⚠️ avvisato · 🔇 chat bloccata</p>` : '<p class="m">Nessun iscritto.</p>'}</div>
   <div class="box"><b>Ultimi errori</b>${d.errori.length ? d.errori.map((e) => `<pre>${esc(e.quando)} — ${esc(e.testo)}</pre>`).join('') : '<p class="m">Nessun errore 🎉</p>'}</div>
   <p class="m">Ricarica la pagina per aggiornarla. 🟢 online · ⚪ offline · 🤖 computer</p></body></html>`);
   });

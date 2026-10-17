@@ -133,39 +133,39 @@ async function signup(p, nick, email = mailOf()) {
     assert(rp3.kind === 'player' && rp3.target === 'Anna' && rp3.chat.some((m) => m.includes('messaggio di prova')), 'segnalazione del giocatore con la chat');
     step('segnala un giocatore: motivo e chat del tavolo nella pagina di stato');
 
-    // messaggi vocali: arrivano agli altri al tavolo (non a chi parla), con controlli su formato, dimensione e frequenza
-    const voices = [];
-    B.sock.on('voice', (v) => voices.push(v));
-    A.sock.on('voice', () => voices.push('eco'));
-    const audio = Buffer.alloc(4000, 7);
-    assert((await A.call('voice', { audio, mime: 'audio/webm;codecs=opus', ms: 2300 })).ok, 'vocale inviato');
-    const vEnd = Date.now() + 3000;
-    while (!voices.length && Date.now() < vEnd) await wait(20);
-    await wait(100);
-    assert(voices.length === 1 && voices[0].seat === 0 && voices[0].audio.length === 4000 && voices[0].ms === 2300, 'vocale ricevuto dagli altri');
-    assert(!(await A.call('voice', { audio, mime: 'audio/webm', ms: 1000 })).ok, 'uno ogni 2 secondi');
-    await wait(2100);
-    assert(!(await A.call('voice', { audio, mime: 'text/html', ms: 1000 })).ok, 'solo audio');
-    await wait(2100);
-    assert(!(await A.call('voice', { audio: Buffer.alloc(400 * 1024), mime: 'audio/webm', ms: 1000 })).ok, 'troppo lungo');
-    step('messaggi vocali: inoltrati al tavolo, con limiti di formato, dimensione e frequenza');
+    // Blocca: chi blocca non riceve più la chat di quel giocatore
+    assert((await B.call('blockPlayer', { nick: 'Anna' })).ok, 'blocca');
+    const nB = B.chats.length, nA = A.chats.length;
+    await A.call('chat', { text: 'messaggio dopo il blocco' });
+    await A.until(() => A.chats.length > nA, 'chi scrive vede il suo messaggio');
+    await wait(150);
+    assert.strictEqual(B.chats.length, nB, 'chi ha bloccato non riceve la chat del bloccato');
+    assert((await B.call('unblockPlayer', { nick: 'Anna' })).ok, 'sblocca');
+    step('blocca: la chat del giocatore bloccato non arriva');
 
-    // silenziare un giocatore e spegnere i vocali: i messaggi non partono verso chi non li ascolta
-    assert((await B.call('voiceMute', { seat: 0, on: true })).ok, 'silenzia');
-    await wait(2100);
-    assert(!(await A.call('voice', { audio, mime: 'audio/webm', ms: 1000 })).ok, 'nessuno ascolta: silenziato');
-    assert((await B.call('voiceMute', { seat: 0, on: false })).ok, 'riattiva');
-    assert((await B.call('voicePref', { on: false })).ok, 'vocali spenti');
-    await A.until((s) => s.room.seats.some((x, i) => i !== 0 && x && !x.isBot && x.voice === false), 'vocali spenti visibili al tavolo');
-    assert(!(await A.call('voice', { audio, mime: 'audio/webm', ms: 1000 })).ok, 'nessuno ascolta: vocali spenti');
-    assert((await B.call('voicePref', { on: true })).ok, 'vocali riaccesi');
-    await wait(2100);
-    const before = voices.length;
-    assert((await A.call('voice', { audio, mime: 'audio/webm', ms: 1000 })).ok, 'di nuovo inviato');
-    const vEnd2 = Date.now() + 3000;
-    while (voices.length === before && Date.now() < vEnd2) await wait(20);
-    assert(voices.length === before + 1, 'di nuovo ricevuto');
-    step('vocali: silenzia un giocatore, vocali spenti nelle impostazioni');
+    // moderazione dalla pagina di stato (regole di comportamento): avviso, chat bloccata e sbloccata
+    const modera = (nick, azione) => fetch(`${URL}/stato/modera?k=${key}&nick=${nick}`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `azione=${azione}` });
+    assert.strictEqual((await fetch(`${URL}/stato/modera?nick=Anna`, { method: 'POST' })).status, 403, 'moderazione solo con la chiave');
+    assert((await modera('Anna', 'avviso')).ok);
+    assert((await A.call('social')).social.warn, 'avviso arrivato');
+    assert((await A.call('warnSeen')).ok && !(await A.call('social')).social.warn, 'avviso letto');
+    await modera('Anna', 'muta7');
+    assert((await A.call('social')).social.chatBan > Date.now(), 'chat bloccata 7 giorni');
+    assert(!(await A.call('chat', { text: 'ciao' })).ok, 'con la chat bloccata non si scrive');
+    await modera('Anna', 'smuta');
+    assert((await A.call('chat', { text: 'ciao di nuovo' })).ok, 'chat sbloccata');
+    // nickname cambiato e profilo eliminato (su un profilo di prova)
+    const Zm = player('Zeta');
+    await Zm.hello();
+    assert((await signup(Zm, 'Zeta_Prova')).ok);
+    await modera('Zeta_Prova', 'rinomina');
+    const soZ = (await Zm.call('social')).social;
+    assert(/^Giocatore\d{4}$/.test(soZ.nick) && soZ.warn && soZ.warn.renamed, 'nickname cambiato con avviso');
+    assert((await Zm.call('checkNick', { nick: 'Zeta_Prova' })).available, 'il vecchio nickname è libero');
+    await modera(soZ.nick, 'elimina');
+    assert(!(await Zm.call('social')).social.nick, 'profilo eliminato');
+    Zm.sock.close();
+    step('moderazione: avviso, chat bloccata, nickname cambiato e profilo eliminato dalla pagina di stato');
 
     // stile: un titolo bloccato è rifiutato, quello di partenza va bene e arriva agli altri al tavolo
     assert(!(await A.call('setLook', { title: 't_maestro' })).ok, 'titolo bloccato');
@@ -413,6 +413,7 @@ async function signup(p, nick, email = mailOf()) {
     step('classifica aggiornata a fine partita');
 
     // campionato tra amici: Anna lo crea e aggiunge Bruno (amico); conterà la prossima partita insieme
+    assert(!(await A.call('leagueCreate', { name: 'Lega di merda', period: 'settimana' })).ok, 'nome volgare del campionato rifiutato');
     const lc = await A.call('leagueCreate', { name: 'Burraco del giovedì', period: 'settimana' });
     assert(lc.ok && lc.id, 'campionato creato');
     assert((await A.call('leagueAdd', { id: lc.id, nick: 'Bruno' })).ok);
@@ -814,6 +815,7 @@ async function signup(p, nick, email = mailOf()) {
     const TT = player('Tornista'); await TT.hello(); { const rt = await signup(TT, 'Tornista'); assert(rt.ok, 'nickname: ' + rt.error); }
     TT.match = null;
     TT.sock.on('tournamentMatch', (x) => { TT.match = x; });
+    assert(!(await TT.call('tournamentCreate', { name: 'Coppa Stronzi', game: 'briscola', size: 4 })).ok, 'nome volgare del torneo rifiutato');
     const tc = await TT.call('tournamentCreate', { name: 'Coppa di prova', game: 'briscola', size: 4 });
     assert(tc.ok && tc.id, 'torneo creato');
     assert(!(await TT.call('tournamentStart', { id: tc.id })).ok, 'servono 4 iscritti');

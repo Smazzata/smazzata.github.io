@@ -1,10 +1,10 @@
 // Service worker: notifiche e copia del gioco per giocare anche senza internet.
 // "Prima la rete": da collegati si usa sempre la versione più recente (e se ne salva una copia);
 // senza rete si usa l'ultima copia salvata. La connessione di gioco (socket.io) non passa mai dalla copia.
-const CACHE = 'burraco-gioco-v39';
+const CACHE = 'burraco-gioco-v40';
 const SHELL = [
   './', 'index.html', 'intro.css', 'style.css', 'fonts/nunito.woff2', 'fonts/playfair.woff2',
-  'js/lingue.js', 'lingue/en.js', 'lingue/es.js', 'lingue/pt.js', 'js/base.js', 'js/connessione.js', 'js/voce.js', 'js/carte.js', 'js/ui.js', 'js/profilo.js', 'js/tutorial.js', 'js/schermate.js', 'js/tavolo.js', 'js/animazioni.js', 'js/finestre.js', 'js/moviola.js', 'js/azioni.js', 'js/comandi.js', 'local-server.js', 'engine.js',
+  'js/lingue.js', 'lingue/en.js', 'lingue/es.js', 'lingue/pt.js', 'js/base.js', 'js/connessione.js', 'js/carte.js', 'js/ui.js', 'js/profilo.js', 'js/tutorial.js', 'js/schermate.js', 'js/tavolo.js', 'js/animazioni.js', 'js/finestre.js', 'js/moviola.js', 'js/azioni.js', 'js/comandi.js', 'local-server.js', 'engine.js',
   'shared/rules.js', 'shared/melds.js', 'shared/scala40.js', 'shared/ramino.js', 'shared/canasta.js', 'shared/scopa.js', 'shared/briscola.js', 'shared/tressette.js', 'shared/rubamazzetto.js', 'shared/briscola5.js', 'shared/premi.js', 'icon.svg', 'manifest.webmanifest', 'privacy.html', 'regole.html', 'icons/icon-192.png',
 ];
 

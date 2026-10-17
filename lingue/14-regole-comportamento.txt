@@ -4,3 +4,15 @@ Ho almeno 14 anni e accetto le regole ‖ I am at least 14 years old and accept 
 Regole di comportamento ‖ Code of conduct ‖ Normas de conducta ‖ Regras de conduta
 Per creare un profilo devi avere almeno 14 anni e accettare le regole ‖ To create a profile you must be at least 14 years old and accept the rules ‖ Para crear un perfil debes tener al menos 14 años y aceptar las reglas ‖ Para criar um perfil você precisa ter pelo menos 14 anos e aceitar as regras
 Nickname non permesso dalle regole ‖ Nickname not allowed by the rules ‖ Apodo no permitido por las reglas ‖ Apelido não permitido pelas regras
+Nome non permesso dalle regole ‖ Name not allowed by the rules ‖ Nombre no permitido por las reglas ‖ Nome não permitido pelas regras
+La chat è bloccata per te perché non hai rispettato le regole di comportamento ‖ Chat is blocked for you because you did not follow the code of conduct ‖ El chat está bloqueado para ti porque no respetaste las normas de conducta ‖ O chat está bloqueado para você porque não respeitou as regras de conduta
+🔇 La chat è bloccata per te fino al {0} perché non hai rispettato le ‖ 🔇 Chat is blocked for you until {0} because you did not follow the ‖ 🔇 El chat está bloqueado para ti hasta el {0} porque no respetaste las ‖ 🔇 O chat está bloqueado para você até {0} porque não respeitou as
+🔇 La chat è bloccata per te perché non hai rispettato le ‖ 🔇 Chat is blocked for you because you did not follow the ‖ 🔇 El chat está bloqueado para ti porque no respetaste las ‖ 🔇 O chat está bloqueado para você porque não respeitou as
+regole di comportamento ‖ code of conduct ‖ normas de conducta ‖ regras de conduta
+⚠️ Avviso del gestore ‖ ⚠️ Warning from the administrator ‖ ⚠️ Aviso del administrador ‖ ⚠️ Aviso do administrador
+Il tuo nickname non rispettava le regole ed è stato cambiato in ‖ Your nickname did not follow the rules and has been changed to ‖ Tu apodo no respetaba las reglas y se ha cambiado a ‖ Seu apelido não respeitava as regras e foi alterado para
+. Puoi sceglierne uno nuovo dal profilo. ‖ . You can choose a new one in your profile. ‖ . Puedes elegir uno nuevo en tu perfil. ‖ . Você pode escolher um novo no seu perfil.
+Il tuo comportamento nel gioco non ha rispettato le regole di comportamento. ‖ Your behaviour in the game did not follow the code of conduct. ‖ Tu comportamiento en el juego no respetó las normas de conducta. ‖ Seu comportamento no jogo não respeitou as regras de conduta.
+Se succede di nuovo, la chat può essere bloccata o il profilo eliminato. ‖ If it happens again, your chat may be blocked or your profile deleted. ‖ Si vuelve a pasar, el chat puede ser bloqueado o el perfil eliminado. ‖ Se acontecer de novo, o chat pode ser bloqueado ou o perfil excluído.
+Leggi le regole di comportamento ‖ Read the code of conduct ‖ Lee las normas de conducta ‖ Leia as regras de conduta
+Ho capito ‖ I understand ‖ Entendido ‖ Entendi

@@ -11,6 +11,7 @@
 const SIZES = [4, 8, 16];
 const GAMES = ['burraco', 'scala40', 'canasta', 'scopa', 'briscola', 'tressette', 'rubamazzetto'];
 const { nomeComputer } = require('./nomi-computer');
+const Parole = require('../shared/parole');
 
 module.exports = function createTournaments({ tournaments, nickOf, openMatch, simulate, notify, champion }) {
   const newId = () => {
@@ -25,6 +26,7 @@ module.exports = function createTournaments({ tournaments, nickOf, openMatch, si
   function create(owner, { name, game, size }) {
     const nm = String(name || '').replace(/[<>]/g, '').trim().slice(0, 30);
     if (nm.length < 3) err('Dai un nome al torneo (almeno 3 caratteri)');
+    if (Parole.contiene(nm)) err('Nome non permesso dalle regole');
     if (!GAMES.includes(game)) err('Gioco non valido');
     if (!SIZES.includes(Number(size))) err('Numero di partecipanti non valido');
     if ([...tournaments.values()].filter((t) => t.owner === owner && t.status !== 'finito').length >= 2) err('Hai già due tornei aperti');

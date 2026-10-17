@@ -4,6 +4,7 @@
  * Contano le partite finite in cui siedono almeno due membri: 3 punti a chi vince, 1 a chi partecipa.
  * A fine stagione il primo entra nell'albo d'oro (e riceve un trofeo), poi la classifica riparte da zero.
  */
+const Parole = require('../shared/parole');
 const DAY = 24 * 3600 * 1000;
 const MAX_MEMBERS = 20;
 const MAX_PER_PLAYER = 5;
@@ -50,6 +51,7 @@ module.exports = function createLeagues({ leagues, nickOf }) {
   function create(owner, name, period) {
     const nm = String(name || '').replace(/[<>]/g, '').trim().slice(0, 30);
     if (nm.length < 3) throw new Error('Dai un nome al campionato (almeno 3 caratteri)');
+    if (Parole.contiene(nm)) throw new Error('Nome non permesso dalle regole');
     if (!['settimana', 'mese'].includes(period)) throw new Error('Durata non valida');
     if (mine(owner).length >= MAX_PER_PLAYER) throw new Error(`Puoi far parte di al massimo ${MAX_PER_PLAYER} campionati`);
     const id = newId();

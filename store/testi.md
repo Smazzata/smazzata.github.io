@@ -22,7 +22,7 @@ Ogni regola si può personalizzare: obiettivo, matte, pozzetti, punteggi e molto
 
 👥 CON GLI AMICI
 • Crea un tavolo e invita gli amici con un link o un codice
-• Profilo con nickname, amici, inviti e chat (anche messaggi vocali)
+• Profilo con nickname, amici, inviti e chat
 • Partite «con calma»: ognuno gioca quando può, ti avvisiamo quando tocca a te
 • Tornei a eliminazione e campionati tra amici
 • Classifica con punteggio di bravura (Elo) e «Gioca subito» con giocatori del tuo livello
@@ -64,7 +64,7 @@ Every rule can be customised: target score, wild cards, kitties, scoring and muc
 
 👥 WITH FRIENDS
 • Create a table and invite friends with a link or a code
-• Profile with nickname, friends, invitations and chat (voice messages too)
+• Profile with nickname, friends, invitations and chat
 • "Slow" games: everyone plays when they can, we tell you when it is your turn
 • Knockout tournaments and leagues with friends
 • Rankings with a skill rating (Elo) and "Play now" with players of your level
@@ -106,7 +106,7 @@ Cada regla se puede personalizar: objetivo, comodines, muertos, puntuación y mu
 
 👥 CON AMIGOS
 • Crea una mesa e invita a tus amigos con un enlace o un código
-• Perfil con apodo, amigos, invitaciones y chat (también mensajes de voz)
+• Perfil con apodo, amigos, invitaciones y chat
 • Partidas «con calma»: cada uno juega cuando puede, te avisamos cuando te toca
 • Torneos de eliminación y ligas entre amigos
 • Clasificación con puntuación de habilidad (Elo) y «Jugar ya» con jugadores de tu nivel
@@ -148,7 +148,7 @@ Cada regra pode ser personalizada: objetivo, curingas, mortos, pontuação e mui
 
 👥 COM OS AMIGOS
 • Crie uma mesa e convide os amigos com um link ou um código
-• Perfil com apelido, amigos, convites e chat (também mensagens de voz)
+• Perfil com apelido, amigos, convites e chat
 • Partidas «sem pressa»: cada um joga quando pode, avisamos quando for sua vez
 • Torneios eliminatórios e ligas entre amigos
 • Ranking com pontuação de habilidade (Elo) e «Jogar agora» com jogadores do seu nível

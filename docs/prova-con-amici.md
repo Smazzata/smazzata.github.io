@@ -10,8 +10,6 @@ Segna ✅ o ❌ accanto a ogni punto; se qualcosa non va, una foto dello schermo
 ## 2. Tavolo insieme (3 minuti)
 - [ ] Uno crea un tavolo (Nuova partita → Crea tavolo e invita amici) e manda il link o il codice.
 - [ ] L'altro entra; si riempie il resto con il computer e si avvia.
-- [ ] **Messaggio vocale**: tieni premuto 🎤 (accanto a 😊), parla, lascia. Sull'altro telefono si sente e compare in 💬.
-  La prima volta il telefono chiede il permesso del microfono: va concesso.
 - [ ] Una reazione rapida (😊) arriva all'altro.
 
 ## 3. Schermo piccolo (2 minuti, sul telefono più piccolo)

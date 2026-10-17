@@ -246,20 +246,6 @@ eliminato ‖ out ‖ eliminado ‖ eliminado
 scope 🧹 ‖ sweeps 🧹 ‖ escobas 🧹 ‖ escopas 🧹
 Tu ‖ You ‖ Tú ‖ Você
 Tu: ‖ You: ‖ Tú: ‖ Você:
-# messaggi vocali
-lascia per inviare ‖ release to send ‖ suelta para enviar ‖ solte para enviar
-Tieni premuto per parlare ‖ Hold to talk ‖ Mantén pulsado para hablar ‖ Segure para falar
-Tieni premuto 🎤 mentre parli ‖ Hold 🎤 while you talk ‖ Mantén pulsado 🎤 mientras hablas ‖ Segure 🎤 enquanto fala
-Su questo dispositivo i messaggi vocali non sono disponibili ‖ Voice messages are not available on this device ‖ Los mensajes de voz no están disponibles en este dispositivo ‖ As mensagens de voz não estão disponíveis neste aparelho
-Serve il permesso del microfono per i messaggi vocali ‖ Voice messages need microphone permission ‖ Los mensajes de voz necesitan permiso del micrófono ‖ As mensagens de voz precisam da permissão do microfone
-Registrazione non riuscita ‖ Recording failed ‖ La grabación falló ‖ A gravação falhou
-🎤 Messaggio inviato ‖ 🎤 Message sent ‖ 🎤 Mensaje enviado ‖ 🎤 Mensagem enviada
-Tocca 💬 per ascoltare il messaggio ‖ Tap 💬 to listen to the message ‖ Toca 💬 para escuchar el mensaje ‖ Toque em 💬 para ouvir a mensagem
-Solo chi è seduto al tavolo può mandare messaggi vocali ‖ Only seated players can send voice messages ‖ Solo quien está sentado en la mesa puede enviar mensajes de voz ‖ Só quem está sentado à mesa pode enviar mensagens de voz
-Messaggio vocale vuoto ‖ Empty voice message ‖ Mensaje de voz vacío ‖ Mensagem de voz vazia
-Messaggio vocale troppo lungo ‖ Voice message too long ‖ Mensaje de voz demasiado largo ‖ Mensagem de voz longa demais
-Formato audio non supportato ‖ Audio format not supported ‖ Formato de audio no compatible ‖ Formato de áudio não suportado
-Aspetta un attimo prima del prossimo messaggio ‖ Wait a moment before the next message ‖ Espera un momento antes del próximo mensaje ‖ Espere um pouco antes da próxima mensagem
 Scrivi un messaggio ‖ Write a message ‖ Escribe un mensaje ‖ Escreva uma mensagem
 Tocca un gioco per attaccare le carte selezionate ‖ Tap a meld to lay off the selected cards ‖ Toca una combinación para añadir las cartas seleccionadas ‖ Toque num jogo para encaixar as cartas selecionadas
 Tocca un gioco per vederlo intero ‖ Tap a meld to see it in full ‖ Toca una combinación para verla entera ‖ Toque num jogo para vê-lo inteiro

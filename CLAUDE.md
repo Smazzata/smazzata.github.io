@@ -22,7 +22,7 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 - `server/engine.js` — motore autoritativo, stato JSON puro; `apply()` è transazionale (in caso di errore ripristina). Le giocate NON si annullano; da vulnerabili una calata sotto i 75 punti è rifiutata.
 - `server/bot.js` — computer a quattro livelli (`memo.level`: facile/normale/difficile/esperto; l'esperto ricorda le carte raccolte, `g.known`).
 - `server/social.js` — profili: nickname univoco, password obbligatoria (scrypt), codice di recupero/QR, email facoltativa confermata con codice (invio da `server/posta.js` col Gmail del gioco, credenziali in `~/.burraco-mail` scritte con `android-server.sh --set-mail`; nelle prove `MAIL_TEST=1`), recupero password via email o codice, una chiave per dispositivo (cambiando password gli altri vengono scollegati), amici, inviti, eliminazione profilo. `ACCOUNTS_EPOCH` in `server/archivio.js` azzera i profili se alzato.
-- Regole e prudenza legale: `public/regole.html` (regole di comportamento), età minima 14 anni (spunta alla creazione del profilo, controllata anche da `server/social.js`: `adult: true` in `startSignup`/`setNick`), filtro delle parolacce `shared/parole.js` (nickname rifiutati, chat con asterischi; tre gruppi OVUNQUE/INIZIO/PAROLA + SALVE per evitare i falsi positivi, prove in `selftest.js`).
+- Regole e prudenza legale: `public/regole.html` (regole di comportamento), età minima 14 anni (spunta alla creazione del profilo, controllata anche da `server/social.js`: `adult: true` in `startSignup`/`setNick`), moderazione dalla pagina di stato (`adminModerate` in social.js: avviso, chat bloccata, nickname cambiato, profilo eliminato), chi blocca non riceve la chat del bloccato, filtro delle parolacce `shared/parole.js` (nickname e nomi di tornei/campionati rifiutati, chat con asterischi; tre gruppi OVUNQUE/INIZIO/PAROLA + SALVE per evitare i falsi positivi, prove in `selftest.js`).
 - `server/index.js` — avvio: Express, Socket.IO, collega i moduli. I moduli condividono stato e funzioni tramite `server/contesto.js` (ognuno si registra con `Object.assign(ctx, {...})` e chiama gli altri con piccoli "rimandi" `(...a) => ctx.f(...a)`):
   `config.js` (impostazioni), `admin.js` (/health, pagina di stato), `tavoli.js` (tavoli, posti, stato ai giocatori, pronto, avvio), `turni.js` (timer, computer, reazioni),
   `statistiche.js` (classifica, trofei, sfida del giorno), `gare.js` (campionati, tornei), `archivio.js` (salvataggio/ripristino),
@@ -44,7 +44,7 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 
 ## Funzioni principali (oltre al gioco)
 Punteggio Elo per gioco (`server/elo.js`), premi da sbloccare (titoli, cornici, dorsi: `shared/premi.js`), accessibilità (testo grande,
-alto contrasto, senza animazioni, mosse lette ad alta voce), messaggi vocali (`public/js/voce.js`), materiale Play Store in `store/`.
+alto contrasto, senza animazioni, mosse lette ad alta voce), materiale Play Store in `store/`. I messaggi vocali sono stati tolti (niente microfono).
 Profili (nickname univoco, codice/QR, password facoltativa, avatar, eliminazione), amici (richieste, blocco, inviti, scheda con partite insieme),
 statistiche e storico sul server, classifica (tutti / amici), spettatori, Gioca subito (tavoli veloci), mini-torneo (al meglio di 3/5),
 tutorial "Impara a giocare" con partita di allenamento e allenatore, musica Spotify, timer del turno, rivincita, reazioni rapide,

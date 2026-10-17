@@ -20,6 +20,8 @@ const CODE_ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 /** età minima per un profilo (in Italia l'età del consenso digitale): chi lo crea lo dichiara con la spunta */
 const ETA_MINIMA = 14;
 const NO_ETA = `Per creare un profilo devi avere almeno ${ETA_MINIMA} anni e accettare le regole`;
+/** chat bloccata «per sempre» (un numero, così si salva in JSON) */
+const CHAT_BAN_FOREVER = 8.64e15;
 const RESERVED = new Set(['admin', 'host', 'bot', 'computer', 'burraco', 'tu', 'server']);
 const AVATAR_EMOJI = ['😀', '😎', '🤠', '🥳', '😇', '🤓', '🧐', '😺', '🐶', '🦊', '🐻', '🐼', '🐸', '🦁', '🐯', '🐵', '🦄', '🐙', '🦉', '🐢', '🌻', '🍀', '⭐', '🔥', '♠️', '♥️', '♦️', '♣️'];
 const AVATAR_COLORS = ['#f2c14e', '#64b5f6', '#ef7d7d', '#81c784', '#ba68c8', '#ffb74d', '#4dd0e1', '#e0e0e0'];
@@ -183,6 +185,80 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     return ensureCode(token);
   }
 
+  /** Elimina il profilo: libera il nickname, cancella codice, password, email, amicizie e blocchi */
+  function deleteProfileOf(token) {
+    const s = sess(token);
+    for (const t of [...s.friends, ...s.reqIn, ...s.reqOut]) {
+      const o = withLists(sessions.get(t));
+      if (!o) continue;
+      o.friends = o.friends.filter((x) => x !== token);
+      o.reqIn = o.reqIn.filter((x) => x !== token);
+      o.reqOut = o.reqOut.filter((x) => x !== token);
+      push(t);
+    }
+    if (s.nick) nickIndex.delete(s.nick.toLowerCase());
+    if (s.code) codeIndex.delete(s.code);
+    if (s.email) emailIndex.delete(s.email);
+    delete s.nick; delete s.code; delete s.pw; delete s.avatar; delete s.email; delete s.emailCode; delete s.resetCode; delete s.terms;
+    delete s.warn; delete s.chatBan;
+    s.friends = []; s.reqIn = []; s.reqOut = []; s.blocked = []; s.name = 'Giocatore';
+    if (onDelete) onDelete(token);
+    push(token);
+  }
+
+  /** nickname libero «Giocatore1234» per chi aveva un nickname non permesso */
+  function freeNick() {
+    for (;;) {
+      const n = 'Giocatore' + (1000 + crypto.randomInt(9000));
+      if (!nickIndex.has(n.toLowerCase())) return n;
+    }
+  }
+
+  /**
+   * Moderazione dal gestore (pagina di stato), secondo le regole di comportamento:
+   *  avviso · chat bloccata 7 giorni o per sempre · chat sbloccata · nickname cambiato · profilo eliminato.
+   * Restituisce una frase per il gestore (null se il nickname non esiste).
+   */
+  function adminModerate(nick, action) {
+    const token = nickIndex.get(String(nick || '').toLowerCase());
+    if (!token) return null;
+    const s = sess(token);
+    const name = s.nick;
+    switch (action) {
+      case 'avviso':
+        s.warn = { at: Date.now(), seen: false };
+        push(token);
+        return `${name} riceverà un avviso appena apre il gioco.`;
+      case 'muta7':
+        s.chatBan = Date.now() + 7 * 86400000;
+        push(token);
+        return `Chat bloccata per 7 giorni a ${name}.`;
+      case 'muta':
+        s.chatBan = CHAT_BAN_FOREVER;
+        push(token);
+        return `Chat bloccata per sempre a ${name}.`;
+      case 'smuta':
+        delete s.chatBan;
+        push(token);
+        return `Chat di nuovo attiva per ${name}.`;
+      case 'rinomina': {
+        const n = freeNick();
+        nickIndex.delete(name.toLowerCase());
+        s.nick = n; s.name = n;
+        nickIndex.set(n.toLowerCase(), token);
+        s.warn = { at: Date.now(), seen: false, renamed: true };
+        renamePlayer(token, n);
+        push(token); pushFriends(token);
+        return `${name} ora si chiama ${n} (riceve un avviso e può scegliere un nickname nuovo dal profilo).`;
+      }
+      case 'elimina':
+        deleteProfileOf(token);
+        return `Profilo ${name} eliminato.`;
+      default:
+        return 'Azione sconosciuta';
+    }
+  }
+
   /** Stato social del profilo, inviato a tutti i suoi dispositivi */
   function socialView(token) {
     const s = withLists(sessions.get(token));
@@ -197,6 +273,9 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       hasEmail: !!s.email,
       emailPending: !s.email && s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null,
       avatar: s.avatar || null,
+      // moderazione: avviso del gestore da leggere, chat bloccata (fino a quando)
+      warn: s.warn && !s.warn.seen ? { renamed: !!s.warn.renamed } : null,
+      chatBan: s.chatBan && s.chatBan > Date.now() ? (s.chatBan >= CHAT_BAN_FOREVER ? 'sempre' : s.chatBan) : null,
       friends: s.friends.filter((t) => nickOf(t)).map(entry).sort((a, b) => b.online - a.online || a.nick.localeCompare(b.nick)),
       reqIn: s.reqIn.map(nickOf).filter(Boolean),
       reqOut: s.reqOut.map(nickOf).filter(Boolean),
@@ -454,23 +533,15 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
 
     // Elimina il profilo: libera il nickname, cancella codice, password e amicizie
     socket.on('deleteProfile', handler(() => {
-      const token = me();
-      const s = sess(token);
-      for (const t of [...s.friends, ...s.reqIn, ...s.reqOut]) {
-        const o = withLists(sessions.get(t));
-        if (!o) continue;
-        o.friends = o.friends.filter((x) => x !== token);
-        o.reqIn = o.reqIn.filter((x) => x !== token);
-        o.reqOut = o.reqOut.filter((x) => x !== token);
-        push(t);
-      }
-      if (s.nick) nickIndex.delete(s.nick.toLowerCase());
-      if (s.code) codeIndex.delete(s.code);
-      if (s.email) emailIndex.delete(s.email);
-      delete s.nick; delete s.code; delete s.pw; delete s.avatar; delete s.email; delete s.emailCode; delete s.resetCode; delete s.terms;
-      s.friends = []; s.reqIn = []; s.reqOut = []; s.blocked = []; s.name = 'Giocatore';
-      if (onDelete) onDelete(token);
-      push(token);
+      deleteProfileOf(me());
+      return {};
+    }));
+
+    // avviso del gestore letto: non si mostra più
+    socket.on('warnSeen', handler(() => {
+      const s = sess(me());
+      if (s.warn) s.warn.seen = true;
+      push(me());
       return {};
     }));
 
@@ -563,5 +634,5 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     }));
   }
 
-  return { keyHash, newDevice, resolveDevice, rebuildIndexes, register, push, pushFriends, socialView, checkNick, adminNewCode, nicks: () => [...nickIndex.values()].map(nickOf).filter(Boolean).sort((a, b) => a.localeCompare(b)) };
+  return { keyHash, newDevice, resolveDevice, rebuildIndexes, register, push, pushFriends, socialView, checkNick, adminNewCode, adminModerate, nicks: () => [...nickIndex.values()].map(nickOf).filter(Boolean).sort((a, b) => a.localeCompare(b)) };
 };

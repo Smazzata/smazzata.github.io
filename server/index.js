@@ -89,7 +89,7 @@ io.on('connection', (socket) => {
     } catch (e) { failed(e); }
   };
 
-  socket.on('hello', handler(({ token: key, name, voice, lang, remind }) => {
+  socket.on('hello', handler(({ token: key, name, lang, remind }) => {
     // il dispositivo ha una sua chiave (che si può revocare), collegata al profilo
     let token = key ? social.resolveDevice(key) : null;
     if (!token) {
@@ -101,7 +101,6 @@ io.on('connection', (socket) => {
     const sess = sessions.get(token);
     // con un nickname il nome mostrato è sempre quello
     if (sess.nick) sess.name = sess.nick; else if (name) sess.name = cleanName(name);
-    if (typeof voice === 'boolean') sess.voice = voice;
     if (typeof remind === 'boolean') sess.remind = remind;
     // lingua del dispositivo: le email arrivano in questa lingua
     if (require('./posta').LANGS.includes(lang)) sess.lang = lang;

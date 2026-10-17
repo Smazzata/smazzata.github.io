@@ -43,9 +43,9 @@ jobs:
           npx cap add android
           # il Play Store accetta solo app per Android 16 (API 36) o più recenti
           grep -E 'targetSdkVersion = (3[6-9]|[4-9][0-9])' android/variables.gradle
-          # microfono per i messaggi vocali al tavolo, vibrazione per il feedback tattile
-          sed -i 's#<uses-permission android:name="android.permission.INTERNET" />#&\n    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-permission android:name="android.permission.VIBRATE" />#' android/app/src/main/AndroidManifest.xml
-          grep RECORD_AUDIO android/app/src/main/AndroidManifest.xml
+          # vibrazione per il feedback tattile (niente microfono: i messaggi vocali sono stati tolti)
+          sed -i 's#<uses-permission android:name="android.permission.INTERNET" />#&\n    <uses-permission android:name="android.permission.VIBRATE" />#' android/app/src/main/AndroidManifest.xml
+          if grep -q RECORD_AUDIO android/app/src/main/AndroidManifest.xml; then echo "microfono non previsto"; exit 1; fi
           grep VIBRATE android/app/src/main/AndroidManifest.xml
           # icone dell'app (sostituiscono quelle predefinite di Capacitor)
           rm -rf android/app/src/main/res/mipmap-anydpi-v26

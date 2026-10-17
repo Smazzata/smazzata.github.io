@@ -883,12 +883,6 @@ body.vmelds .felt > .teamzone.theirs { flex: 1 1 auto; }
 .tutgames { flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
 .tutgames .swatch { font-size: 12px; padding: 4px 8px; }
 
-/* messaggi vocali */
-.voicebtn { -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; touch-action: none; }
-.voicerec { position: fixed; left: 50%; top: 40%; transform: translate(-50%, -50%); z-index: 90; background: rgba(0,0,0,.82); color: #fff;
-  padding: 12px 18px; border-radius: 999px; font-weight: 700; font-size: 15px; pointer-events: none; animation: voicepulse 1s ease-in-out infinite alternate; }
-@keyframes voicepulse { from { box-shadow: 0 0 0 0 rgba(231,76,60,.6); } to { box-shadow: 0 0 0 10px rgba(231,76,60,0); } }
-.voiceplay { padding: 2px 8px; }
 
 /* schermi piccoli: quando le carte del tavolo non ci stanno si stringono le righe intorno (vedi fitTable) */
 .tight1 .scorebar { padding-top: 3px; }

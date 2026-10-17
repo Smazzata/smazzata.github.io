@@ -10,8 +10,6 @@ const Daily = require('./daily');
 const Parole = require('../shared/parole');
 const { BOT_SPEEDS } = require('./config');
 const ctx = require('./contesto');
-/** dimensione massima di un messaggio vocale (15 secondi di voce compressa stanno in ~60 KB) */
-const VOICE_MAX = 300 * 1024;
 const { io, sessions, rooms, daily } = ctx;
 /** motore e computer del gioco di questo tavolo */
 const GE = (room) => Games.of(room).E;
@@ -421,6 +419,9 @@ module.exports.register = function register(socket, handler) {
 
   socket.on('chat', handler(({ text }) => {
     const room = getRoom(socket);
+    // chat bloccata dal gestore (regole di comportamento, pagina di stato)
+    const ban = (sessions.get(socket.data.token) || {}).chatBan;
+    if (ban && ban > Date.now()) throw new E.GameError('La chat è bloccata per te perché non hai rispettato le regole di comportamento');
     // le parole vietate dalle regole (shared/parole.js) arrivano agli altri coperte da asterischi
     const t = Parole.censura(String(text || '').replace(/[<>]/g, '').trim().slice(0, 140));
     if (!t) return;
@@ -428,34 +429,12 @@ module.exports.register = function register(socket, handler) {
     const name = seat >= 0 ? room.seats[seat].name : 'Ospite';
     // ultimi messaggi solo in memoria (mai salvati): servono se qualcuno segnala un giocatore
     room.chatLog = [...(room.chatLog || []), { at: Date.now(), name, text: t }].slice(-30);
-    io.to(room.code).emit('chat', { name, text: t, seat });
-  }));
-
-  // Messaggi vocali: si tiene premuto 🎤, il registrato (max 15 s) arriva agli altri al tavolo.
-  // Il server lo inoltra soltanto: non viene mai salvato.
-  socket.on('voice', handler(({ audio, mime, ms } = {}) => {
-    const room = getRoom(socket);
-    const seat = seatOfToken(room, socket.data.token);
-    if (seat < 0) throw new E.GameError('Solo chi è seduto al tavolo può mandare messaggi vocali');
-    const buf = Buffer.isBuffer(audio) ? audio : audio instanceof ArrayBuffer ? Buffer.from(audio) : null;
-    if (!buf || buf.length < 200) throw new E.GameError('Messaggio vocale vuoto');
-    if (buf.length > VOICE_MAX) throw new E.GameError('Messaggio vocale troppo lungo');
-    const type = String(mime || '');
-    if (!/^audio\/(webm|ogg|mp4|mpeg|aac)(;[\w=.,\s-]*)?$/.test(type)) throw new E.GameError('Formato audio non supportato');
-    const now = Date.now();
-    if (socket.data.lastVoice && now - socket.data.lastVoice < 2000) throw new E.GameError('Aspetta un attimo prima del prossimo messaggio');
-    const name = room.seats[seat].name;
-    const dur = Math.max(0, Math.min(15000, Number(ms) || 0));
-    // arriva solo a chi è seduto, ha i vocali attivi e non ha silenziato chi parla
-    const to = [];
-    room.seats.forEach((x, i) => {
-      if (!x || x.isBot || i === seat || (sessions.get(x.token) || {}).voice === false || (x.muted || []).includes(seat)) return;
-      for (const sk of socketsOf(x.token)) if (sk.data.room === room.code) to.push(sk);
-    });
-    if (!to.length) throw new E.GameError('Nessuno al tavolo può ascoltare i vocali in questo momento');
-    socket.data.lastVoice = now;
-    room.chatLog = [...(room.chatLog || []), { at: now, name, text: '🎤 messaggio vocale' }].slice(-30);
-    for (const sk of to) sk.emit('voice', { seat, name, audio: buf, mime: type, ms: dur });
+    // non arriva a chi ha bloccato chi scrive
+    for (const id of io.sockets.adapter.rooms.get(room.code) || []) {
+      const sk = io.sockets.sockets.get(id);
+      if (!sk || ((sessions.get(sk.data.token) || {}).blocked || []).includes(socket.data.token)) continue;
+      sk.emit('chat', { name, text: t, seat });
+    }
   }));
 
   /*
@@ -491,26 +470,5 @@ module.exports.register = function register(socket, handler) {
     const sess = sessions.get(socket.data.token);
     if (sess) sess.remind = !!on;
     return {};
-  }));
-
-  // Vocali: attivati o no nelle impostazioni personali (vale per tutti i tavoli)
-  socket.on('voicePref', handler(({ on } = {}) => {
-    const sess = sessions.get(socket.data.token);
-    if (!sess) return;
-    sess.voice = !!on;
-    if (sess.room && rooms.has(sess.room)) broadcast(rooms.get(sess.room));
-  }));
-
-  // Silenziare un giocatore al tavolo: i suoi vocali non arrivano più (lui non lo sa)
-  socket.on('voiceMute', handler(({ seat: other, on } = {}) => {
-    const room = getRoom(socket);
-    const seat = seatOfToken(room, socket.data.token);
-    if (seat < 0) throw new E.GameError('Solo chi è seduto al tavolo può farlo');
-    const o = Number(other);
-    if (!Number.isInteger(o) || o === seat || !room.seats[o]) throw new E.GameError('Giocatore non valido');
-    const me = room.seats[seat];
-    me.muted = (me.muted || []).filter((x) => x !== o);
-    if (on) me.muted.push(o);
-    broadcast(room);
   }));
 };

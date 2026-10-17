@@ -35,7 +35,10 @@
    **Link per eliminare l'account** (richiesto da Google): https://smazzata.github.io/gioca/elimina-profilo.html
 7. **Classificazione dei contenuti** (questionario): niente violenza, niente acquisti, **niente gioco d'azzardo
    simulato** (nessun gioco con puntate o fiches: il Sette e mezzo è stato tolto apposta). Va invece dichiarato che
-   **gli utenti interagiscono** (chat, messaggi vocali, amici), con la possibilità di segnalare e bloccare.
+   **gli utenti interagiscono** (chat scritta e amici; niente messaggi vocali), con la possibilità di segnalare e bloccare.
+   L'app non chiede più il microfono: nessun dato audio da dichiarare in «Sicurezza dei dati».
+   Moderazione: dalla pagina di stato (`/stato?k=…`, colonna «Moderazione») il gestore manda un avviso, blocca la chat
+   (7 giorni o per sempre), cambia un nickname non permesso (🚩) o elimina il profilo.
 8. **Pubblico di destinazione**: 14 anni in su (in Italia è l'età del consenso digitale, e c'è la chat tra giocatori):
    alla creazione del profilo l'app chiede la spunta «Ho almeno 14 anni e accetto le regole», controllata anche dal server.
    Google non ha una fascia che parte da 14: scegli 13-15, 16-17 e 18+ e scrivi che l'app non è rivolta ai bambini.

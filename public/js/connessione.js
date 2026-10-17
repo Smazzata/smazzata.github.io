@@ -37,7 +37,7 @@
     if (S.lostConnection) toast('✓ Riconnesso');
     S.lostConnection = false;
     S.connected = true;
-    socket.emit('hello', { token: S.token, name: S.name, voice: S.prefs.voice !== false, lang: LANG, remind: S.prefs.remind !== false });
+    socket.emit('hello', { token: S.token, name: S.name, lang: LANG, remind: S.prefs.remind !== false });
   });
   socket.on('disconnect', () => {
     S.connected = false;
@@ -103,6 +103,8 @@
     // (dopo una registrazione invece si passa da lei con «Ho salvato il codice», senza interrompere)
     if (!S.launcherChecked) { S.launcherChecked = true; if (soc && soc.nick && !S.modalKind && syncLauncher()) return; }
     if (soc && soc.nick) { S.name = soc.nick; if (!OFFLINE) store.set('bur_name', soc.nick); }
+    // avviso del gestore (regole di comportamento): si mostra finché non si tocca «Ho capito»
+    if (soc && soc.warn && S.modalKind !== 'warn') { warnModal(soc.warn); return; }
     if (S.modalKind === 'friends') friendsModal();
     if (S.screen === 'home' || S.screen === 'lobby') render();
   });
@@ -139,7 +141,7 @@
     setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 500); }, Math.max(0, min - (Date.now() - INTRO_AT)));
   }
   socket.on('reaction', ({ seat, emoji }) => showSeatBubble(seat, emoji));
-  /** Una nuvoletta (reazione o 🎤) sopra il posto di un giocatore */
+  /** Una nuvoletta (reazione) sopra il posto di un giocatore */
   function showSeatBubble(seat, emoji) {
     const g = S.game;
     if (!g) return;

@@ -125,7 +125,6 @@
       settingsModal();
       if (S.screen === 'game') render();
       if (key === 'sound' && val) { Sound.unlock(); Sound.play('turn'); }
-      if (key === 'voice') { emit('voicePref', { on: val }); if (val) voiceAskPermission(); }
       if (key === 'remind') emit('setRemind', { on: val });
       if (key === 'notify' && val && canNotify && Notification.permission !== 'granted') {
         Notification.requestPermission().then((p) => {
@@ -227,11 +226,6 @@
     },
     signupBack() { S.signup = null; render(); },
     forgot(el, e) { if (e) e.preventDefault(); forgotModal(); },
-    async voiceMute(el) {
-      const on = el.dataset.on === '1';
-      const r = await emit('voiceMute', { seat: Number(el.dataset.seat), on });
-      if (r.ok) { closeModal(); toast(on ? `🔇 Non sentirai più i vocali di ${el.dataset.nick}` : `🔊 Senti di nuovo i vocali di ${el.dataset.nick}`); }
-    },
     async addFriendNick(el) {
       const r = await emit('friendRequest', { nick: el.dataset.nick });
       if (r.ok) { toast(`Richiesta inviata a ${el.dataset.nick}`); closeModal(); }
@@ -317,7 +311,7 @@
     b5Call(el) { act('call', { suit: el.dataset.s }); },
     zoomTeam(el) { S.zoomTeam = Number(el.dataset.team); zoomModal(); },
     quickChat(el) { emit('chat', { text: el.dataset.text }); },
-    playVoice(el) { const m = S.chat[Number(el.dataset.i)]; if (m && m.voice) playVoice(m.voice); },
+    async warnSeen() { closeModal(); await emit('warnSeen', {}); },
     scores: showScores,
     result: showResult,
     ready() { emit('ready'); },
