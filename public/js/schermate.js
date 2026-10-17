@@ -41,7 +41,8 @@
    * Il controllo si fa al massimo ogni 6 ore; «Più tardi» nasconde l'avviso per quella versione.
    */
   async function checkAppUpdate() {
-    if (!IN_APP || OFFLINE) return;
+    // l'app del Play Store si aggiorna dallo Store: niente avviso per scaricare l'APK (Google non lo permette)
+    if (!IN_APP || OFFLINE || /SmazzataStore/.test(navigator.userAgent)) return;
     let latest = null;
     const cached = store.get('bur_apk_latest', null);
     if (cached && Date.now() - cached.at < 6 * 3600 * 1000) latest = cached.n;

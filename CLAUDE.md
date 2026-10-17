@@ -36,7 +36,7 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
   impacchettati da `scripts/bundle-engine.js` (il server li offre su `/engine.js`). Si attiva da solo se socket.io non si carica,
   o con `?offline=1`. `scripts/build-pages.js` pubblica su GitHub Pages la pagina d'ingresso + una copia del gioco in `gioca/`;
   i service worker (`public/sw.js`, `launcher/sw.js`) salvano tutto sul dispositivo ("prima la rete").
-- `android-app/` — guscio Capacitor dell'APK (apre la pagina d'ingresso); `burraco.p12` è la chiave di firma fissa (non cambiarla: gli aggiornamenti non si installerebbero più).
+- `android-app/` — app Capacitor (APK e AAB): pagina d'ingresso e gioco senza internet sono dentro l'app (`www/`, generata con `npm run app:www`, origine `https://localhost`); da collegati porta al server sul tunnel come il sito. User agent `BurracoApp/N SmazzataLocale` (+ `SmazzataStore` nell'AAB: niente avviso di aggiornamento APK). `burraco.p12` è la chiave di firma fissa (non cambiarla: gli aggiornamenti non si installerebbero più).
 - `scripts/android-server.sh` — avvio sul telefono-server (Termux): dipendenze, aggiornamento da GitHub ogni 5 min, tunnel Cloudflare, pubblicazione dell'indirizzo (`--set-token`, `--install-boot`).
 
 ## Funzioni principali (oltre al gioco)

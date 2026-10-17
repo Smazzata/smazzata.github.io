@@ -19,6 +19,8 @@
    * con #tk=…; se qui il profilo è diverso, si passa un attimo da lei (#salva=…) per aggiornarla.
    */
   const ON_TUNNEL = /\.trycloudflare\.com$/.test(location.hostname);
+  // nell'app Android nuova la pagina d'ingresso è dentro l'app (https://localhost/), non sul sito
+  const launcherHome = () => (/SmazzataLocale/.test(navigator.userAgent) ? 'https://localhost/' : HOME_URL);
   const LAUNCHER = { came: /^#tk=/.test(location.hash), tk: (location.hash.match(/^#tk=([A-Za-z0-9]*)$/) || [])[1] || '' };
   if (LAUNCHER.came) {
     history.replaceState(null, '', location.pathname + location.search);
@@ -27,7 +29,7 @@
   function syncLauncher(token = S.token) {
     if (!ON_TUNNEL || OFFLINE || !token || (LAUNCHER.came && LAUNCHER.tk === token)) return false;
     try { if (sessionStorage.getItem('bur_sync') === token) return false; sessionStorage.setItem('bur_sync', token); } catch (e) { return false; }
-    location.replace(HOME_URL + '#salva=' + token);
+    location.replace(launcherHome() + '#salva=' + token);
     return true;
   }
   socket.on('connect', () => {
@@ -90,7 +92,7 @@
     store.set('bur_token', null);
     S.token = null;
     alert(reason || 'Sei stato scollegato dal profilo.');
-    if (ON_TUNNEL) location.replace(HOME_URL + '#salva=');
+    if (ON_TUNNEL) location.replace(launcherHome() + '#salva=');
     else location.reload();
   });
   socket.on('social', (soc) => {

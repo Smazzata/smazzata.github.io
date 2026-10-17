@@ -2,10 +2,11 @@
   "appId": "it.msf.burraco",
   "appName": "Smazzata",
   "webDir": "www",
-  "appendUserAgent": "BurracoApp",
+  "appendUserAgent": "BurracoApp SmazzataLocale",
   "backgroundColor": "#0f5132",
   "server": {
-    "url": "https://simonemuliello010500-web.github.io/BurracoByMSF/",
+    "androidScheme": "https",
+    "hostname": "localhost",
     "allowNavigation": [
       "*.trycloudflare.com",
       "simonemuliello010500-web.github.io"

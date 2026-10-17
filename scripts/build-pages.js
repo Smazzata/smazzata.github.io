@@ -4,6 +4,9 @@
  *   /         pagina d'ingresso (launcher/), che trova il server e ci porta i giocatori
  *   /gioca/   copia del gioco che funziona senza server: partite contro il computer, anche senza internet
  *   node scripts/build-pages.js [cartella di uscita, predefinita _site]
+ *
+ * Gli stessi file vanno anche dentro l'app Android (npm run app:www → android-app/www): la pagina d'ingresso
+ * e il gioco senza internet stanno nel telefono; da collegati la pagina porta al server come sul sito.
  */
 const fs = require('fs');
 const path = require('path');

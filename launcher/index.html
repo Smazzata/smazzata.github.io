@@ -102,6 +102,28 @@
       try { if (saveMatch[1]) localStorage.setItem(TK, saveMatch[1]); else localStorage.removeItem(TK); } catch (e) { /* niente memoria */ }
       history.replaceState(null, '', location.pathname + location.search);
     }
+    /*
+     * App Android nuova: questa pagina è dentro l'app (https://localhost/) e ha una memoria sua. Le app vecchie aprivano
+     * la pagina sul sito: la prima volta che si è collegati si passa un attimo dal sito (#porta), che rimanda qui
+     * il codice del profilo salvato (#salva=…), così aggiornando l'app non si perde il profilo.
+     */
+    const IN_APP_LOCAL = /SmazzataLocale/.test(navigator.userAgent);
+    const SITE = 'https://simonemuliello010500-web.github.io/BurracoByMSF/';
+    const APP_HOME = 'https://localhost/';
+    const MIGRATED = 'bur_profilo_portato';
+    if (IN_APP_LOCAL && location.hash === '#porta' && location.origin + location.pathname === SITE) {
+      let tk = '';
+      try { tk = localStorage.getItem(TK) || ''; } catch (e) { /* niente memoria */ }
+      location.replace(APP_HOME + '#salva=' + tk);
+    }
+    function needsMigration() {
+      if (!IN_APP_LOCAL || location.origin + '/' !== APP_HOME) return false;
+      try {
+        if (localStorage.getItem(MIGRATED) || localStorage.getItem(TK)) return false;
+        localStorage.setItem(MIGRATED, '1');
+        return true;
+      } catch (e) { return false; }
+    }
     function dest(url) {
       let tk = '';
       try { tk = localStorage.getItem(TK) || ''; } catch (e) { /* niente memoria */ }
@@ -112,6 +134,7 @@
     }
 
     async function go() {
+      if (location.hash === '#porta') return;
       $('retry').classList.add('hidden');
       $('offline').classList.add('hidden');
       $('spin').classList.remove('hidden');
@@ -120,7 +143,7 @@
       let last = null;
       try { last = localStorage.getItem(LAST); } catch (e) { /* niente memoria */ }
       if (last && await alive(last, 2500)) {
-        location.replace(dest(last));
+        location.replace(needsMigration() ? SITE + '#porta' : dest(last));
         return;
       }
       let url;
@@ -138,12 +161,13 @@
       }
       try { localStorage.setItem(LAST, url); } catch (e) { /* niente memoria */ }
       $('msg').textContent = 'Trovato! Entro al tavolo…';
-      location.replace(dest(url));
+      location.replace(needsMigration() ? SITE + '#porta' : dest(url));
     }
 
     $('retry').addEventListener('click', go);
     // copia della pagina e del gioco sul dispositivo: senza internet si gioca contro il computer
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+    // (nell'app Android i file sono già nel telefono: niente copia)
+    if ('serviceWorker' in navigator && !/SmazzataLocale/.test(navigator.userAgent)) navigator.serviceWorker.register('sw.js').catch(() => {});
     // nel browser Android si propone l'app; dentro l'app (user agent "BurracoApp") no
     // i tablet Android spesso si presentano come computer (Chrome «versione desktop»): Linux + schermo touch = Android
     const isAndroid = /android/i.test(navigator.userAgent)

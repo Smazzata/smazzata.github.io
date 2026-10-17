@@ -14,7 +14,8 @@
     "ui": "node server/uitest.js",
     "test:rapido": "node -e \"process.env.TEST_RAPIDO=1;require('./server/selftest.js')\"",
     "anim": "node server/animtest.js",
-    "suoni": "node scripts/suoni-wav.js"
+    "suoni": "node scripts/suoni-wav.js",
+    "app:www": "node scripts/build-pages.js android-app/www"
   },
   "engines": {
     "node": ">=18"
