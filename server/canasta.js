@@ -238,17 +238,23 @@ function discard(g, seat, cardId) {
   g.turnInfo = null;
 }
 
+/** Punti sul tavolo di una squadra (carte calate, canaste, tre rossi): a fine smazzata e come punteggio provvisorio */
+function meldScore(t) {
+  const meldPts = t.melds.reduce((s, m) => s + m.cards.reduce((a, c) => a + C.value(c), 0), 0);
+  const canastas = t.melds.filter((m) => m.length >= 7).map((m) => (m.wildCount
+    ? { kind: 'dirty', label: 'Canasta sporca', bonus: 300 } : { kind: 'clean', label: 'Canasta pulita', bonus: 500 }));
+  const bonusPts = canastas.reduce((s, k) => s + k.bonus, 0);
+  const reds = t.red3.length ? (t.red3.length === 4 ? 800 : t.red3.length * 100) * (t.melds.length ? 1 : -1) : 0;
+  return { meldPts, canastas, bonusPts, reds };
+}
+
 function endHand(g, reason, closer) {
   g.phase = 'handEnd';
   const cfg = g.cfg;
   const closerTeam = closer == null ? null : teamOf(g, closer);
   const concealed = closerTeam && g.turnInfo && !g.turnInfo.startHadMelds;
   const results = g.teams.map((t) => {
-    const meldPts = t.melds.reduce((s, m) => s + m.cards.reduce((a, c) => a + C.value(c), 0), 0);
-    const canastas = t.melds.filter((m) => m.length >= 7).map((m) => (m.wildCount
-      ? { kind: 'dirty', label: 'Canasta sporca', bonus: 300 } : { kind: 'clean', label: 'Canasta pulita', bonus: 500 }));
-    const bonusPts = canastas.reduce((s, k) => s + k.bonus, 0);
-    const reds = t.red3.length ? (t.red3.length === 4 ? 800 : t.red3.length * 100) * (t.melds.length ? 1 : -1) : 0;
+    const { meldPts, canastas, bonusPts, reds } = meldScore(t);
     const handPts = t.members.reduce((s, x) => s + g.players[x].hand.reduce((a, c) => a + C.value(c), 0), 0);
     const closePts = t === closerTeam ? cfg.goOut * (concealed ? 2 : 1) : 0;
     const total = meldPts + bonusPts + reds - handPts + closePts;
@@ -332,6 +338,7 @@ function viewFor(g, seat) {
     teams: g.teams.map((t) => ({
       id: t.id, members: t.members, red3: t.red3.length, minimum: C.minimum(teamScore(g, t)), opened: t.melds.length > 0,
       pozzettoTaken: false, closed: false, canClose: hasCanasta(t),
+      live: (({ meldPts, bonusPts, reds }) => meldPts + bonusPts + reds)(meldScore(t)),
       melds: t.melds.map((m) => ({ id: m.id, type: 'set', rank: m.rank, cards: m.cards, wild: m.wild, length: m.length, ...meldKind(m) })),
     })),
     stockCount: g.stock.length, discard: g.discard.slice(-1), discardCount: g.discard.length, pozzetti: [],

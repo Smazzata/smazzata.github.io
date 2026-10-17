@@ -102,6 +102,12 @@
     return out;
   }
 
+  /** Punteggio provvisorio della smazzata in corso (combinazioni calate), piccolo accanto al totale */
+  function liveHTML(g, t) {
+    if (!t || t.live == null || !t.live || g.phase === 'handEnd') return '';
+    return `<i class="live" title="Punti provvisori di questa smazzata: combinazioni calate">${t.live > 0 ? '+' : '−'}${Math.abs(t.live)}</i>`;
+  }
+
   /** Centro del tavolo per Scopa e Briscola */
   function presaCenterHTML(g) {
     const name = (s) => (s === g.you ? 'Tu' : g.players[s].name);
@@ -168,7 +174,7 @@
       <div class="ptrump">${g.stockCount ? `Mazzo <b>${g.stockCount}</b>` : 'Mazzo finito'} · briscola ${cardHTML(g.trump, g.stockCount ? '' : 'mini')}</div>
       <div class="ptrick">${trick.length ? trick.map((x) => `<span class="tc ${x.seat === winner ? 'win' : ''}">${cardHTML(x.card)}<span>${esc(name(x.seat))}</span></span>`).join('') : '<span class="empty">Tocca a chi apre il giro</span>'}</div>
       ${!g.trick.length && g.lastTrick ? `<div class="pinfo"><span>Ha preso <b>${esc(name(g.lastTrick.winner))}</b>${g.lastTrick.points ? ` · ${g.lastTrick.points} punti` : ''}</span></div>` : ''}
-      <div class="pinfo">${g.teams.map((t) => `<span>${teamLbl(t)}: <b>${t.taken}</b> carte prese</span>`).join('')}</div>
+      <div class="pinfo">${g.teams.map((t) => `<span>${teamLbl(t)}: <b>${t.taken}</b> carte prese${t.points != null ? ` · <b>${t.points}</b> punti` : ''}</span>`).join('')}</div>
     </div>`;
   }
 
@@ -276,7 +282,6 @@
 
   function seatHTML(g, seat, pos, myTeam) {
     const p = g.players[seat];
-    const t = g.teams.find((x) => x.members.includes(seat));
     const partner = myTeam && myTeam.members.includes(seat);
     const turn = g.turn === seat && g.phase !== 'handEnd';
     const fan = Array.from({ length: Math.min(p.handCount, 7) }, (_, i) => backHTML('tiny', `style="--i:${i}"`)).join('');
@@ -286,7 +291,7 @@
       ${avatarHTML(p.name, seat, p.isBot, rs && rs.avatar)}
       <div class="sinfo"><b ${rs && !rs.isBot && !p.isBot ? `data-act="playerMenu" data-nick="${esc(p.name)}"` : ''}>${esc(p.name)} ${lvlHTML(rs && rs.level)}</b>
         ${rs && rs.avatar && rs.avatar.t ? `<span class="stitle">${esc(rs.avatar.t)}</span>` : ''}
-        <span class="smeta">${p.out ? '❌ eliminato · ' : ''}${off ? '📴 ' : ''}${S.room && (S.room.muted || []).includes(seat) ? '<span title="silenziato">🔇</span> ' : ''}${partner ? '<span title="compagno">🤝</span> ' : ''}${p.handCount} carte${t && t.pozzettoTaken ? ` <span class="pz-ok" title="${g.cfg.pozzettoName} preso">✓ ${g.cfg.pozzettoName}</span>` : ''}</span></div>
+        <span class="smeta">${p.out ? '❌ eliminato · ' : ''}${off ? '📴 ' : ''}${S.room && (S.room.muted || []).includes(seat) ? '<span title="silenziato">🔇</span> ' : ''}${partner ? '<span title="compagno">🤝</span> ' : ''}${p.handCount} carte</span></div>
       <div class="minifan">${fan}</div>
       ${turn ? (S.turnEnd ? '<span class="thinking cdchip" data-cd></span>' : '<span class="thinking"><i></i><i></i><i></i></span>') : ''}
     </div>`;
@@ -308,12 +313,15 @@
     // punteggi
     let scores;
     if (isS40Game()) scores = g.players.map((p) => `<span class="sc ${p.seat === me ? 'me' : ''} ${p.out ? 'out' : ''}" title="Penalità (eliminato a ${g.cfg.target})">${p.out ? '❌ ' : ''}${esc(p.seat === me ? 'Tu' : p.name)} <b>${-g.scores[p.seat]}</b></span>`).join('');
-    else if (g.n === 3) scores = g.players.map((p) => `<span class="sc ${p.seat === me ? 'me' : ''}">${esc(p.seat === me ? 'Tu' : p.name)} <b>${g.scores[p.seat]}</b></span>`).join('');
-    else scores = g.teams.map((t) => `<span class="sc ${t === myTeam ? 'me' : ''}">${esc(teamName(g, t))} <b>${g.scores[t.members[0]]}</b></span>`).join('');
+    else if (g.n === 3) scores = g.players.map((p) => `<span class="sc ${p.seat === me ? 'me' : ''}">${esc(p.seat === me ? 'Tu' : p.name)} <b>${g.scores[p.seat]}</b>${liveHTML(g, g.teams.find((t) => t.members.includes(p.seat)))}</span>`).join('');
+    else scores = g.teams.map((t) => `<span class="sc ${t === myTeam ? 'me' : ''}">${esc(teamName(g, t))} <b>${g.scores[t.members[0]]}</b>${liveHTML(g, t)}</span>`).join('');
 
     const seats = seatPositions(g).map(([s, pos]) => seatHTML(g, s, pos, myTeam)).join('');
 
-    // centro: tallone, pozzetti, scarti
+    // pozzetti: piccoli, in alto a destra (nella riga dei punteggi), così il tavolo resta alle combinazioni
+    const pozz = g.pozzetti.length ? `<span class="pozz" title="${P === 'morto' ? 'Morti' : 'Pozzetti'} da prendere: ${g.pozzetti.length}"><span class="pz">${g.pozzetti.map(() => backHTML('tiny')).join('')}</span></span>` : '';
+
+    // centro: tallone e scarti
     const pileAll = g.cfg.pile === 'open' ? g.discard : g.discard.slice(-1);
     const pileCards = pileAll.map((c, i) => {
       const top = i === pileAll.length - 1;
@@ -325,7 +333,6 @@
         <div class="deck">${g.stockCount ? Array.from({ length: stockLayers }, (_, i) => backHTML('', `style="--l:${i}"`)).join('') : '<div class="card slot"></div>'}</div>
         <span class="lbl ${stockWarning(g) ? 'lowstock' : ''}">${canDraw && g.stockCount ? '<b class="here">👆 Pesca qui</b>' : `Tallone · ${g.stockCount}`}</span>
       </div>
-      ${g.pozzetti.length ? `<div class="pozz"><div class="pz">${g.pozzetti.map((n, i) => backHTML('', `style="--l:${i}"`)).join('')}</div><span class="lbl">${g.pozzetti.length === 1 ? cap(P) : (P === 'morto' ? 'Morti' : 'Pozzetti')}</span></div>` : ''}
       <div class="pile ${(canDraw && g.discardCount && !g.mustDraw) || (playing && S.selected.size === 1) ? 'active' : ''} ${g.cfg.pile} ${S.hint && (S.hint.type === 'takePile' || S.hint.type === 'discard') ? 'hinted' : ''}" data-drop="discard" ${canDraw && !g.mustDraw ? 'data-act="takePile"' : playing ? 'data-act="discardSel"' : ''}>
         <div class="pcards">${pileCards || '<div class="card slot"></div>'}</div>
         <span class="lbl">${playing && S.selected.size === 1 ? '<b class="here">👆 Scarta qui</b>' : isCanastaGame() ? `Monte${g.discardCount ? ' · ' + g.discardCount : ''}${g.pileBlocked ? ' 🔒' : g.pileFrozen ? ' ❄️' : ''}` : `Scarti${g.discardCount ? ' · ' + g.discardCount : ''}${g.cfg.pile === 'closed' ? ' (chiusi)' : ''}`}</span>
@@ -385,7 +392,7 @@
         <button class="iconbtn" data-act="leave" title="Esci">⏏</button>`
         : `<button class="iconbtn menuico" data-act="tableMenu" title="Menu">☰${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}
       </div>
-      <div class="scorebar">${r.series ? `<span class="sc series">${seriesHTML(r, g)}</span>` : ''}${scores}</div>
+      <div class="scorebar">${r.series ? `<span class="sc series">${seriesHTML(r, g)}</span>` : ''}${scores}${pozz}</div>
       <div class="seats-row n${g.n} ${g.you < 0 ? 'spect' : ''}">${seats}</div>
       ${surrenderBarHTML(g, r)}
       <div class="felt" id="felt">${g.presa ? presaCenterHTML(g) : others + center + mineZone}</div>
@@ -454,14 +461,15 @@
       // c'è spazio libero: carte delle combinazioni e del tallone più grandi (fino a un limite)
       const cs0 = getComputedStyle(felt);
       let mw0 = parseFloat(cs0.getPropertyValue('--mw')) || 30;
-      let pw0 = parseFloat(cs0.getPropertyValue('--pw')) || 42;
+      let pw0 = parseFloat(cs0.getPropertyValue('--pw')) || 36;
+      const maxPw = pw0 + 4; // tallone e scarti crescono poco: lo spazio libero va alle combinazioni
       // in colonna lo spazio in larghezza basta più a lungo: le carte possono crescere di più
       const maxMw = mw0 * (document.body.classList.contains('vmelds') ? 1.9 : 1.45);
       while (mw0 + 2 <= maxMw) {
         felt.style.setProperty('--mw', `${mw0 + 2}px`);
-        felt.style.setProperty('--pw', `${Math.min(pw0 + 2, 72)}px`);
+        felt.style.setProperty('--pw', `${Math.min(pw0 + 2, maxPw)}px`);
         if (!fits()) { felt.style.setProperty('--mw', `${mw0}px`); felt.style.setProperty('--pw', `${pw0}px`); break; }
-        mw0 += 2; pw0 = Math.min(pw0 + 2, 72);
+        mw0 += 2; pw0 = Math.min(pw0 + 2, maxPw);
       }
       return;
     }
@@ -473,14 +481,14 @@
      */
     const cs = getComputedStyle(felt);
     let mw = parseFloat(cs.getPropertyValue('--mw')) || 30;
-    let pw = parseFloat(cs.getPropertyValue('--pw')) || 42;
+    let pw = parseFloat(cs.getPropertyValue('--pw')) || 36;
     let tw = mw; // carte degli avversari
     const setAll = () => {
       felt.style.setProperty('--mw', `${mw}px`);
       felt.style.setProperty('--pw', `${pw}px`);
       for (const z of theirs) z.style.setProperty('--mw', `${Math.min(tw, mw)}px`);
     };
-    const shrinkAll = (min) => { while (!fits() && mw > min) { mw -= 2; tw = Math.min(tw, mw); pw = Math.max(32, pw - 2); setAll(); } };
+    const shrinkAll = (min) => { while (!fits() && mw > min) { mw -= 2; tw = Math.min(tw, mw); pw = Math.max(30, pw - 2); setAll(); } };
     const shrinkTheirs = (min) => { while (!fits() && tw > min) { tw -= 2; setAll(); } };
     shrinkAll(26);
     if (fits()) return;

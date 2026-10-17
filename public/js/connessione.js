@@ -9,7 +9,8 @@
     ? LocalServer.createSocket({ engineUrl: 'engine.js', name: store.get('bur_name', '') })
     // autoConnect: false — ci si collega solo quando tutti i file dell'interfaccia sono caricati (vedi comandi.js)
     : io({ reconnectionDelay: 300, reconnectionDelayMax: 2000, randomizationFactor: 0.3, autoConnect: false });
-  if (OFFLINE) document.body.classList.add('offline');
+  // non "offline": è già la classe della striscia di connessione (body diventava flex e il tavolo sbordava)
+  if (OFFLINE) document.body.classList.add('senza-rete');
   // gioco senza internet: i risultati delle smazzate restano in coda e vanno al server alla prossima connessione
   if (OFFLINE) socket.on('handOver', (p) => { autoLevelRecord(p); queueLocalResult(p); });
 

@@ -15,14 +15,14 @@
   --back-2: #c2334a;
   --cw: 52px;              /* larghezza carta in mano */
   --mw: 30px;              /* larghezza carta nei giochi */
-  --pw: 42px;              /* larghezza carte tallone / scarti */
+  --pw: 36px;              /* larghezza carte tallone / scarti (piccole: il tavolo resta alle combinazioni) */
   font-family: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-title: "Playfair Display", Georgia, "Times New Roman", serif;
 }
-body.bigcards { --cw: 64px; --mw: 36px; --pw: 50px; }
+body.bigcards { --cw: 64px; --mw: 36px; --pw: 44px; }
 @media (min-width: 760px) {
-  :root { --cw: 70px; --mw: 40px; --pw: 58px; }
-  body.bigcards { --cw: 84px; --mw: 48px; --pw: 66px; }
+  :root { --cw: 70px; --mw: 40px; --pw: 50px; }
+  body.bigcards { --cw: 84px; --mw: 48px; --pw: 58px; }
 }
 
 /* temi del tavolo */
@@ -202,6 +202,9 @@ details.custom summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
 
 /* =================== TAVOLO =================== */
 .game { display: flex; flex-direction: column; height: 100dvh; max-width: 1100px; margin: 0 auto; position: relative; }
+/* il tavolo non scorre mai di lato: niente può allargarlo oltre lo schermo */
+#app { min-width: 0; max-width: 100%; }
+.game { width: 100%; overflow-x: clip; }
 .topbar { display: flex; align-items: center; gap: 5px; padding: 6px 8px; background: rgba(0,0,0,.3); font-size: 13px; }
 .topbar .title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--muted); }
 .topbar .title b { color: #fff; }
@@ -210,6 +213,8 @@ details.custom summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
 .scorebar { display: flex; gap: 6px; padding: 6px 8px 2px; overflow-x: auto; font-size: 13px; scrollbar-width: none; }
 .scorebar .sc { background: rgba(0,0,0,.28); border-radius: 99px; padding: 3px 10px; white-space: nowrap; }
 .scorebar .sc b { color: var(--gold); margin-left: 3px; }
+/* punteggio provvisorio della smazzata accanto al totale */
+.scorebar .sc .live { font-style: normal; font-size: 11px; font-weight: 700; color: #b9ecc8; margin-left: 4px; }
 .scorebar .sc.me { box-shadow: inset 0 0 0 1.5px var(--gold); }
 
 /* posti degli altri giocatori */
@@ -226,7 +231,6 @@ details.custom summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
 .seatchip .sinfo { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
 .seatchip .sinfo b { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 84px; }
 .seatchip .smeta { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.seatchip .smeta .pz-ok { display: block; color: var(--gold); font-weight: 600; }
 .seatchip.partner { background: rgba(242,193,78,.12); }
 .seatchip.turn { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(242,193,78,.18), 0 0 18px rgba(242,193,78,.35); }
 .seatchip .minifan { display: none; position: relative; width: 40px; height: 22px; }
@@ -242,12 +246,15 @@ details.custom summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
 .center { display: flex; gap: 12px; align-items: flex-end; padding: 10px 4px; justify-content: center; }
 .lbl { display: block; text-align: center; font-size: 11px; color: var(--muted); margin-top: 4px; white-space: nowrap; }
 .stock .deck { position: relative; width: var(--pw); height: calc(var(--pw) * 1.42); }
-.stock .deck .card, .pozz .pz .card { --cw: var(--pw); position: absolute; left: calc(var(--l) * -2px); top: calc(var(--l) * -2px); }
+.stock .deck .card { --cw: var(--pw); position: absolute; left: calc(var(--l) * -2px); top: calc(var(--l) * -2px); }
 .stock.active .deck { animation: glow 1.6s infinite; border-radius: 8px; }
 .stock.active, .pile.active { cursor: pointer; }
 @keyframes glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(242,193,78,.0); } 50% { box-shadow: 0 0 0 5px rgba(242,193,78,.55); } }
-.pozz .pz { position: relative; width: calc(var(--pw) * 1.42); height: var(--pw); }
-.pozz .pz .card { --cw: calc(var(--pw) * .8); transform: rotate(90deg); transform-origin: 0 0; left: calc(var(--pw) * 1.2 + var(--l) * 6px); top: calc(var(--l) * 4px); }
+/* pozzetti: piccole carte coricate in alto a destra, nella riga dei punteggi */
+.scorebar .pozz { margin-left: auto; flex: 0 0 auto; display: flex; align-items: center; padding: 0 2px 0 6px; }
+.scorebar .pozz .pz { display: flex; }
+.scorebar .pozz .card { --cw: 16px; transform: rotate(90deg); margin: -4px 4px; border-width: 1px; }
+.scorebar .pozz .card::before { inset: 2px; }
 .pile { flex: 1; min-width: 0; max-width: 520px; border-radius: 12px; padding: 4px; transition: background .2s; }
 .pile .pcards { display: flex; overflow-x: auto; padding: 6px 4px 4px; scrollbar-width: thin; min-height: calc(var(--pw) * 1.42 + 10px); }
 .pile .pcards .card { --cw: var(--pw); margin-right: calc(var(--pw) * -0.55); flex: 0 0 auto; }
@@ -882,7 +889,6 @@ body.vmelds .felt > .teamzone.theirs { flex: 1 1 auto; }
 .tight1 .seats-row { padding-top: 3px; gap: 4px; }
 .tight1 .seatchip { padding: 2px 7px 2px 2px; gap: 5px; border-radius: 12px; }
 .tight1 .seatchip .avatar { width: 26px; height: 26px; font-size: 14px; }
-.tight1 .seatchip .smeta .pz-ok { display: inline; margin-left: 4px; }
 .tight1 .recap { margin-top: 2px; padding: 2px 10px; line-height: 1.35; }
 .tight1 .recap div:nth-child(n+2) { display: none; }
 .tight1 .ticker { margin-top: 2px; padding: 2px 10px; }

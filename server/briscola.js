@@ -171,7 +171,7 @@ function viewFor(g, seat) {
     n: g.n, you: seat, handNo: g.handNo, dealer: g.dealer,
     players: g.players.map((p) => ({ seat: p.seat, name: p.name, isBot: p.isBot, team: p.team, handCount: p.hand.length })),
     hand: seat >= 0 && g.players[seat] ? g.players[seat].hand : [],
-    teams: g.teams.map((t) => ({ id: t.id, members: t.members, melds: [], taken: t.taken.length, pozzettoTaken: false, closed: false, canClose: false })),
+    teams: g.teams.map((t) => ({ id: t.id, members: t.members, melds: [], taken: t.taken.length, points: t.taken.reduce((s, c) => s + BR.points(c), 0), pozzettoTaken: false, closed: false, canClose: false })),
     trump: g.trump, trick: g.trick, lastTrick: g.lastTrick,
     stockCount: g.stock.length, discard: [], discardCount: 0, pozzetti: [],
     turn: g.turn, phase: g.phase, lastTurn: false, mustDraw: false, canUndo: false, singlePickId: null,

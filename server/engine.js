@@ -487,13 +487,19 @@ function undo(g, seat) {
 
 /* ---------------- Fine smazzata ---------------- */
 
+/** Punti delle combinazioni calate da una squadra (carte + burraco): servono a fine smazzata e come punteggio provvisorio */
+function meldScore(t, cfg) {
+  const meldPts = t.melds.reduce((s, m) => s + m.cards.reduce((a, c) => a + cardValue(c, cfg.values), 0), 0);
+  const burraco = t.melds.map((m) => meldKind(m, cfg)).filter((k) => k.kind);
+  const bonusPts = burraco.reduce((s, k) => s + k.bonus, 0);
+  return { meldPts, burraco, bonusPts };
+}
+
 function endHand(g, reason, closerSeat = null) {
   const cfg = g.cfg;
   const noneTaken = g.teams.every((t) => !t.pozzettoTaken);
   const results = g.teams.map((t) => {
-    const meldPts = t.melds.reduce((s, m) => s + m.cards.reduce((a, c) => a + cardValue(c, cfg.values), 0), 0);
-    const burraco = t.melds.map((m) => meldKind(m, cfg)).filter((k) => k.kind);
-    const bonusPts = burraco.reduce((s, k) => s + k.bonus, 0);
+    const { meldPts, burraco, bonusPts } = meldScore(t, cfg);
     const handPts = t.members.reduce((s, seat) => s + g.players[seat].hand.reduce((a, c) => a + cardValue(c, cfg.values), 0), 0);
     const closePts = t.closed ? cfg.bonus.close : 0;
     const pozPts = !t.pozzettoTaken && !(cfg.noPenaltyIfNoneTaken && noneTaken) ? cfg.bonus.noPozzetto : 0;
@@ -610,6 +616,8 @@ function viewFor(g, seat) {
     teams: g.teams.map((t) => ({
       id: t.id, members: t.members, pozzettoTaken: t.pozzettoTaken, closed: t.closed,
       canClose: canClose(g, t),
+      // punteggio provvisorio della smazzata: combinazioni calate e burraco (senza carte in mano né chiusura)
+      live: (({ meldPts, bonusPts }) => meldPts + bonusPts)(meldScore(t, cfg)),
       melds: t.melds.map((m) => ({ id: m.id, type: m.type, cards: m.cards, wild: m.wild, length: m.length, ...meldKind(m, cfg) })),
     })),
     stockCount: g.stock.length,
