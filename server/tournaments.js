@@ -10,7 +10,7 @@
  */
 const SIZES = [4, 8, 16];
 const GAMES = ['burraco', 'scala40', 'canasta', 'scopa', 'briscola', 'tressette', 'rubamazzetto'];
-const BOT_NAMES = ['Nonna Pina', 'Zio Gino', 'Carmela', 'Totò', 'Rosetta', 'Peppino', 'Ninetta', 'Gegè', 'Don Ciccio', 'Assunta', 'Pasquale', 'Filomena', 'Gennaro', 'Concetta', 'Salvatore', 'Immacolata'];
+const { nomeComputer } = require('./nomi-computer');
 
 module.exports = function createTournaments({ tournaments, nickOf, openMatch, simulate, notify, champion }) {
   const newId = () => {
@@ -54,9 +54,7 @@ module.exports = function createTournaments({ tournaments, nickOf, openMatch, si
   function fillBots(t, token) {
     if (t.owner !== token) err('Solo chi ha creato il torneo può farlo');
     if (t.status !== 'iscrizioni') err('Le iscrizioni sono chiuse');
-    const used = new Set(t.players.map((p) => p.name));
-    const free = BOT_NAMES.filter((n) => !used.has(n));
-    while (t.players.length < t.size) t.players.push({ bot: true, name: free.shift() || 'Computer ' + t.players.length });
+    while (t.players.length < t.size) t.players.push({ bot: true, name: nomeComputer(t.players.map((p) => p.name)) });
   }
 
   function start(t, token) {

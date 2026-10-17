@@ -8,7 +8,13 @@
 (function () {
   'use strict';
   const SAVE_KEY = 'bur_offline_room';
-  const BOT_NAMES = ['Nonna Pina', 'Zio Gino', 'Carmela', 'Totò', 'Rosetta', 'Peppino', 'Ninetta', 'Gegè'];
+  // Nomi comuni pescati a caso per i computer (stessa lista in server/nomi-computer.js).
+  const BOT_NAMES = [
+    'Marco', 'Luca', 'Giulia', 'Francesca', 'Andrea', 'Sara', 'Matteo', 'Chiara', 'Paolo', 'Elena',
+    'Davide', 'Laura', 'Stefano', 'Valentina', 'Roberto', 'Martina', 'Simone', 'Federica', 'Alessandro', 'Silvia',
+    'Giorgio', 'Anna', 'Fabio', 'Alessia', 'Riccardo', 'Paola', 'Daniele', 'Serena', 'Claudio', 'Monica',
+    'Lorenzo', 'Elisa', 'Michele', 'Roberta', 'Massimo', 'Cristina', 'Emanuele', 'Ilaria', 'Filippo', 'Marta',
+  ];
   const BOT_DELAY = 700;
   const BOT_SPEEDS = { lenta: BOT_DELAY * 1.9, normale: BOT_DELAY, veloce: BOT_DELAY * 0.45 };
 
@@ -152,7 +158,7 @@
           const s40 = d.rules && d.rules.game === 'scala40';
           const rules = d.tutorial ? (s40 ? self.BurracoScala40.normalize({ players: 2 }) : R.normalize({ ...R.PRESETS[0].rules, players: 2, target: 505 }))
             : s40 ? self.BurracoScala40.normalize(d.rules) : otherRules(d.rules) ? otherRules(d.rules).normalize(d.rules) : R.normalize(d.rules);
-          const free = BOT_NAMES.slice().sort(() => Math.random() - 0.5);
+          const free = BOT_NAMES.filter((n) => n !== me).sort(() => Math.random() - 0.5);
           room = {
             rules, n: rules.players, ready: [], botSpeed: 'normale', botLevel: 'normale', aids: true, hints: false,
             seats: Array.from({ length: rules.players }, (_, i) => (i === 0 ? { name: me } : { name: free[i], isBot: true })),

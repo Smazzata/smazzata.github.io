@@ -19,7 +19,7 @@ const scheduleBot = (...a) => ctx.scheduleBot(...a);
 const scheduleSave = (...a) => ctx.scheduleSave(...a);
 const scheduleTurnTimer = (...a) => ctx.scheduleTurnTimer(...a);
 
-const BOT_NAMES = ['Nonna Pina', 'Zio Gino', 'Carmela', 'Totò', 'Rosetta', 'Peppino', 'Ninetta', 'Gegè'];
+const { nomeComputer } = require('./nomi-computer');
 
 function newCode() {
   const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -312,9 +312,7 @@ function cleanName(n) {
 }
 
 function botName(room) {
-  const used = new Set(room.seats.filter(Boolean).map((s) => s.name));
-  const free = BOT_NAMES.filter((n) => !used.has(n));
-  return free.length ? free[Math.floor(Math.random() * free.length)] : 'Bot ' + Math.floor(Math.random() * 100);
+  return nomeComputer(room.seats.filter(Boolean).map((s) => s.name));
 }
 
 function fillBots(room) {
