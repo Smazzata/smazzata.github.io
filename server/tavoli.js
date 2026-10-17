@@ -222,6 +222,44 @@ function leaveRoom(socket, abandon = false) {
   broadcast(room);
 }
 
+/*
+ * Un profilo resta collegato su tutti i suoi dispositivi, ma gioca da uno solo per volta: un altro dispositivo
+ * (chiave diversa) seduto a una partita in corso blocca l'entrata finché l'utente non conferma.
+ */
+function otherDeviceGame(socket) {
+  for (const s of socketsOf(socket.data.token)) {
+    if (s === socket || !s.data.room || s.data.devKey === socket.data.devKey) continue;
+    const room = rooms.get(s.data.room);
+    if (room && room.game && !room.game.over && seatOfToken(room, s.data.token) >= 0) return s;
+  }
+  return null;
+}
+/** BUSY_HERE: la stessa partita è aperta altrove (si può spostare qui); BUSY_OTHER: si lascerebbe quella partita */
+function checkOtherDevice(socket, code) {
+  const s = otherDeviceGame(socket);
+  if (s) throw new E.GameError(s.data.room === code ? 'BUSY_HERE' : 'BUSY_OTHER');
+}
+/** conferma dell'utente: 'here' sposta la partita su questo dispositivo, 'abandon' la lascia (posto al computer) */
+function takeOver(socket, mode) {
+  let code = null;
+  for (const s of socketsOf(socket.data.token)) {
+    if (s === socket || !s.data.room || s.data.devKey === socket.data.devKey) continue;
+    code = s.data.room;
+    if (mode === 'abandon') leaveRoom(s, true);
+    else { s.leave(code); s.data.room = null; }
+    s.emit('state', { room: null, game: null });
+    s.emit('notice', { text: mode === 'abandon' ? 'Hai lasciato la partita da un altro dispositivo' : 'La partita continua su un altro dispositivo' });
+  }
+  const room = mode === 'here' && code && rooms.get(code);
+  if (room) {
+    if (socket.data.room && socket.data.room !== code) leaveRoom(socket);
+    socket.join(code);
+    socket.data.room = code;
+    sessions.get(socket.data.token).room = code;
+    broadcast(room);
+  }
+}
+
 function joinRoom(socket, room) {
   const token = socket.data.token;
   const sess = sessions.get(token);
@@ -320,4 +358,4 @@ setInterval(() => {
   }
 }, 60 * 1000);
 
-Object.assign(ctx, { newCode, roomOfToken, renamePlayer, seatOfToken, roomInfo, humanCount, isConnected, broadcast, socketsOf, myGames, pushMyGames, slowRoomUpdates, checkReady, afterAction, leaveRoom, joinRoom, getRoom, requireHost, cleanName, botName, fillBots, startGame });
+Object.assign(ctx, { newCode, roomOfToken, renamePlayer, seatOfToken, roomInfo, humanCount, isConnected, broadcast, socketsOf, myGames, pushMyGames, slowRoomUpdates, checkReady, afterAction, leaveRoom, joinRoom, otherDeviceGame, checkOtherDevice, takeOver, getRoom, requireHost, cleanName, botName, fillBots, startGame });

@@ -28,6 +28,7 @@ const getRoom = (...a) => ctx.getRoom(...a);
 const humanCount = (...a) => ctx.humanCount(...a);
 const isConnected = (...a) => ctx.isConnected(...a);
 const joinRoom = (...a) => ctx.joinRoom(...a);
+const checkOtherDevice = (...a) => ctx.checkOtherDevice(...a);
 const leaveRoom = (...a) => ctx.leaveRoom(...a);
 const myGames = (...a) => ctx.myGames(...a);
 const newCode = (...a) => ctx.newCode(...a);
@@ -56,7 +57,13 @@ module.exports.register = function register(socket, handler) {
     }
   }));
 
+  // si gioca da un dispositivo per volta: l'utente ha confermato di spostare (o lasciare) la partita dell'altro
+  socket.on('takeOver', handler(({ mode }) => {
+    ctx.takeOver(socket, mode === 'here' ? 'here' : 'abandon');
+  }));
+
   socket.on('createRoom', handler(({ rules, vsBots, tutorial }) => {
+    checkOtherDevice(socket, null);
     // allenamento: Classico in 2 (a 505) oppure un altro gioco in 2, contro un computer facile e lento, con i suggerimenti
     const other = tutorial && rules && Games.idOf(rules) !== 'burraco' ? Games.idOf(rules) : null;
     const r = tutorial
@@ -85,6 +92,7 @@ module.exports.register = function register(socket, handler) {
   }));
 
   socket.on('startDaily', handler(() => {
+    checkOtherDevice(socket, null);
     const sess = sessions.get(socket.data.token);
     if (!sess || !sess.nick) throw new E.GameError('Scegli prima il tuo nickname');
     const c = Daily.challenge();
@@ -104,6 +112,7 @@ module.exports.register = function register(socket, handler) {
   }));
 
   socket.on('quickPlay', handler(({ n }) => {
+    checkOtherDevice(socket, null);
     n = Number(n) === 2 ? 2 : 4;
     const sess = sessions.get(socket.data.token);
     if (!sess || !sess.nick) throw new E.GameError('Scegli prima il tuo nickname');
@@ -129,6 +138,7 @@ module.exports.register = function register(socket, handler) {
   socket.on('joinRoom', handler(({ code }) => {
     const room = rooms.get(String(code || '').toUpperCase().trim());
     if (!room) throw new E.GameError('Tavolo non trovato');
+    checkOtherDevice(socket, room.code);
     joinRoom(socket, room);
   }));
 

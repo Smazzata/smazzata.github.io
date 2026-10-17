@@ -216,6 +216,29 @@ async function signup(p, nick, email = mailOf()) {
     assert((await C.call('login', { nick: 'zeno', password: 'nuova1234' })).ok, 'accesso con la nuova password');
     step('password obbligatoria, codice di recupero, altri dispositivi scollegati');
 
+    // un profilo su due dispositivi: entrambi restano collegati, ma si gioca da uno solo per volta
+    const W1 = player('Dario pc1'); await W1.hello();
+    assert((await signup(W1, 'Dario')).ok);
+    assert((await W1.call('createRoom', { rules: { players: 2, target: 100 }, vsBots: true })).ok);
+    await W1.until((s) => s.game, 'partita di Dario');
+    const W2 = player('Dario pc2');
+    const busy = new Promise((res) => W2.sock.once('busyElsewhere', res));
+    await W2.hello((await W2.call('login', { nick: 'dario', password: 'prova123' })).token);
+    await busy;
+    assert(W1.state.game, 'il primo dispositivo resta in partita (e collegato)');
+    assert.strictEqual((await W2.call('createRoom', { rules: { players: 2 }, vsBots: true })).error, 'BUSY_OTHER', 'niente seconda partita insieme');
+    const moved = new Promise((res) => W1.sock.once('notice', res));
+    assert((await W2.call('takeOver', { mode: 'here' })).ok);
+    assert(/altro dispositivo/.test((await moved).text), 'il primo dispositivo viene avvisato');
+    await W2.until((s) => s.game, 'partita spostata sul secondo dispositivo');
+    assert(!W1.state.room, 'il primo dispositivo torna alla schermata iniziale');
+    assert.strictEqual((await W1.call('createRoom', { rules: { players: 2 }, vsBots: true })).error, 'BUSY_OTHER');
+    assert((await W1.call('takeOver', { mode: 'abandon' })).ok);
+    await W2.until((s) => !s.room, 'partita abbandonata');
+    assert((await W1.call('createRoom', { rules: { players: 2 }, vsBots: true })).ok, 'dopo la conferma si gioca');
+    W1.sock.close(); W2.sock.close();
+    step('due dispositivi: restano collegati, si gioca da uno per volta (spostare o lasciare la partita)');
+
     // email: conferma con codice e recupero della password via email (in prova le email finiscono in un file)
     const lastCode = (to) => codeFor(to);
     const Y = player('Ylenia'); await Y.hello();

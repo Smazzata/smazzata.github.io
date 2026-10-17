@@ -277,10 +277,33 @@
     for (const p of q) socket.emit('localResult', p, (r) => { if (!r || !r.ok) queueLocalResult(p); });
   }
 
+  /** «Hai già una partita in corso su un altro dispositivo»: true se l'utente vuole procedere */
+  function askOtherDevice(mode) {
+    return new Promise((res) => {
+      const here = mode === 'here';
+      openModal('device', `<div class="result" style="text-align:center"><h2>📱 ${t('Partita su un altro dispositivo')}</h2>
+        <p>${t(here ? "Hai già una partita in corso su un altro dispositivo. Vuoi continuarla qui? L'altro dispositivo tornerà alla schermata iniziale."
+          : 'Hai già una partita in corso su un altro dispositivo: se procedi la abbandonerai (il tuo posto passa al computer). Sei sicuro di voler procedere?')}</p>
+        <div class="row" style="justify-content:center"><button class="btn primary" id="devYes">${t(here ? 'Continua qui' : 'Sì, procedi')}</button><button class="btn" id="devNo">${t('Annulla')}</button></div></div>`);
+      $('#devYes').onclick = () => { closeModal(); res(true); };
+      $('#devNo').onclick = () => { closeModal(); res(false); };
+    });
+  }
+  socket.on('busyElsewhere', async () => {
+    if (await askOtherDevice('here')) emit('takeOver', { mode: 'here' });
+  });
+
   function emit(ev, data) {
     return new Promise((res) => {
       const target = S.localGame && LOCAL_EVENTS.has(ev) && Local.sock ? Local.sock : socket;
-      target.emit(ev, data, (r) => {
+      target.emit(ev, data, async (r) => {
+        // partita in corso su un altro dispositivo dello stesso profilo: si chiede prima di continuare
+        if (r && !r.ok && (r.error === 'BUSY_HERE' || r.error === 'BUSY_OTHER')) {
+          const mode = r.error === 'BUSY_HERE' ? 'here' : 'abandon';
+          if (!(await askOtherDevice(mode))) return res({ ok: false });
+          const tk = await emit('takeOver', { mode });
+          return res(tk.ok ? await emit(ev, data) : tk);
+        }
         if (r && !r.ok) { toast(r.error, true); Sound.play('error'); }
         res(r || { ok: false });
       });

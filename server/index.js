@@ -114,6 +114,13 @@ io.on('connection', (socket) => {
     if (sess.room && rooms.has(sess.room)) {
       const room = rooms.get(sess.room);
       if (seatOfToken(room, token) >= 0 || (room.spectators || []).includes(token)) {
+        // la partita è aperta su un altro dispositivo: qui si chiede se spostarla
+        const other = ctx.otherDeviceGame(socket);
+        if (other && other.data.room === room.code) {
+          socket.emit('state', { room: null, game: null });
+          socket.emit('busyElsewhere', {});
+          return;
+        }
         socket.join(room.code);
         socket.data.room = room.code;
         broadcast(room);
