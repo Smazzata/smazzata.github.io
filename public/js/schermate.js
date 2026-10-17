@@ -65,7 +65,7 @@
     const so = S.social;
     const pending = S.gatePending || so.emailPending;
     return `<div class="page">
-      <div class="logo"><h1>Smazzata</h1></div>
+      <div class="logo"><h1 translate="no">Smazzata</h1></div>
       <div class="panel gate"><h3>📧 Conferma la tua email</h3>
         <p>Per usare il profilo <b>${esc(so.nick)}</b> conferma la tua email: ti mandiamo un codice di 6 cifre. Serve per recuperare la password.</p>
         <form id="gatemailform" class="row"><input id="gatemail" type="email" class="grow" maxlength="250" autocomplete="email" placeholder="nome@esempio.it" value="${esc(pending || '')}"><button class="btn">${pending ? 'Manda di nuovo' : 'Manda il codice'}</button></form>
@@ -78,7 +78,7 @@
     const fan = [{ r: 1, s: 'S' }, { r: 13, s: 'H' }, { r: 0, s: 'J' }, { r: 2, s: 'D' }, { r: 7, s: 'C' }]
       .map((c, i) => cardHTML({ ...c, id: -1 - i }, 'logo-card', `style="--i:${i - 2}"`)).join('');
     return `<div class="page">
-      <div class="logo"><div class="logo-fan">${fan}</div><h1>Smazzata</h1>
+      <div class="logo"><div class="logo-fan">${fan}</div><h1 translate="no">Smazzata</h1>
         <div class="muted">Gioca con gli amici o contro il computer</div></div>
       ${S.appUpdate && !S.appUpdate.dismissed ? `<div class="apkbanner update">
         <img src="icons/icon-192.png" alt=""><span><b>📲 Nuova versione dell'app</b><br>Scaricala e installala sopra quella che hai: profilo e partite restano.</span>

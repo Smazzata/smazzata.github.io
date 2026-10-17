@@ -6,7 +6,9 @@
 - `schermate/` — schermate del telefono (1080×1920). Si rigenerano con `STORE=1 node server/uitest.js`.
 - `testi.md` — nome, descrizione breve e descrizione completa in italiano, inglese, spagnolo e portoghese.
 - Il pacchetto da caricare (**Smazzata.aab**) viene creato da GitHub a ogni nuova versione dell'app,
-  nella pagina *Releases* del progetto, accanto a `Burraco.apk`.
+  nella pagina *Releases* del progetto, accanto a `Burraco.apk`. È costruito per Android 16 (API 36, Capacitor 8),
+  come chiede Google dal 31 agosto 2026. Serve la chiave di caricamento nei Secrets di GitHub (vedi sotto, punto 3):
+  senza, GitHub crea solo l'APK.
 
 ## Prima di pubblicare (da non dimenticare)
 - **Cambiare la chiave della pagina di stato** (è stata scritta in una chat): in Termux, in una nuova sessione,
@@ -19,20 +21,26 @@
 1. **Account sviluppatore Google Play**: https://play.google.com/console — costo unico di 25 dollari.
    Serve un documento d'identità; Google può chiedere di verificare un numero di telefono.
 2. **Crea l'app** nella Console: nome «Smazzata», lingua predefinita italiano, *Gioco*, *Gratuita*.
-3. **Firma dell'app**: lascia attiva la «Firma dell'app da parte di Google Play». Il file `Smazzata.aab` è già firmato
-   con la nostra chiave (`android-app/burraco.p12`), che diventa la *chiave di caricamento*. Non perderla e non cambiarla.
+3. **Firma dell'app**: lascia attiva la «Firma dell'app da parte di Google Play». `Smazzata.aab` è firmato con la
+   *chiave di caricamento* segreta, che sta solo sul PC nella cartella `Smazzata-chiavi` (fuori dal progetto) e nei
+   Secrets di GitHub `PLAY_UPLOAD_KEY` e `PLAY_UPLOAD_KEY_PASSWORD` (istruzioni nel `LEGGIMI.txt` di quella cartella).
+   Non usare `android-app/burraco.p12` per il Play Store: è nel progetto pubblico, serve solo all'APK del sito.
+   Tieni una copia della cartella delle chiavi; se si perde, Google permette di chiedere una nuova chiave di caricamento.
 4. **Scheda dello Store**: copia i testi da `testi.md` e carica icona, immagine in evidenza e almeno 2 schermate.
 5. **Norme sulla privacy**: indirizzo https://simonemuliello010500-web.github.io/BurracoByMSF/gioca/privacy.html
 6. **Sicurezza dei dati**: dichiara che l'app raccoglie **indirizzo email** (Informazioni personali → Indirizzo email:
    obbligatorio, scopo «Gestione dell'account», non condiviso con terzi) e **ID utente** (il nickname). Salva anche
    statistiche di gioco e una password cifrata; dati cifrati in transito (https); nessuna pubblicità, nessun dato venduto;
    l'utente può eliminare il profilo dall'app (Profilo → Elimina il mio profilo).
+   **Link per eliminare l'account** (richiesto da Google): https://simonemuliello010500-web.github.io/BurracoByMSF/gioca/elimina-profilo.html
 7. **Classificazione dei contenuti** (questionario): niente violenza, niente acquisti, **niente gioco d'azzardo
    simulato** (nessun gioco con puntate o fiches: il Sette e mezzo è stato tolto apposta). Va invece dichiarato che
    **gli utenti interagiscono** (chat, messaggi vocali, amici), con la possibilità di segnalare e bloccare.
 8. **Pubblico di destinazione**: 13 anni in su (per via della chat tra giocatori).
 9. **Test chiuso**: per i nuovi account personali Google chiede un test chiuso con almeno 12 tester per 14 giorni
-   prima della pubblicazione. Bastano amici e parenti: li inviti con la loro email Google.
+   prima della pubblicazione. Li inviti con la loro email Google (o un Gruppo Google). Se non conosci abbastanza
+   persone: scambio di tester tra sviluppatori (Reddit r/AndroidClosedTesting, r/TestersCommunity) e gruppi di
+   giocatori di Burraco/Scala 40 su Facebook. Mai account finti o emulatori: Google può chiudere l'account.
 10. **Produzione**: dopo il test, «Crea nuova release» → carica `Smazzata.aab` → invia per la revisione (qualche giorno).
 
 ## Da sapere

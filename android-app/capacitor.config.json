@@ -11,8 +11,5 @@
       "*.trycloudflare.com",
       "simonemuliello010500-web.github.io"
     ]
-  },
-  "android": {
-    "adjustMarginsForEdgeToEdge": "force"
   }
 }

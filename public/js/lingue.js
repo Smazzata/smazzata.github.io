@@ -72,6 +72,7 @@
     document.write(`<script src="lingue/${LANG}.js"><\/script>`);
     const done = new WeakMap(); // nodo -> testo già tradotto (per non tradurre due volte)
     const fixText = (n) => {
+      if (n.parentNode && n.parentNode.closest && n.parentNode.closest('[translate="no"]')) return; // es. il nome «Smazzata»
       const v = n.nodeValue;
       if (done.get(n) === v) return;
       const r = tr(v);
@@ -104,7 +105,7 @@
         else for (const n of m.addedNodes) walk(n);
       }
     }).observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });
-    document.addEventListener('DOMContentLoaded', () => { walk(document.body); document.title = t(document.title); });
+    document.addEventListener('DOMContentLoaded', () => { walk(document.body); if (document.title !== 'Smazzata') document.title = t(document.title); }); // il nome dell'app non si traduce
     // finestre del browser (conferma, avviso, richiesta)
     for (const fn of ['confirm', 'alert', 'prompt']) {
       const orig = window[fn].bind(window);

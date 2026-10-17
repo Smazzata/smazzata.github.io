@@ -225,6 +225,7 @@ I18N.load({"Per calare servono almeno 3 carte: selezionale e trascinale insieme"
 "Tra sole persone la partita cambia il tuo punteggio Elo; con il computer al tavolo è amichevole.":"With only people at the table the game changes your Elo rating; with the computer it is friendly.",
 "= punteggio di bravura: si parte da 1000, sale battendo avversari forti e scende perdendo.":"= skill rating: it starts at 1000, rises when you beat strong opponents and falls when you lose.",
 "L'Elo cambia solo con le partite classificate (⚡ Gioca subito tra persone). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei.":"Elo changes only in ranked games (⚡ Play now between people). Friendly games (with friends or the computer) count for stats, level and trophies.",
+"Scarica":"Download",
 "Briscola in 5":"Five-player Briscola",
 "🍷 Briscola in 5":"🍷 Five-player Briscola",
 "La chiamata del Sud: asta, carta chiamata e socio segreto":"The southern \"chiamata\": auction, called card and secret partner",

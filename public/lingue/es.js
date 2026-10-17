@@ -225,6 +225,7 @@ I18N.load({"Per calare servono almeno 3 carte: selezionale e trascinale insieme"
 "Tra sole persone la partita cambia il tuo punteggio Elo; con il computer al tavolo è amichevole.":"Solo entre personas la partida cambia tu puntuación Elo; con la computadora en la mesa es amistosa.",
 "= punteggio di bravura: si parte da 1000, sale battendo avversari forti e scende perdendo.":"= puntuación de habilidad: empieza en 1000, sube al vencer a rivales fuertes y baja al perder.",
 "L'Elo cambia solo con le partite classificate (⚡ Gioca subito tra persone). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei.":"El Elo cambia solo con las partidas clasificatorias (⚡ Jugar ya entre personas). Las amistosas (con amigos o con la computadora) cuentan para estadísticas, nivel y trofeos.",
+"Scarica":"Descargar",
 "Briscola in 5":"Brisca de 5",
 "🍷 Briscola in 5":"🍷 Brisca de 5",
 "La chiamata del Sud: asta, carta chiamata e socio segreto":"La \"llamada\" del sur: subasta, carta llamada y socio secreto",
