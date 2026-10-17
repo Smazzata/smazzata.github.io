@@ -28,6 +28,11 @@ function filesTests() {
     assert(lsw.includes(`'gioca/js/${f}'`), `launcher/sw.js non salva gioca/js/${f}`);
   }
   console.log(`file dell'interfaccia: ${js.length}, tutti caricati e salvati per l'uso offline`);
+  // nell'app Android (Capacitor) un indirizzo che finisce con una cartella ("gioca/") riapre la pagina d'ingresso:
+  // i link della pagina d'ingresso verso il gioco devono nominare il file (gioca/index.html)
+  const launcher = fs.readFileSync(path.join(root, 'launcher', 'index.html'), 'utf8');
+  const dirLinks = launcher.match(/href="gioca\/(\?[^"]*)?"/g);
+  assert(!dirLinks, `launcher/index.html: link a una cartella, nell'app non funziona: ${dirLinks}`);
   // lingue: dizionari aggiornati rispetto a lingue/*.txt e salvati per l'uso offline
   const n = require('../scripts/lingue').build(true);
   for (const l of ['en', 'es', 'pt']) {
