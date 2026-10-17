@@ -37,6 +37,19 @@
   }
 
   /**
+   * fn quando la corsa (transform) di el è davvero finita. La corsa parte al fotogramma dopo il cambio di stile:
+   * con un tempo fisso, sui dispositivi lenti la carta sparirebbe prima di arrivare (piccolo salto). Il tempo
+   * di riserva serve se la corsa non parte o viene interrotta.
+   */
+  function afterMove(el, ms, fn) {
+    let done = false;
+    const end = () => { if (done) return; done = true; el.removeEventListener('transitionend', onEnd); fn(); };
+    const onEnd = (e) => { if (e.target === el && e.propertyName === 'transform') end(); };
+    el.addEventListener('transitionend', onEnd);
+    setTimeout(end, ms + 400);
+  }
+
+  /**
    * Fa atterrare una carta in volo esattamente sopra la carta vera (target), da dove si trova adesso.
    * faceHTML: la carta si gira a metà strada (la pescata parte coperta e arriva scoperta).
    */
@@ -69,16 +82,17 @@
       const mid = { left: (cur.left + t.left) / 2, top: (cur.top + t.top) / 2, width: (cur.width + t.width) / 2, height: (cur.height + t.height) / 2 };
       el.style.transition = 'transform 100ms ease-in';
       el.style.transform = at(mid, mid.width / w, 0.05);
-      setTimeout(() => {
+      afterMove(el, 100, () => {
+        if (!el.isConnected) return;
         el.innerHTML = faceHTML;
         el.style.transition = 'transform 150ms ease-out';
         el.style.transform = at(t, sc);
-        setTimeout(finish, 160);
-      }, 105);
+        afterMove(el, 150, finish);
+      });
     } else {
       el.style.transition = 'transform 170ms ease-out';
       el.style.transform = at(t, sc);
-      setTimeout(finish, 180);
+      afterMove(el, 170, finish);
     }
   }
 

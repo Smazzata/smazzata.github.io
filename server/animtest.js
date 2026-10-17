@@ -38,6 +38,9 @@ const PROBE = `
       const rec = { face: !!face };
       orig(el, target, face);
       rec.t = target.getBoundingClientRect(); // misurata dopo: landFlyer ferma l'animazione d'arrivo della carta vera
+      // la carta in volo si misura anche nell'istante in cui viene tolta: è lì che la sostituisce la carta vera
+      const rm = el.remove.bind(el);
+      el.remove = () => { if (el.isConnected) rec.last = el.firstElementChild.getBoundingClientRect(); rm(); };
       const iv = setInterval(() => {
         if (!el.isConnected) { clearInterval(iv); rec.done = true; rec.visible = target.style.visibility !== 'hidden'; return; }
         rec.last = el.firstElementChild.getBoundingClientRect();
