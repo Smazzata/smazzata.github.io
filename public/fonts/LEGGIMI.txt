@@ -1,0 +1,4 @@
+Caratteri usati dall'app (da Google Fonts, solo lettere latine):
+- Nunito (nunito.woff2) — Copyright The Nunito Project Authors
+- Playfair Display (playfair.woff2) — Copyright The Playfair Display Project Authors
+Entrambi con licenza SIL Open Font License 1.1: https://openfontlicense.org

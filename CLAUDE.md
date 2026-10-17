@@ -27,6 +27,7 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 - `public/js/` — interfaccia divisa per sezioni (base, connessione, carte, ui, profilo, tutorial, schermate, tavolo,
   animazioni, finestre, azioni, comandi): file normali caricati in ordine da `index.html` che condividono le stesse
   dichiarazioni. Un file nuovo va aggiunto a `index.html` e ai due service worker (`npm test` lo controlla).
+- Caratteri: Nunito (testi) e Playfair Display (titoli, `--font-title`) salvati in `public/fonts/` (dichiarati in `intro.css`, valgono anche per la pagina d'ingresso; nei due service worker).
 - `public/` — interfaccia: tavolo mobile-first, trascinamento carte, animazioni, suoni sintetizzati, tema chiaro/scuro a scelta dell'utente, statistiche personali in localStorage.
 - Lingue (it/en/es/pt): l'interfaccia resta scritta in italiano; `public/js/lingue.js` traduce al volo i testi che compaiono (dizionario `public/lingue/xx.js`, generato da `lingue/*.txt` con `node scripts/lingue.js`; righe `italiano ‖ English ‖ Español ‖ Português`, `{0}` = parte variabile). Per un testo nuovo aggiungi la riga e rigenera (npm test controlla). In console `[...I18N.missing]` mostra i testi visti senza traduzione.
 - `launcher/` — pagina d'ingresso su GitHub Pages (link fisso) che legge l'indirizzo del server dal ramo `indirizzo` (`server.json`).
