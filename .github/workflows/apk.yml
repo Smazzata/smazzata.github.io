@@ -88,8 +88,11 @@ jobs:
           grep SmazzataStore android/app/src/main/assets/capacitor.config.json
           npx cap build android --androidreleasetype AAB --signing-type jarsigner             --keystorepath "$RUNNER_TEMP/caricamento-play.p12" --keystorepass "$PLAY_UPLOAD_KEY_PASSWORD"             --keystorealias caricamento --keystorealiaspass "$PLAY_UPLOAD_KEY_PASSWORD"
           rm -f "$RUNNER_TEMP/caricamento-play.p12"
-          aab=$(find android/app/build/outputs/bundle/release -name '*.aab' | head -1)
+          # Capacitor lascia sia app-release.aab (non firmato) sia app-release-signed.aab: serve quello firmato
+          aab=$(find android/app/build/outputs/bundle/release -name '*-signed.aab' | head -1)
           echo "AAB: $aab"
+          [ -n "$aab" ] || { echo "::error::Pacchetto firmato non trovato"; exit 1; }
+          jarsigner -verify "$aab" | grep -q "jar verified" || { echo "::error::Smazzata.aab non risulta firmato"; exit 1; }
           cp "$aab" Smazzata.aab
           ls -la Smazzata.aab
 
