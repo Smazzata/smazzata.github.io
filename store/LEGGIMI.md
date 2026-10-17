@@ -30,7 +30,7 @@
 5. **Norme sulla privacy**: indirizzo https://simonemuliello010500-web.github.io/BurracoByMSF/gioca/privacy.html
 6. **Sicurezza dei dati**: dichiara che l'app raccoglie **indirizzo email** (Informazioni personali → Indirizzo email:
    obbligatorio, scopo «Gestione dell'account», non condiviso con terzi) e **ID utente** (il nickname). Salva anche
-   statistiche di gioco e una password cifrata; dati cifrati in transito (https); nessuna pubblicità, nessun dato venduto;
+   statistiche di gioco e una password cifrata; dati cifrati in transito (https); nessun dato venduto;
    l'utente può eliminare il profilo dall'app (Profilo → Elimina il mio profilo).
    **Link per eliminare l'account** (richiesto da Google): https://simonemuliello010500-web.github.io/BurracoByMSF/gioca/elimina-profilo.html
 7. **Classificazione dei contenuti** (questionario): niente violenza, niente acquisti, **niente gioco d'azzardo
@@ -44,5 +44,8 @@
 10. **Produzione**: dopo il test, «Crea nuova release» → carica `Smazzata.aab` → invia per la revisione (qualche giorno).
 
 ## Da sapere
+- **Pubblicità (in arrivo)**: quando la aggiungi, nella Console vanno aggiornati «Contiene annunci» (sì),
+  «Sicurezza dei dati» (ID pubblicità e dati raccolti dal servizio di annunci) e la pagina sulla privacy
+  (`public/privacy.html`, con il nome del servizio); in Europa serve anche la richiesta di consenso.
 - Ogni nuova versione: GitHub crea un nuovo `Smazzata.aab` (numero di versione già crescente): lo carichi come nuova release.
 - L'APK scaricato dal sito continua a funzionare come prima; chi installa dal Play Store riceve gli aggiornamenti da lì.

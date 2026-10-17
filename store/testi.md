@@ -11,7 +11,7 @@ Limiti di Google: nome massimo 30 caratteri, descrizione breve massimo 80, descr
 
 **Descrizione completa:**
 Smazzata è il tavolo da gioco di carte per giocare con gli amici, in famiglia o contro il computer.
-Gratis e senza pubblicità.
+Gratis.
 
 🃏 TANTI GIOCHI, UN SOLO TAVOLO
 • Burraco (Classico FIBUR, Reale, Buraco brasiliano Aberto e Fechado)
@@ -53,7 +53,7 @@ Trofei, livelli, titoli e cornici da sbloccare giocando.
 
 **Full description:**
 Smazzata is the card table for playing with friends, family or against the computer.
-Free and ad-free.
+Free to play.
 
 🃏 MANY GAMES, ONE TABLE
 • Burraco (Classic FIBUR, Royal, Brazilian Buraco Aberto and Fechado)
@@ -95,7 +95,7 @@ Trophies, levels, titles and frames to unlock as you play.
 
 **Descripción completa:**
 Smazzata es la mesa de cartas para jugar con amigos, en familia o contra la computadora.
-Gratis y sin publicidad.
+Gratis.
 
 🃏 MUCHOS JUEGOS, UNA SOLA MESA
 • Burraco (Clásico FIBUR, Real, Buraco brasileño Aberto y Fechado)
@@ -137,7 +137,7 @@ Trofeos, niveles, títulos y marcos para desbloquear jugando.
 
 **Descrição completa:**
 Smazzata é a mesa de cartas para jogar com amigos, em família ou contra o computador.
-Grátis e sem anúncios.
+Grátis.
 
 🃏 MUITOS JOGOS, UMA SÓ MESA
 • Buraco (Aberto e Fechado) e Burraco italiano (Clássico FIBUR, Real)

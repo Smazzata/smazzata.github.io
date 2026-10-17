@@ -356,7 +356,7 @@ I18N.load({"Per calare servono almeno 3 carte: selezionale e trascinale insieme"
 "Codice sbagliato o scaduto":"Código incorrecto o caducado",
 "La password del profilo è cambiata: entra di nuovo con la password nuova.":"La contraseña del perfil ha cambiado: entra de nuevo con la contraseña nueva.",
 "Sei stato scollegato dal profilo.":"Se ha cerrado la sesión de tu perfil.",
-"Se dimentichi la password ti mandiamo un codice per sceglierne una nuova. Niente pubblicità.":"Si olvidas la contraseña te enviamos un código para elegir una nueva. Sin publicidad.",
+"Se dimentichi la password ti mandiamo un codice per sceglierne una nuova.":"Si olvidas la contraseña te enviamos un código para elegir una nueva.",
 "Scrivi la tua email":"Escribe tu email",
 "Email non partita: la confermi più tardi dal profilo":"El email no se envió: confírmalo más tarde desde el perfil",
 "Non arriva? Guarda anche nello spam. Puoi confermarla anche più tardi da 👤 Profilo.":"¿No llega? Mira también en spam. También puedes confirmarlo más tarde desde 👤 Perfil.",

@@ -103,7 +103,7 @@
               <p class="muted small" style="margin:0 0 6px">Ti serve per entrare dagli altri tuoi dispositivi.</p>
               ${S.mailOn ? `<label class="field"><span>La tua email</span>
               <input type="email" id="nickmail" maxlength="250" autocomplete="email" placeholder="nome@esempio.it" value="${esc(S.mailDraft || '')}"></label>
-              <p class="muted small" style="margin:0 0 6px">Se dimentichi la password ti mandiamo un codice per sceglierne una nuova. Niente pubblicità.</p>` : ''}
+              <p class="muted small" style="margin:0 0 6px">Se dimentichi la password ti mandiamo un codice per sceglierne una nuova.</p>` : ''}
               <div class="row"><button class="btn primary grow" data-act="claimNick">Crea il profilo</button></div>
               <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a> · <a href="privacy.html">Privacy</a></p>`}
         ${homeButtonsHTML()}
