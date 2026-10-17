@@ -87,7 +87,7 @@
       <h4>Elimina profilo</h4>
       <button class="btn small danger" data-act="deleteProfile">Elimina il mio profilo</button>
       <p class="muted small">Libera il nickname e cancella codice, password, amicizie e classifica. Le statistiche su questo dispositivo restano.
-        <a href="privacy.html">Leggi l'informativa privacy</a>.</p>`);
+        <a href="privacy.html">Leggi l'informativa privacy</a> · <a href="regole.html">Regole di comportamento</a></p>`);
   }
 
   /** Subito dopo la creazione del profilo: il codice di recupero da conservare */

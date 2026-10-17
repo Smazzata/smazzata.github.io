@@ -17,11 +17,12 @@ Webapp di Burraco multiplayer (Node.js + Express + Socket.IO, frontend HTML/CSS/
 Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice e scrivi i messaggi di commit in italiano.
 
 ## Come è fatta
-- `shared/rules.js` — schema delle regole modificabili, preset (Classico FIBUR, Reale, Buraco Aberto/Fechado), testo delle regole generato dalla configurazione. Condiviso server/browser (UMD).
+- `shared/rules.js` — schema delle regole modificabili, preset (Classico da torneo, Reale, Buraco Aberto/Fechado), testo delle regole generato dalla configurazione. Condiviso server/browser (UMD).
 - `shared/melds.js` — analisi di scale/tris e divisione in più combinazioni (`partitionMelds`): il server valida, il browser fa l'anteprima.
 - `server/engine.js` — motore autoritativo, stato JSON puro; `apply()` è transazionale (in caso di errore ripristina). Le giocate NON si annullano; da vulnerabili una calata sotto i 75 punti è rifiutata.
 - `server/bot.js` — computer a quattro livelli (`memo.level`: facile/normale/difficile/esperto; l'esperto ricorda le carte raccolte, `g.known`).
 - `server/social.js` — profili: nickname univoco, password obbligatoria (scrypt), codice di recupero/QR, email facoltativa confermata con codice (invio da `server/posta.js` col Gmail del gioco, credenziali in `~/.burraco-mail` scritte con `android-server.sh --set-mail`; nelle prove `MAIL_TEST=1`), recupero password via email o codice, una chiave per dispositivo (cambiando password gli altri vengono scollegati), amici, inviti, eliminazione profilo. `ACCOUNTS_EPOCH` in `server/archivio.js` azzera i profili se alzato.
+- Regole e prudenza legale: `public/regole.html` (regole di comportamento), età minima 14 anni (spunta alla creazione del profilo, controllata anche da `server/social.js`: `adult: true` in `startSignup`/`setNick`), filtro delle parolacce `shared/parole.js` (nickname rifiutati, chat con asterischi; tre gruppi OVUNQUE/INIZIO/PAROLA + SALVE per evitare i falsi positivi, prove in `selftest.js`).
 - `server/index.js` — avvio: Express, Socket.IO, collega i moduli. I moduli condividono stato e funzioni tramite `server/contesto.js` (ognuno si registra con `Object.assign(ctx, {...})` e chiama gli altri con piccoli "rimandi" `(...a) => ctx.f(...a)`):
   `config.js` (impostazioni), `admin.js` (/health, pagina di stato), `tavoli.js` (tavoli, posti, stato ai giocatori, pronto, avvio), `turni.js` (timer, computer, reazioni),
   `statistiche.js` (classifica, trofei, sfida del giorno), `gare.js` (campionati, tornei), `archivio.js` (salvataggio/ripristino),

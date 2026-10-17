@@ -128,7 +128,7 @@ const GAMES = [
     await cdp.run(`localStorage.setItem('bur_prefs', JSON.stringify({ lang: 'it' })); return true;`);
     await cdp.send('Page.navigate', { url: URL });
     await wait(2500);
-    await cdp.run(`const r = await emit('setNick', { nick: 'Robot_Anim', password: 'robot1234' }); if (!r.ok) throw new Error(r.error); return 1;`);
+    await cdp.run(`const r = await emit('setNick', { nick: 'Robot_Anim', password: 'robot1234', adult: true }); if (!r.ok) throw new Error(r.error); return 1;`);
     await cdp.run(PROBE);
 
     const check = (game, what, r, { expectEarly, expectLanding = expectEarly, mayFade = false, tol = 4 }) => {

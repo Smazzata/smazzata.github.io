@@ -71,9 +71,10 @@
 
   const PRESETS = [
     {
-      id: 'classico', name: 'Burraco Classico (FIBUR)',
-      tagline: 'La versione italiana ufficiale da torneo: jolly e pinelle, scale e tris, pozzetti.',
-      intro: `<p>La forma più diffusa in Italia, codificata dalla <b>FIBUR</b> (Federazione Italiana Burraco).
+      // l'id 'classico' resta quello di sempre: lo usano presetOf e lo storico delle partite
+      id: 'classico', name: 'Burraco Classico (regole da torneo)',
+      tagline: 'La versione italiana da torneo: jolly e pinelle, scale e tris, pozzetti.',
+      intro: `<p>La forma più diffusa in Italia, con le regole dei tornei (regolamento della <b>FIBUR</b>, Federazione Italiana Burraco).
         Si gioca di norma in 4 a coppie, ma anche in 2 o in 3. Con la regola opzionale del <b>semipulito</b> (150 punti)
         molti circoli premiano i burraco con una sola matta e almeno 7 carte naturali in fila.</p>`,
       rules: { ...BASE_IT },

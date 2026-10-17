@@ -7,6 +7,7 @@ const E = require('./engine');
 const Games = require('./games');
 const Rules = require('../shared/rules');
 const Daily = require('./daily');
+const Parole = require('../shared/parole');
 const { BOT_SPEEDS } = require('./config');
 const ctx = require('./contesto');
 /** dimensione massima di un messaggio vocale (15 secondi di voce compressa stanno in ~60 KB) */
@@ -420,7 +421,8 @@ module.exports.register = function register(socket, handler) {
 
   socket.on('chat', handler(({ text }) => {
     const room = getRoom(socket);
-    const t = String(text || '').replace(/[<>]/g, '').trim().slice(0, 140);
+    // le parole vietate dalle regole (shared/parole.js) arrivano agli altri coperte da asterischi
+    const t = Parole.censura(String(text || '').replace(/[<>]/g, '').trim().slice(0, 140));
     if (!t) return;
     const seat = seatOfToken(room, socket.data.token);
     const name = seat >= 0 ? room.seats[seat].name : 'Ospite';

@@ -14,7 +14,7 @@ Smazzata è il tavolo da gioco di carte per giocare con gli amici, in famiglia o
 Gratis.
 
 🃏 TANTI GIOCHI, UN SOLO TAVOLO
-• Burraco (Classico FIBUR, Reale, Buraco brasiliano Aberto e Fechado)
+• Burraco (Classico con le regole da torneo, Reale, Buraco brasiliano Aberto e Fechado)
 • Scala 40 • Ramino • Canasta
 • Scopa e Scopone scientifico • Briscola e Briscola in 5 (a chiamata) • Tressette (con accusi)
 • Rubamazzetto
@@ -56,7 +56,7 @@ Smazzata is the card table for playing with friends, family or against the compu
 Free to play.
 
 🃏 MANY GAMES, ONE TABLE
-• Burraco (Classic FIBUR, Royal, Brazilian Buraco Aberto and Fechado)
+• Burraco (Classic with tournament rules, Royal, Brazilian Buraco Aberto and Fechado)
 • Scala 40 • Ramino (rummy) • Canasta
 • Scopa and Scopone scientifico • Briscola and Briscola in 5 (with a called partner) • Tressette (with declarations)
 • Rubamazzetto
@@ -98,7 +98,7 @@ Smazzata es la mesa de cartas para jugar con amigos, en familia o contra la comp
 Gratis.
 
 🃏 MUCHOS JUEGOS, UNA SOLA MESA
-• Burraco (Clásico FIBUR, Real, Buraco brasileño Aberto y Fechado)
+• Burraco (Clásico con reglas de torneo, Real, Buraco brasileño Aberto y Fechado)
 • Scala 40 • Ramino (rummy) • Canasta
 • Escoba y Scopone científico • Brisca y Briscola in 5 (con socio llamado) • Tressette (con cantos)
 • Rubamazzetto
@@ -140,7 +140,7 @@ Smazzata é a mesa de cartas para jogar com amigos, em família ou contra o comp
 Grátis.
 
 🃏 MUITOS JOGOS, UMA SÓ MESA
-• Buraco (Aberto e Fechado) e Burraco italiano (Clássico FIBUR, Real)
+• Buraco (Aberto e Fechado) e Burraco italiano (Clássico com regras de torneio, Real)
 • Scala 40 • Ramino (rummy) • Canastra
 • Escopa e Scopone científico • Bisca e Briscola in 5 (com parceiro chamado) • Tressette (com acusos)
 • Rouba-monte

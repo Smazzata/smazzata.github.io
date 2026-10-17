@@ -104,6 +104,9 @@ const HELPERS = `
       const i = document.querySelector('#nick'); i.value = 'Robot_UI'; i.dispatchEvent(new Event('input', { bubbles: true }));
       const p = document.querySelector('#nickpw'); p.value = 'robot1234'; p.dispatchEvent(new Event('input', { bubbles: true }));
       await __W(500); __tap('[data-act="claimNick"]'); await __W(800);
+      if (document.querySelector('[data-act="savedCode"]')) throw new Error('profilo creato senza la spunta dei 14 anni');
+      __tap('#nickage'); await __W(200);
+      __tap('[data-act="claimNick"]'); await __W(800);
       if (!document.querySelector('[data-act="savedCode"]')) throw new Error('codice di recupero non mostrato');
       __tap('[data-act="savedCode"]'); await __W(300);
       return document.querySelector('.hello') ? document.querySelector('.hello').innerText : null;`);

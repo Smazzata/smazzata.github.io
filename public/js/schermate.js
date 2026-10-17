@@ -104,8 +104,9 @@
               ${S.mailOn ? `<label class="field"><span>La tua email</span>
               <input type="email" id="nickmail" maxlength="250" autocomplete="email" placeholder="nome@esempio.it" value="${esc(S.mailDraft || '')}"></label>
               <p class="muted small" style="margin:0 0 6px">Se dimentichi la password ti mandiamo un codice per sceglierne una nuova.</p>` : ''}
+              <label class="agecheck"><input type="checkbox" id="nickage"${S.ageOk ? ' checked' : ''}><span><span>Ho almeno 14 anni e accetto le regole</span> (<a href="regole.html">Regole</a> · <a href="privacy.html">Privacy</a>)</span></label>
               <div class="row"><button class="btn primary grow" data-act="claimNick">Crea il profilo</button></div>
-              <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a> · <a href="privacy.html">Privacy</a></p>`}
+              <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a></p>`}
         ${homeButtonsHTML()}
       </div>
       ${!OFFLINE && S.myGames && S.myGames.length ? `<div class="panel"><h2>🐢 Le tue partite con calma</h2>
@@ -154,6 +155,7 @@
       ${item('howto', '❓', 'Come si usa l\'app')}
       ${item('settings', '⚙️', 'Impostazioni')}
       ${OFFLINE ? '' : item('report', '🐞', 'Segnala un problema')}
+      <a class="menuitem" href="regole.html"><span>📜</span>Regole di comportamento</a>
       <a class="menuitem" href="privacy.html"><span>🔒</span>Privacy</a></div>`);
   }
 

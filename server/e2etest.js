@@ -59,7 +59,7 @@ async function codeFor(to, from = 0) {
 /** registrazione completa: dati → codice per email → profilo */
 async function signup(p, nick, email = mailOf()) {
   const n = mailbox().length;
-  const st = await p.call('startSignup', { nick, password: 'prova123', email });
+  const st = await p.call('startSignup', { nick, password: 'prova123', email, adult: true });
   if (!st.ok) return st;
   return p.call('finishSignup', { code: await codeFor(email.toLowerCase(), n) });
 }
@@ -93,7 +93,17 @@ async function signup(p, nick, email = mailOf()) {
     assert(!(await A.call('startSignup', { nick: 'Anna', password: 'prova123' })).ok, 'senza email niente codice');
     assert(!(await A.call('startSignup', { nick: 'Anna', password: 'prova123', email: 'non-valida' })).ok, 'email non valida');
     assert(ck.ok && ck.available, 'Anna disponibile');
+    // età minima e regole: senza la spunta niente codice (lo controlla il server, non solo il browser)
+    assert(!(await A.call('startSignup', { nick: 'Anna', password: 'prova123', email: mailOf() })).ok, 'senza la spunta dei 14 anni niente profilo');
+    // nickname volgari rifiutati (anche con numeri al posto delle lettere), «Scopa» permesso
+    for (const bad of ['Stronzo88', 'C4zz0ne', 'xx_puta_xx']) {
+      assert(!(await A.call('checkNick', { nick: bad })).available, `nickname volgare rifiutato: ${bad}`);
+      assert(!(await A.call('startSignup', { nick: bad, password: 'prova123', email: mailOf(), adult: true })).ok, `registrazione rifiutata: ${bad}`);
+    }
+    assert((await A.call('checkNick', { nick: 'Scopa_Re' })).available, '«Scopa» è un gioco: nickname permesso');
     assert((await signup(A, 'Anna')).ok);
+    assert(!(await A.call('setNick', { nick: 'Merdaccia' })).ok, 'cambio nickname volgare rifiutato');
+    step('età minima e nickname volgari rifiutati dal server');
     ck = await B.call('checkNick', { nick: 'ANNA' });
     assert(ck.ok && !ck.available, 'nickname già preso (maiuscole/minuscole non contano)');
     assert(!(await signup(B, 'anna')).ok, 'non si può prendere un nick occupato');
@@ -112,6 +122,10 @@ async function signup(p, nick, email = mailOf()) {
     // segnalare un giocatore: arriva con il motivo e gli ultimi messaggi della chat del tavolo
     await A.call('chat', { text: 'messaggio di prova per la segnalazione' });
     await wait(100);
+    // parolacce in chat: arrivano coperte da asterischi, le parole innocue restano
+    await A.call('chat', { text: 'che stronzo, giochiamo a Scopa?' });
+    await B.until(() => B.chats.some((m) => m.text.includes('Scopa')), 'chat filtrata');
+    assert(B.chats.some((m) => m.text === 'che *******, giochiamo a Scopa?'), 'parolaccia coperta da asterischi in chat');
     assert(!(await B.call('reportPlayer', { nick: 'Anna', reason: 'boh' })).ok, 'motivo obbligatorio');
     assert((await B.call('reportPlayer', { nick: 'Anna', reason: 'offese', text: 'prova' })).ok);
     const st3 = await (await fetch(`${URL}/stato.json?k=${key}`)).json();
@@ -242,7 +256,7 @@ async function signup(p, nick, email = mailOf()) {
     // email: conferma con codice e recupero della password via email (in prova le email finiscono in un file)
     const lastCode = (to) => codeFor(to);
     const Y = player('Ylenia'); await Y.hello();
-    assert((await Y.call('startSignup', { nick: 'Ylenia', password: 'prova123', email: 'Ylenia@Esempio.it' })).ok, 'codice inviato alla registrazione');
+    assert((await Y.call('startSignup', { nick: 'Ylenia', password: 'prova123', email: 'Ylenia@Esempio.it', adult: true })).ok, 'codice inviato alla registrazione');
     const vcode = await lastCode('ylenia@esempio.it');
     assert(vcode, 'email con il codice');
     assert(!(await Y.call('finishSignup', { code: vcode === '000000' ? '111111' : '000000' })).ok, 'codice sbagliato');
@@ -254,7 +268,7 @@ async function signup(p, nick, email = mailOf()) {
     assert((await signup(X, 'Xenia')).ok);
     assert(!(await X.call('setEmail', { email: 'ylenia@esempio.it' })).ok, 'email già usata da un altro profilo');
     const X2 = player('Xavier'); await X2.hello();
-    assert(!(await X2.call('startSignup', { nick: 'Xavier', password: 'prova123', email: 'YLENIA@esempio.it' })).ok, 'registrazione con email già usata');
+    assert(!(await X2.call('startSignup', { nick: 'Xavier', password: 'prova123', email: 'YLENIA@esempio.it', adult: true })).ok, 'registrazione con email già usata');
     X2.sock.close();
     assert((await C.call('forgotPassword', { email: 'nessuno@esempio.it' })).ok, 'stessa risposta per email sconosciute');
     const mailsBefore = mailbox().length;
@@ -290,7 +304,7 @@ async function signup(p, nick, email = mailOf()) {
 
     // l'email arriva nella lingua del dispositivo
     const Es = player('Elena'); await Es.hello(undefined, 'es');
-    assert((await Es.call('startSignup', { nick: 'Elena', password: 'prova123', email: 'elena@esempio.es' })).ok);
+    assert((await Es.call('startSignup', { nick: 'Elena', password: 'prova123', email: 'elena@esempio.es', adult: true })).ok);
     let esMail = null; for (let i = 0; i < 50 && !esMail; i++) { esMail = mailbox().find((x) => x.to === 'elena@esempio.es'); await wait(20); }
     assert(esMail && /tu código es \d{6}/.test(esMail.subject) && /Hola Elena/.test(esMail.text), 'email in spagnolo');
     Es.sock.close();

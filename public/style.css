@@ -75,6 +75,8 @@ input, select { font: inherit; }
 .grow { flex: 1; }
 .muted { color: var(--muted); font-size: 14px; }
 .field { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
+.agecheck { display: flex; align-items: flex-start; gap: 6px; margin: 2px 0 8px; font-size: 13px; line-height: 1.35; }
+.agecheck input { width: 16px; height: 16px; margin: 1px 0 0; flex: none; accent-color: var(--gold); }
 .field input[type=text], .codein {
   padding: 11px; border-radius: 10px; border: 0; background: var(--paper); color: var(--ink); width: 100%; min-width: 0;
 }

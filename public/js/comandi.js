@@ -222,6 +222,7 @@
   document.addEventListener('input', (e) => {
     if (e.target.id === 'nick') { S.nickDraft = e.target.value; checkNickLive(e.target.value, '#nickStatus'); }
     if (e.target.id === 'nickpw') S.pwDraft = e.target.value;
+    if (e.target.id === 'nickage') S.ageOk = e.target.checked;
     if (e.target.id === 'nickmail') S.mailDraft = e.target.value;
     if (e.target.id === 'nickEdit') checkNickLive(e.target.value, '#nickStatusEdit');
     if (e.target.id === 'rpRange') replayGo(e.target.value);

@@ -18,7 +18,7 @@ Variabili d'ambiente: `PORT` (default 3000), `BOT_DELAY` in ms tra le mosse del 
 
 ## Come funziona
 
-- **Preset**: Burraco Classico (FIBUR), Burraco Reale, Buraco Brasiliano Aberto e Fechado.
+- **Preset**: Burraco Classico (regole da torneo), Burraco Reale, Buraco Brasiliano Aberto e Fechado.
   Sono punti di partenza: ogni regola (giocatori 2/3/4, jolly, matte, tris, scarti aperti/chiusi,
   condizioni di chiusura, fine tallone, vulnerabilità, punteggi e bonus, obiettivo) è modificabile.
 - **Spiegazione regole**: generata automaticamente dalla configurazione scelta (`shared/rules.js` → `describe`).

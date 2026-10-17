@@ -41,6 +41,23 @@ function filesTests() {
   console.log(`lingue: ${n} testi in inglese, spagnolo e portoghese`);
 }
 
+/** Parole vietate (shared/parole.js): nickname rifiutati e chat con asterischi, senza falsi positivi */
+function paroleTests() {
+  const P = require('../shared/parole');
+  const cattivi = ['Cazzone', 'CAZZZZO', 'c4zz0', 'Stronzo88', 'xXStronzoXx', 'Puta_88', 'vaffanculo', 'FuckYou', 'Merdaccia', 'PornoStar',
+    'Troia', 'idiota_1', 'putana', 'c.a.z.z.o', 'Mierda', 'Caralho', 'Coglione', 'B1tch'];
+  const buoni = ['Scopa', 'Scopone', 'ReDellaScopa', 'Simone_88', 'Calcolo', 'Articulo', 'Computadora', 'Disputa', 'Cazzuola', 'Stronzio',
+    'Puttanesca', 'Zoccolo', 'Montenegro', 'Nazionale', 'Scunthorpe', 'Dickens', 'Shiitake', 'Cono', 'Essex', 'Negroni', 'Troisi',
+    'Putting', 'Cumulo', 'Fiche', 'Cassandra', 'Analisi', 'Rape', 'Briscola', 'Tressette', 'Burraco', 'Canasta', 'Pinella', 'Matta'];
+  for (const n of cattivi) assert(P.nickVietato(n), `nickname volgare non rifiutato: ${n}`);
+  for (const n of buoni) assert(!P.nickVietato(n), `nickname innocuo rifiutato: ${n}`);
+  assert.strictEqual(P.censura('Sei uno STRONZO, c4zz0! Giochiamo a Scopa?'), 'Sei uno *******, *****! Giochiamo a Scopa?');
+  assert.strictEqual(P.censura('che merdaaa, il calcolo della disputa'), 'che *******, il calcolo della disputa');
+  assert.strictEqual(P.censura('Bella mano! Scopa e settebello 👏'), 'Bella mano! Scopa e settebello 👏', 'chat innocua intatta');
+  assert(!P.contiene('pasta alla puttanesca con la cazzuola'), 'parole innocue che contengono una radice vietata');
+  console.log(`parole vietate: ${cattivi.length} nickname rifiutati, ${buoni.length} innocui permessi, chat con asterischi`);
+}
+
 /** Archivio: salvataggio e rilettura, scritture solo delle voci cambiate, importazione da stato.json */
 /** Scala 40: combinazioni e partite simulate tra computer (carte conservate, moviola, fine partita) */
 function scala40Tests() {
@@ -500,6 +517,7 @@ canastaTests();
 presaTests();
 tournamentTests();
 filesTests();
+paroleTests();
 // TEST_RAPIDO=1 (npm run test:rapido): meno partite simulate, per le verifiche durante il lavoro.
 // Le prove su GitHub usano sempre la versione completa.
 const QUICK = !!process.env.TEST_RAPIDO;

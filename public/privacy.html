@@ -16,7 +16,7 @@
     td, th { border-bottom: 1px solid #e3ddcc; padding: 6px 4px; text-align: left; vertical-align: top; }
     a.back { display: inline-block; margin-bottom: 8px; color: #155d3a; font-weight: 600; text-decoration: none; }
     @media (prefers-color-scheme: dark) {
-      main { background: #1e2422; color: #e6e6e1; } h2 { color: #8fd3a8; } .muted { color: #a5aca8; } td, th { border-color: #3a413e; } a.back { color: #8fd3a8; }
+      main { background: #1e2422; color: #e6e6e1; } h2 { color: #8fd3a8; } .muted { color: #a5aca8; } td, th { border-color: #3a413e; } a.back, a { color: #8fd3a8; }
     }
   </style>
 </head>
@@ -24,7 +24,10 @@
 <main>
   <a class="back" href="/">← Torna al gioco</a>
   <h1>Privacy</h1>
-  <p class="muted">Smazzata è un'app gratuita di giochi di carte tra amici, gestita da Muliello S.F. Questa pagina spiega in modo semplice quali dati usiamo e come cancellarli.</p>
+  <p class="muted">Smazzata è un'app gratuita di giochi di carte tra amici, gestita da Muliello S.F. Questa pagina spiega in modo semplice quali dati usiamo e come cancellarli. Valgono anche le <a href="regole.html">regole di comportamento</a>.</p>
+
+  <h2>Chi gestisce i dati</h2>
+  <p>I dati sono gestiti da <b>Muliello S.F.</b>, che fa funzionare Smazzata. Per qualsiasi domanda o richiesta sui tuoi dati scrivi a <a href="mailto:smazzata.play@gmail.com">smazzata.play@gmail.com</a>.</p>
 
   <h2>In breve</h2>
   <ul>
@@ -32,6 +35,7 @@
     <li>Non chiediamo nome vero, numero di telefono o posizione.</li>
     <li>Non vendiamo i tuoi dati a nessuno.</li>
     <li>Puoi cancellare il tuo profilo in qualsiasi momento: <b>Profilo → Elimina il mio profilo</b>.</li>
+    <li>Per creare un profilo devi avere <b>almeno 14 anni</b> (in Italia è l'età minima per dare da soli il consenso ai servizi online). Se ci accorgiamo che un profilo è di una persona più giovane, lo eliminiamo.</li>
   </ul>
 
   <h2>Cosa salviamo sul server</h2>
@@ -39,6 +43,7 @@
     <tr><th>Dato</th><th>Perché</th></tr>
     <tr><td>Nickname e avatar (emoji e colore)</td><td>Per farti riconoscere al tavolo e dai tuoi amici.</td></tr>
     <tr><td>Codice di recupero e una chiave per ogni dispositivo che usi</td><td>Per riconoscere il tuo profilo, spostarlo su un altro dispositivo e scollegare gli altri dispositivi quando cambi password. Delle chiavi teniamo solo un'impronta.</td></tr>
+    <tr><td>Data in cui hai creato il profilo dichiarando di avere almeno 14 anni e accettando le regole</td><td>Per sapere che la dichiarazione è stata fatta.</td></tr>
     <tr><td>Password</td><td>Per entrare nel profilo da qualsiasi dispositivo. Non è mai salvata in chiaro: ne teniamo solo un'impronta irreversibile (scrypt).</td></tr>
     <tr><td>Email</td><td>Per mandarti il codice di conferma, il codice per scegliere una nuova password e un avviso quando la password cambia. Non è visibile agli altri giocatori.</td></tr>
     <tr><td>Amici, richieste di amicizia, giocatori bloccati</td><td>Per le funzioni Amici e Inviti.</td></tr>
@@ -81,10 +86,10 @@
     <li><b>Profilo → Elimina il mio profilo</b> libera il nickname e cancella codice, password, email, avatar, amicizie, blocchi, statistiche, trofei, posto in classifica e iscrizioni alle notifiche.</li>
     <li>Le copie nei backup scompaiono da sole entro 7 giorni.</li>
     <li>Senza l'app (dal browser) o se non riesci più a entrare: <a href="elimina-profilo.html">come eliminare il profilo</a>.</li>
-    <li>Per qualsiasi richiesta (per esempio cancellare una segnalazione) scrivi al gestore con <b>🐞 Segnala un problema</b>.</li>
+    <li>Per qualsiasi richiesta (per esempio cancellare una segnalazione) scrivi a <a href="mailto:smazzata.play@gmail.com">smazzata.play@gmail.com</a> oppure usa <b>🐞 Segnala un problema</b>.</li>
   </ul>
 
-  <p class="muted">Ultimo aggiornamento: ottobre 2026.</p>
+  <p class="muted">Ultimo aggiornamento: 17 ottobre 2026.</p>
 </main>
 </body>
 </html>

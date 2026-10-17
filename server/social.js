@@ -13,9 +13,13 @@ const { GameError } = require('./engine');
 const Premi = require('../shared/premi');
 const Levels = require('./levels');
 const Posta = require('./posta');
+const Parole = require('../shared/parole');
 
 const NICK_RE = /^[A-Za-z0-9_.-]{3,16}$/;
 const CODE_ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+/** età minima per un profilo (in Italia l'età del consenso digitale): chi lo crea lo dichiara con la spunta */
+const ETA_MINIMA = 14;
+const NO_ETA = `Per creare un profilo devi avere almeno ${ETA_MINIMA} anni e accettare le regole`;
 const RESERVED = new Set(['admin', 'host', 'bot', 'computer', 'burraco', 'tu', 'server']);
 const AVATAR_EMOJI = ['😀', '😎', '🤠', '🥳', '😇', '🤓', '🧐', '😺', '🐶', '🦊', '🐻', '🐼', '🐸', '🦁', '🐯', '🐵', '🦄', '🐙', '🦉', '🐢', '🌻', '🍀', '⭐', '🔥', '♠️', '♥️', '♦️', '♣️'];
 const AVATAR_COLORS = ['#f2c14e', '#64b5f6', '#ef7d7d', '#81c784', '#ba68c8', '#ffb74d', '#4dd0e1', '#e0e0e0'];
@@ -51,6 +55,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     nick = String(nick || '').trim();
     if (!NICK_RE.test(nick)) return { available: false, reason: 'Da 3 a 16 caratteri: lettere, numeri, punto, trattino o _' };
     if (RESERVED.has(nick.toLowerCase())) return { available: false, reason: 'Nickname riservato' };
+    if (Parole.nickVietato(nick)) return { available: false, reason: 'Nickname non permesso dalle regole' };
     const owner = nickIndex.get(nick.toLowerCase());
     if (owner && owner !== selfToken) return { available: false, reason: 'Già preso' };
     return { available: true };
@@ -220,7 +225,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
 
     socket.on('checkNick', handler(({ nick }) => checkNick(nick, socket.data.token)));
 
-    socket.on('setNick', handler(({ nick, password }) => {
+    socket.on('setNick', handler(({ nick, password, adult }) => {
       const token = me();
       nick = String(nick || '').trim();
       const ok = checkNick(nick, token);
@@ -228,7 +233,9 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       const s = sess(token);
       // con le email attive un profilo nuovo nasce solo confermando l'email (startSignup → finishSignup)
       if (!s.nick && Posta.enabled()) fail("Conferma l'email per creare il profilo");
+      if (!s.nick && adult !== true) fail(NO_ETA);
       if (!s.nick || !s.pw) setPw(s, password);
+      if (!s.nick) s.terms = Date.now(); // quando ha dichiarato l'età e accettato le regole
       if (s.nick) nickIndex.delete(s.nick.toLowerCase());
       s.nick = nick;
       s.name = nick;
@@ -332,11 +339,12 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     }));
 
     // --- Registrazione con email: il profilo nasce solo dopo aver scritto il codice arrivato per email ---
-    socket.on('startSignup', handler(async ({ nick, password, email }) => {
+    socket.on('startSignup', handler(async ({ nick, password, email, adult }) => {
       const token = me();
       const s = sess(token);
       if (s.nick) fail('Hai già un profilo');
       if (!Posta.enabled()) fail('Le email non sono attive su questo server');
+      if (adult !== true) fail(NO_ETA);
       nick = String(nick || '').trim();
       const ok = checkNick(nick, token);
       if (!ok.available) fail(ok.reason);
@@ -372,6 +380,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       s.name = su.nick;
       s.pw = su.pw;
       s.email = su.email;
+      s.terms = Date.now(); // quando ha dichiarato l'età e accettato le regole (spunta chiesta da startSignup)
       s.signup = null;
       nickIndex.set(s.nick.toLowerCase(), token);
       emailIndex.set(s.email, token);
@@ -458,7 +467,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if (s.nick) nickIndex.delete(s.nick.toLowerCase());
       if (s.code) codeIndex.delete(s.code);
       if (s.email) emailIndex.delete(s.email);
-      delete s.nick; delete s.code; delete s.pw; delete s.avatar; delete s.email; delete s.emailCode; delete s.resetCode;
+      delete s.nick; delete s.code; delete s.pw; delete s.avatar; delete s.email; delete s.emailCode; delete s.resetCode; delete s.terms;
       s.friends = []; s.reqIn = []; s.reqOut = []; s.blocked = []; s.name = 'Giocatore';
       if (onDelete) onDelete(token);
       push(token);
