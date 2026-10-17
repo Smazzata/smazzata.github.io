@@ -37,6 +37,42 @@ function gameStats(e, gid) {
 }
 
 /**
+ * Variazioni di Elo di una partita classificata, con i punteggi di tutti prima della partita. Chi ha abbandonato
+ * (posto al computer, s.leftToken) conta ancora come persona, e per lui la partita vale come persa.
+ */
+function rankedDeltas(room, gid) {
+  const g = room.game;
+  const tokenOf = (s) => s && (s.token || s.leftToken);
+  const seats = room.seats.map((s) => {
+    const x = ((leaderboard.get(tokenOf(s)) || {}).byGame || {})[gid] || {};
+    return { human: !!tokenOf(s), rating: x.elo || Elo.START, games: x.rankedGames || 0 };
+  });
+  const teams = g.teams.map((t) => t.members);
+  const out = Elo.deltas(seats, teams, g.winners || []);
+  room.seats.forEach((s, seat) => {
+    if (!s || !s.leftToken) return;
+    const mine = teams.find((t) => t.includes(seat)) || [seat];
+    const lost = Elo.deltas(seats, teams, teams.filter((t) => t !== mine).flat())[seat];
+    out[seat] = Math.min(out[seat], lost);
+  });
+  return out;
+}
+
+/** Applica una variazione di Elo (partita classificata) al giocatore; e = la sua scheda già in modifica, se c'è */
+function applyElo(token, gid, delta, won, e) {
+  const own = !e;
+  if (own) { e = leaderboard.get(token); if (!e) return; e = { ...e }; }
+  const gs = gameStats(e, gid);
+  gs.rankedGames = (gs.rankedGames || 0) + 1;
+  if (won) gs.rankedWins = (gs.rankedWins || 0) + 1;
+  const before = gs.elo || Elo.START;
+  gs.elo = before + delta;
+  gs.eloMax = Math.max(gs.eloMax || Elo.START, gs.elo);
+  if (own) leaderboard.set(token, e);
+  for (const sock of io.sockets.sockets.values()) if (sock.data.token === token) sock.emit('elo', { game: gid, before, after: gs.elo });
+}
+
+/**
  * Statistiche dei giocatori sul server: aggiornate a ogni fine smazzata e a fine partita
  * (una sola volta ciascuna), con lo storico delle ultime 20 partite.
  */
@@ -50,14 +86,11 @@ function recordLeaderboard(room) {
   if (gameEnds) recordSeries(room);
   // punteggio Elo: si calcola una volta per partita, con i punteggi di tutti prima della partita
   const eloGid = Games.idOf(room.rules);
-  // le partite giocate sul telefono (risultato mandato dal dispositivo) non cambiano l'Elo: si potrebbero falsificare
-  const eloDelta = gameEnds && !room.tutorial && !room.localGame ? Elo.deltas(
-    room.seats.map((s) => {
-      if (!s || s.isBot || !s.token) return { human: false, rating: Elo.BOT_RATING[room.botLevel || 'normale'] || Elo.START, games: 0 };
-      const x = ((leaderboard.get(s.token) || {}).byGame || {})[eloGid] || {};
-      return { human: true, rating: x.elo || Elo.START, games: x.games || 0 };
-    }),
-    g.teams.map((t) => t.members), g.winners || []) : null;
+  // solo le partite classificate cambiano l'Elo (vedi Elo.isRanked): le amichevoli contano per tutto il resto
+  const ranked = gameEnds && Elo.isRanked(room);
+  const eloDelta = ranked ? rankedDeltas(room, eloGid) : null;
+  // chi ha abbandonato una classificata (posto passato al computer) perde comunque i suoi punti
+  if (eloDelta) room.seats.forEach((s, seat) => { if (s && s.isBot && s.leftToken) applyElo(s.leftToken, eloGid, eloDelta[seat], false); });
   room.seats.forEach((s, seat) => {
     if (!s || s.isBot || !s.token) return;
     const e = { ...STATS0, ...(leaderboard.get(s.token) || {}) };
@@ -97,15 +130,10 @@ function recordLeaderboard(room) {
         if (g.winners.includes(seat)) x.wins++;
         x.points += g.scores[seat];
       }
-      if (eloDelta) {
-        const before = gs.elo || Elo.START;
-        gs.elo = before + eloDelta[seat];
-        gs.eloMax = Math.max(gs.eloMax || Elo.START, gs.elo);
-        for (const sock of io.sockets.sockets.values()) if (sock.data.token === s.token) sock.emit('elo', { game: gid, before, after: gs.elo });
-      }
+      if (eloDelta) applyElo(s.token, gid, eloDelta[seat], g.winners.includes(seat), e);
       const team = g.teams.find((t) => t.members.includes(seat));
       e.history = [{
-        at: Date.now(), game: gid, preset: Games.of(room).presetOf(room.rules) || 'personalizzate', won: g.winners.includes(seat),
+        at: Date.now(), game: gid, preset: Games.of(room).presetOf(room.rules) || 'personalizzate', won: g.winners.includes(seat), ranked: !!ranked,
         hands: g.history.length,
         teams: g.teams.map((t) => ({ names: t.members.map((x) => room.seats[x].name), score: g.scores[t.members[0]], mine: t === team })),
         tokens: room.seats.filter((x) => x && !x.isBot && x.token).map((x) => x.token),
@@ -212,7 +240,7 @@ function publicStats(e) {
     name: e.name, games: e.games, wins: e.wins, points: e.points, burraco: e.burraco, hands: e.hands || 0,
     handsWon: e.handsWon || 0, closures: e.closures || 0, bestHand: e.bestHand == null ? null : e.bestHand,
     avgHand: e.hands ? Math.round((e.handPoints || 0) / e.hands) : null,
-    elo: e.elo || null, eloMax: e.eloMax || null,
+    elo: e.elo || null, eloMax: e.eloMax || null, rankedGames: e.rankedGames || 0, rankedWins: e.rankedWins || 0,
   };
 }
 

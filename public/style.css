@@ -613,6 +613,10 @@ body[data-theme="notte"] .trophy { border-color: #3a413e; }
 body[data-theme="notte"] .trophy.got { background: #3a321a; border-color: #b98f2a; }
 body[data-theme="notte"] .trophy span { color: #a5aca8; }
 
+/* partita classificata (cambia l'Elo): piccola etichetta dorata */
+.rankbadge { display: inline-block; padding: 1px 7px; border-radius: 99px; border: 1px solid var(--gold-2); color: var(--gold);
+  background: rgba(242,193,78,.14); font: 800 11px/1.4 "Nunito", system-ui, sans-serif; vertical-align: middle; white-space: nowrap; }
+.modal-box .rankbadge { color: var(--ink); } /* sul foglio chiaro delle finestre */
 /* livello del giocatore */
 .lvl { display: inline-flex; align-items: center; justify-content: center; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 99px;
   background: linear-gradient(180deg, #ffd56b, #d9a326); color: #2b1d00; font: 800 10px/1 system-ui, sans-serif; vertical-align: middle;

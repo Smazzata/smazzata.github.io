@@ -409,6 +409,7 @@ async function signup(p, nick, email = mailOf()) {
     assert(ms.ok && ms.stats.games === 1 && ms.stats.hands >= 1 && ms.history.length === 1, 'statistiche e storico di Anna');
     assert(ms.history[0].teams.some((t) => t.mine), 'nello storico è segnata la propria squadra');
     assert(ms.byGame.burraco && ms.byGame.burraco.games === 1 && !ms.byGame.scala40, 'statistiche del Burraco separate');
+    assert(!ms.byGame.burraco.elo && !ms.byGame.burraco.rankedGames && !A.state.room.ranked && ms.history[0].ranked === false, 'partita amichevole: Elo invariato');
     assert(ms.timeline.length === 1 && ms.timeline[0].g === 'burraco' && ms.timeline[0].o.includes('Bruno'), 'cronologia per i grafici (con gli avversari)');
     // trofei: "Tra amici" (Anna e Bruno sono amici), avvisi in tempo reale, bacheca con l'avanzamento
     await A.until(() => A.trophies.includes('amici'), 'avviso del trofeo');
@@ -537,8 +538,25 @@ async function signup(p, nick, email = mailOf()) {
     const q2 = await Q2.call('quickPlay', { n: 2 });
     assert(q1.ok && q2.ok && q1.code === q2.code, 'stesso tavolo veloce');
     await Q1.until((s) => s.game && s.room.quick === 2, 'partita veloce avviata');
+    assert(Q1.state.room.ranked && Q2.state.room.ranked, 'gioca subito tra persone: partita classificata');
+    // classificata: chi si arrende perde punti Elo, l'avversario li guadagna
+    assert((await Q1.call('surrender')).done);
+    await Q2.until((s) => s.game && s.game.over, 'classificata finita');
+    const eloQ = async (P) => ((await P.call('myStats')).byGame.burraco || {});
+    let e1 = await eloQ(Q1), e2 = await eloQ(Q2);
+    assert(e1.elo < 1000 && e2.elo > 1000 && e1.rankedGames === 1 && e2.rankedWins === 1, `Elo cambiato (${e1.elo}, ${e2.elo})`);
+    // rivincita, poi Quinto abbandona (posto al computer) e Sesto si arrende: per chi abbandona conta come persa
+    assert((await Q1.call('ready')).ok); assert((await Q2.call('ready')).ok);
+    await Q2.until((s) => s.game && !s.game.over, 'rivincita classificata');
+    assert((await Q1.call('leaveRoom', { abandon: true })).ok);
+    await Q2.until((s) => s.room.seats.some((x) => x && x.isBot), 'posto di Quinto al computer');
+    assert(Q2.state.room.ranked, 'resta classificata anche dopo un abbandono');
+    assert((await Q2.call('surrender')).done);
+    await Q2.until((s) => s.game && s.game.over, 'seconda classificata finita');
+    const f1 = await eloQ(Q1), f2 = await eloQ(Q2);
+    assert(f1.elo < e1.elo && f2.elo < e2.elo && f1.rankedGames === 2, `chi abbandona perde comunque (${f1.elo}, ${f2.elo})`);
     Q1.sock.close(); Q2.sock.close();
-    step('gioca subito: tavolo veloce che parte da solo quando è pieno');
+    step('gioca subito: tavolo veloce che parte da solo, classificata (Elo che cambia, anche per chi abbandona)');
 
     // giocatore offline: senza timer, il computer gioca al suo posto e il tavolo non si blocca
     const O1 = player('Ottavio'), O2 = player('Nora');

@@ -14,6 +14,9 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage non disponibile */ } },
   };
 
+  // spiegazione dell'etichetta 🏅 delle partite classificate (le sole che cambiano l'Elo)
+  const RANKED_TIP = 'Partita classificata: cambia il punteggio Elo';
+
   // Senza internet (o aprendo la pagina con ?offline=1) si gioca contro il computer con il server locale
   const OFFLINE = (() => {
     try {

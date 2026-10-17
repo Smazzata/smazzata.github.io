@@ -38,7 +38,7 @@ function saveNow() {
       tournaments: [...tournaments.values()],
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
-        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series, daily: r.daily, seed: r.seed, slow: r.slow, lastActionAt: r.lastActionAt, tournament: r.tournament,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, series: r.series, daily: r.daily, seed: r.seed, slow: r.slow, lastActionAt: r.lastActionAt, tournament: r.tournament, rankedGame: r.rankedGame,
       })),
     };
     store.save(data);

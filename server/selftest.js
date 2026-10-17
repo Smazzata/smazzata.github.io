@@ -354,6 +354,12 @@ function eloTests() {
   assert(d[0] > 0 && d[0] <= 6 && d[1] === 0, 'battere il computer facile vale poco; il computer non cambia');
   d = Elo.deltas([h(1000, 0), h(1000, 0), h(1000, 0), h(1000, 0)], [[0, 2], [1, 3]], [1, 3]);
   assert(d[1] === 20 && d[3] === 20 && d[0] === -20, 'a coppie: tutta la coppia sale o scende');
+  // classificate: solo «Gioca subito» tra persone; il resto è amichevole
+  const PU = { token: 'x' }, CO = { isBot: true };
+  assert(Elo.isRanked({ quick: 2, seats: [PU, null] }) && Elo.isRanked({ quick: 2, seats: [PU, PU] }), 'tavolo veloce tra persone: classificata');
+  assert(!Elo.isRanked({ quick: 2, seats: [PU, CO] }), 'con il computer: amichevole');
+  assert(!Elo.isRanked({ seats: [PU, PU] }) && !Elo.isRanked({ quick: 2, tournament: {}, seats: [PU, PU] }), 'tavolo creato a mano o torneo: amichevole');
+  assert(Elo.isRanked({ quick: 2, game: {}, rankedGame: true, seats: [PU, CO] }), "decisa all'avvio: un abbandono non la cambia");
   console.log('punteggio Elo OK');
   // premi: sbloccati per livello o trofei
   const P = require('../shared/premi');

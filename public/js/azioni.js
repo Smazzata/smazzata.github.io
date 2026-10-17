@@ -430,6 +430,7 @@
       if (!requireName()) return;
       openModal('quick', `<div class="result" style="text-align:center"><h2>⚡ Gioca subito</h2>
         <p>Entri in un tavolo con chi sta cercando una partita adesso. Si parte appena il tavolo è pieno (oppure puoi riempirlo con il computer).</p>
+        <p class="muted small"><span class="rankbadge">🏅 Classificata</span> Tra sole persone la partita cambia il tuo punteggio Elo; con il computer al tavolo è amichevole.</p>
         <div class="row" style="justify-content:center"><button class="btn primary big" data-act="quick" data-n="2">In 2</button><button class="btn primary big" data-act="quick" data-n="4">In 4 (a coppie)</button></div></div>`);
     },
     async quick(el) { const r = await emit('quickPlay', { n: Number(el.dataset.n) }); if (r.ok) closeModal(); },
@@ -496,7 +497,8 @@
       const rows = r.list.map((e, i) => `<tr class="${e.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][i] || i + 1}</td><td style="text-align:left">${esc(e.name)} ${lvlHTML(e.level)}${e.me ? ' (tu)' : ''}</td><td><b>${e.elo}</b></td><td>${e.wins}/${e.games}</td><td>${Math.round((e.wins / e.games) * 100)}%</td></tr>`).join('');
       openModal('leaders', `<div class="result"><h2>🏆 Classifica</h2>${tabs}
         ${rows ? `<table><tr><th></th><th style="text-align:left">Giocatore</th><th title="Punteggio di bravura">Elo</th><th>Vinte</th><th>%</th></tr>${rows}</table>` : '<p class="muted">Ancora nessuna partita completata. La classifica conta le partite finite tra giocatori umani (anche contro il computer).</p>'}
-        <p class="muted small">Classifica di tutti i giocatori di questo server. <b>Elo</b> = punteggio di bravura: si parte da 1000, sale battendo avversari forti (anche il computer, secondo il livello) e scende perdendo.</p></div>`);
+        <p class="muted small">Classifica di tutti i giocatori di questo server. <b>Elo</b> = punteggio di bravura: si parte da 1000, sale battendo avversari forti e scende perdendo.</p>
+        <p class="muted small">L'Elo cambia solo con le partite classificate (⚡ Gioca subito tra persone). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei.</p></div>`);
     },
     resetStats() { if (confirm('Azzerare le statistiche?')) { store.set('bur_stats', {}); statsModal(); } },
     musicStop() { emit('setMusic', { url: '' }).then(() => musicModal()); },

@@ -6,6 +6,7 @@
 const E = require('./engine');
 const Games = require('./games');
 const Daily = require('./daily');
+const Elo = require('./elo');
 const Levels = require('./levels');
 const { HOME_URL } = require('./config');
 const ctx = require('./contesto');
@@ -74,6 +75,7 @@ function roomInfo(room) {
     tournament: room.tournament ? { id: room.tournament.id, name: room.tournament.name, round: room.tournament.round } : null,
     daily: room.daily ? { date: room.daily, title: Daily.challenge(room.daily).title } : null,
     quick: room.quick || 0,
+    ranked: Elo.isRanked(room), // partita classificata: cambia l'Elo
     series: room.series || null,
     surrender: room.surrenderVotes && room.surrenderVotes.length ? room.surrenderVotes : null,
     turnLeft: room.turnDeadline ? Math.max(0, room.turnDeadline - Date.now()) : null,
@@ -122,7 +124,7 @@ function myGames(token) {
     out.push({
       code: room.code, started: !!g, over: !!(g && g.over), myTurn,
       players: room.seats.map((x, i) => (x ? { name: x.name, isBot: !!x.isBot, me: i === seat } : null)),
-      handNo: g ? g.handNo : 0, scores: g ? g.teams.map((t) => g.scores[t.members[0]]) : [],
+      ranked: Elo.isRanked(room), handNo: g ? g.handNo : 0, scores: g ? g.teams.map((t) => g.scores[t.members[0]]) : [],
       at: room.lastActionAt || 0,
     });
   }
@@ -323,6 +325,7 @@ function startGame(room) {
   if (room.series && room.series.champion) room.series = { ...room.series, wins: Array(room.n).fill(0), games: 0, champion: null };
   clearTimeout(room.botTimer);
   room.botTimer = null;
+  room.rankedGame = Elo.isRanked({ ...room, game: null }); // classificata o amichevole: si decide ora, per tutta la partita
   room.game = GE(room).createGame({
     rules: room.rules,
     players: room.seats.map((s) => ({ name: s.name, isBot: !!s.isBot })),

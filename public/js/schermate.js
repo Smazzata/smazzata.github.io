@@ -111,7 +111,7 @@
       ${!OFFLINE && S.myGames && S.myGames.length ? `<div class="panel"><h2>🐢 Le tue partite con calma</h2>
         ${S.myGames.map((m) => `<button class="slowgame ${m.myTurn ? 'myturn' : ''}" data-act="openSlow" data-code="${esc(m.code)}">
           <span class="who">${m.players.filter((x) => x && !x.me).map((x) => esc(x.name)).join(', ') || 'In attesa di giocatori'}</span>
-          <span class="meta">${m.myTurn ? '<b>Tocca a te!</b>' : m.over ? 'Partita finita' : m.started ? `Smazzata ${m.handNo} · ${m.scores.join(' – ')}` : 'In sala d’attesa'}${m.at ? ` · ${agoText(m.at)}` : ''}</span></button>`).join('')}</div>` : ''}
+          <span class="meta">${m.ranked ? `<span class="rankbadge" title="${RANKED_TIP}">🏅</span> ` : ''}${m.myTurn ? '<b>Tocca a te!</b>' : m.over ? 'Partita finita' : m.started ? `Smazzata ${m.handNo} · ${m.scores.join(' – ')}` : 'In sala d’attesa'}${m.at ? ` · ${agoText(m.at)}` : ''}</span></button>`).join('')}</div>` : ''}
       ${IS_ANDROID && !IN_APP && !OFFLINE ? `<a class="apkbanner" href="${APK_URL}">
         <img src="icons/icon-192.png" alt=""><span><b>📱 Scarica l'app per Android</b><br>Installala e gioca a schermo intero</span></a>` : ''}
     </div>`;
@@ -250,8 +250,9 @@
         <div class="row" style="justify-content:center;margin-top:6px"><button class="btn ghost small" data-act="copy">Copia il link</button>${S.social && S.social.nick ? '<button class="btn ghost small" data-act="friends">👥 Dai miei amici</button>' : ''}</div>
       </div>
       <div class="panel">
-        <h2>Giocatori (${filled}/${r.n})</h2>
+        <h2>Giocatori (${filled}/${r.n}) ${r.ranked ? `<span class="rankbadge" title="${RANKED_TIP}">🏅 Classificata</span>` : ''}</h2>
         ${r.quick ? '<p class="muted">⚡ Tavolo veloce: la partita parte da sola appena il tavolo è pieno.</p>' : ''}
+        ${r.quick && !r.ranked ? '<p class="muted small">Con il computer al tavolo la partita è amichevole: il punteggio Elo non cambia.</p>' : ''}
         <div class="seats">${seats}</div>
         ${isHost ? `<div class="row" style="margin-top:12px">
             <button class="btn primary big grow" data-act="${ready ? 'start' : 'startFill'}">▶ Inizia la partita</button></div>
