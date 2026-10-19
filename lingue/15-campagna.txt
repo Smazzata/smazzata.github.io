@@ -21,20 +21,14 @@ Inizia · 5 livelli guidati ‖ Start · 5 guided levels ‖ Empezar · 5 nivele
 {0} · MONDO 1 ‖ {0} · WORLD 1 ‖ {0} · MUNDO 1 ‖ {0} · MUNDO 1
 Il prato delle carte ‖ The card meadow ‖ El prado de las cartas ‖ O prado das cartas
 {0}. Piccole prove, una scoperta alla volta. ‖ {0}. Small challenges, one discovery at a time. ‖ {0}. Pequeñas pruebas, un descubrimiento a la vez. ‖ {0}. Pequenos desafios, uma descoberta de cada vez.
-{0} / {1} livelli ‖ {0} / {1} levels ‖ {0} / {1} niveles ‖ {0} / {1} níveis
 Livelli completati ‖ Levels completed ‖ Niveles completados ‖ Níveis concluídos
-LIVELLO {0} · {1} ‖ LEVEL {0} · {1} ‖ NIVEL {0} · {1} ‖ NÍVEL {0} · {1}
-Completato · Rigioca ‖ Completed · Play again ‖ Completado · Volver a jugar ‖ Concluído · Jogar de novo
-Completa il livello precedente ‖ Complete the previous level ‖ Completa el nivel anterior ‖ Conclua o nível anterior
 Riprendi ‖ Resume ‖ Continuar ‖ Continuar
-Da esplorare ‖ To explore ‖ Por explorar ‖ Para explorar
 Il primo mondo è tuo! ‖ The first world is yours! ‖ ¡El primer mundo es tuyo! ‖ O primeiro mundo é seu!
 Hai scoperto le basi di {0}. Puoi rigiocare ogni livello o provarle al tavolo. ‖ You've discovered the basics of {0}. You can replay any level or try them at the table. ‖ Has descubierto lo básico de {0}. Puedes volver a jugar cualquier nivel o probarlo en la mesa. ‖ Você descobriu o básico de {0}. Pode jogar de novo qualquer nível ou testar na mesa.
 Prova contro il computer ‖ Try against the computer ‖ Prueba contra el ordenador ‖ Teste contra o computador
 {0}. Le varianti personalizzate possono avere regole diverse. ‖ {0}. Custom variants may have different rules. ‖ {0}. Las variantes personalizadas pueden tener reglas distintas. ‖ {0}. Variantes personalizadas podem ter regras diferentes.
 Scala 40 · regole base ‖ Scala 40 · basic rules ‖ Scala 40 · reglas básicas ‖ Scala 40 · regras básicas
 Ramino · regole base ‖ Rummy · basic rules ‖ Rummy · reglas básicas ‖ Rummy · regras básicas
-LIVELLO COMPLETATO ‖ LEVEL COMPLETE ‖ NIVEL COMPLETADO ‖ NÍVEL CONCLUÍDO
 Hai imparato: {0}. ‖ You learned how to {0}. ‖ Has aprendido a {0}. ‖ Você aprendeu a {0}.
 Prossimo livello → ‖ Next level → ‖ Siguiente nivel → ‖ Próximo nível →
 Completa il primo mondo 🏰 ‖ Complete the first world 🏰 ‖ Completa el primer mundo 🏰 ‖ Conclua o primeiro mundo 🏰
@@ -289,3 +283,4 @@ Stelle raccolte ‖ Stars collected ‖ Estrellas conseguidas ‖ Estrelas conqu
 Rigioca ‖ Play again ‖ Volver a jugar ‖ Jogar de novo
 Gioca! ‖ Play! ‖ ¡Juega! ‖ Jogue!
 Chiudi ‖ Close ‖ Cerrar ‖ Fechar
+Inizia · 5 livelli guidati · ‖ Start · 5 guided levels · ‖ Empezar · 5 niveles guiados · ‖ Começar · 5 níveis guiados ·
