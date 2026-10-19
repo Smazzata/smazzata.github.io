@@ -664,6 +664,7 @@
     if (felt && S.feltScroll != null) felt.scrollTop = S.feltScroll;
     const pc = $('.pile .pcards');
     if (pc) pc.scrollLeft = pc.scrollWidth;
+    reattachDiscardFlights();
     flipCards(S.flipFrom);
     S.flipFrom = null;
     const ev = S.animEvent;

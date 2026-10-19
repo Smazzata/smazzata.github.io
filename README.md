@@ -35,6 +35,7 @@ Variabili d'ambiente: `PORT` (default 3000), `BOT_DELAY` in ms tra le mosse del 
 - `server/index.js` — server Express + Socket.IO (tavoli, posti, riconnessione, chat)
 - `server/selftest.js` — test: `npm test` simula partite complete tra bot con tutti i preset e configurazioni casuali
 - `npm run anim` verifica voli, atterraggi e assenza di ridisegni duplicati allo scarto. Richiede Chrome o Edge.
+- `npm run anim -- --landing` esegue solo la regressione degli scarti: carta propria e avversaria, conferme da 0 a 500ms e ridisegno durante il volo, anche con CPU rallentata 4×. Controlla che la carta sulla pila compaia soltanto quando quella in volo ha raggiunto la stessa posizione. Questi controlli sono inclusi anche in `npm run anim`.
 - `npm run anim -- --perf` misura il dimensionamento del tavolo in 36 scenari (telefono verticale/orizzontale e desktop, carte grandi, combinazioni in colonna, tavoli pieni), con CPU rallentata 4×. Salva le mediane di cinque misure in `test-output/render-perf.json`. Per confrontare anche la geometria con una versione precedente, impostare `PERF_BASELINE` al percorso di una copia del vecchio `public/js/tavolo.js`. Sono misure del layout, non degli FPS su un telefono reale.
 - `public/` — interfaccia (HTML/CSS/JS senza build)
 

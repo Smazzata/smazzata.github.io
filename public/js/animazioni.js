@@ -5,6 +5,7 @@
 
   /* ================= Animazioni ================= */
   function rectOf(el) { return el && el.getBoundingClientRect(); }
+  const discardFlights = new Map();
 
   function fly(fromEl, toEl, html, { delay = 0, dur = 420, hold = false } = {}) {
     if (S.prefs.anim === false) return null; // animazioni disattivate (accessibilità)
@@ -12,6 +13,7 @@
     if (!a || !b || !a.width || !b.width) return null;
     const el = document.createElement('div');
     el.className = 'flyer';
+    el.flightEnd = performance.now() + 20 + delay + dur;
     // stessa misura delle carte sul tavolo (il tavolo la adatta allo schermo in #felt)
     const felt = $('#felt');
     if (felt && felt.style.getPropertyValue('--pw')) el.style.setProperty('--pw', felt.style.getPropertyValue('--pw'));
@@ -43,10 +45,12 @@
    */
   function afterMove(el, ms, fn) {
     let done = false;
-    const end = () => { if (done) return; done = true; el.removeEventListener('transitionend', onEnd); fn(); };
+    const cancel = () => { done = true; clearTimeout(timer); el.removeEventListener('transitionend', onEnd); };
+    const end = () => { if (done) return; cancel(); fn(); };
     const onEnd = (e) => { if (e.target === el && e.propertyName === 'transform') end(); };
     el.addEventListener('transitionend', onEnd);
-    setTimeout(end, ms + 400);
+    const timer = setTimeout(end, ms + 400);
+    return cancel;
   }
 
   /**
@@ -55,6 +59,7 @@
    */
   function landFlyer(el, target, faceHTML) {
     if (!el || !el.isConnected) return;
+    if (el.cancelLanding) el.cancelLanding();
     el.dataset.landed = '1';
     const card = el.firstElementChild;
     const w = card.offsetWidth || 50;
@@ -76,7 +81,7 @@
     el.style.transform = at(cur, cur.width / w);
     void el.offsetWidth;
     target.style.visibility = 'hidden';
-    const finish = () => { target.style.visibility = ''; target.style.animation = ''; el.remove(); };
+    const finish = () => { discardFlights.delete(el); target.style.visibility = ''; target.style.animation = ''; el.remove(); };
     if (faceHTML) {
       // girata: si stringe, cambia faccia, si riapre arrivando
       const mid = { left: (cur.left + t.left) / 2, top: (cur.top + t.top) / 2, width: (cur.width + t.width) / 2, height: (cur.height + t.height) / 2 };
@@ -90,9 +95,29 @@
         afterMove(el, 150, finish);
       });
     } else {
-      el.style.transition = 'transform 170ms ease-out';
+      const discard = !!target.closest('.pile');
+      if (discard) {
+        // Una conferma immediata non deve comprimere l'intero scarto in 170ms.
+        // Mantiene inoltre la stessa scadenza se il tavolo viene ridisegnato in volo.
+        if (!discardFlights.has(el)) el.flightEnd = Math.max(el.flightEnd || 0, performance.now() + 170);
+        discardFlights.set(el, target);
+      }
+      const duration = discard ? Math.max(1, el.flightEnd - performance.now()) : 170;
+      el.style.transition = `transform ${duration}ms ease-out`;
       el.style.transform = at(t, sc);
-      afterMove(el, 170, finish);
+      el.cancelLanding = afterMove(el, duration, finish);
+    }
+  }
+
+  // Un aggiornamento del turno può sostituire la pila prima dell'atterraggio.
+  // Nasconde anche la nuova carta e prosegue dal punto attuale verso il nuovo posto.
+  function reattachDiscardFlights() {
+    for (const [el, target] of discardFlights) {
+      if (!el.isConnected) { discardFlights.delete(el); continue; }
+      if (target.isConnected) continue;
+      const next = $(`.pile .card[data-card="${target.dataset.card}"]`);
+      if (next) landFlyer(el, next);
+      else fadeFlyers([el]);
     }
   }
 
@@ -100,6 +125,8 @@
   function fadeFlyers(list) {
     for (const el of list) {
       if (!el || !el.isConnected) continue;
+      if (el.cancelLanding) el.cancelLanding();
+      discardFlights.delete(el);
       el.dataset.landed = '1';
       el.style.transition = 'opacity 180ms';
       el.style.opacity = '0';
@@ -253,9 +280,14 @@
     else if (ev.type === 'discard' && !mine) {
       const top = $('.pile .card.top');
       const c = g.discard[g.discard.length - 1];
-      if (top) top.style.visibility = 'hidden';
-      fly(seatEl, top || pile, c ? cardHTML(c) : backHTML(), { dur: 380 });
-      setTimeout(() => { if (top) top.style.visibility = ''; }, 420);
+      // Misura il posto definitivo: .landed sposta e ingrandisce temporaneamente
+      // la carta, quindi il volo punterebbe fuori dalla pila. Niente rotazione
+      // casuale alla fine: la copia deve coincidere con la carta che sostituisce.
+      if (top) { top.classList.remove('landed'); top.style.visibility = 'hidden'; }
+      const flyer = fly(seatEl, top || pile, c ? cardHTML(c) : backHTML(), { dur: 380, hold: true });
+      if (flyer && top) landFlyer(flyer, top);
+      else if (flyer) afterMove(flyer, 400, () => flyer.remove());
+      else if (top) top.style.visibility = '';
     } else if (ev.type === 'pile') {
       for (let i = 0; i < Math.min(ev.count || 1, 5); i++) fly(pile, seatEl, backHTML(), { delay: i * 60 });
     } else if (ev.type === 'pozzetto') {

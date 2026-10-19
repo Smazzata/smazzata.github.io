@@ -39,13 +39,24 @@ const PROBE = `
     const orig = landFlyer;
     window.landFlyer = function (el, target, face) {
       const rec = { face: !!face };
+      const selector = (target.closest('#hand') ? '#hand' : '#felt') + ' .card[data-card="' + target.dataset.card + '"]';
       orig(el, target, face);
       rec.t = target.getBoundingClientRect(); // misurata dopo: landFlyer ferma l'animazione d'arrivo della carta vera
       // la carta in volo si misura anche nell'istante in cui viene tolta: è lì che la sostituisce la carta vera
       const rm = el.remove.bind(el);
-      el.remove = () => { if (el.isConnected) rec.last = el.firstElementChild.getBoundingClientRect(); rm(); };
+      el.remove = () => {
+        if (el.isConnected) {
+          rec.last = el.firstElementChild.getBoundingClientRect();
+          // Il tavolo può essere stato ridisegnato: verifica la carta attuale,
+          // non il vecchio nodo ormai scollegato e ancora nascosto.
+          const live = document.querySelector(selector);
+          if (live) rec.t = live.getBoundingClientRect();
+          rec.visible = !!live && live.style.visibility !== 'hidden';
+        }
+        rm();
+      };
       const iv = setInterval(() => {
-        if (!el.isConnected) { clearInterval(iv); rec.done = true; rec.visible = target.style.visibility !== 'hidden'; return; }
+        if (!el.isConnected) { clearInterval(iv); rec.done = true; return; }
         rec.last = el.firstElementChild.getBoundingClientRect();
       }, 8);
       __log.push(rec);
@@ -140,6 +151,11 @@ const GAMES = [
     await cdp.run(`const r = await emit('setNick', { nick: 'Robot_Anim', password: 'robot1234', adult: true }); if (!r.ok) throw new Error(r.error); return 1;`);
     await cdp.run(PROBE);
 
+    if (process.argv.includes('--landing')) {
+      await require('./landingtest')(cdp);
+      return;
+    }
+
     if (process.argv.includes('--perf')) {
       await require('./renderperf')(cdp);
       return;
@@ -213,6 +229,7 @@ const GAMES = [
         }
       }
     }
+    await require('./landingtest')(cdp);
     const real = errors.filter((e) => !/vibrate|Failed to load resource|favicon/.test(e));
     if (real.length) problems.push('errori nella pagina: ' + real.slice(0, 3).join(' | '));
     if (problems.length) throw new Error('problemi nelle animazioni:\n  - ' + problems.join('\n  - '));
