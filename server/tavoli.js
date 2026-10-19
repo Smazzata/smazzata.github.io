@@ -74,6 +74,7 @@ function roomInfo(room) {
     tournament: room.tournament ? { id: room.tournament.id, name: room.tournament.name, round: room.tournament.round } : null,
     daily: room.daily ? { date: room.daily, title: Daily.challenge(room.daily).title } : null,
     quick: room.quick || 0,
+    queueMode: room.queueMode || 'ranked',
     ranked: Elo.isRanked(room), // partita classificata: cambia l'Elo
     series: room.series || null,
     surrender: room.surrenderVotes && room.surrenderVotes.length ? room.surrenderVotes : null,

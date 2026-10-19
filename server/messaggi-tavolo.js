@@ -61,7 +61,7 @@ module.exports.register = function register(socket, handler) {
     ctx.takeOver(socket, mode === 'here' ? 'here' : 'abandon');
   }));
 
-  socket.on('createRoom', handler(({ rules, vsBots, tutorial }) => {
+  socket.on('createRoom', handler(({ rules, vsBots, tutorial, botLevel }) => {
     checkOtherDevice(socket, null);
     // allenamento: Classico in 2 (a 505) oppure un altro gioco in 2, contro un computer facile e lento, con i suggerimenti
     const other = tutorial && rules && Games.idOf(rules) !== 'burraco' ? Games.idOf(rules) : null;
@@ -72,6 +72,7 @@ module.exports.register = function register(socket, handler) {
     const room = {
       code, rules: r, n: r.players, hostToken: socket.data.token,
       seats: Array(r.players).fill(null), game: null, ready: new Set(), botTimer: null, botMemo: {},
+      botLevel: ['facile', 'normale', 'difficile', 'esperto'].includes(botLevel) ? botLevel : 'normale',
     };
     if (tutorial) Object.assign(room, { tutorial: true, hints: true, botLevel: 'facile', botSpeed: 'lenta' });
     rooms.set(code, room);
@@ -110,7 +111,8 @@ module.exports.register = function register(socket, handler) {
     return { code: room.code };
   }));
 
-  socket.on('quickPlay', handler(({ n }) => {
+  socket.on('quickPlay', handler(({ n, mode = 'ranked' }) => {
+    if (!['casual', 'ranked'].includes(mode)) throw new E.GameError('Modalità non valida');
     checkOtherDevice(socket, null);
     n = Number(n) === 2 ? 2 : 4;
     const sess = sessions.get(socket.data.token);
@@ -119,13 +121,16 @@ module.exports.register = function register(socket, handler) {
     const eloOf = (t) => ((((ctx.leaderboard.get(t) || {}).byGame || {}).burraco || {}).elo) || 1000;
     const mine = eloOf(socket.data.token);
     const avg = (r) => { const h = r.seats.filter((s) => s && !s.isBot); return h.reduce((a, s) => a + eloOf(s.token), 0) / Math.max(1, h.length); };
-    let room = [...rooms.values()].filter((r) => r.quick === n && !r.game && r.seats.some((s) => !s)
+    const publicRules = Rules.normalize({ ...Rules.PRESETS[0].rules, players: n });
+    let room = [...rooms.values()].filter((r) => r.quick === n && (r.queueMode || 'ranked') === mode
+      && Object.keys(publicRules).every((k) => r.rules[k] === publicRules[k]) && !r.slow && !r.series
+      && (mode !== 'ranked' || r.seats.every((s) => !s || !s.isBot)) && !r.game && r.seats.some((s) => !s)
       && seatOfToken(r, socket.data.token) < 0 && r.seats.some((s) => s && !s.isBot && isConnected(s.token)))
       .sort((a, b) => Math.abs(avg(a) - mine) - Math.abs(avg(b) - mine))[0];
     if (!room) {
       const r = Rules.normalize({ ...Rules.PRESETS[0].rules, players: n });
       room = {
-        code: newCode(), rules: r, n, hostToken: socket.data.token, quick: n,
+        code: newCode(), rules: r, n, hostToken: socket.data.token, quick: n, queueMode: mode,
         seats: Array(n).fill(null), game: null, ready: new Set(), botTimer: null, botMemo: {},
       };
       rooms.set(room.code, room);
@@ -179,6 +184,7 @@ module.exports.register = function register(socket, handler) {
   socket.on('configure', handler(({ rules }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
+    if (room.quick) throw new E.GameError('I tavoli pubblici usano regole fisse. Crea un tavolo con gli amici per personalizzarle.');
     if (room.game) throw new E.GameError('Partita già iniziata');
     const r = Games.of(rules).normalize(rules);
     const n = r.players;
@@ -239,6 +245,7 @@ module.exports.register = function register(socket, handler) {
   socket.on('setSeries', handler(({ bestOf }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
+    if (room.quick) throw new E.GameError('Il formato dei tavoli pubblici è fisso');
     bestOf = Number(bestOf);
     if (![1, 3, 5].includes(bestOf)) throw new E.GameError('Torneo non valido');
     if (room.game && !room.game.over) throw new E.GameError('Si cambia il torneo tra una partita e l\'altra');
@@ -356,6 +363,7 @@ module.exports.register = function register(socket, handler) {
   socket.on('setSlow', handler(({ on }) => {
     const room = getRoom(socket);
     requireHost(socket, room);
+    if (room.quick) throw new E.GameError('I tavoli pubblici si giocano in tempo reale');
     if (room.game) throw new E.GameError('Il ritmo si sceglie prima di iniziare');
     if (room.daily || room.tutorial) throw new E.GameError('Non disponibile per questa partita');
     room.slow = !!on;

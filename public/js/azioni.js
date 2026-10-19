@@ -148,7 +148,7 @@
     async createBots() {
       const botLevel = autoLevel(Games2.idOf(S.rules));
       if (OFFLINE) { emit('createRoom', { rules: S.rules, vsBots: true, botLevel }); return; }
-      try { await localSocket(); } catch (e) { emit('createRoom', { rules: S.rules, vsBots: true }); return; }
+      try { await localSocket(); } catch (e) { emit('createRoom', { rules: S.rules, vsBots: true, botLevel }); return; }
       S.localGame = true; Local.attached = true;
       // la partita nasce sul telefono (non sul server)
       const r = await new Promise((res) => Local.sock.emit('createRoom', { rules: S.rules, vsBots: true, botLevel }, res));
@@ -422,14 +422,21 @@
     tutStep(el) { tutorialModal(Number(el.dataset.i), el.dataset.game); },
     practice(el) { if (!requireName()) return; closeModal(); emit('createRoom', { tutorial: true, rules: el && el.dataset.game && el.dataset.game !== 'burraco' ? { game: el.dataset.game } : undefined }); },
     coachOff() { S.coachOff = true; render(); },
-    quickMenu() {
-      if (!requireName()) return;
-      openModal('quick', `<div class="result" style="text-align:center"><h2>⚡ Gioca subito</h2>
-        <p>Entri in un tavolo con chi sta cercando una partita adesso. Si parte appena il tavolo è pieno (oppure puoi riempirlo con il computer).</p>
-        <p class="muted small"><span class="rankbadge">🏅 Classificata</span> Tra sole persone la partita cambia il tuo punteggio Elo; con il computer al tavolo è amichevole.</p>
-        <div class="row" style="justify-content:center"><button class="btn primary big" data-act="quick" data-n="2">In 2</button><button class="btn primary big" data-act="quick" data-n="4">In 4 (a coppie)</button></div></div>`);
+    setupBotLevel(el) {
+      if (!['auto', 'facile', 'normale', 'difficile', 'esperto'].includes(el.dataset.val)) return;
+      S.prefs.botLevel = el.dataset.val; applyPrefs(); render();
     },
-    async quick(el) { const r = await emit('quickPlay', { n: Number(el.dataset.n) }); if (r.ok) closeModal(); },
+    quickMenu(el) {
+      if (!requireName()) return;
+      const mode = el && el.dataset.mode === 'ranked' ? 'ranked' : 'casual';
+      openModal('quick', `<div class="result" style="text-align:center"><h2>${mode === 'ranked' ? '🏅 Classificata' : '🃏 Amichevole online'}</h2>
+        <h3>Burraco Classico</h3><p>Per iniziare, i tavoli pubblici usano tutti questa variante con regole fisse. Le altre varianti sono disponibili con gli amici e contro il computer.</p>
+        <p>${mode === 'ranked' ? 'Il risultato cambia il tuo punteggio Elo.' : 'Il risultato non cambia il tuo punteggio Elo.'} Si parte quando il tavolo è pieno.</p>
+        ${[2, 4].map((players) => `<details><summary>Regole in ${players} giocatori</summary><div class="rules-text">${R.describe(R.normalize({ ...R.PRESETS[0].rules, players }))}</div></details>`).join('')}
+        <p class="muted small">Se non trovi avversari puoi invitare qualcuno, uscire dalla ricerca o scegliere una partita amichevole con il computer.</p>
+        <div class="row" style="justify-content:center"><button class="btn primary big" data-act="quick" data-mode="${mode}" data-n="2">Cerca in 2</button><button class="btn primary big" data-act="quick" data-mode="${mode}" data-n="4">Cerca in 4 (a coppie)</button></div></div>`);
+    },
+    async quick(el) { const r = await emit('quickPlay', { n: Number(el.dataset.n), mode: el.dataset.mode || 'casual' }); if (r.ok) closeModal(); },
     series(el) { emit('setSeries', { bestOf: Number(el.dataset.val) }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     async playerCard(el) {
       const r = await emit('playerCard', { nick: el.dataset.nick });
@@ -494,7 +501,7 @@
       openModal('leaders', `<div class="result"><h2>🏆 Classifica</h2>${tabs}
         ${rows ? `<table><tr><th></th><th style="text-align:left">Giocatore</th><th title="Punteggio di bravura">Elo</th><th>Vinte</th><th>%</th></tr>${rows}</table>` : '<p class="muted">Ancora nessuna partita completata. La classifica conta le partite finite tra giocatori umani (anche contro il computer).</p>'}
         <p class="muted small">Classifica di tutti i giocatori di questo server. <b>Elo</b> = punteggio di bravura: si parte da 1000, sale battendo avversari forti e scende perdendo.</p>
-        <p class="muted small">L'Elo cambia solo con le partite classificate (⚡ Gioca subito tra persone). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei.</p></div>`);
+        <p class="muted small">L'Elo cambia solo con le partite classificate (🏅 Classificata). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei.</p></div>`);
     },
     resetStats() { if (confirm('Azzerare le statistiche?')) { store.set('bur_stats', {}); statsModal(); } },
     musicStop() { emit('setMusic', { url: '' }).then(() => musicModal()); },

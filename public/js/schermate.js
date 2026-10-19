@@ -134,10 +134,12 @@
         <button class="btn primary big grow" data-act="joinCode" data-code="${esc(S.pendingJoin)}">Entra al tavolo</button></div>` : ''}
       ${last ? `<button class="btn primary big grow" data-act="rejoin">↩ Torna alla partita</button>` : ''}
       ${S.tourMatch && !S.room ? `<div class="tourready">🏆 ${esc(S.tourMatch.text)} <button class="btn small primary" data-act="tourPlay" data-code="${esc(S.tourMatch.code)}">▶ Gioca</button></div>` : ''}
-      <button class="btn ${last ? '' : 'primary'} big grow homebtn" data-act="playBots"><span>🤖</span>Gioca contro il computer</button>
+      ${OFFLINE ? '' : `<button class="btn ${last ? '' : 'primary'} big grow homebtn" data-act="quickMenu" data-mode="casual"><span>🃏</span><div>Amichevole online<small>Trova un tavolo · senza punti classifica</small></div></button>
+      <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked"><span>🏅</span><div>Classificata<small>Gioca per il tuo punteggio Elo</small></div></button>`}
       ${OFFLINE ? '' : `<button class="btn big grow homebtn" data-act="playFriends"><span>👥</span>Gioca con gli amici</button>`}
-      <button class="btn big grow homebtn" data-act="tutorial"><span>🎓</span>Impara a giocare</button>
-      ${FULL() && !OFFLINE ? `<div class="row"><button class="btn grow" data-act="quickMenu">⚡ Gioca subito</button><button class="btn grow dailybtn" data-act="daily">📅 Sfida del giorno</button><button class="btn grow tourbtn" data-act="tournaments">🏆 Tornei</button></div>` : ''}
+      <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots"><span>🤖</span>Gioca contro il computer</button>
+      <button class="btn ghost grow" data-act="tutorial">🎓 Impara a giocare</button>
+      ${FULL() && !OFFLINE ? `<div class="row"><button class="btn grow" data-act="quickMenu">🃏 Amichevole online</button><button class="btn grow dailybtn" data-act="daily">📅 Sfida del giorno</button><button class="btn grow tourbtn" data-act="tournaments">🏆 Tornei</button></div>` : ''}
       <button class="btn ghost grow morebtn" data-act="more">☰ Altro${reqs ? ` <span class="pill">${reqs}</span>` : ''}</button>
     </div>`;
   }
@@ -149,7 +151,7 @@
     const item = (act, icon, label, extra = '') => `<button class="menuitem" data-act="${act}"><span>${icon}</span>${label}${extra}</button>`;
     openModal('more', `<h2>☰ Altro</h2><div class="menulist">
       ${so.nick ? item('profile', '👤', 'Il mio profilo') + item('friends', '👥', 'Amici', reqs ? ` <span class="pill">${reqs}</span>` : '') : ''}
-      ${OFFLINE ? '' : item('daily', '📅', 'Sfida del giorno') + item('quickMenu', '⚡', 'Gioca subito con chi è online') + item('tournaments', '🏆', 'Tornei') + item('leaders', '🏅', 'Classifica')}
+      ${OFFLINE ? '' : item('daily', '📅', 'Sfida del giorno') + item('quickMenu', '⚡', 'Amichevole online') + item('tournaments', '🏆', 'Tornei') + item('leaders', '🏅', 'Classifica')}
       ${item('stats', '📊', 'Le mie statistiche')}
       ${item('gamesRules', '📖', 'Regole dei giochi')}
       ${item('howto', '❓', 'Come si usa l\'app')}
@@ -189,6 +191,7 @@
       <div class="gamegrid">${GAME_TILES.map(([id, icon, name]) => `<button class="gtile ${pickedGame(S.rules) === id ? 'on' : ''}" data-act="pickGame" data-game="${id}"><span>${icon}</span>${name}</button>`).join('')}</div>
       <div class="panel">
         ${pf ? `<h3>Quanti giocatori?</h3><div class="row">${pf.choices.map(([v, l]) => `<button class="swatch big ${Number(S.rules.players) === Number(v) ? 'on' : ''}" data-act="pickPlayers" data-n="${v}">${esc(l)}</button>`).join('')}</div>` : ''}
+        ${friends ? '' : `<h3>Difficoltà del computer</h3><div class="row">${[['auto', 'Automatica'], ['facile', 'Facile'], ['normale', 'Normale'], ['difficile', 'Difficile'], ['esperto', 'Esperto']].map(([v, label]) => `<button class="swatch ${(S.prefs.botLevel || 'auto') === v ? 'on' : ''}" data-act="setupBotLevel" data-val="${v}" aria-pressed="${(S.prefs.botLevel || 'auto') === v}">${label}</button>`).join('')}</div><p class="muted small">Automatica: si adatta ai tuoi risultati.</p>`}
         <div class="row" style="margin-top:12px">${friends
           ? '<button class="btn primary big grow" data-act="create">👥 Crea il tavolo</button>'
           : '<button class="btn primary big grow" data-act="createBots">▶ Inizia la partita</button>'}</div>
@@ -236,7 +239,7 @@
       const team = r.n === 4 && !RX.isS40(r.rules) ? `<span class="teamtag">Coppia ${i % 2 === 0 ? 'A' : 'B'}</span>` : '';
       return `<div class="seat">
         <div class="who">${s ? avatarHTML(s.name, i, s.isBot, s.avatar) : '<span class="avatar empty">?</span>'}
-        <div>${s ? `<b>${esc(s.name)}</b> ${lvlHTML(s.level)}${me ? ' <span class="badge">tu</span>' : ''}${s.connected ? '' : ' <span class="muted">(offline)</span>'}` : '<span class="muted">Aspetto un amico…</span>'}<br>${team}</div>
+        <div>${s ? `<b>${esc(s.name)}</b> ${lvlHTML(s.level)}${me ? ' <span class="badge">tu</span>' : ''}${s.connected ? '' : ' <span class="muted">(offline)</span>'}` : '<span class="muted">In attesa di un giocatore…</span>'}<br>${team}</div>
         </div>${right}</div>`;
     }).join('');
     const filled = r.seats.filter(Boolean).length;
@@ -253,11 +256,11 @@
       </div>
       <div class="panel">
         <h2>Giocatori (${filled}/${r.n}) ${r.ranked ? `<span class="rankbadge" title="${RANKED_TIP}">🏅 Classificata</span>` : ''}</h2>
-        ${r.quick ? '<p class="muted">⚡ Tavolo veloce: la partita parte da sola appena il tavolo è pieno.</p>' : ''}
-        ${r.quick && !r.ranked ? '<p class="muted small">Con il computer al tavolo la partita è amichevole: il punteggio Elo non cambia.</p>' : ''}
+        ${r.quick ? `<p class="muted">${r.queueMode === 'casual' ? 'Amichevole online' : 'Classificata'} · Burraco Classico · ${r.n} giocatori.<br>In cerca di altri ${r.n - filled} giocatori. La partita parte appena il tavolo è pieno.</p>` : ''}
+        ${r.quick && !r.ranked ? '<p class="muted small">Partita amichevole: il punteggio Elo non cambia.</p>' : ''}
         <div class="seats">${seats}</div>
         ${isHost ? `<div class="row" style="margin-top:12px">
-            <button class="btn primary big grow" data-act="${ready ? 'start' : 'startFill'}">▶ Inizia la partita</button></div>
+            <button class="btn primary big grow" data-act="${ready ? 'start' : 'startFill'}">${r.quick && !ready ? 'Gioca amichevole con il computer' : '▶ Inizia la partita'}</button></div>
             ${ready ? '' : '<p class="muted small" style="text-align:center">I posti ancora vuoti li prende il computer.</p>'}`
           : `<p class="muted" style="text-align:center">Aspettiamo che ${esc(hostName)} inizi la partita…</p>`}
       </div>
@@ -266,9 +269,9 @@
         <p>${rulesStatus(r.rules)} <span class="muted">· ${r.n} giocatori · si vince a ${r.rules.target}</span></p>
         <div class="row"><button class="btn small" data-act="music">🎵 Musica del tavolo${r.music ? ' (attiva)' : ''}</button></div>
         <div class="row" style="margin-top:8px"><button class="btn small" data-act="roomRules">📜 Leggi le regole</button>
-        ${isHost ? '<button class="btn small" data-act="editRules">✏️ Modifica regole</button>' : ''}</div>
-        ${isHost ? `<h3 style="margin-top:14px">Torneo</h3>${seriesPickHTML(r.series && r.series.bestOf)}` : r.series ? `<p>🏆 Torneo al meglio di ${r.series.bestOf}</p>` : ''}
-        ${isHost && !r.daily && !r.tutorial ? `<h3 style="margin-top:14px">Ritmo della partita</h3>
+        ${isHost && !r.quick ? '<button class="btn small" data-act="editRules">✏️ Modifica regole</button>' : ''}</div>
+        ${isHost && !r.quick ? `<h3 style="margin-top:14px">Torneo</h3>${seriesPickHTML(r.series && r.series.bestOf)}` : r.series ? `<p>🏆 Torneo al meglio di ${r.series.bestOf}</p>` : ''}
+        ${isHost && !r.quick && !r.daily && !r.tutorial ? `<h3 style="margin-top:14px">Ritmo della partita</h3>
           <div class="row"><button class="swatch ${r.slow ? '' : 'on'}" data-act="setSlow" data-val="0">⚡ Normale</button><button class="swatch ${r.slow ? 'on' : ''}" data-act="setSlow" data-val="1">🐢 Con calma</button></div>
           <p class="muted small">Con calma: ognuno gioca il suo turno quando può, anche ore dopo. Puoi uscire quando vuoi: il posto resta tuo, la partita ti aspetta e ti avvisiamo quando tocca a te.</p>`
           : r.slow ? '<p>🐢 <b>Partita con calma</b>: ognuno gioca quando può, ti avvisiamo quando tocca a te.</p>' : ''}

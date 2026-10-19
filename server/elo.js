@@ -17,7 +17,7 @@ const BOT_RATING = { facile: 800, normale: 1000, difficile: 1200, esperto: 1350 
  *  perdere apposta per far salire qualcuno. Se nel tavolo veloce entra anche un solo computer, diventa amichevole.
  *  Si decide all'avvio (room.rankedGame): chi abbandona a metà non la rende amichevole, e per lui conta come persa. */
 function isRanked(room) {
-  if (!room || !room.quick || room.tutorial || room.daily || room.tournament || room.localGame) return false;
+  if (!room || !room.quick || room.queueMode === 'casual' || room.tutorial || room.daily || room.tournament || room.localGame) return false;
   if (room.game) return !!room.rankedGame;
   return room.seats.every((s) => !s || (!s.isBot && s.token));
 }

@@ -13,8 +13,9 @@ const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
 
-const PORT = 3996;
-const DEBUG_PORT = 9333;
+const HOME_ONLY = process.argv.includes('--home');
+const PORT = HOME_ONLY ? 3995 : 3996;
+const DEBUG_PORT = HOME_ONLY ? 9334 : 9333;
 const URL = `http://localhost:${PORT}`;
 // STORE=1: schermate per il Play Store (1080×1920, formato 9:16) salvate in store/schermate
 const STORE = !!process.env.STORE;
@@ -111,8 +112,25 @@ const HELPERS = `
       __tap('[data-act="savedCode"]'); await __W(300);
       return document.querySelector('.hello') ? document.querySelector('.hello').innerText : null;`);
     if (!nick || !nick.includes('Robot_UI')) throw new Error('nickname non confermato');
+    await cdp.run(`
+      await __W(2500);
+      const choices = [...document.querySelectorAll('.homebtn')];
+      if (choices.map((b) => b.dataset.act + ':' + (b.dataset.mode || '')).join(',') !== 'quickMenu:casual,quickMenu:ranked,playFriends:,playBots:') throw new Error('ordine delle modalità nella home');
+      if (!choices[0].classList.contains('primary')) throw new Error('amichevole non evidenziata');
+      for (const mode of ['casual', 'ranked']) {
+        __tap('[data-act="quickMenu"][data-mode="' + mode + '"]'); await __W(200);
+        if (document.querySelectorAll('#modal [data-act="quick"][data-mode="' + mode + '"]').length !== 2) throw new Error('scelta formato pubblico');
+        if (!document.querySelector('#modal').textContent.includes('Burraco Classico')) throw new Error('variante pubblica non indicata');
+        document.querySelector('.modal-close').click();
+      }
+      __tap('[data-act="playBots"]'); await __W(100);
+      __tap('[data-act="setupBotLevel"][data-val="difficile"]');
+      if (S.prefs.botLevel !== 'difficile' || !document.querySelector('[data-act="setupBotLevel"][data-val="difficile"]').classList.contains('on')) throw new Error('selettore difficoltà');
+      __tap('[data-act="setupBotLevel"][data-val="auto"]');
+      __tap('[data-act="goHome"]');`);
     await shot('01-home');
     step('schermata iniziale e nickname');
+    if (HOME_ONLY) { step('home, formati pubblici e selettore difficoltà: tutto OK'); return; }
 
     // 2. Burraco contro il computer fino alla fine della smazzata
     await cdp.run(`__tap('[data-act="playBots"]'); await __W(400); __tap('[data-act="createBots"]'); await __W(1500);`);

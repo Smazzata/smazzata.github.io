@@ -980,6 +980,7 @@ body.noanim *, body.noanim *::before, body.noanim *::after { animation-duration:
 .homebtns .row { margin: 0; }
 .homebtn { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 19px; padding: 16px 18px; }
 .homebtn span { font-size: 24px; line-height: 1; }
+.homebtn small { display: block; font-size: 13px; font-weight: 400; margin-top: 5px; line-height: 1.35; }
 .morebtn { font-size: 16px; padding: 11px; }
 .invitebox { display: flex; flex-direction: column; gap: 8px; text-align: center; font-size: 16px; padding: 10px; border-radius: 12px; background: rgba(242,193,78,.16); }
 .bigtitle { font-size: 21px; margin: 14px 0 10px; }
