@@ -1,0 +1,291 @@
+# Impara giocando: percorsi a livelli (public/js/campagna.js, shared/campaign.js)
+# italiano ‖ English ‖ Español ‖ Português
+# (pozzetto = kitty / muerto / morto; tallone = stock / mazo / monte; burraco = burraco / burraco / canastra; pinella = pinella / pinella / curinga)
+
+# Pagina iniziale e interfaccia
+🌱 Impara giocando ‖ 🌱 Learn by playing ‖ 🌱 Aprende jugando ‖ 🌱 Aprenda jogando
+Tre percorsi: Burraco, Scala 40 e Ramino ‖ Three paths: Burraco, Scala 40 and Rummy ‖ Tres caminos: Burraco, Scala 40 y Rummy ‖ Três caminhos: Burraco, Scala 40 e Rummy
+📖 Regole e tutorial ‖ 📖 Rules and tutorial ‖ 📖 Reglas y tutorial ‖ 📖 Regras e tutorial
+← Tutti i percorsi ‖ ← All paths ‖ ← Todos los caminos ‖ ← Todos os caminhos
+← Home ‖ ← Home ‖ ← Inicio ‖ ← Início
+← Mappa di {0} ‖ ← {0} map ‖ ← Mapa de {0} ‖ ← Mapa de {0}
+Progressi salvati su questo dispositivo e in questo browser. Nessuna vita, nessun limite di tempo. ‖ Progress saved on this device and in this browser. No lives, no time limit. ‖ Progreso guardado en este dispositivo y en este navegador. Sin vidas ni límite de tiempo. ‖ Progresso salvo neste dispositivo e neste navegador. Sem vidas, sem limite de tempo.
+Non riesco a salvare sul dispositivo. Puoi continuare, ma chiudendo la pagina perderai questi progressi. ‖ I can't save on this device. You can keep going, but if you close the page you will lose this progress. ‖ No puedo guardar en el dispositivo. Puedes seguir, pero si cierras la página perderás este progreso. ‖ Não consigo salvar no dispositivo. Você pode continuar, mas ao fechar a página perderá este progresso.
+LA TUA AVVENTURA ‖ YOUR ADVENTURE ‖ TU AVENTURA ‖ SUA AVENTURA
+Un gioco, un percorso ‖ One game, one path ‖ Un juego, un camino ‖ Um jogo, um caminho
+Scegli cosa vuoi imparare. Ogni avventura comincia da zero e cresce con te. ‖ Choose what you want to learn. Every adventure starts from scratch and grows with you. ‖ Elige qué quieres aprender. Cada aventura empieza desde cero y crece contigo. ‖ Escolha o que você quer aprender. Cada aventura começa do zero e cresce com você.
+Primo mondo completato · Rigioca ‖ First world completed · Play again ‖ Primer mundo completado · Volver a jugar ‖ Primeiro mundo concluído · Jogar de novo
+Riprendi · {0} di {1} livelli ‖ Resume · {0} of {1} levels ‖ Continuar · {0} de {1} niveles ‖ Continuar · {0} de {1} níveis
+Inizia · 5 livelli guidati ‖ Start · 5 guided levels ‖ Empezar · 5 niveles guiados ‖ Começar · 5 níveis guiados
+📖 Preferisci leggere le regole? ‖ 📖 Would you rather read the rules? ‖ 📖 ¿Prefieres leer las reglas? ‖ 📖 Prefere ler as regras?
+{0} · MONDO 1 ‖ {0} · WORLD 1 ‖ {0} · MUNDO 1 ‖ {0} · MUNDO 1
+Il prato delle carte ‖ The card meadow ‖ El prado de las cartas ‖ O prado das cartas
+{0}. Piccole prove, una scoperta alla volta. ‖ {0}. Small challenges, one discovery at a time. ‖ {0}. Pequeñas pruebas, un descubrimiento a la vez. ‖ {0}. Pequenos desafios, uma descoberta de cada vez.
+{0} / {1} livelli ‖ {0} / {1} levels ‖ {0} / {1} niveles ‖ {0} / {1} níveis
+Livelli completati ‖ Levels completed ‖ Niveles completados ‖ Níveis concluídos
+LIVELLO {0} · {1} ‖ LEVEL {0} · {1} ‖ NIVEL {0} · {1} ‖ NÍVEL {0} · {1}
+Completato · Rigioca ‖ Completed · Play again ‖ Completado · Volver a jugar ‖ Concluído · Jogar de novo
+Completa il livello precedente ‖ Complete the previous level ‖ Completa el nivel anterior ‖ Conclua o nível anterior
+Riprendi ‖ Resume ‖ Continuar ‖ Continuar
+Da esplorare ‖ To explore ‖ Por explorar ‖ Para explorar
+Il primo mondo è tuo! ‖ The first world is yours! ‖ ¡El primer mundo es tuyo! ‖ O primeiro mundo é seu!
+Hai scoperto le basi di {0}. Puoi rigiocare ogni livello o provarle al tavolo. ‖ You've discovered the basics of {0}. You can replay any level or try them at the table. ‖ Has descubierto lo básico de {0}. Puedes volver a jugar cualquier nivel o probarlo en la mesa. ‖ Você descobriu o básico de {0}. Pode jogar de novo qualquer nível ou testar na mesa.
+Prova contro il computer ‖ Try against the computer ‖ Prueba contra el ordenador ‖ Teste contra o computador
+{0}. Le varianti personalizzate possono avere regole diverse. ‖ {0}. Custom variants may have different rules. ‖ {0}. Las variantes personalizadas pueden tener reglas distintas. ‖ {0}. Variantes personalizadas podem ter regras diferentes.
+Scala 40 · regole base ‖ Scala 40 · basic rules ‖ Scala 40 · reglas básicas ‖ Scala 40 · regras básicas
+Ramino · regole base ‖ Rummy · basic rules ‖ Rummy · reglas básicas ‖ Rummy · regras básicas
+LIVELLO COMPLETATO ‖ LEVEL COMPLETE ‖ NIVEL COMPLETADO ‖ NÍVEL CONCLUÍDO
+Hai imparato: {0}. ‖ You learned how to {0}. ‖ Has aprendido a {0}. ‖ Você aprendeu a {0}.
+Prossimo livello → ‖ Next level → ‖ Siguiente nivel → ‖ Próximo nível →
+Completa il primo mondo 🏰 ‖ Complete the first world 🏰 ‖ Completa el primer mundo 🏰 ‖ Conclua o primeiro mundo 🏰
+Prova una partita contro il computer ‖ Try a game against the computer ‖ Prueba una partida contra el ordenador ‖ Teste uma partida contra o computador
+Rigioca il livello ‖ Replay the level ‖ Volver a jugar el nivel ‖ Jogar o nível de novo
+{0} · LIVELLO {1} · PROVA {2}/{3} ‖ {0} · LEVEL {1} · CHALLENGE {2}/{3} ‖ {0} · NIVEL {1} · PRUEBA {2}/{3} ‖ {0} · NÍVEL {1} · DESAFIO {2}/{3}
+Sul tavolo ‖ On the table ‖ En la mesa ‖ Na mesa
+Tocca una carta, poi conferma. Tocca di nuovo per deselezionare. ‖ Tap one card, then confirm. Tap again to deselect. ‖ Toca una carta y luego confirma. Toca de nuevo para deseleccionar. ‖ Toque uma carta e depois confirme. Toque de novo para desmarcar.
+Tocca {0} carte, poi conferma. Tocca di nuovo per deselezionare. ‖ Tap {0} cards, then confirm. Tap again to deselect. ‖ Toca {0} cartas y luego confirma. Toca de nuevo para deseleccionar. ‖ Toque {0} cartas e depois confirme. Toque de novo para desmarcar.
+Esatto! ‖ Correct! ‖ ¡Correcto! ‖ Certo!
+Proviamo ancora ‖ Let's try again ‖ Intentémoslo otra vez ‖ Vamos tentar de novo
+Puoi cambiare la selezione e riprovare, senza penalità. ‖ You can change your selection and try again, with no penalty. ‖ Puedes cambiar la selección y volver a intentarlo, sin penalización. ‖ Você pode mudar a seleção e tentar de novo, sem penalidade.
+Continua → ‖ Continue → ‖ Continuar → ‖ Continuar →
+Conferma le carte ‖ Confirm the cards ‖ Confirmar las cartas ‖ Confirmar as cartas
+Conferma la risposta ‖ Confirm the answer ‖ Confirmar la respuesta ‖ Confirmar a resposta
+Donna ‖ Queen ‖ Reina ‖ Dama
+{0} di cuori ‖ {0} of hearts ‖ {0} de corazones ‖ {0} de copas
+{0} di quadri ‖ {0} of diamonds ‖ {0} de diamantes ‖ {0} de ouros
+{0} di picche ‖ {0} of spades ‖ {0} de picas ‖ {0} de espadas
+{0} di fiori ‖ {0} of clubs ‖ {0} de tréboles ‖ {0} de paus
+
+# Percorsi
+Dalla prima scala al tuo primo burraco ‖ From your first run to your first burraco ‖ De tu primera escalera a tu primer burraco ‖ Da primeira sequência à sua primeira canastra
+Impara ad aprire e a liberare la mano ‖ Learn to open and empty your hand ‖ Aprende a abrir y a vaciar tu mano ‖ Aprenda a abrir e a esvaziar a mão
+Cala subito, costruisci e chiudi ‖ Meld right away, build and go out ‖ Baja enseguida, construye y cierra ‖ Baixe logo, construa e bata
+
+# Livelli (titolo e obiettivo; l'obiettivo compare anche in minuscolo in «Hai imparato: …»)
+Il sentiero del turno ‖ The path of the turn ‖ El sendero del turno ‖ A trilha do turno
+Il ponte delle scale ‖ The bridge of runs ‖ El puente de las escaleras ‖ A ponte das sequências
+La radura delle matte ‖ The wild card glade ‖ El claro de los comodines ‖ A clareira dos curingas
+La collina delle sette carte ‖ The hill of seven cards ‖ La colina de las siete cartas ‖ A colina das sete cartas
+Il castello del Burraco ‖ Burraco castle ‖ El castillo del Burraco ‖ O castelo do Burraco
+Il ponte delle combinazioni ‖ The bridge of melds ‖ El puente de las combinaciones ‖ A ponte dos jogos
+La porta dei quaranta ‖ The gate of forty ‖ La puerta de los cuarenta ‖ O portão dos quarenta
+Il giardino dei jolly ‖ The joker garden ‖ El jardín de los comodines ‖ O jardim dos coringas
+Il castello della Scala 40 ‖ Scala 40 castle ‖ El castillo de la Scala 40 ‖ O castelo da Scala 40
+La porta già aperta ‖ The gate already open ‖ La puerta ya abierta ‖ O portão já aberto
+Il castello del Ramino ‖ Rummy castle ‖ El castillo del Rummy ‖ O castelo do Rummy
+Pesca, cala e scarta ‖ Draw, meld and discard ‖ Roba, baja y descarta ‖ Compre, baixe e descarte
+pesca, cala e scarta ‖ draw, meld and discard ‖ robar, bajar y descartar ‖ comprar, baixar e descartar
+Costruisci una scala e un tris ‖ Build a run and a set ‖ Forma una escalera y un trío ‖ Monte uma sequência e uma trinca
+costruisci una scala e un tris ‖ build a run and a set ‖ formar una escalera y un trío ‖ montar uma sequência e uma trinca
+Scopri pinelle e jolly ‖ Discover pinelle and jokers ‖ Descubre pinelle y comodines ‖ Descubra os dois e os coringas
+scopri pinelle e jolly ‖ use pinelle and jokers ‖ usar pinelle y comodines ‖ usar os dois e os coringas
+Completa un burraco pulito ‖ Complete a clean burraco ‖ Completa un burraco limpio ‖ Complete uma canastra limpa
+completa un burraco pulito ‖ complete a clean burraco ‖ completar un burraco limpio ‖ completar uma canastra limpa
+Riconosci quando puoi chiudere ‖ Recognise when you can go out ‖ Reconoce cuándo puedes cerrar ‖ Reconheça quando você pode bater
+riconosci quando puoi chiudere ‖ recognise when you can go out ‖ reconocer cuándo puedes cerrar ‖ reconhecer quando você pode bater
+Impara il ritmo della partita ‖ Learn the rhythm of the game ‖ Aprende el ritmo de la partida ‖ Aprenda o ritmo da partida
+impara il ritmo della partita ‖ follow the rhythm of the game ‖ seguir el ritmo de la partida ‖ seguir o ritmo da partida
+Distingui scale e tris ‖ Tell runs and sets apart ‖ Distingue escaleras y tríos ‖ Diferencie sequências e trincas
+distingui scale e tris ‖ tell runs and sets apart ‖ distinguir escaleras y tríos ‖ diferenciar sequências e trincas
+Raggiungi il minimo per aprire ‖ Reach the minimum to open ‖ Alcanza el mínimo para abrir ‖ Alcance o mínimo para abrir
+raggiungi il minimo per aprire ‖ reach the minimum to open ‖ alcanzar el mínimo para abrir ‖ alcançar o mínimo para abrir
+Usa una matta e attacca una carta ‖ Use a wild card and lay off a card ‖ Usa un comodín y añade una carta ‖ Use um curinga e encaixe uma carta
+usa una matta e attacca una carta ‖ use a wild card and lay off a card ‖ usar un comodín y añadir una carta ‖ usar um curinga e encaixar uma carta
+Chiudi e riconosci le penalità ‖ Go out and count the penalties ‖ Cierra y reconoce las penalizaciones ‖ Bata e reconheça as penalidades
+chiudi e riconosci le penalità ‖ go out and count the penalties ‖ cerrar y reconocer las penalizaciones ‖ bater e reconhecer as penalidades
+Pesca e scopri lo scarto ‖ Draw and discover the discard ‖ Roba y descubre el descarte ‖ Compre e descubra o descarte
+pesca e scopri lo scarto ‖ draw and use the discard ‖ robar y usar el descarte ‖ comprar e usar o descarte
+Crea scale e tris ‖ Make runs and sets ‖ Crea escaleras y tríos ‖ Crie sequências e trincas
+crea scale e tris ‖ make runs and sets ‖ crear escaleras y tríos ‖ criar sequências e trincas
+Cala senza una soglia di punti ‖ Meld with no points threshold ‖ Baja sin un mínimo de puntos ‖ Baixe sem um mínimo de pontos
+cala senza una soglia di punti ‖ meld with no points threshold ‖ bajar sin un mínimo de puntos ‖ baixar sem um mínimo de pontos
+Completa e allunga una scala ‖ Complete and extend a run ‖ Completa y alarga una escalera ‖ Complete e estenda uma sequência
+completa e allunga una scala ‖ complete and extend a run ‖ completar y alargar una escalera ‖ completar e estender uma sequência
+Finisci la mano con uno scarto ‖ Finish your hand with a discard ‖ Termina la mano con un descarte ‖ Termine a mão com um descarte
+finisci la mano con uno scarto ‖ finish your hand with a discard ‖ terminar la mano con un descarte ‖ terminar a mão com um descarte
+
+# Burraco · prove
+Prima una carta ‖ A card first ‖ Primero una carta ‖ Primeiro uma carta
+Nel tuo turno prima peschi: dal tallone oppure raccogliendo tutto il monte degli scarti. Poi puoi calare e attaccare carte. ‖ On your turn you draw first: from the stock or by picking up the whole discard pile. Then you can meld and lay off cards. ‖ En tu turno primero robas: del mazo o recogiendo todo el pozo de descartes. Luego puedes bajar y añadir cartas. ‖ No seu turno primeiro você compra: do monte ou pegando todo o lixo. Depois pode baixar e encaixar cartas.
+Il tuo turno è appena iniziato. Cosa fai per prima cosa? ‖ Your turn has just started. What do you do first? ‖ Tu turno acaba de empezar. ¿Qué haces primero? ‖ Seu turno acabou de começar. O que você faz primeiro?
+Scarto una carta ‖ I discard a card ‖ Descarto una carta ‖ Descarto uma carta
+Pesco dal tallone ‖ I draw from the stock ‖ Robo del mazo ‖ Compro do monte
+Calo subito un tris ‖ I meld a set right away ‖ Bajo un trío enseguida ‖ Baixo uma trinca na hora
+Prima si pesca. Solo dopo si possono calare combinazioni e attaccare carte. ‖ You draw first. Only then can you meld and lay off cards. ‖ Primero se roba. Solo después se pueden bajar combinaciones y añadir cartas. ‖ Primeiro se compra. Só depois é possível baixar jogos e encaixar cartas.
+La fine del turno ‖ The end of the turn ‖ El final del turno ‖ O fim do turno
+Dopo aver pescato puoi calare, ma non sei obbligato. Per terminare il turno devi scartare una carta. ‖ After drawing you may meld, but you don't have to. To end your turn you must discard a card. ‖ Después de robar puedes bajar, pero no es obligatorio. Para terminar el turno debes descartar una carta. ‖ Depois de comprar você pode baixar, mas não é obrigado. Para terminar o turno você deve descartar uma carta.
+Hai pescato e non vuoi calare. Come passi il turno? ‖ You've drawn and don't want to meld. How do you end your turn? ‖ Has robado y no quieres bajar. ¿Cómo pasas el turno? ‖ Você comprou e não quer baixar. Como passa a vez?
+Pesco di nuovo ‖ I draw again ‖ Robo otra vez ‖ Compro de novo
+Non faccio nulla ‖ I do nothing ‖ No hago nada ‖ Não faço nada
+Lo scarto termina il turno. Puoi farlo anche senza aver calato. ‖ The discard ends the turn. You can do it even without melding. ‖ El descarte termina el turno. Puedes hacerlo aunque no hayas bajado. ‖ O descarte termina o turno. Você pode fazê-lo mesmo sem ter baixado.
+Tre carte in fila ‖ Three cards in a row ‖ Tres cartas seguidas ‖ Três cartas seguidas
+Una scala parte da almeno tre carte consecutive dello stesso seme. ‖ A run needs at least three consecutive cards of the same suit. ‖ Una escalera necesita al menos tres cartas consecutivas del mismo palo. ‖ Uma sequência precisa de pelo menos três cartas consecutivas do mesmo naipe.
+Seleziona le 3 carte che formano una scala. ‖ Select the 3 cards that form a run. ‖ Selecciona las 3 cartas que forman una escalera. ‖ Selecione as 3 cartas que formam uma sequência.
+4, 5 e 6 di cuori sono consecutivi e dello stesso seme. ‖ The 4, 5 and 6 of hearts are consecutive and of the same suit. ‖ El 4, 5 y 6 de corazones son consecutivos y del mismo palo. ‖ O 4, 5 e 6 de copas são consecutivos e do mesmo naipe.
+Tre dello stesso valore ‖ Three of the same rank ‖ Tres del mismo valor ‖ Três do mesmo valor
+Nel Burraco Classico puoi calare anche tris: almeno tre carte dello stesso valore. ‖ In Classic Burraco you can also meld sets: at least three cards of the same rank. ‖ En el Burraco Clásico también puedes bajar tríos: al menos tres cartas del mismo valor. ‖ No Burraco Clássico você também pode baixar trincas: pelo menos três cartas do mesmo valor.
+Seleziona le 3 carte del tris. ‖ Select the 3 cards of the set. ‖ Selecciona las 3 cartas del trío. ‖ Selecione as 3 cartas da trinca.
+Tre 9 formano un tris. L’8 non appartiene alla combinazione. ‖ Three 9s make a set. The 8 doesn't belong to the meld. ‖ Tres 9 forman un trío. El 8 no pertenece a la combinación. ‖ Três 9 formam uma trinca. O 8 não faz parte do jogo.
+La pinella ti aiuta ‖ The pinella helps you ‖ La pinella te ayuda ‖ O dois ajuda você
+I 2 si chiamano pinelle e possono sostituire una carta mancante. Nel Classico ogni combinazione può avere al massimo una matta. ‖ The 2s are called pinelle and can stand in for a missing card. In Classic each meld can have at most one wild card. ‖ Los 2 se llaman pinelle y pueden sustituir una carta que falta. En el Clásico cada combinación puede tener como máximo un comodín. ‖ Os 2 (as “pinelle” italianas) são curingas e podem substituir uma carta que falta. No Clássico cada jogo pode ter no máximo um curinga.
+Sul tavolo ci sono 5 e 7 di cuori. Scegli la pinella per completare la scala. ‖ The 5 and 7 of hearts are on the table. Choose the pinella to complete the run. ‖ En la mesa están el 5 y el 7 de corazones. Elige la pinella para completar la escalera. ‖ Na mesa estão o 5 e o 7 de copas. Escolha o dois para completar a sequência.
+Il 2 di denari sostituisce il 6 di cuori: hai completato 5–6–7. ‖ The 2 of diamonds stands in for the 6 of hearts: you've completed 5–6–7. ‖ El 2 de diamantes sustituye al 6 de corazones: has completado 5–6–7. ‖ O 2 de ouros substitui o 6 de copas: você completou 5–6–7.
+Una matta alla volta ‖ One wild card at a time ‖ Un comodín a la vez ‖ Um curinga de cada vez
+Sia il jolly sia una pinella usata come sostituta sono matte. ‖ Both the joker and a pinella used as a stand-in are wild cards. ‖ Tanto el joker como una pinella usada como sustituta son comodines. ‖ Tanto o coringa quanto um dois usado como substituto são curingas.
+Una scala ha già un jolly. Puoi aggiungere una pinella come seconda matta? ‖ A run already has a joker. Can you add a pinella as a second wild card? ‖ Una escalera ya tiene un joker. ¿Puedes añadir una pinella como segundo comodín? ‖ Uma sequência já tem um coringa. Você pode adicionar um dois como segundo curinga?
+Sì, sempre ‖ Yes, always ‖ Sí, siempre ‖ Sim, sempre
+Solo se è rossa ‖ Only if it's red ‖ Solo si es roja ‖ Só se for vermelho
+No, nel Classico il limite è una matta ‖ No, in Classic the limit is one wild card ‖ No, en el Clásico el límite es un comodín ‖ Não, no Clássico o limite é um curinga
+Nel formato Classico una combinazione ammette al massimo una matta. Un 2 del seme giusto nella posizione naturale può invece essere una carta naturale. ‖ In the Classic format a meld allows at most one wild card. A 2 of the right suit in its natural position, however, can count as a natural card. ‖ En el formato Clásico una combinación admite como máximo un comodín. En cambio, un 2 del palo correcto en su posición natural puede ser una carta natural. ‖ No formato Clássico um jogo admite no máximo um curinga. Já um 2 do naipe certo na sua posição natural pode ser uma carta natural.
+La settima carta ‖ The seventh card ‖ La séptima carta ‖ A sétima carta
+Una combinazione di almeno sette carte è un burraco. Senza matte è pulito e vale un bonus di 200 punti. ‖ A meld of at least seven cards is a burraco. With no wild cards it's clean and earns a 200-point bonus. ‖ Una combinación de al menos siete cartas es un burraco. Sin comodines es limpio y vale un bonus de 200 puntos. ‖ Um jogo de pelo menos sete cartas é uma canastra. Sem curingas ela é limpa e vale um bônus de 200 pontos.
+Aggiungi una carta per completare questo burraco pulito. ‖ Add a card to complete this clean burraco. ‖ Añade una carta para completar este burraco limpio. ‖ Adicione uma carta para completar esta canastra limpa.
+Dal 4 al 10 di cuori sono sette carte senza matte: burraco pulito! ‖ From the 4 to the 10 of hearts makes seven cards with no wild cards: clean burraco! ‖ Del 4 al 10 de corazones son siete cartas sin comodines: ¡burraco limpio! ‖ Do 4 ao 10 de copas são sete cartas sem curingas: canastra limpa!
+Il pozzetto ‖ The kitty ‖ El muerto ‖ O morto
+Ogni squadra ha un pozzetto di 11 carte. Lo prende quando uno dei suoi giocatori finisce per la prima volta le carte in mano. ‖ Each team has an 11-card kitty. It takes it when one of its players runs out of cards in hand for the first time. ‖ Cada equipo tiene un muerto de 11 cartas. Lo toma cuando uno de sus jugadores se queda sin cartas en la mano por primera vez. ‖ Cada dupla tem um morto de 11 cartas. Ela o pega quando um dos seus jogadores fica sem cartas na mão pela primeira vez.
+Finisci le carte senza scartare e il pozzetto della squadra è ancora disponibile. Cosa succede? ‖ You run out of cards without discarding and your team's kitty is still available. What happens? ‖ Te quedas sin cartas sin descartar y el muerto del equipo sigue disponible. ¿Qué pasa? ‖ Você fica sem cartas sem descartar e o morto da dupla ainda está disponível. O que acontece?
+La partita finisce ‖ The game ends ‖ La partida termina ‖ A partida termina
+Peschi una sola carta ‖ You draw just one card ‖ Robas una sola carta ‖ Você compra só uma carta
+Prendi il pozzetto e continui il turno ‖ You take the kitty and carry on with your turn ‖ Tomas el muerto y sigues el turno ‖ Você pega o morto e continua o turno
+Senza scarto il pozzetto si prende al volo e puoi continuare. Se finisci scartando, lo giochi dal tuo turno successivo. ‖ Without a discard you take the kitty on the fly and can carry on. If you run out by discarding, you play it from your next turn. ‖ Sin descarte el muerto se toma al vuelo y puedes seguir. Si terminas descartando, lo juegas a partir de tu siguiente turno. ‖ Sem descarte o morto é pego na hora e você pode continuar. Se terminar descartando, joga com ele a partir do seu próximo turno.
+Prima di chiudere ‖ Before going out ‖ Antes de cerrar ‖ Antes de bater
+Nel Classico, per chiudere la squadra deve aver preso il pozzetto e realizzato almeno un burraco. ‖ In Classic, to go out the team must have taken the kitty and made at least one burraco. ‖ En el Clásico, para cerrar el equipo debe haber tomado el muerto y hecho al menos un burraco. ‖ No Clássico, para bater a dupla deve ter pegado o morto e feito pelo menos uma canastra.
+Avete preso il pozzetto, ma nessuna combinazione arriva a sette carte. Puoi chiudere? ‖ You've taken the kitty, but no meld reaches seven cards. Can you go out? ‖ Habéis tomado el muerto, pero ninguna combinación llega a siete cartas. ¿Puedes cerrar? ‖ Vocês pegaram o morto, mas nenhum jogo chega a sete cartas. Você pode bater?
+Sì, basta finire le carte ‖ Yes, you just need to run out of cards ‖ Sí, basta con quedarse sin cartas ‖ Sim, basta acabar as cartas
+No, serve anche un burraco ‖ No, you also need a burraco ‖ No, también hace falta un burraco ‖ Não, também é preciso uma canastra
+Sì, se scarto un Asso ‖ Yes, if I discard an Ace ‖ Sí, si descarto un As ‖ Sim, se eu descartar um Ás
+Il pozzetto da solo non basta: serve almeno un burraco della squadra. ‖ The kitty alone isn't enough: the team needs at least one burraco. ‖ El muerto solo no basta: el equipo necesita al menos un burraco. ‖ Só o morto não basta: a dupla precisa de pelo menos uma canastra.
+Lo scarto finale ‖ The final discard ‖ El descarte final ‖ O descarte final
+Avete preso il pozzetto e fatto un burraco. In questo esercizio rimarrà una sola carta: scegli quale può essere lo scarto finale. ‖ You've taken the kitty and made a burraco. In this exercise only one card will be left: choose which one can be the final discard. ‖ Habéis tomado el muerto y hecho un burraco. En este ejercicio quedará una sola carta: elige cuál puede ser el descarte final. ‖ Vocês pegaram o morto e fizeram uma canastra. Neste exercício sobrará só uma carta: escolha qual pode ser o descarte final.
+Quale di queste carte può essere l’ultima carta da scartare per chiudere? ‖ Which of these cards can be the last card you discard to go out? ‖ ¿Cuál de estas cartas puede ser la última que descartas para cerrar? ‖ Qual destas cartas pode ser a última a descartar para bater?
+Il 7 di fiori è una carta naturale. Nel Classico non puoi chiudere scartando un jolly o una pinella. ‖ The 7 of clubs is a natural card. In Classic you can't go out by discarding a joker or a pinella. ‖ El 7 de tréboles es una carta natural. En el Clásico no puedes cerrar descartando un joker o una pinella. ‖ O 7 de paus é uma carta natural. No Clássico você não pode bater descartando um coringa ou um dois.
+
+# Scala 40 · prove
+Da dove si comincia ‖ Where to start ‖ Por dónde se empieza ‖ Por onde começar
+Ogni turno inizia pescando. Dopo puoi calare e attaccare, rispettando l’apertura, poi termini con uno scarto. ‖ Every turn starts by drawing. Then you can meld and lay off, following the opening rule, and you finish with a discard. ‖ Cada turno empieza robando. Después puedes bajar y añadir, respetando la apertura, y terminas con un descarte. ‖ Cada turno começa comprando. Depois você pode baixar e encaixar, respeitando a abertura, e termina com um descarte.
+Non hai ancora aperto e vuoi pescare senza usare subito lo scarto. Cosa scegli? ‖ You haven't opened yet and want to draw without using the discard right away. What do you choose? ‖ Aún no has abierto y quieres robar sin usar el descarte enseguida. ¿Qué eliges? ‖ Você ainda não abriu e quer comprar sem usar o descarte na hora. O que escolhe?
+Il tallone coperto ‖ The face-down stock ‖ El mazo boca abajo ‖ O monte virado para baixo
+Tutto il monte degli scarti ‖ The whole discard pile ‖ Todo el pozo de descartes ‖ Todo o lixo
+Passo senza pescare ‖ I pass without drawing ‖ Paso sin robar ‖ Passo sem comprar
+Dal tallone puoi pescare normalmente. Nelle regole base, prima di aprire lo scarto si prende per usarlo subito nell’apertura. ‖ You can always draw from the stock. In the basic rules, before opening you take the discard only to use it right away in your opening. ‖ Del mazo puedes robar con normalidad. En las reglas básicas, antes de abrir el descarte se toma para usarlo enseguida en la apertura. ‖ Do monte você pode comprar normalmente. Nas regras básicas, antes de abrir o descarte só é pego para usá-lo na hora na abertura.
+L’obiettivo ‖ The goal ‖ El objetivo ‖ O objetivo
+Nella Scala 40 cerchi di restare senza carte. Le carte rimaste in mano alla fine diventano punti di penalità. ‖ In Scala 40 you try to run out of cards. The cards left in your hand at the end become penalty points. ‖ En la Scala 40 intentas quedarte sin cartas. Las cartas que te quedan en la mano al final se convierten en puntos de penalización. ‖ Na Scala 40 você tenta ficar sem cartas. As cartas que sobram na mão no final viram pontos de penalidade.
+Qual è l’obiettivo di una smazzata? ‖ What is the goal of a hand? ‖ ¿Cuál es el objetivo de una mano? ‖ Qual é o objetivo de uma mão?
+Tenere più carte degli altri ‖ Keeping more cards than the others ‖ Tener más cartas que los demás ‖ Ficar com mais cartas que os outros
+Fare almeno sette carte in ogni scala ‖ Making at least seven cards in every run ‖ Hacer al menos siete cartas en cada escalera ‖ Fazer pelo menos sete cartas em cada sequência
+Liberarsi delle carte e chiudere con uno scarto ‖ Getting rid of your cards and going out with a discard ‖ Deshacerse de las cartas y cerrar con un descarte ‖ Livrar-se das cartas e bater com um descarte
+Qui non ci sono pozzetti o burraco: devi calare, attaccare e scartare per finire la mano. ‖ There are no kitties or burracos here: you have to meld, lay off and discard to finish your hand. ‖ Aquí no hay muertos ni burracos: debes bajar, añadir y descartar para terminar la mano. ‖ Aqui não há mortos nem canastras: você deve baixar, encaixar e descartar para terminar a mão.
+Una scala dello stesso seme ‖ A run of one suit ‖ Una escalera del mismo palo ‖ Uma sequência do mesmo naipe
+Servono almeno tre carte consecutive dello stesso seme. Per ora impariamo la combinazione; l’apertura arriva nella prossima tappa. ‖ You need at least three consecutive cards of the same suit. For now let's learn the meld; opening comes in the next stage. ‖ Hacen falta al menos tres cartas consecutivas del mismo palo. Por ahora aprendemos la combinación; la apertura llega en la próxima etapa. ‖ São precisas pelo menos três cartas consecutivas do mesmo naipe. Por enquanto aprendemos o jogo; a abertura vem na próxima etapa.
+Seleziona una scala di 3 carte. ‖ Select a run of 3 cards. ‖ Selecciona una escalera de 3 cartas. ‖ Selecione uma sequência de 3 cartas.
+5, 6 e 7 di picche formano una scala. Il 6 di cuori non può farne parte. ‖ The 5, 6 and 7 of spades form a run. The 6 of hearts can't be part of it. ‖ El 5, 6 y 7 de picas forman una escalera. El 6 de corazones no puede formar parte de ella. ‖ O 5, 6 e 7 de espadas formam uma sequência. O 6 de copas não pode fazer parte dela.
+Un tris di semi diversi ‖ A set of different suits ‖ Un trío de palos distintos ‖ Uma trinca de naipes diferentes
+Un tris contiene carte dello stesso valore e di semi diversi. Due copie della stessa carta non possono stare nello stesso tris. ‖ A set contains cards of the same rank and different suits. Two copies of the same card can't be in the same set. ‖ Un trío contiene cartas del mismo valor y de palos distintos. Dos copias de la misma carta no pueden estar en el mismo trío. ‖ Uma trinca contém cartas do mesmo valor e de naipes diferentes. Duas cópias da mesma carta não podem estar na mesma trinca.
+Hai già due Re. Scegli il Re che completa un tris valido. ‖ You already have two Kings. Choose the King that completes a valid set. ‖ Ya tienes dos Reyes. Elige el Rey que completa un trío válido. ‖ Você já tem dois Reis. Escolha o Rei que completa uma trinca válida.
+Il Re di quadri ha un seme diverso dai Re di cuori e picche già presenti. ‖ The King of diamonds has a different suit from the Kings of hearts and spades already there. ‖ El Rey de diamantes tiene un palo distinto de los Reyes de corazones y picas que ya están. ‖ O Rei de ouros tem um naipe diferente dos Reis de copas e espadas que já estão lá.
+Una prima calata da 40 ‖ A first meld worth 40 ‖ Una primera bajada de 40 ‖ Uma primeira baixada de 40
+Per aprire devi calare almeno 40 punti nello stesso turno. Le figure valgono 10 punti ciascuna. ‖ To open you must meld at least 40 points in the same turn. Face cards are worth 10 points each. ‖ Para abrir debes bajar al menos 40 puntos en el mismo turno. Las figuras valen 10 puntos cada una. ‖ Para abrir você deve baixar pelo menos 40 pontos no mesmo turno. As figuras valem 10 pontos cada.
+Seleziona i 4 Re per aprire con un poker da 40 punti. ‖ Select the 4 Kings to open with four of a kind worth 40 points. ‖ Selecciona los 4 Reyes para abrir con un póker de 40 puntos. ‖ Selecione os 4 Reis para abrir com uma quadra de 40 pontos.
+Quattro Re di semi diversi valgono 10 + 10 + 10 + 10 = 40: puoi aprire. ‖ Four Kings of different suits are worth 10 + 10 + 10 + 10 = 40: you can open. ‖ Cuatro Reyes de palos distintos valen 10 + 10 + 10 + 10 = 40: puedes abrir. ‖ Quatro Reis de naipes diferentes valem 10 + 10 + 10 + 10 = 40: você pode abrir.
+Un tris non basta sempre ‖ A set isn't always enough ‖ Un trío no siempre basta ‖ Uma trinca nem sempre basta
+Il minimo di 40 riguarda il totale dell’apertura, anche composto da più combinazioni. ‖ The minimum of 40 applies to the opening's total, which can be made of several melds. ‖ El mínimo de 40 se refiere al total de la apertura, aunque esté formada por varias combinaciones. ‖ O mínimo de 40 vale para o total da abertura, mesmo que seja formada por vários jogos.
+Un tris di Re vale 30 punti. Da solo basta per aprire? ‖ A set of Kings is worth 30 points. Is it enough on its own to open? ‖ Un trío de Reyes vale 30 puntos. ¿Basta solo para abrir? ‖ Uma trinca de Reis vale 30 pontos. Sozinha basta para abrir?
+Sì, perché è un tris ‖ Yes, because it's a set ‖ Sí, porque es un trío ‖ Sim, porque é uma trinca
+No, mancano almeno 10 punti in combinazioni valide ‖ No, at least 10 more points in valid melds are missing ‖ No, faltan al menos 10 puntos en combinaciones válidas ‖ Não, faltam pelo menos 10 pontos em jogos válidos
+Solo se sono tutti rossi ‖ Only if they're all red ‖ Solo si son todos rojos ‖ Só se forem todos vermelhos
+30 è meno di 40. Puoi aggiungere un’altra combinazione valida all’apertura; una carta isolata da 10 non basta. ‖ 30 is less than 40. You can add another valid meld to the opening; a single 10-point card isn't enough. ‖ 30 es menos que 40. Puedes añadir otra combinación válida a la apertura; una carta suelta de 10 no basta. ‖ 30 é menos que 40. Você pode acrescentar outro jogo válido à abertura; uma carta solta de 10 não basta.
+Completa il vuoto ‖ Fill the gap ‖ Completa el hueco ‖ Preencha o espaço
+Nella Scala 40 le matte sono i jolly. I 2 sono carte normali e non sostituiscono altre carte. ‖ In Scala 40 the wild cards are the jokers. The 2s are normal cards and don't stand in for other cards. ‖ En la Scala 40 los comodines son los jokers. Los 2 son cartas normales y no sustituyen a otras cartas. ‖ Na Scala 40 os curingas são os coringas do baralho (jokers). Os 2 são cartas normais e não substituem outras cartas.
+Completa 5 e 7 di cuori scegliendo la matta. ‖ Complete the 5 and 7 of hearts by choosing the wild card. ‖ Completa el 5 y el 7 de corazones eligiendo el comodín. ‖ Complete o 5 e o 7 de copas escolhendo o curinga.
+Il jolly rappresenta il 6 di cuori. Il 2 non è una pinella nella Scala 40. ‖ The joker stands for the 6 of hearts. In Scala 40 the 2 is not a pinella. ‖ El joker representa el 6 de corazones. En la Scala 40 el 2 no es una pinella. ‖ O coringa representa o 6 de copas. Na Scala 40 o 2 não é curinga.
+Dopo l’apertura ‖ After opening ‖ Después de la apertura ‖ Depois da abertura
+Dopo aver aperto puoi attaccare carte alle combinazioni di tutti i giocatori. ‖ Once you've opened you can lay off cards on every player's melds. ‖ Después de abrir puedes añadir cartas a las combinaciones de todos los jugadores. ‖ Depois de abrir você pode encaixar cartas nos jogos de todos os jogadores.
+Hai già aperto. Quale carta puoi attaccare a 7–8–9 di quadri? ‖ You've already opened. Which card can you lay off on the 7–8–9 of diamonds? ‖ Ya has abierto. ¿Qué carta puedes añadir al 7–8–9 de diamantes? ‖ Você já abriu. Qual carta pode encaixar no 7–8–9 de ouros?
+Il 10 di quadri continua la scala dello stesso seme. Puoi attaccarlo anche se la scala è di un avversario. ‖ The 10 of diamonds continues the run of the same suit. You can lay it off even if the run belongs to an opponent. ‖ El 10 de diamantes continúa la escalera del mismo palo. Puedes añadirlo aunque la escalera sea de un rival. ‖ O 10 de ouros continua a sequência do mesmo naipe. Você pode encaixá-lo mesmo que a sequência seja de um adversário.
+Conserva lo scarto ‖ Keep a card to discard ‖ Guarda el descarte ‖ Guarde o descarte
+Per chiudere devi rimanere senza carte scartando l’ultima. Pianifica le calate lasciando una carta per lo scarto. ‖ To go out you must run out of cards by discarding the last one. Plan your melds leaving one card to discard. ‖ Para cerrar debes quedarte sin cartas descartando la última. Planifica las bajadas dejando una carta para el descarte. ‖ Para bater você deve ficar sem cartas descartando a última. Planeje as baixadas deixando uma carta para o descarte.
+Hai una combinazione da calare e una carta in più. Come chiudi? ‖ You have a meld to put down and one extra card. How do you go out? ‖ Tienes una combinación para bajar y una carta de más. ¿Cómo cierras? ‖ Você tem um jogo para baixar e uma carta a mais. Como você bate?
+Calo la combinazione e scarto l’ultima carta ‖ I meld and discard the last card ‖ Bajo la combinación y descarto la última carta ‖ Baixo o jogo e descarto a última carta
+Calo tutto senza scartare ‖ I meld everything without discarding ‖ Bajo todo sin descartar ‖ Baixo tudo sem descartar
+Pesco due carte ‖ I draw two cards ‖ Robo dos cartas ‖ Compro duas cartas
+La chiusura termina con lo scarto dell’ultima carta. ‖ Going out ends with discarding the last card. ‖ El cierre termina con el descarte de la última carta. ‖ A batida termina com o descarte da última carta.
+Contare ciò che resta ‖ Counting what's left ‖ Contar lo que queda ‖ Contar o que sobra
+A fine smazzata un Re rimasto in mano vale 10 punti di penalità e un 7 ne vale 7. Qui non c’è una chiusura in mano che raddoppia. ‖ At the end of the hand a King left in your hand is worth 10 penalty points and a 7 is worth 7. There's no going out in one here to double them. ‖ Al final de la mano un Rey que te queda vale 10 puntos de penalización y un 7 vale 7. Aquí no hay un cierre en mano que los duplique. ‖ No fim da mão um Rei que sobrou vale 10 pontos de penalidade e um 7 vale 7. Aqui não há batida de mão que os dobre.
+Ti restano un Re e un 7. Quanti punti di penalità hai? ‖ You're left with a King and a 7. How many penalty points do you have? ‖ Te quedan un Rey y un 7. ¿Cuántos puntos de penalización tienes? ‖ Sobraram um Rei e um 7. Quantos pontos de penalidade você tem?
+10 + 7 = 17 punti di penalità. Nelle regole base chi raggiunge 101 viene eliminato. ‖ 10 + 7 = 17 penalty points. In the basic rules whoever reaches 101 is eliminated. ‖ 10 + 7 = 17 puntos de penalización. En las reglas básicas quien llega a 101 queda eliminado. ‖ 10 + 7 = 17 pontos de penalidade. Nas regras básicas quem chega a 101 é eliminado.
+
+# Ramino · prove
+Il ritmo del Ramino ‖ The rhythm of Rummy ‖ El ritmo del Rummy ‖ O ritmo do Rummy
+Anche nel Ramino il turno segue questo ordine: pesca, eventuali calate o attacchi, scarto. ‖ In Rummy too the turn follows this order: draw, any melds or lay-offs, discard. ‖ También en el Rummy el turno sigue este orden: robar, posibles bajadas o añadidos, descarte. ‖ Também no Rummy o turno segue esta ordem: compra, eventuais baixadas ou encaixes, descarte.
+È appena iniziato il tuo turno. Qual è la prima azione? ‖ Your turn has just started. What's the first move? ‖ Acaba de empezar tu turno. ¿Cuál es la primera acción? ‖ Seu turno acabou de começar. Qual é a primeira ação?
+Calare tutte le carte ‖ Meld all your cards ‖ Bajar todas las cartas ‖ Baixar todas as cartas
+Prima peschi. Poi puoi giocare combinazioni e concludere con lo scarto. ‖ First you draw. Then you can play melds and finish with the discard. ‖ Primero robas. Luego puedes jugar combinaciones y terminar con el descarte. ‖ Primeiro você compra. Depois pode jogar combinações e terminar com o descarte.
+Lo scarto è disponibile ‖ The discard is available ‖ El descarte está disponible ‖ O descarte está disponível
+Nel Ramino di Smazzata puoi prendere lo scarto in cima anche se non hai ancora calato. ‖ In Smazzata's Rummy you can take the top discard even if you haven't melded yet. ‖ En el Rummy de Smazzata puedes tomar el descarte de arriba aunque todavía no hayas bajado. ‖ No Rummy do Smazzata você pode pegar o descarte de cima mesmo sem ter baixado ainda.
+Non hai ancora calato e ti serve la carta in cima agli scarti. Puoi prenderla? ‖ You haven't melded yet and you need the top card of the discards. Can you take it? ‖ Aún no has bajado y necesitas la carta de arriba de los descartes. ¿Puedes tomarla? ‖ Você ainda não baixou e precisa da carta de cima do lixo. Pode pegá-la?
+Sì, prendo quella carta ‖ Yes, I take that card ‖ Sí, tomo esa carta ‖ Sim, pego essa carta
+No, devo prima arrivare a 40 punti ‖ No, I must reach 40 points first ‖ No, primero debo llegar a 40 puntos ‖ Não, primeiro preciso chegar a 40 pontos
+Sì, ma devo prendere tutto il monte ‖ Yes, but I must take the whole pile ‖ Sí, pero debo tomar todo el pozo ‖ Sim, mas preciso pegar todo o lixo
+Prendi solo la carta in cima. A differenza della Scala 40, non devi usarla subito per aprire. ‖ You take only the top card. Unlike Scala 40, you don't have to use it right away to open. ‖ Tomas solo la carta de arriba. A diferencia de la Scala 40, no tienes que usarla enseguida para abrir. ‖ Você pega só a carta de cima. Diferente da Scala 40, não precisa usá-la na hora para abrir.
+Crea scale e tris ‖ Make runs and sets ‖ Crea escaleras y tríos ‖ Crie sequências e trincas
+La tua prima scala ‖ Your first run ‖ Tu primera escalera ‖ Sua primeira sequência
+Tre o più carte consecutive dello stesso seme formano una scala. ‖ Three or more consecutive cards of the same suit form a run. ‖ Tres o más cartas consecutivas del mismo palo forman una escalera. ‖ Três ou mais cartas consecutivas do mesmo naipe formam uma sequência.
+Seleziona le 3 carte della scala. ‖ Select the 3 cards of the run. ‖ Selecciona las 3 cartas de la escalera. ‖ Selecione as 3 cartas da sequência.
+8, 9 e 10 di fiori sono una scala. Il 9 di quadri ha il seme sbagliato. ‖ The 8, 9 and 10 of clubs are a run. The 9 of diamonds has the wrong suit. ‖ El 8, 9 y 10 de tréboles son una escalera. El 9 de diamantes tiene el palo equivocado. ‖ O 8, 9 e 10 de paus são uma sequência. O 9 de ouros tem o naipe errado.
+Un tris senza doppioni ‖ A set without duplicates ‖ Un trío sin repetidas ‖ Uma trinca sem repetidas
+I tris richiedono lo stesso valore e semi diversi, come nella Scala 40. ‖ Sets need the same rank and different suits, as in Scala 40. ‖ Los tríos requieren el mismo valor y palos distintos, como en la Scala 40. ‖ As trincas exigem o mesmo valor e naipes diferentes, como na Scala 40.
+Seleziona le 3 carte che formano un tris. ‖ Select the 3 cards that form a set. ‖ Selecciona las 3 cartas que forman un trío. ‖ Selecione as 3 cartas que formam uma trinca.
+I tre 6 di cuori, quadri e fiori formano un tris valido. ‖ The three 6s of hearts, diamonds and clubs form a valid set. ‖ Los tres 6 de corazones, diamantes y tréboles forman un trío válido. ‖ Os três 6 de copas, ouros e paus formam uma trinca válida.
+Bastano dodici punti ‖ Twelve points are enough ‖ Bastan doce puntos ‖ Doze pontos bastam
+Nel Ramino non serve raggiungere 40 punti per la prima calata. Basta una combinazione valida. ‖ In Rummy you don't need to reach 40 points for your first meld. Any valid meld will do. ‖ En el Rummy no hace falta llegar a 40 puntos para la primera bajada. Basta una combinación válida. ‖ No Rummy não é preciso chegar a 40 pontos para a primeira baixada. Basta um jogo válido.
+Seleziona 3–4–5 di cuori: puoi calarli anche come prima combinazione. ‖ Select the 3–4–5 of hearts: you can meld them even as your first meld. ‖ Selecciona el 3–4–5 de corazones: puedes bajarlos incluso como primera combinación. ‖ Selecione o 3–4–5 de copas: você pode baixá-los mesmo como primeiro jogo.
+3 + 4 + 5 = 12. Nel Ramino puoi aprire anche con questa sola scala. ‖ 3 + 4 + 5 = 12. In Rummy you can open with just this run. ‖ 3 + 4 + 5 = 12. En el Rummy puedes abrir incluso solo con esta escalera. ‖ 3 + 4 + 5 = 12. No Rummy você pode abrir só com esta sequência.
+Ramino o Scala 40? ‖ Rummy or Scala 40? ‖ ¿Rummy o Scala 40? ‖ Rummy ou Scala 40?
+Le combinazioni sono simili, ma il requisito di apertura cambia. ‖ The melds are similar, but the opening requirement is different. ‖ Las combinaciones son parecidas, pero el requisito de apertura cambia. ‖ Os jogos são parecidos, mas o requisito de abertura muda.
+Hai un tris valido da 18 punti. Nel Ramino puoi calarlo come prima combinazione? ‖ You have a valid set worth 18 points. In Rummy can you meld it as your first meld? ‖ Tienes un trío válido de 18 puntos. En el Rummy, ¿puedes bajarlo como primera combinación? ‖ Você tem uma trinca válida de 18 pontos. No Rummy pode baixá-la como primeiro jogo?
+No, servono 40 punti ‖ No, you need 40 points ‖ No, hacen falta 40 puntos ‖ Não, são precisos 40 pontos
+No, servono sette carte ‖ No, you need seven cards ‖ No, hacen falta siete cartas ‖ Não, são precisas sete cartas
+Sì, non c’è un minimo di apertura ‖ Yes, there's no opening minimum ‖ Sí, no hay un mínimo de apertura ‖ Sim, não há mínimo de abertura
+Nel Ramino non c’è soglia. Non trasferire qui la regola dei 40 punti della Scala 40. ‖ In Rummy there's no threshold. Don't bring the 40-point rule of Scala 40 over here. ‖ En el Rummy no hay mínimo. No traslades aquí la regla de los 40 puntos de la Scala 40. ‖ No Rummy não há mínimo. Não traga para cá a regra dos 40 pontos da Scala 40.
+La carta che manca ‖ The missing card ‖ La carta que falta ‖ A carta que falta
+I jolly possono sostituire una carta. I 2 restano carte naturali, non pinelle. ‖ Jokers can stand in for a card. The 2s stay natural cards, not pinelle. ‖ Los jokers pueden sustituir una carta. Los 2 siguen siendo cartas naturales, no pinelle. ‖ Os coringas podem substituir uma carta. Os 2 continuam sendo cartas naturais, não curingas.
+Completa 8 e 10 di picche con una matta. ‖ Complete the 8 and 10 of spades with a wild card. ‖ Completa el 8 y el 10 de picas con un comodín. ‖ Complete o 8 e o 10 de espadas com um curinga.
+Il jolly sostituisce il 9 di picche. Nelle regole base del Ramino sono ammessi fino a due jolly per combinazione. ‖ The joker stands in for the 9 of spades. In basic Rummy rules up to two jokers per meld are allowed. ‖ El joker sustituye al 9 de picas. En las reglas básicas del Rummy se admiten hasta dos jokers por combinación. ‖ O coringa substitui o 9 de espadas. Nas regras básicas do Rummy são permitidos até dois coringas por jogo.
+Una carta in meno in mano ‖ One less card in hand ‖ Una carta menos en la mano ‖ Uma carta a menos na mão
+Dopo la prima calata puoi attaccare alle combinazioni di tutti. ‖ After your first meld you can lay off on everyone's melds. ‖ Después de la primera bajada puedes añadir a las combinaciones de todos. ‖ Depois da primeira baixada você pode encaixar nos jogos de todos.
+Hai già calato. Attacca una carta a 4–5–6 di fiori. ‖ You've already melded. Lay off a card on the 4–5–6 of clubs. ‖ Ya has bajado. Añade una carta al 4–5–6 de tréboles. ‖ Você já baixou. Encaixe uma carta no 4–5–6 de paus.
+Il 7 di fiori allunga la scala: hai una carta in meno da tenere in mano. ‖ The 7 of clubs extends the run: you have one less card to hold. ‖ El 7 de tréboles alarga la escalera: tienes una carta menos en la mano. ‖ O 7 de paus estende a sequência: você tem uma carta a menos na mão.
+L’ultima carta ‖ The last card ‖ La última carta ‖ A última carta
+Per chiudere, dopo calate e attacchi, devi scartare l’ultima carta. ‖ To go out, after melding and laying off, you must discard the last card. ‖ Para cerrar, después de bajar y añadir, debes descartar la última carta. ‖ Para bater, depois de baixar e encaixar, você deve descartar a última carta.
+Ti resta una sola carta dopo le tue calate. Cosa fai per chiudere? ‖ You have just one card left after your melds. What do you do to go out? ‖ Te queda una sola carta después de tus bajadas. ¿Qué haces para cerrar? ‖ Sobrou só uma carta depois das suas baixadas. O que você faz para bater?
+La tengo per il turno dopo ‖ I keep it for the next turn ‖ La guardo para el siguiente turno ‖ Guardo para o próximo turno
+La scarto ‖ I discard it ‖ La descarto ‖ Descarto
+Prendo il pozzetto ‖ I take the kitty ‖ Tomo el muerto ‖ Pego o morto
+Scarta l’ultima carta. Nel Ramino non c’è un pozzetto. ‖ Discard the last card. There's no kitty in Rummy. ‖ Descarta la última carta. En el Rummy no hay muerto. ‖ Descarte a última carta. No Rummy não há morto.
+Nelle regole base, chi cala tutto nello stesso turno della prima calata e chiude realizza una chiusura in mano. ‖ In the basic rules, whoever melds everything in the same turn as their first meld and goes out makes a “going out in one”. ‖ En las reglas básicas, quien baja todo en el mismo turno de su primera bajada y cierra hace un cierre en mano. ‖ Nas regras básicas, quem baixa tudo no mesmo turno da primeira baixada e bate faz uma batida de mão.
+Cosa succede alle penalità degli altri con una chiusura in mano? ‖ What happens to the others' penalties when you go out in one? ‖ ¿Qué pasa con las penalizaciones de los demás con un cierre en mano? ‖ O que acontece com as penalidades dos outros com uma batida de mão?
+Raddoppiano ‖ They double ‖ Se duplican ‖ Dobram
+Si annullano ‖ They're cancelled ‖ Se anulan ‖ São anuladas
+Diventano tutte 40 ‖ They all become 40 ‖ Se vuelven todas 40 ‖ Viram todas 40
+Le penalità degli altri raddoppiano. Hai imparato le basi: ora puoi provarle in una partita contro il computer. ‖ The others' penalties double. You've learned the basics: now you can try them in a game against the computer. ‖ Las penalizaciones de los demás se duplican. Has aprendido lo básico: ahora puedes probarlo en una partida contra el ordenador. ‖ As penalidades dos outros dobram. Você aprendeu o básico: agora pode testar numa partida contra o computador.
+Scala 40 ‖ Scala 40 ‖ Scala 40 ‖ Scala 40
+
+# Mappa del mondo, stelle e finestrella del livello
+LIVELLO {0} COMPLETATO ‖ LEVEL {0} COMPLETE ‖ NIVEL {0} COMPLETADO ‖ NÍVEL {0} CONCLUÍDO
+Perfetto, nessun errore! ‖ Perfect, no mistakes! ‖ ¡Perfecto, sin errores! ‖ Perfeito, nenhum erro!
+Bravo! Un solo errore. ‖ Well done! Just one mistake. ‖ ¡Muy bien! Un solo error. ‖ Muito bem! Só um erro.
+Livello superato! Rigiocalo senza errori per avere 3 stelle. ‖ Level passed! Replay it with no mistakes to get 3 stars. ‖ ¡Nivel superado! Vuelve a jugarlo sin errores para conseguir 3 estrellas. ‖ Nível superado! Jogue de novo sem erros para ganhar 3 estrelas.
+Livello {0}: {1}. {2} ‖ Level {0}: {1}. {2} ‖ Nivel {0}: {1}. {2} ‖ Nível {0}: {1}. {2}
+Completato, {0} stella ‖ Completed, {0} star ‖ Completado, {0} estrella ‖ Concluído, {0} estrela
+Completato, {0} stelle ‖ Completed, {0} stars ‖ Completado, {0} estrellas ‖ Concluído, {0} estrelas
+Bloccato ‖ Locked ‖ Bloqueado ‖ Bloqueado
+Da giocare ‖ To play ‖ Por jugar ‖ Para jogar
+Primo mondo completato · Rigioca · ‖ First world completed · Play again · ‖ Primer mundo completado · Volver a jugar · ‖ Primeiro mundo concluído · Jogar de novo ·
+Riprendi · {0} di {1} livelli · ‖ Resume · {0} of {1} levels · ‖ Continuar · {0} de {1} niveles · ‖ Continuar · {0} de {1} níveis ·
+Stelle raccolte ‖ Stars collected ‖ Estrellas conseguidas ‖ Estrelas conquistadas
+🔒 Mondo 2 · presto ‖ 🔒 World 2 · coming soon ‖ 🔒 Mundo 2 · pronto ‖ 🔒 Mundo 2 · em breve
+{0} · LIVELLO {1} ‖ {0} · LEVEL {1} ‖ {0} · NIVEL {1} ‖ {0} · NÍVEL {1}
+{0} prove · nessuna vita · nessun limite di tempo ‖ {0} challenges · no lives · no time limit ‖ {0} pruebas · sin vidas · sin límite de tiempo ‖ {0} desafios · sem vidas · sem limite de tempo
+Rigioca ‖ Play again ‖ Volver a jugar ‖ Jogar de novo
+Gioca! ‖ Play! ‖ ¡Juega! ‖ Jogue!
+Chiudi ‖ Close ‖ Cerrar ‖ Fechar
