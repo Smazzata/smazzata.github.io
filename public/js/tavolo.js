@@ -458,17 +458,32 @@
     if (fits()) {
       // c'è spazio libero: carte delle combinazioni e del tallone più grandi (fino a un limite)
       const cs0 = getComputedStyle(felt);
-      let mw0 = parseFloat(cs0.getPropertyValue('--mw')) || 30;
-      let pw0 = parseFloat(cs0.getPropertyValue('--pw')) || 36;
+      const mw0 = parseFloat(cs0.getPropertyValue('--mw')) || 30;
+      const pw0 = parseFloat(cs0.getPropertyValue('--pw')) || 36;
       const maxPw = pw0 + 4; // tallone e scarti crescono poco: lo spazio libero va alle combinazioni
       // in colonna lo spazio in larghezza basta più a lungo: le carte possono crescere di più
       const maxMw = mw0 * (document.body.classList.contains('vmelds') ? 1.9 : 1.45);
-      while (mw0 + 2 <= maxMw) {
-        felt.style.setProperty('--mw', `${mw0 + 2}px`);
-        felt.style.setProperty('--pw', `${Math.min(pw0 + 2, maxPw)}px`);
-        if (!fits()) { felt.style.setProperty('--mw', `${mw0}px`); felt.style.setProperty('--pw', `${pw0}px`); break; }
-        mw0 += 2; pw0 = Math.min(pw0 + 2, maxPw);
+      // Ogni fits() forza il layout: cerca lo stesso passo da 2px con una ricerca
+      // binaria, invece di ricalcolare tutto il tavolo per ogni dimensione intermedia.
+      const size = (step) => {
+        felt.style.setProperty('--mw', `${mw0 + step * 2}px`);
+        felt.style.setProperty('--pw', `${Math.min(pw0 + step * 2, maxPw)}px`);
+      };
+      const max = Math.floor((maxMw - mw0) / 2);
+      let lo = 0, hi = max;
+      // I piccoli aggiustamenti sono frequenti: controlliamo prima i primi quattro passi.
+      for (let step = 1; step <= Math.min(4, max); step++) {
+        size(step);
+        if (!fits()) { hi = step - 1; break; }
+        lo = step;
       }
+      while (lo < hi) {
+        const mid = Math.ceil((lo + hi) / 2);
+        size(mid);
+        if (fits()) lo = mid; else hi = mid - 1;
+      }
+      if (lo) size(lo);
+      else { felt.style.removeProperty('--mw'); felt.style.removeProperty('--pw'); }
       return;
     }
     /*
@@ -486,8 +501,37 @@
       felt.style.setProperty('--pw', `${pw}px`);
       for (const z of theirs) z.style.setProperty('--mw', `${Math.min(tw, mw)}px`);
     };
-    const shrinkAll = (min) => { while (!fits() && mw > min) { mw -= 2; tw = Math.min(tw, mw); pw = Math.max(30, pw - 2); setAll(); } };
-    const shrinkTheirs = (min) => { while (!fits() && tw > min) { tw -= 2; setAll(); } };
+    const shrink = (steps, apply) => {
+      if (fits() || steps <= 0) return;
+      let lo = 1, hi = steps;
+      for (let step = 1; step <= Math.min(4, steps); step++) {
+        apply(step);
+        if (fits()) return;
+        if (step === steps) return;
+        lo = step + 1;
+      }
+      apply(steps);
+      if (!fits()) return;
+      while (lo < hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        apply(mid);
+        if (fits()) hi = mid; else lo = mid + 1;
+      }
+      apply(lo);
+    };
+    const shrinkAll = (min) => {
+      const startMw = mw, startTw = tw, startPw = pw;
+      shrink(Math.ceil((mw - min) / 2), (step) => {
+        mw = startMw - step * 2;
+        tw = Math.min(startTw, mw);
+        pw = Math.max(30, startPw - step * 2);
+        setAll();
+      });
+    };
+    const shrinkTheirs = (min) => {
+      const start = tw;
+      shrink(Math.ceil((tw - min) / 2), (step) => { tw = start - step * 2; setAll(); });
+    };
     shrinkAll(26);
     if (fits()) return;
     root.classList.add('tight1');

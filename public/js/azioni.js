@@ -55,7 +55,9 @@
     const r = await emit('action', { type, ...extra });
     if (r.ok && type === 'takePile') S.tookTopId = pileTop ? pileTop.id : null;
     if (r.ok && (type === 'draw' || type === 'discard')) S.tookTopId = null;
-    if (r.ok && ['meld', 'add', 'swap', 'discard', 'takePile', 'undo'].includes(type)) { S.selected.clear(); render(); }
+    // onState ha già ridisegnato il tavolo e rimosso le carte giocate dalla selezione.
+    // Un secondo render identico interromperebbe le animazioni appena avviate.
+    if (r.ok && S.selected.size && ['meld', 'add', 'swap', 'discard', 'takePile', 'undo'].includes(type)) { S.selected.clear(); render(); }
     // mossa rifiutata: le carte nascoste dall'anticipo tornano al loro posto
     if (!r.ok) { S.antic = null; clearAnticipated(); render(); }
     return r;

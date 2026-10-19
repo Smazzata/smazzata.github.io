@@ -27,6 +27,9 @@ const PROBE = `
   window.__W = (ms) => new Promise((r) => setTimeout(r, ms));
   if (!window.__probe) {
     window.__probe = 1;
+    window.__renders = 0;
+    const originalRender = render;
+    window.render = function () { __renders++; return originalRender(); };
     const o = socket.emit.bind(socket);
     socket.emit = (ev, d, cb) => { setTimeout(() => o(ev, d, cb), ${LAG}); return socket; };
     window.__flyers = [];
@@ -54,13 +57,19 @@ const PROBE = `
     size: +(rec.last.width / rec.t.width).toFixed(2), done: !!rec.done, visible: !!rec.visible, face: rec.face } : null);
   /** una mossa: quante carte partono prima della risposta, com'è l'atterraggio, se resta qualcosa sullo schermo */
   window.__try = async (type, extra = {}) => {
+    if (type === 'discard' && S.game.phase === 'play') {
+      S.selected = new Set([extra.cardId]);
+      render();
+    }
+    const rendersBefore = __renders;
     const t0 = Date.now(), n = __log.length;
     const p = act(type, extra);
     await __W(${LAG - 70});
     const early = __flyers.filter((t) => t >= t0).length;
     const r = await p;
+    const renders = __renders - rendersBefore;
     await __W(1300);
-    return { ok: r.ok, err: r.error || null, early, landing: __chk(__log[n]), leftovers: document.querySelectorAll('.flyer.antic').length };
+    return { ok: r.ok, err: r.error || null, early, renders, landing: __chk(__log[n]), leftovers: document.querySelectorAll('.flyer.antic').length };
   };
   window.__waitTurn = async (pred, ms = 20000) => {
     const end = Date.now() + ms;
@@ -83,7 +92,7 @@ const GAMES = [
 ];
 
 (async () => {
-  fs.rmSync(OUT, { recursive: true, force: true });
+  if (!process.argv.includes('--perf')) fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });
   const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'burraco-anim-'));
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'burraco-anim-browser-'));
@@ -131,9 +140,15 @@ const GAMES = [
     await cdp.run(`const r = await emit('setNick', { nick: 'Robot_Anim', password: 'robot1234', adult: true }); if (!r.ok) throw new Error(r.error); return 1;`);
     await cdp.run(PROBE);
 
+    if (process.argv.includes('--perf')) {
+      await require('./renderperf')(cdp);
+      return;
+    }
+
     const check = (game, what, r, { expectEarly, expectLanding = expectEarly, mayFade = false, tol = 4 }) => {
       const line = `${game} · ${what}`;
       if (r.ok === false && expectEarly) { problems.push(`${line}: mossa rifiutata (${r.err})`); return; }
+      if (what === 'scarto' && r.ok && r.renders !== 1) problems.push(`${line}: ${r.renders} ridisegni invece di uno`);
       if (expectEarly && r.early < 1) problems.push(`${line}: la carta non parte al tocco`);
       if (!expectEarly && r.early > 0) problems.push(`${line}: ${r.early} carte volano anche se la mossa non è valida`);
       if (expectLanding) {
