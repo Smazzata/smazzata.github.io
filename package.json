@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "express": "^4.21.2",
-    "nodemailer": "^6.9.16",
+    "nodemailer": "^10.1.7",
     "qrcode-generator": "^1.4.4",
     "socket.io": "^4.8.1",
     "web-push": "^3.6.7"
