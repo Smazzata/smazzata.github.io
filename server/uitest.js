@@ -133,21 +133,21 @@ const HELPERS = `
     step('schermata iniziale e nickname');
     if (CAMPAIGN_ONLY) {
       await cdp.run(`
-        localStorage.removeItem(CAMPAIGN_KEY); S.campaignSession = null;
+        localStorage.removeItem(CAMPAIGN_KEY); localStorage.removeItem(CAMPAIGN_STARS_KEY); S.campaignSession = null; S.campaignStarsSession = null;
         __tap('[data-act="campaign"]');
         if (document.querySelectorAll('[data-act="campaignPath"]').length !== 3) throw new Error('tre percorsi indipendenti mancanti');`);
       await shot('campagna-01-percorsi');
       await cdp.run(`
         __tap('[data-act="campaignPath"][data-id="burraco"]');
-        if (document.querySelectorAll('[data-act="campaignLevel"]:disabled').length !== 4) throw new Error('sblocco iniziale errato');
-        __tap('[data-act="campaignLevel"][data-i="0"]');
+        if (document.querySelectorAll('[data-act="campaignPreview"]:disabled').length !== 4) throw new Error('sblocco iniziale errato');
+        __tap('[data-act="campaignPreview"][data-i="0"]'); __tap('#modal [data-act="campaignLevel"]');
         __tap('[data-act="campaignSelect"][data-i="0"]'); __tap('[data-act="campaignCheck"]');
         if (S.campaignFeedback !== 'wrong' || campaignProgress().burraco.turno !== 0) throw new Error('errore assegna avanzamento');
         __tap('[data-act="campaignSelect"][data-i="1"]'); __tap('[data-act="campaignCheck"]');
         if (S.campaignFeedback !== 'correct' || campaignProgress().burraco.turno !== 1) throw new Error('salvataggio prova');`);
       await open(URL);
       await cdp.run(`
-        __tap('[data-act="campaign"]'); __tap('[data-act="campaignPath"][data-id="burraco"]'); __tap('[data-act="campaignLevel"][data-i="0"]');
+        __tap('[data-act="campaign"]'); __tap('[data-act="campaignPath"][data-id="burraco"]'); __tap('[data-act="campaignPreview"][data-i="0"]'); __tap('#modal [data-act="campaignLevel"]');
         if (S.campaignStep !== 1) throw new Error('progresso non ripreso dopo reload');
         if (campaignProgress().scala40.turno || campaignProgress().ramino.turno) throw new Error('percorsi non indipendenti');
         onState(null, null);
@@ -158,7 +158,7 @@ const HELPERS = `
         for (const path of Campaign.paths) {
           handlers.campaignPaths(); __tap('[data-act="campaignPath"][data-id="' + path.id + '"]');
           for (let i = 0; i < path.levels.length; i++) {
-            __tap('[data-act="campaignLevel"][data-i="' + i + '"]');
+            __tap('[data-act="campaignPreview"][data-i="' + i + '"]'); __tap('#modal [data-act="campaignLevel"]');
             const level = path.levels[i];
             while (S.campaignStep < level.steps.length) {
               const step = level.steps[S.campaignStep];
@@ -173,12 +173,19 @@ const HELPERS = `
             __tap('[data-act="campaignMap"]');
           }
           if (campaignCompleted(path, campaignProgress()) !== 5) throw new Error('mondo non completato');
+          if (path.levels.some((l) => campaignStars()[path.id][l.id] !== 3)) throw new Error('senza errori servono 3 stelle');
+          if (document.querySelectorAll('.cmap-spot.done').length !== 5 || document.querySelector('.cmap-spot.current')) throw new Error('mappa: livelli completati non mostrati');
         }
       `);
       await shot('campagna-02-mondo-completato');
       await cdp.run(`
-        handlers.campaignPaths(); __tap('[data-act="campaignPath"][data-id="scala40"]'); __tap('[data-act="campaignLevel"][data-i="2"]');
+        handlers.campaignPaths(); __tap('[data-act="campaignPath"][data-id="scala40"]'); __tap('[data-act="campaignPreview"][data-i="2"]'); __tap('#modal [data-act="campaignLevel"]');
         if (S.campaignStep !== 0) throw new Error('rigioca non riparte');
+        S.campaignSelected = [0, 1, 2, 3]; handlers.campaignCheck();
+        if (S.campaignFeedback !== 'wrong') throw new Error('risposta sbagliata accettata');
+        for (const step of campaignPath().levels[2].steps.slice(S.campaignStep)) { S.campaignSelected = step.kind === 'cards' ? step.answer.slice() : [step.answer]; handlers.campaignCheck(); if (S.campaignFeedback !== 'correct') throw new Error('rigioca: risposta rifiutata'); handlers.campaignNext(); }
+        if (S.campaignLastStars !== 2 || campaignStars().scala40.apertura !== 3) throw new Error('stelle: un errore = 2, si tiene il migliore');
+        handlers.campaignMap(); if (document.querySelectorAll('.cmap-spot.done').length !== 5) throw new Error('mappa dopo rigioca');
         if (campaignCompleted(campaignPath(), campaignProgress()) !== 5) throw new Error('rigioca cancella progressi');`);
       await cdp.send('Emulation.setDeviceMetricsOverride', { width: 320, height: 740, deviceScaleFactor: DPR, mobile: true });
       await cdp.run(`if (document.documentElement.scrollWidth > innerWidth + 1) throw new Error('overflow a 320px');`);

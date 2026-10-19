@@ -6,32 +6,36 @@
 .campaign h1:focus, .campaign-feedback:focus { outline: none; }
 .campaign button:focus-visible { outline: 3px solid #efb844; outline-offset: 4px; }
 .campaign-kicker { display: block; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; line-height: 1.6; }
-.campaign-hero { margin: 18px 0; padding: 26px 22px 0; overflow: hidden; position: relative; background: #e9f1dc; color: #234733; border-radius: 24px; text-align: center; }
+/* Scelta del percorso: scena illustrata in alto */
+.campaign-hero { margin: 18px 0; padding: 24px 20px 0; overflow: hidden; position: relative; color: #234733; border-radius: 26px; text-align: center;
+  background: linear-gradient(#bfe6f7, #e9f6fb 70%); box-shadow: 0 0 0 4px #f6e4b5, 0 0 0 7px #8a5a32, 0 10px 0 3px #3b2414, 0 16px 26px rgba(0, 0, 0, .35); }
+.campaign-hero h1 { color: #1f4a30; text-shadow: 0 2px 0 rgba(255, 255, 255, .8); }
 .campaign-hero p { max-width: 460px; margin: 0 auto; font-size: 15px; line-height: 1.6; }
-.campaign-scene { display: block; width: calc(100% + 44px); margin: 12px -22px 0; height: 140px; }
-.campaign-paths { display: grid; gap: 14px; }
-.campaign-path { display: flex; gap: 16px; align-items: center; width: 100%; border: 1px solid #d3dfbd; border-radius: 18px; background: #fffdf4; color: #294b37; padding: 22px 18px; text-align: left; box-shadow: 0 4px 0 #153f2b; }
-.campaign-path > span:nth-child(2) { flex: 1; }
-.campaign-path strong { display: block; font-size: 22px; }
-.campaign-path span span { display: block; font-size: 14px; line-height: 1.5; margin-top: 4px; }
-.campaign-path small { display: block; color: #526d38; font-weight: 700; margin-top: 10px; }
-.campaign-path-icon { font-size: 32px; }
+.campaign-scene { display: block; width: calc(100% + 40px); margin: 6px -20px 0; height: 150px; }
+/* schede dei percorsi: paesaggio della stagione in alto, gettone con l'icona, avanzamento a gemme */
+.campaign-paths { display: grid; gap: 22px; }
+.campaign-path { position: relative; display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%; border: 0; border-radius: 22px; overflow: hidden;
+  background: linear-gradient(#fffdf4, #f6ecd2); color: #294b37; padding: 0 0 16px; text-align: left; cursor: pointer;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px #c99b62, 0 8px 0 3px #6b4226, 0 14px 20px rgba(0, 0, 0, .3); transition: transform .1s; }
+.campaign-path:active { transform: translateY(4px); box-shadow: 0 0 0 3px #fff, 0 0 0 5px #c99b62, 0 4px 0 3px #6b4226, 0 6px 10px rgba(0, 0, 0, .3); }
+.cp-art { grid-column: 1 / -1; display: block; height: 92px; position: relative; border-bottom: 3px solid #c99b62; }
+.cp-art svg { display: block; width: 100%; height: 100%; }
+.campaign-path-icon { position: absolute; left: 16px; top: 54px; width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; font-size: 30px;
+  background: radial-gradient(circle at 50% 30%, #fff8d6, #ffd768 50%, #e09a1c); border: 3px solid #fff;
+  box-shadow: inset 0 -5px 0 rgba(150, 70, 0, .25), 0 0 0 2px #c87a10, 0 5px 0 #8a4a06, 0 8px 10px rgba(0, 0, 0, .3); }
+.cp-burraco .campaign-path-icon { background: radial-gradient(circle at 50% 30%, #d8ffd9, #5fd07a 50%, #1f8a45); box-shadow: inset 0 -5px 0 rgba(0, 60, 20, .25), 0 0 0 2px #1d6b38, 0 5px 0 #0f4f27, 0 8px 10px rgba(0, 0, 0, .3); }
+.cp-scala40 .campaign-path-icon { background: radial-gradient(circle at 50% 30%, #ffe9d0, #ff9a4a 50%, #c4501c); box-shadow: inset 0 -5px 0 rgba(100, 30, 0, .25), 0 0 0 2px #9c3517, 0 5px 0 #6b2410, 0 8px 10px rgba(0, 0, 0, .3); }
+.cp-ramino .campaign-path-icon { background: radial-gradient(circle at 50% 30%, #dcf8ff, #4cc3f0 50%, #1a7fb8); box-shadow: inset 0 -5px 0 rgba(0, 40, 80, .25), 0 0 0 2px #1c5fa8, 0 5px 0 #123f73, 0 8px 10px rgba(0, 0, 0, .3); }
+.cp-text { padding: 12px 0 0 92px; min-width: 0; }
+.campaign-path strong { display: block; font-size: 22px; font-weight: 900; line-height: 1.15; }
+.cp-text > span:not(.cp-pips) { display: block; font-size: 14px; line-height: 1.45; margin-top: 4px; }
+.campaign-path small { display: block; color: #526d38; font-weight: 800; margin-top: 8px; }
+.cp-pips { display: flex; gap: 6px; margin-top: 8px; }
+.cp-pips i { width: 18px; height: 10px; border-radius: 5px; background: #ddd3bb; box-shadow: inset 0 2px 0 rgba(0, 0, 0, .12); }
+.cp-pips i.on { background: linear-gradient(#8ff0a8, #2fae5c); box-shadow: inset 0 -2px 0 rgba(0, 60, 20, .3), 0 1px 0 #17703a; }
+.campaign-path > b { margin: 12px 16px 0 8px; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-size: 16px; color: #fff;
+  background: radial-gradient(circle at 50% 30%, #8ff0a8, #2fae5c 50%, #17703a); box-shadow: inset 0 2px 0 rgba(255, 255, 255, .45), 0 4px 0 #0f4f27; }
 .campaign-note { font-size: 13px; line-height: 1.6; opacity: .9; margin: 18px 0; }
-.campaign-world-progress { display: flex; gap: 18px; align-items: center; margin: 20px 6px; font-size: 14px; }
-.campaign-world-progress progress { flex: 1; min-width: 0; height: 10px; accent-color: #f2c14e; }
-.campaign-map { list-style: none; margin: 0; padding: 12px 0; position: relative; }
-.campaign-map::before { content: ''; position: absolute; top: 40px; bottom: 60px; left: 50%; border-left: 6px dotted #abc78b; opacity: .5; }
-.campaign-map li { position: relative; margin: 0 0 25px; width: 90%; }
-.campaign-map li:nth-child(even) { margin-left: 10%; }
-.campaign-node { display: flex; align-items: center; gap: 16px; width: 100%; text-align: left; border: 2px solid #d4dfbd; border-radius: 20px; background: #f8f4e6; color: #254833; padding: 18px; box-shadow: 0 5px 0 #153f2b; }
-.campaign-node strong, .campaign-node span span, .campaign-node small { display: block; }
-.campaign-node strong { font-size: 18px; margin: 5px 0; }
-.campaign-node span span { font-size: 13px; line-height: 1.5; }
-.campaign-node small { font-size: 10px; letter-spacing: .5px; }
-.campaign-node-icon { flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: #e1e9cf; font-size: 26px; }
-.campaign-map .current .campaign-node { border-color: #f2c14e; background: #fff2bf; }
-.campaign-map .done .campaign-node-icon { background: #376849; color: white; }
-.campaign-map .locked .campaign-node { background: #d9dfd3; color: #53604f; box-shadow: none; cursor: default; }
 .campaign-exercise, .campaign-celebrate { margin-top: 18px; padding: 24px; border: 1px solid #e4dfca; border-radius: 22px; background: #fffcf1; color: #293e32; }
 .campaign-lesson { font-size: 16px; line-height: 1.65; padding: 16px; border-radius: 14px; background: #edf2e1; }
 .campaign-table { padding: 12px; border-radius: 16px; background: #295d42; color: white; }
@@ -51,16 +55,158 @@
 .campaign-feedback.correct { background: #e4f1dd; border-color: #367347; }
 .campaign-feedback p { margin: 6px 0; }
 .campaign-confirm { width: 100%; margin-top: 8px; }
-.campaign-celebrate { text-align: center; padding: 32px 24px; }
-.campaign-celebrate > span:first-child { display: block; font-size: 64px; margin: 8px 0 20px; }
+/* Fine livello: medaglione con raggi di luce, stelle in rilievo, coriandoli a seme */
+.campaign-celebrate { position: relative; overflow: hidden; text-align: center; padding: 30px 22px 26px; border: 0;
+  background: radial-gradient(circle at 50% 70px, #fff6c9 0, #fffcf1 160px), #fffcf1;
+  box-shadow: 0 0 0 4px #f6e4b5, 0 0 0 7px #c99b62, 0 10px 0 3px #6b4226, 0 16px 26px rgba(0, 0, 0, .3); }
+.campaign-celebrate::before { content: ''; position: absolute; left: 50%; top: 72px; width: 360px; height: 360px; margin: -180px 0 0 -180px; border-radius: 50%; pointer-events: none;
+  background: repeating-conic-gradient(rgba(255, 210, 63, .32) 0 10deg, rgba(255, 210, 63, 0) 10deg 24deg);
+  -webkit-mask: radial-gradient(circle, #000 20%, transparent 68%); mask: radial-gradient(circle, #000 20%, transparent 68%); animation: cmapSpin 24s linear infinite; }
+.campaign-celebrate > * { position: relative; }
+.cmedal { display: grid !important; place-items: center; width: 96px; height: 96px; margin: 0 auto 14px; border-radius: 50%; font-size: 50px;
+  background: radial-gradient(circle at 50% 30%, #fff8d6, #ffd768 50%, #e09a1c); border: 5px solid #fff;
+  box-shadow: inset 0 -7px 0 rgba(150, 70, 0, .25), inset 0 4px 0 rgba(255, 255, 255, .6), 0 0 0 3px #c87a10, 0 8px 0 #8a4a06, 0 14px 16px rgba(0, 0, 0, .3);
+  animation: cstarPop .5s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+.campaign-celebrate .campaign-kicker { display: inline-block; padding: 5px 16px; border-radius: 999px; color: #fff; background: linear-gradient(#3fbf6a, #1f8a45); box-shadow: 0 3px 0 #0f4f27; }
 .campaign-celebrate p { line-height: 1.6; }
+.cconf { position: absolute !important; inset: 0; pointer-events: none; overflow: hidden; }
+.cconf i { position: absolute; top: -20px; width: 9px; height: 13px; border-radius: 2px; opacity: 0; animation: cconfFall 2.6s ease-in forwards; }
+.cconf i:nth-child(3n) { border-radius: 50%; width: 10px; height: 10px; }
+.cconf i:nth-child(3n + 1) { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); width: 12px; height: 14px; }
 .campaign-end-actions { display: grid; gap: 14px; margin-top: 26px; }
 .campaign-end-actions .btn.ghost { color: #315d40; border-color: #9cba9b; }
+.campaign-end-actions .btn.primary, .cpop .btn.cpop-play, .campaign-celebrate > .btn.primary {
+  border: 0; color: #fff; font-weight: 900; text-shadow: 0 2px 0 rgba(0, 60, 20, .45);
+  background: linear-gradient(#6fe08c, #2fae5c 55%, #1f8a45); box-shadow: inset 0 3px 0 rgba(255, 255, 255, .45), inset 0 -4px 0 rgba(0, 0, 0, .15), 0 6px 0 #0f4f27, 0 10px 14px rgba(0, 0, 0, .25); }
+.campaign-end-actions .btn.primary:active, .cpop .btn.cpop-play:active { transform: translateY(4px); box-shadow: inset 0 3px 0 rgba(255, 255, 255, .45), 0 2px 0 #0f4f27; }
 @media (max-width: 420px) {
   .campaign-exercise { padding: 18px 14px; }
-  .campaign-map li { width: 96%; }
-  .campaign-map li:nth-child(even) { margin-left: 4%; }
-  .campaign-node { padding: 15px 12px; gap: 12px; }
   .campaign-cards { --cw: 46px; gap: 8px; }
 }
+@media (max-width: 350px) {
+  .cmap-spot { transform: scale(.86); }
+  .cp-text { padding-left: 86px; }
+  .campaign-path-icon { left: 12px; width: 56px; height: 56px; font-size: 26px; }
+  .campaign-path > b { margin-right: 10px; width: 36px; height: 36px; }
+}
 @media (prefers-reduced-motion: reduce) { .campaign-card { transition: none; } }
+/* Mappa del mondo (stile giochi a livelli): sentiero a terrazzi dal basso verso il castello */
+.campaign-world { padding-bottom: 32px; }
+.cmap-head { margin: 14px 0 14px; text-align: center; }
+.cmap-head h1 { margin: 4px 0 10px; text-shadow: 0 3px 0 rgba(0, 0, 0, .25); }
+.cmap-stats { display: flex; gap: 10px; justify-content: center; }
+.cmap-stats span { padding: 6px 16px; border-radius: 999px; font-weight: 900; font-size: 15px; color: #fff;
+  background: linear-gradient(#2c6e4b, #194a31); box-shadow: inset 0 2px 0 rgba(255, 255, 255, .2), 0 3px 0 rgba(0, 0, 0, .3); }
+.cstar { font-style: normal; color: #ffd23f; text-shadow: 0 1px 0 #a66d00; }
+.cmap { position: relative; width: min(calc(100% - 14px), 430px); margin: 8px auto 18px; border-radius: 28px; overflow: hidden;
+  box-shadow: 0 0 0 4px #f6e4b5, 0 0 0 7px #8a5a32, 0 12px 0 3px #3b2414, 0 18px 30px rgba(0, 0, 0, .4); }
+.cmap::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; box-shadow: inset 0 0 30px rgba(0, 30, 10, .25); }
+.cmap-bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.cmap-spot { position: absolute; width: 0; height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; }
+.cmap-spot.current { z-index: 2; }
+/* gettone del livello: faccia lucida sopra, spessore sotto, bordo dorato */
+.cmap-node { position: absolute; width: 64px; height: 64px; left: -32px; top: -36px; border-radius: 50%; border: 4px solid #ffe7a0; padding: 0; cursor: pointer;
+  display: grid; place-items: center; background: radial-gradient(circle at 50% 30%, #8ff0a8, #2fae5c 45%, #17703a 100%); color: #fff;
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, .2), inset 0 3px 0 rgba(255, 255, 255, .45), 0 0 0 2px #b07a1a, 0 7px 0 #0f4f27, 0 7px 0 2px #8a5a12, 0 14px 14px rgba(0, 0, 0, .35);
+  transition: transform .1s; -webkit-tap-highlight-color: transparent; }
+.cmap-node::before { content: ''; position: absolute; left: 14%; right: 14%; top: 6%; height: 32%; border-radius: 50%; background: linear-gradient(rgba(255, 255, 255, .7), rgba(255, 255, 255, 0)); pointer-events: none; }
+.cmap-node b { position: relative; font-size: 28px; font-weight: 900; line-height: 1; -webkit-text-stroke: 1.5px rgba(0, 60, 25, .55); paint-order: stroke fill; text-shadow: 0 3px 0 rgba(0, 0, 0, .3); }
+.cmap-node:active { transform: translateY(4px); box-shadow: inset 0 -6px 0 rgba(0, 0, 0, .2), 0 0 0 2px #b07a1a, 0 3px 0 #0f4f27, 0 3px 0 2px #8a5a12, 0 6px 8px rgba(0, 0, 0, .35); }
+.cmap-spot.current .cmap-node { width: 76px; height: 76px; left: -38px; top: -44px; border-color: #fff4c4; color: #7a3e00;
+  background: radial-gradient(circle at 50% 28%, #fff3b0, #ffc93a 45%, #e08a12 100%);
+  box-shadow: inset 0 -7px 0 rgba(150, 70, 0, .3), inset 0 3px 0 rgba(255, 255, 255, .6), 0 0 0 2px #c87a10, 0 8px 0 #a3570a, 0 8px 0 2px #6b3a06, 0 16px 16px rgba(0, 0, 0, .35);
+  animation: cmapBounce 1.8s ease-in-out infinite; }
+.cmap-spot.current .cmap-node b { font-size: 34px; -webkit-text-stroke: 1.5px rgba(120, 50, 0, .5); text-shadow: 0 2px 0 rgba(255, 255, 255, .55); }
+.cmap-spot.locked .cmap-node { cursor: default; border-color: #eceee6; color: #f4f5f0;
+  background: radial-gradient(circle at 50% 30%, #e8eae2, #a9aea2 50%, #7b8077 100%);
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, .15), inset 0 3px 0 rgba(255, 255, 255, .5), 0 0 0 2px #6e736a, 0 7px 0 #5b6058, 0 12px 12px rgba(0, 0, 0, .3); }
+.cmap-spot.locked .cmap-node b { opacity: .8; -webkit-text-stroke: 1.5px rgba(60, 60, 60, .45); }
+.cmap-lock { position: absolute; right: -10px; bottom: -6px; font-size: 22px; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .3)); }
+/* raggi di luce che girano dietro il livello da giocare */
+.cmap-rays { position: absolute; width: 160px; height: 160px; left: -80px; top: -86px; border-radius: 50%; pointer-events: none;
+  background: repeating-conic-gradient(rgba(255, 246, 180, .6) 0 12deg, rgba(255, 246, 180, 0) 12deg 30deg);
+  -webkit-mask: radial-gradient(circle, #000 25%, transparent 70%); mask: radial-gradient(circle, #000 25%, transparent 70%); animation: cmapSpin 14s linear infinite; }
+.cmap-spark { position: absolute; width: 14px; height: 14px; left: 34px; top: -50px; pointer-events: none; background: #fff8c0;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); animation: cmapTwinkle 1.6s ease-in-out infinite; }
+.cmap-spark.two { left: -50px; top: 0; width: 11px; height: 11px; animation-delay: .8s; }
+.cmap-spot .cstars { position: absolute; top: -78px; white-space: nowrap; font-size: 25px; }
+.cmap-spot .cstars i { -webkit-text-stroke: 1.5px #fff; paint-order: stroke fill; }
+.cmap-spot .cstars i.on { color: #ffd23f; text-shadow: 0 3px 0 #b07a00, 0 4px 6px rgba(0, 0, 0, .3); }
+.cmap-spot .cstars i:not(.on) { color: #b6b8ae; text-shadow: 0 3px 0 #7b7e74; }
+/* targhetta con il titolo */
+.cmap-title { position: absolute; top: 40px; max-width: 132px; padding: 4px 10px 5px; border-radius: 10px; width: max-content; pointer-events: none;
+  background: linear-gradient(#fffaf0, #f4e3bd); border: 2px solid #c99b62; color: #4a2f17; font-size: 12px; font-weight: 900; line-height: 1.2; text-align: center;
+  box-shadow: 0 3px 0 #8a5a32, 0 5px 8px rgba(0, 0, 0, .25); }
+.cmap-spot.current .cmap-title { top: 46px; background: linear-gradient(#fff6c9, #ffd768); border-color: #c87a10; color: #5a2e00; box-shadow: 0 3px 0 #a3570a, 0 5px 8px rgba(0, 0, 0, .25); }
+.cmap-spot.locked .cmap-title { background: linear-gradient(#f3f3ee, #dcdcd2); border-color: #a9ab9f; color: #5c5f57; box-shadow: 0 3px 0 #85887e, 0 5px 8px rgba(0, 0, 0, .2); }
+/* io sulla mappa: segnaposto che saltella vicino al livello da giocare */
+.cmap-me { position: absolute; top: -104px; left: 22px; display: grid; place-items: center; animation: cmapBob 1.4s ease-in-out infinite; pointer-events: none; }
+.cmap-me .avatar { width: 44px; height: 44px; font-size: 22px; border: 3px solid #fff; box-shadow: 0 0 0 2px #c87a10, 0 4px 8px rgba(0, 0, 0, .35); }
+.cmap-me.left { left: auto; right: 22px; }
+.cmap-me::after { content: ''; position: absolute; bottom: -17px; left: 50%; margin-left: -8px; border: 8px solid transparent; border-top: 11px solid #fff; }
+.cstars { display: inline-flex; gap: 1px; font-size: 22px; line-height: 1; }
+.cstars i { font-style: normal; color: rgba(0, 0, 0, .22); text-shadow: 0 1px 0 rgba(255, 255, 255, .4); }
+.cstars i.on { color: #ffd23f; text-shadow: 0 2px 0 #a67814; }
+.cmap-spot .cstars i:nth-child(2) { transform: translateY(-7px) scale(1.15); }
+.cstars.big { font-size: 46px; gap: 6px; margin: 8px 0; }
+.cstars.big i { -webkit-text-stroke: 2px #fff; paint-order: stroke fill; color: #d6d2c2; text-shadow: 0 4px 0 #a9a491; }
+.cstars.big i.on { color: #ffd23f; text-shadow: 0 4px 0 #b07a00, 0 7px 10px rgba(0, 0, 0, .25); }
+.cstars.big i:nth-child(2) { transform: translateY(-12px) scale(1.2); }
+.campaign-celebrate .cstars.big i.on { animation: cstarPop .45s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+.campaign-celebrate .cstars.big i:nth-child(2).on { animation-delay: .15s; }
+.campaign-celebrate .cstars.big i:nth-child(3).on { animation-delay: .3s; }
+/* Finestrella del livello: paesaggio del percorso in testa e medaglione con l'icona */
+.cpop { text-align: center; color: inherit; margin: -18px -16px 0; }
+/* la ✕ resta sopra il paesaggio invece di spingerlo di lato */
+.modal-box:has(.cpop) .modal-close { position: absolute; top: 10px; right: 10px; float: none; background: rgba(255, 255, 255, .88); box-shadow: 0 2px 0 rgba(0, 0, 0, .2); }
+.cpop-art { height: 110px; border-radius: 18px 18px 0 0; overflow: hidden; border-bottom: 4px solid #c99b62; }
+.cpop-art svg { display: block; width: 100%; height: 100%; }
+.cpop > .campaign-kicker { display: inline-block; position: relative; margin-top: -14px; padding: 4px 16px; border-radius: 999px; color: #fff; background: linear-gradient(#e08a12, #b0600a); box-shadow: 0 3px 0 #6b3a06; }
+.cpop-icon { width: 84px; height: 84px; margin: 10px auto 6px; border-radius: 50%; display: grid; place-items: center; font-size: 44px;
+  background: radial-gradient(circle at 50% 30%, #fff8d6, #ffd768 50%, #e09a1c); border: 4px solid #fff;
+  box-shadow: inset 0 -6px 0 rgba(150, 70, 0, .25), inset 0 4px 0 rgba(255, 255, 255, .6), 0 0 0 3px #c87a10, 0 7px 0 #8a4a06, 0 12px 14px rgba(0, 0, 0, .25); }
+.cpop h2 { font-family: var(--font-title); font-size: 26px; margin: 8px 16px 0; }
+.cpop p { line-height: 1.5; margin: 8px 18px; }
+.cpop-info { font-size: 13px; opacity: .8; }
+.cpop-play { width: calc(100% - 32px); margin: 12px 16px 6px; font-size: 21px; }
+@keyframes cmapBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes cmapBob { 50% { transform: translateY(-7px); } }
+@keyframes cmapSpin { to { transform: rotate(360deg); } }
+@keyframes cmapTwinkle { 0%, 100% { transform: scale(.3) rotate(0); opacity: 0; } 50% { transform: scale(1) rotate(45deg); opacity: 1; } }
+@keyframes cmapDrift { from { transform: translateX(-14px); } to { transform: translateX(18px); } }
+@keyframes cmapSway { from { transform: rotate(-7deg) translateY(2px); } to { transform: rotate(6deg) translateY(-3px); } }
+@keyframes cmapFlag { from { transform: scaleX(1) skewY(0); } to { transform: scaleX(.86) skewY(-5deg); } }
+@keyframes cmapShine { to { stroke-dashoffset: -64; } }
+@keyframes cmapGlow { from { opacity: .25; } to { opacity: 1; } }
+@keyframes cmapFlutter { 0% { transform: translate(0, 0) scaleX(1); } 25% { transform: translate(14px, -10px) scaleX(.6); } 50% { transform: translate(26px, 2px) scaleX(1); } 75% { transform: translate(12px, 10px) scaleX(.6); } 100% { transform: translate(30px, -6px) scaleX(1); } }
+@keyframes cstarPop { from { transform: scale(0) rotate(-40deg); opacity: 0; } }
+@keyframes cconfFall { 0% { opacity: 1; transform: translateY(0) rotate(0); } 85% { opacity: 1; } 100% { opacity: 0; transform: translateY(420px) rotate(var(--r, 360deg)); } }
+/* elementi animati del paesaggio: pochi, solo trasformazioni e opacità (leggeri sui telefoni) */
+.cmap-cloud, .cmap-kite, .cmap-flag, .cmap-spin, .cmap-bfly, .cmap-twinkle { transform-box: fill-box; }
+.cmap-cloud { animation: cmapDrift 26s ease-in-out infinite alternate; }
+.cmap-cloud.slow { animation-duration: 38s; animation-direction: alternate-reverse; }
+.cmap-kite { transform-origin: 50% 100%; animation: cmapSway 4s ease-in-out infinite alternate; }
+.cmap-flag { transform-origin: 0 50%; animation: cmapFlag 1.2s ease-in-out infinite alternate; }
+.cmap-spin { transform-origin: center; animation: cmapSpin 9s linear infinite; }
+.cmap-shine { animation: cmapShine 3s linear infinite; }
+.cmap-fly { animation: cmapGlow 2.4s ease-in-out infinite alternate; }
+.cmap-fly.two { animation-delay: -1.2s; }
+.cmap-bfly { animation: cmapFlutter 6s ease-in-out infinite alternate; }
+.cmap-bfly.two { animation-duration: 7.5s; animation-direction: alternate-reverse; }
+.cmap-beam { animation: cmapGlow 1.8s ease-in-out infinite alternate; }
+.cmap-twinkle { transform-origin: center; animation: cmapTwinkle 1.8s ease-in-out infinite; }
+.cmap-twinkle.two { animation-delay: .9s; }
+/* senza animazioni (impostazione dell'app o del sistema): tutto fermo */
+body.noanim .campaign *, body.noanim .campaign *::before, body.noanim .cpop * { animation: none !important; }
+body.noanim .cconf { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .campaign *, .campaign *::before, .cpop * { animation: none !important; }
+  .cconf { display: none; }
+}
+/* tema notte: la mappa resta illustrata, si abbassa solo la luce */
+body[data-theme="notte"] .cmap-bg, body[data-theme="notte"] .cp-art, body[data-theme="notte"] .cpop-art, body[data-theme="notte"] .campaign-scene { filter: brightness(.88) saturate(.95); }
+body[data-theme="notte"] .campaign-path { background: linear-gradient(#2c332f, #222825); color: #e6e6e1; box-shadow: 0 0 0 3px #3a423d, 0 0 0 5px #8a6a3e, 0 8px 0 3px #3b2414, 0 14px 20px rgba(0, 0, 0, .4); }
+body[data-theme="notte"] .campaign-path small { color: #a8d38a; }
+body[data-theme="notte"] .cp-pips i { background: #48504b; }
+body[data-theme="notte"] .campaign-hero { background: linear-gradient(#24414f, #2c3a33 70%); color: #e6e6e1; }
+body[data-theme="notte"] .campaign-hero h1 { color: #e9f5e6; text-shadow: 0 2px 0 rgba(0, 0, 0, .4); }
