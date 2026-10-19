@@ -13,7 +13,8 @@ const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
 
-const HOME_ONLY = process.argv.includes('--home');
+const CAMPAIGN_ONLY = process.argv.includes('--campaign');
+const HOME_ONLY = process.argv.includes('--home') || CAMPAIGN_ONLY;
 const PORT = HOME_ONLY ? 3995 : 3996;
 const DEBUG_PORT = HOME_ONLY ? 9334 : 9333;
 const URL = `http://localhost:${PORT}`;
@@ -130,6 +131,63 @@ const HELPERS = `
       __tap('[data-act="goHome"]');`);
     await shot('01-home');
     step('schermata iniziale e nickname');
+    if (CAMPAIGN_ONLY) {
+      await cdp.run(`
+        localStorage.removeItem(CAMPAIGN_KEY); S.campaignSession = null;
+        __tap('[data-act="campaign"]');
+        if (document.querySelectorAll('[data-act="campaignPath"]').length !== 3) throw new Error('tre percorsi indipendenti mancanti');`);
+      await shot('campagna-01-percorsi');
+      await cdp.run(`
+        __tap('[data-act="campaignPath"][data-id="burraco"]');
+        if (document.querySelectorAll('[data-act="campaignLevel"]:disabled').length !== 4) throw new Error('sblocco iniziale errato');
+        __tap('[data-act="campaignLevel"][data-i="0"]');
+        __tap('[data-act="campaignSelect"][data-i="0"]'); __tap('[data-act="campaignCheck"]');
+        if (S.campaignFeedback !== 'wrong' || campaignProgress().burraco.turno !== 0) throw new Error('errore assegna avanzamento');
+        __tap('[data-act="campaignSelect"][data-i="1"]'); __tap('[data-act="campaignCheck"]');
+        if (S.campaignFeedback !== 'correct' || campaignProgress().burraco.turno !== 1) throw new Error('salvataggio prova');`);
+      await open(URL);
+      await cdp.run(`
+        __tap('[data-act="campaign"]'); __tap('[data-act="campaignPath"][data-id="burraco"]'); __tap('[data-act="campaignLevel"][data-i="0"]');
+        if (S.campaignStep !== 1) throw new Error('progresso non ripreso dopo reload');
+        if (campaignProgress().scala40.turno || campaignProgress().ramino.turno) throw new Error('percorsi non indipendenti');
+        onState(null, null);
+        if (S.screen !== 'campaign') throw new Error('riconnessione interrompe campagna');
+        socket.disconnect();
+        if (document.querySelector('.offline')) throw new Error('campagna bloccata senza connessione');`);
+      await cdp.run(`
+        for (const path of Campaign.paths) {
+          handlers.campaignPaths(); __tap('[data-act="campaignPath"][data-id="' + path.id + '"]');
+          for (let i = 0; i < path.levels.length; i++) {
+            __tap('[data-act="campaignLevel"][data-i="' + i + '"]');
+            const level = path.levels[i];
+            while (S.campaignStep < level.steps.length) {
+              const step = level.steps[S.campaignStep];
+              const answer = step.kind === 'cards' ? step.answer : [step.answer];
+              for (const n of answer) __tap('[data-act="campaignSelect"][data-i="' + n + '"]');
+              __tap('[data-act="campaignCheck"]');
+              if (S.campaignFeedback !== 'correct') throw new Error(path.id + ': risposta corretta rifiutata');
+              if (document.documentElement.scrollWidth > innerWidth + 1) throw new Error('overflow orizzontale della campagna');
+              __tap('[data-act="campaignNext"]');
+            }
+            if (!document.querySelector('.campaign-celebrate')) throw new Error('riepilogo livello assente');
+            __tap('[data-act="campaignMap"]');
+          }
+          if (campaignCompleted(path, campaignProgress()) !== 5) throw new Error('mondo non completato');
+        }
+      `);
+      await shot('campagna-02-mondo-completato');
+      await cdp.run(`
+        handlers.campaignPaths(); __tap('[data-act="campaignPath"][data-id="scala40"]'); __tap('[data-act="campaignLevel"][data-i="2"]');
+        if (S.campaignStep !== 0) throw new Error('rigioca non riparte');
+        if (campaignCompleted(campaignPath(), campaignProgress()) !== 5) throw new Error('rigioca cancella progressi');`);
+      await cdp.send('Emulation.setDeviceMetricsOverride', { width: 320, height: 740, deviceScaleFactor: DPR, mobile: true });
+      await cdp.run(`if (document.documentElement.scrollWidth > innerWidth + 1) throw new Error('overflow a 320px');`);
+      await shot('campagna-03-carte');
+      const real = errors.filter((e) => !/vibrate|Failed to load resource|favicon/.test(e));
+      if (real.length) throw new Error(real.join('\n'));
+      step('campagna: 3 percorsi, 30 prove, errori, sblocchi, ripresa, replay, offline e schermo 320px OK');
+      return;
+    }
     if (HOME_ONLY) { step('home, formati pubblici e selettore difficoltà: tutto OK'); return; }
 
     // 2. Burraco contro il computer fino alla fine della smazzata

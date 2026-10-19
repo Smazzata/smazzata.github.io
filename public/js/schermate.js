@@ -11,6 +11,7 @@
     const changed = S.lastScreen !== S.screen;
     S.lastScreen = S.screen;
     if (S.screen === 'home') app.innerHTML = homeHTML();
+    else if (S.screen === 'campaign') app.innerHTML = campaignHTML();
     else if (S.screen === 'setup') app.innerHTML = setupHTML();
     else if (S.screen === 'lobby') app.innerHTML = lobbyHTML();
     else if (S.screen === 'game') {
@@ -19,7 +20,7 @@
       afterGameRender();
     }
     if (changed && app.firstElementChild) app.firstElementChild.classList.add('enter');
-    if (!S.connected && !S.localGame) {
+    if (!S.connected && !S.localGame && S.screen !== 'campaign') {
       app.insertAdjacentHTML('afterbegin', `<div class="offline"><span class="spin"></span>${S.lostConnection ? '📡 Connessione persa: mi ricollego…' : 'Connessione al server…'}</div>`);
       const gm = $('.game');
       if (gm) gm.classList.add('offline-lock');
@@ -138,7 +139,8 @@
       <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked"><span>🏅</span><div>Classificata<small>Gioca per il tuo punteggio Elo</small></div></button>`}
       ${OFFLINE ? '' : `<button class="btn big grow homebtn" data-act="playFriends"><span>👥</span>Gioca con gli amici</button>`}
       <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots"><span>🤖</span>Gioca contro il computer</button>
-      <button class="btn ghost grow" data-act="tutorial">🎓 Impara a giocare</button>
+      <button class="btn grow campaign-entry" data-act="campaign">🌱 Impara giocando<small>Tre percorsi: Burraco, Scala 40 e Ramino</small></button>
+      <button class="btn ghost grow" data-act="tutorial">📖 Regole e tutorial</button>
       ${FULL() && !OFFLINE ? `<div class="row"><button class="btn grow" data-act="quickMenu">🃏 Amichevole online</button><button class="btn grow dailybtn" data-act="daily">📅 Sfida del giorno</button><button class="btn grow tourbtn" data-act="tournaments">🏆 Tornei</button></div>` : ''}
       <button class="btn ghost grow morebtn" data-act="more">☰ Altro${reqs ? ` <span class="pill">${reqs}</span>` : ''}</button>
     </div>`;

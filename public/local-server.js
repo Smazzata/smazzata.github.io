@@ -89,8 +89,9 @@
       }
       // copia completa (come quando i dati viaggiano in rete): la vista non deve condividere pezzi con la partita,
       // altrimenti le mosse successive cambierebbero anche lo stato precedente che l'interfaccia confronta
-      fire('state', room ? { room: roomInfo(), game: g ? JSON.parse(JSON.stringify(E().viewFor(g, 0))) : null } : { room: null, game: null });
+      // La home legge il salvataggio durante l'evento: deve già vedere la partita aggiornata o cancellata.
       store.set(room);
+      fire('state', room ? { room: roomInfo(), game: g ? JSON.parse(JSON.stringify(E().viewFor(g, 0))) : null } : { room: null, game: null });
       scheduleBot();
     }
 

@@ -344,7 +344,7 @@
     S.room = room;
     S.game = game;
     if (!room) {
-      if (S.screen !== 'setup') S.screen = 'home';
+      if (!['setup', 'campaign'].includes(S.screen)) S.screen = 'home';
       if (S.pendingJoin && S.social && S.social.nick) { const code = S.pendingJoin; S.pendingJoin = ''; joinRoom(code); }
     } else {
       S.pendingJoin = '';
