@@ -111,24 +111,25 @@ module.exports.register = function register(socket, handler) {
     return { code: room.code };
   }));
 
-  socket.on('quickPlay', handler(({ n, mode = 'ranked' }) => {
+  socket.on('quickPlay', handler(({ n, mode = 'ranked', game = 'burraco' }) => {
     if (!['casual', 'ranked'].includes(mode)) throw new E.GameError('Modalità non valida');
     checkOtherDevice(socket, null);
-    n = Number(n) === 2 ? 2 : 4;
+    const publicRules = Games.publicRules(game, n);
+    n = publicRules.players;
+    const gameId = Games.idOf(publicRules);
     const sess = sessions.get(socket.data.token);
     if (!sess || !sess.nick) throw new E.GameError('Scegli prima il tuo nickname');
     // tra i tavoli veloci aperti si sceglie quello con i giocatori più vicini al mio punteggio di bravura (Elo)
-    const eloOf = (t) => ((((ctx.leaderboard.get(t) || {}).byGame || {}).burraco || {}).elo) || 1000;
+    const eloOf = (t) => ((((ctx.leaderboard.get(t) || {}).byGame || {})[gameId] || {}).elo) || 1000;
     const mine = eloOf(socket.data.token);
     const avg = (r) => { const h = r.seats.filter((s) => s && !s.isBot); return h.reduce((a, s) => a + eloOf(s.token), 0) / Math.max(1, h.length); };
-    const publicRules = Rules.normalize({ ...Rules.PRESETS[0].rules, players: n });
-    let room = [...rooms.values()].filter((r) => r.quick === n && (r.queueMode || 'ranked') === mode
+    let room = [...rooms.values()].filter((r) => r.quick === n && Games.idOf(r.rules) === gameId && (r.queueMode || 'ranked') === mode
       && Object.keys(publicRules).every((k) => r.rules[k] === publicRules[k]) && !r.slow && !r.series
       && (mode !== 'ranked' || r.seats.every((s) => !s || !s.isBot)) && !r.game && r.seats.some((s) => !s)
       && seatOfToken(r, socket.data.token) < 0 && r.seats.some((s) => s && !s.isBot && isConnected(s.token)))
       .sort((a, b) => Math.abs(avg(a) - mine) - Math.abs(avg(b) - mine))[0];
     if (!room) {
-      const r = Rules.normalize({ ...Rules.PRESETS[0].rules, players: n });
+      const r = publicRules;
       room = {
         code: newCode(), rules: r, n, hostToken: socket.data.token, quick: n, queueMode: mode,
         seats: Array(n).fill(null), game: null, ready: new Set(), botTimer: null, botMemo: {},

@@ -549,6 +549,34 @@ async function signup(p, nick, email = mailOf()) {
     const Q1 = player('Quinto'), Q2 = player('Sesto');
     await Q1.hello(); await Q2.hello();
     assert((await signup(Q1, 'Quinto')).ok); assert((await signup(Q2, 'Sesto')).ok);
+    assert(!(await Q1.call('quickPlay', { game: 'inesistente', n: 2 })).ok, 'gioco pubblico sconosciuto rifiutato');
+    assert(!(await Q1.call('quickPlay', { game: 'briscola5', n: 2 })).ok, 'formato non valido rifiutato');
+    for (const game of ['burraco', 'scala40', 'ramino', 'canasta', 'scopa', 'scopone', 'briscola', 'tressette', 'rubamazzetto', 'briscola5']) {
+      const n = game === 'briscola5' ? 5 : 4;
+      const first = await Q1.call('quickPlay', { game, n, mode: 'casual' });
+      assert(first.ok, game + ': creazione tavolo pubblico');
+      const other = await Q2.call('quickPlay', { game: game === 'scopa' ? 'scopone' : 'scopa', n: 4, mode: 'casual' });
+      assert(other.ok && other.code !== first.code, 'giochi e varianti diversi non abbinati');
+      await Q2.call('leaveRoom');
+      const same = await Q2.call('quickPlay', { game, n, mode: 'casual' });
+      assert(same.ok && same.code === first.code, game + ': stesso gioco abbinato');
+      const state = await Q1.until((st) => st.room && st.room.code === first.code, 'sala del gioco richiesto');
+      assert.strictEqual(state.room.rules.game || 'burraco', game === 'scopone' ? 'scopa' : game);
+      assert.strictEqual(state.room.n, n);
+      if (game === 'scopone') assert.strictEqual(state.room.rules.deal, 10);
+      await Q1.call('leaveRoom'); await Q2.call('leaveRoom');
+    }
+    const br1 = await Q1.call('quickPlay', { game: 'briscola', n: 2, mode: 'ranked' });
+    const br2 = await Q2.call('quickPlay', { game: 'briscola', n: 2, mode: 'ranked' });
+    assert(br1.ok && br1.code === br2.code, 'abbinamento Briscola classificata');
+    await Q1.until((st) => st.game && st.game.game === 'briscola', 'avvio del gioco scelto');
+    assert((await Q1.call('surrender')).done);
+    await Q2.until((st) => st.game && st.game.over, 'Briscola classificata finita');
+    const brStats = (await Q1.call('myStats')).byGame;
+    assert.strictEqual(brStats.briscola.rankedGames, 1, 'Elo del gioco scelto');
+    assert(!(brStats.burraco || {}).rankedGames, 'Burraco non modificato dalla Briscola');
+    await Q1.call('leaveRoom'); await Q2.call('leaveRoom');
+    step('partita rapida: selezione di tutti i giochi, code separate, avvio Briscola ed Elo indipendente');
     const casual = await Q1.call('quickPlay', { n: 2, mode: 'casual' });
     const ranked = await Q2.call('quickPlay', { n: 2, mode: 'ranked' });
     assert(casual.ok && ranked.ok && casual.code !== ranked.code, 'code amichevole e classificata separate');

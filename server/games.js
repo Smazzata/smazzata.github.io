@@ -6,6 +6,7 @@
  * nextHand, surrender, teamOf, note), un computer (nextAction, thinkMs) e le regole (normalize, preset).
  */
 const Rules = require('../shared/rules');
+const { GameError } = require('./engine');
 const S40 = require('../shared/scala40');
 const RAM = require('../shared/ramino');
 const CAN = require('../shared/canasta');
@@ -76,4 +77,13 @@ const GAMES = {
 const idOf = (rules) => (rules && GAMES[rules.game] ? rules.game : 'burraco');
 const of = (rulesOrRoom) => GAMES[idOf(rulesOrRoom && rulesOrRoom.rules ? rulesOrRoom.rules : rulesOrRoom)];
 
-module.exports = { GAMES, of, idOf };
+// Formati pubblici: solo regole standard, mai impostazioni inviate dal client.
+function publicRules(game = 'burraco', n) {
+  const id = game === 'scopone' ? 'scopa' : game;
+  if (!Object.hasOwn(GAMES, id)) throw new GameError('Gioco non valido');
+  const base = game === 'scopone' ? SCO.PRESETS[1].rules : id === 'burraco' ? Rules.PRESETS[0].rules : {};
+  const rules = GAMES[id].normalize({ ...base, players: Number(n) });
+  if (![2, 3, 4, 5].includes(Number(n)) || rules.players !== Number(n)) throw new GameError('Numero di giocatori non valido per questo gioco');
+  return rules;
+}
+module.exports = { GAMES, of, idOf, publicRules };

@@ -431,14 +431,20 @@
     quickMenu(el) {
       if (!requireName()) return;
       const mode = el && el.dataset.mode === 'ranked' ? 'ranked' : 'casual';
+      const game = GAME_TILES.some(([id]) => id === el?.dataset.game) ? el.dataset.game : 'burraco';
+      const base = game === 'burraco' ? R.PRESETS[0].rules : RX.presetById(game).rules;
+      const rules = RX.normalize(base);
+      const formats = (RX.schema(rules).find((f) => f.key === 'players')?.choices || [[rules.players, String(rules.players)]])
+        .filter(([n]) => RX.normalize({ ...base, players: n }).players === n);
       openModal('quick', `<div class="result" style="text-align:center"><h2>${mode === 'ranked' ? '🏅 Classificata' : '🃏 Amichevole online'}</h2>
-        <h3>Burraco Classico</h3><p>Per iniziare, i tavoli pubblici usano tutti questa variante con regole fisse. Le altre varianti sono disponibili con gli amici e contro il computer.</p>
+        <h3>Scegli il gioco</h3><div class="gamegrid">${GAME_TILES.map(([id, icon, name]) => `<button class="gtile ${id === game ? 'on' : ''}" data-act="quickMenu" data-mode="${mode}" data-game="${id}" aria-pressed="${id === game}"><span>${icon}</span>${name}</button>`).join('')}</div>
+        <h3>${game === 'burraco' ? 'Burraco Classico' : esc(RX.gameName(rules))}</h3>
         <p>${mode === 'ranked' ? 'Il risultato cambia il tuo punteggio Elo.' : 'Il risultato non cambia il tuo punteggio Elo.'} Si parte quando il tavolo è pieno.</p>
-        ${[2, 4].map((players) => `<details><summary>Regole in ${players} giocatori</summary><div class="rules-text">${R.describe(R.normalize({ ...R.PRESETS[0].rules, players }))}</div></details>`).join('')}
+        ${formats.map(([players]) => `<details><summary>Regole in ${players} giocatori</summary><div class="rules-text">${RX.describe(RX.normalize({ ...base, players }))}</div></details>`).join('')}
         <p class="muted small">Se non trovi avversari puoi invitare qualcuno, uscire dalla ricerca o scegliere una partita amichevole con il computer.</p>
-        <div class="row" style="justify-content:center"><button class="btn primary big" data-act="quick" data-mode="${mode}" data-n="2">Cerca in 2</button><button class="btn primary big" data-act="quick" data-mode="${mode}" data-n="4">Cerca in 4 (a coppie)</button></div></div>`);
+        <div class="row" style="justify-content:center">${formats.map(([n, label]) => `<button class="btn primary big" data-act="quick" data-game="${game}" data-mode="${mode}" data-n="${n}">Cerca in ${esc(label)}</button>`).join('')}</div></div>`);
     },
-    async quick(el) { const r = await emit('quickPlay', { n: Number(el.dataset.n), mode: el.dataset.mode || 'casual' }); if (r.ok) closeModal(); },
+    async quick(el) { const r = await emit('quickPlay', { n: Number(el.dataset.n), mode: el.dataset.mode || 'casual', game: el.dataset.game || 'burraco' }); if (r.ok) closeModal(); },
     series(el) { emit('setSeries', { bestOf: Number(el.dataset.val) }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     async playerCard(el) {
       const r = await emit('playerCard', { nick: el.dataset.nick });

@@ -120,8 +120,15 @@ const HELPERS = `
       if (!choices[0].classList.contains('primary')) throw new Error('amichevole non evidenziata');
       for (const mode of ['casual', 'ranked']) {
         __tap('[data-act="quickMenu"][data-mode="' + mode + '"]'); await __W(200);
-        if (document.querySelectorAll('#modal [data-act="quick"][data-mode="' + mode + '"]').length !== 2) throw new Error('scelta formato pubblico');
+        if (document.querySelectorAll('#modal [data-act="quick"][data-mode="' + mode + '"]').length !== 3) throw new Error('scelta formato pubblico');
         if (!document.querySelector('#modal').textContent.includes('Burraco Classico')) throw new Error('variante pubblica non indicata');
+        for (const [game] of GAME_TILES) {
+          __tap('#modal [data-act="quickMenu"][data-game="' + game + '"]');
+          const buttons = [...document.querySelectorAll('#modal [data-act="quick"]')];
+          if (!buttons.length || buttons.some((b) => b.dataset.game !== game || b.dataset.mode !== mode)) throw new Error('gioco o modalità persi');
+          if (game === 'briscola5' && (buttons.length !== 1 || buttons[0].dataset.n !== '5')) throw new Error('briscola in 5');
+          if (game === 'scopone' && (buttons.length !== 1 || buttons[0].dataset.n !== '4')) throw new Error('scopone');
+        }
         document.querySelector('.modal-close').click();
       }
       __tap('[data-act="playBots"]'); await __W(100);
