@@ -134,65 +134,67 @@ const HELPERS = `
     if (CAMPAIGN_ONLY) {
       await cdp.run(`
         localStorage.removeItem(CAMPAIGN_KEY); localStorage.removeItem(CAMPAIGN_STARS_KEY); S.campaignSession = null; S.campaignStarsSession = null;
-        __tap('[data-act="campaign"]');
-        if (document.querySelectorAll('[data-act="campaignPath"]').length !== 3) throw new Error('tre percorsi indipendenti mancanti');`);
+        handlers.campaign();
+        if (document.querySelectorAll('[data-act="campaignPath"]').length !== 3) throw new Error('percorsi mancanti');
+        window.__campaignStart = async (i) => {
+          __tap('[data-act="campaignPreview"][data-i="' + i + '"]'); __tap('#modal [data-act="campaignLevel"]');
+          for (let n = 0; n < 100 && !S.campaignMatch; n++) await __W(50);
+          if (!S.campaignMatch) throw new Error('tavolo non caricato'); await __W(350);
+        };
+        window.__campaignPlay = async () => {
+          const level = campaignPath().levels[S.campaignLevel];
+          const deadline = Date.now() + 15000;
+          while (S.campaignStep < level.steps.length) {
+            if (Date.now() > deadline) throw new Error('partita bloccata');
+            if (level.steps[S.campaignStep].seat === 1) { await __W(100); continue; }
+            const action = Campaign.expected(S.campaignMatch, level);
+            for (const id of action.cardIds || (action.cardId !== undefined ? [action.cardId] : [])) __tap('[data-act="campaignSelect"][data-i="' + id + '"]');
+            __tap('[data-act="campaignMove"][data-type="' + action.type + '"]' + (action.meldId ? '[data-meld="' + action.meldId + '"]' : ''));
+            if (S.campaignFeedback) throw new Error(S.campaignFeedback);
+            if (document.documentElement.scrollWidth > innerWidth + 1) throw new Error('overflow tavolo');
+          }
+          if (!document.querySelector('.campaign-celebrate')) throw new Error('riepilogo assente');
+        };
+      `);
       await shot('campagna-01-percorsi');
       await cdp.run(`
         __tap('[data-act="campaignPath"][data-id="burraco"]');
-        if (document.querySelectorAll('[data-act="campaignPreview"]:disabled').length !== 4) throw new Error('sblocco iniziale errato');
-        __tap('[data-act="campaignPreview"][data-i="0"]'); __tap('#modal [data-act="campaignLevel"]');
-        __tap('[data-act="campaignSelect"][data-i="0"]'); __tap('[data-act="campaignCheck"]');
-        if (S.campaignFeedback !== 'wrong' || campaignProgress().burraco.turno !== 0) throw new Error('errore assegna avanzamento');
-        __tap('[data-act="campaignSelect"][data-i="1"]'); __tap('[data-act="campaignCheck"]');
-        if (S.campaignFeedback !== 'correct' || campaignProgress().burraco.turno !== 1) throw new Error('salvataggio prova');`);
-      await open(URL);
-      await cdp.run(`
-        __tap('[data-act="campaign"]'); __tap('[data-act="campaignPath"][data-id="burraco"]'); __tap('[data-act="campaignPreview"][data-i="0"]'); __tap('#modal [data-act="campaignLevel"]');
-        if (S.campaignStep !== 1) throw new Error('progresso non ripreso dopo reload');
-        if (campaignProgress().scala40.turno || campaignProgress().ramino.turno) throw new Error('percorsi non indipendenti');
-        onState(null, null);
-        if (S.screen !== 'campaign') throw new Error('riconnessione interrompe campagna');
+        if (document.querySelectorAll('[data-act="campaignPreview"]:disabled').length !== 4) throw new Error('sblocco iniziale');
+        await __campaignStart(0);
+        __tap('[data-act="campaignSelect"]'); __tap('[data-act="campaignMove"][data-type="meld"]');
+        if (!S.campaignFeedback || campaignProgress().burraco.turno !== 0) throw new Error('errore assegna progresso');
+        handlers.campaignMap(); await __campaignStart(0);
+        __tap('[data-act="campaignMove"][data-type="draw"]');
+        const action = Campaign.expected(S.campaignMatch, campaignPath().levels[0]);
+        __tap('[data-act="campaignSelect"][data-i="' + action.cardId + '"]'); __tap('[data-act="campaignMove"][data-type="discard"]');
+        const abandoned = S.campaignMatch, index = abandoned.index;
+        handlers.campaignMap(); await __W(1500);
+        if (abandoned.index !== index) throw new Error('bot continua dopo uscita');
+        if (campaignProgress().burraco.turno !== 0) throw new Error('salvato spezzone incompleto');
+        onState(null, null); if (S.screen !== 'campaign') throw new Error('riconnessione interrompe campagna');
         socket.disconnect();
-        if (document.querySelector('.offline')) throw new Error('campagna bloccata senza connessione');`);
-      await cdp.run(`
-        for (const path of Campaign.paths) {
-          handlers.campaignPaths(); __tap('[data-act="campaignPath"][data-id="' + path.id + '"]');
-          for (let i = 0; i < path.levels.length; i++) {
-            __tap('[data-act="campaignPreview"][data-i="' + i + '"]'); __tap('#modal [data-act="campaignLevel"]');
-            const level = path.levels[i];
-            while (S.campaignStep < level.steps.length) {
-              const step = level.steps[S.campaignStep];
-              const answer = step.kind === 'cards' ? step.answer : [step.answer];
-              for (const n of answer) __tap('[data-act="campaignSelect"][data-i="' + n + '"]');
-              __tap('[data-act="campaignCheck"]');
-              if (S.campaignFeedback !== 'correct') throw new Error(path.id + ': risposta corretta rifiutata');
-              if (document.documentElement.scrollWidth > innerWidth + 1) throw new Error('overflow orizzontale della campagna');
-              __tap('[data-act="campaignNext"]');
-            }
-            if (!document.querySelector('.campaign-celebrate')) throw new Error('riepilogo livello assente');
-            __tap('[data-act="campaignMap"]');
-          }
-          if (campaignCompleted(path, campaignProgress()) !== 5) throw new Error('mondo non completato');
-          if (path.levels.some((l) => campaignStars()[path.id][l.id] !== 3)) throw new Error('senza errori servono 3 stelle');
-          if (document.querySelectorAll('.cmap-spot.done').length !== 5 || document.querySelector('.cmap-spot.current')) throw new Error('mappa: livelli completati non mostrati');
-        }
       `);
+      for (const game of ['burraco', 'scala40', 'ramino']) {
+        await cdp.run(`handlers.campaignPaths(); __tap('[data-act="campaignPath"][data-id="${game}"]');`);
+        for (let i = 0; i < 5; i++) {
+          await cdp.run(`await __campaignStart(${i});`);
+          if (i === 4) await shot('campagna-tavolo-' + game);
+          await cdp.run(`await __campaignPlay(); handlers.campaignMap();`);
+        }
+        await cdp.run(`
+          if (campaignCompleted(campaignPath(), campaignProgress()) !== 5) throw new Error('mondo incompleto');
+          if (campaignPath().levels.some((l) => campaignStars()[campaignPath().id][l.id] !== 3)) throw new Error('stelle errate');
+        `);
+      }
       await shot('campagna-02-mondo-completato');
-      await cdp.run(`
-        handlers.campaignPaths(); __tap('[data-act="campaignPath"][data-id="scala40"]'); __tap('[data-act="campaignPreview"][data-i="2"]'); __tap('#modal [data-act="campaignLevel"]');
-        if (S.campaignStep !== 0) throw new Error('rigioca non riparte');
-        S.campaignSelected = [0, 1, 2, 3]; handlers.campaignCheck();
-        if (S.campaignFeedback !== 'wrong') throw new Error('risposta sbagliata accettata');
-        for (const step of campaignPath().levels[2].steps.slice(S.campaignStep)) { S.campaignSelected = step.kind === 'cards' ? step.answer.slice() : [step.answer]; handlers.campaignCheck(); if (S.campaignFeedback !== 'correct') throw new Error('rigioca: risposta rifiutata'); handlers.campaignNext(); }
-        if (S.campaignLastStars !== 2 || campaignStars().scala40.apertura !== 3) throw new Error('stelle: un errore = 2, si tiene il migliore');
-        handlers.campaignMap(); if (document.querySelectorAll('.cmap-spot.done').length !== 5) throw new Error('mappa dopo rigioca');
-        if (campaignCompleted(campaignPath(), campaignProgress()) !== 5) throw new Error('rigioca cancella progressi');`);
       await cdp.send('Emulation.setDeviceMetricsOverride', { width: 320, height: 740, deviceScaleFactor: DPR, mobile: true });
-      await cdp.run(`if (document.documentElement.scrollWidth > innerWidth + 1) throw new Error('overflow a 320px');`);
+      await cdp.run(`await __campaignStart(4); await __campaignPlay(); handlers.campaignMap(); await __campaignStart(4); if (document.documentElement.scrollWidth > innerWidth + 1) throw new Error('overflow a 320px');`);
       await shot('campagna-03-carte');
+      await open(URL);
+      await cdp.run(`handlers.campaign(); handlers.campaignPath({ dataset: { id: 'ramino' } }); if (campaignCompleted(campaignPath(), campaignProgress()) !== 5) throw new Error('progressi persi dopo reload');`);
       const real = errors.filter((e) => !/vibrate|Failed to load resource|favicon/.test(e));
       if (real.length) throw new Error(real.join('\n'));
-      step('campagna: 3 percorsi, 30 prove, errori, sblocchi, ripresa, replay, offline e schermo 320px OK');
+      step('campagna: 15 partite, mosse reali, sblocchi, uscita durante bot, replay, offline e schermo 320px OK');
       return;
     }
     if (HOME_ONLY) { step('home, formati pubblici e selettore difficoltà: tutto OK'); return; }
