@@ -299,6 +299,7 @@
   });
 
   function emit(ev, data) {
+    if (S.campaignActive && LOCAL_EVENTS.has(ev)) return Promise.resolve(campaignEvent(ev, data));
     return new Promise((res) => {
       const target = S.localGame && LOCAL_EVENTS.has(ev) && Local.sock ? Local.sock : socket;
       target.emit(ev, data, async (r) => {
@@ -331,6 +332,7 @@
   }
 
   function onState(room, game) {
+    if (S.campaignActive && !room?.campaign) return;
     const prev = S.game;
     speakNewMoves(game);
     const prevMusic = S.room && S.room.music;

@@ -18,9 +18,10 @@
       S.flipFrom = changed ? null : cardRects();
       app.innerHTML = gameHTML();
       afterGameRender();
+      campaignDecorateTable();
     }
     if (changed && app.firstElementChild) app.firstElementChild.classList.add('enter');
-    if (!S.connected && !S.localGame && S.screen !== 'campaign') {
+    if (!S.connected && !S.localGame && !S.campaignActive && S.screen !== 'campaign') {
       app.insertAdjacentHTML('afterbegin', `<div class="offline"><span class="spin"></span>${S.lostConnection ? '📡 Connessione persa: mi ricollego…' : 'Connessione al server…'}</div>`);
       const gm = $('.game');
       if (gm) gm.classList.add('offline-lock');

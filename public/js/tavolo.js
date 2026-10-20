@@ -394,7 +394,7 @@
       <div class="seats-row n${g.n} ${g.you < 0 ? 'spect' : ''}">${seats}</div>
       ${surrenderBarHTML(g, r)}
       <div class="felt" id="felt">${g.presa ? presaCenterHTML(g) : others + center + mineZone}</div>
-      ${r.tutorial && !S.coachOff ? `<div class="coach">🎓 ${coachTip(g)} <button class="ico" data-act="coachOff" title="Nascondi">✕</button></div>` : ''}
+      ${r.campaign ? campaignCoachHTML() : r.tutorial && !S.coachOff ? `<div class="coach">🎓 ${coachTip(g)} <button class="ico" data-act="coachOff" title="Nascondi">✕</button></div>` : ''}
       <div class="sr-only" id="turnmsg" aria-live="polite">${statusText(g).replace(/<[^>]+>/g, '')}</div>
       <div class="floatbar"><span class="fl">${left}</span><span class="fr">${actions}</span></div>
       ${S.reactOpen ? `<div class="reactbar">${['👏', '😂', '😱', '🔥', '👍', '😡', '🙏', '😍'].map((e) => `<button data-act="react" data-e="${e}">${e}</button>`).join('')}</div>` : ''}

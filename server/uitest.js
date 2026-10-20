@@ -126,6 +126,12 @@ const HELPERS = `
           __tap('#modal [data-act="quickMenu"][data-game="' + game + '"]');
           const buttons = [...document.querySelectorAll('#modal [data-act="quick"]')];
           if (!buttons.length || buttons.some((b) => b.dataset.game !== game || b.dataset.mode !== mode)) throw new Error('gioco o modalità persi');
+          for (const tile of document.querySelectorAll('#modal .gtile')) {
+            const style = getComputedStyle(tile);
+            const luminance = (color) => color.match(/[0-9.]+/g).slice(0, 3).map(Number).map((n) => n / 255).map((n) => n <= .04045 ? n / 12.92 : ((n + .055) / 1.055) ** 2.4).reduce((sum, n, i) => sum + n * [.2126, .7152, .0722][i], 0);
+            const a = luminance(style.color), b = luminance(style.backgroundColor);
+            if ((Math.max(a, b) + .05) / (Math.min(a, b) + .05) < 4.5) throw new Error('contrasto insufficiente nel selettore del gioco');
+          }
           if (game === 'briscola5' && (buttons.length !== 1 || buttons[0].dataset.n !== '5')) throw new Error('briscola in 5');
           if (game === 'scopone' && (buttons.length !== 1 || buttons[0].dataset.n !== '4')) throw new Error('scopone');
         }
@@ -146,7 +152,9 @@ const HELPERS = `
         window.__campaignStart = async (i) => {
           __tap('[data-act="campaignPreview"][data-i="' + i + '"]'); __tap('#modal [data-act="campaignLevel"]');
           for (let n = 0; n < 100 && !S.campaignMatch; n++) await __W(50);
-          if (!S.campaignMatch) throw new Error('tavolo non caricato'); await __W(350);
+          if (!S.campaignMatch) throw new Error('tavolo non caricato'); await __W(1700);
+          if (S.screen !== 'game' || !document.querySelector('.game #felt') || !document.querySelector('.game #hand') || document.querySelector('.campaign-felt')) throw new Error('il livello deve usare il tavolo normale');
+          onState(null, null); if (S.screen !== 'game') throw new Error('lo stato remoto interrompe il livello');
         };
         window.__campaignPlay = async () => {
           const level = campaignPath().levels[S.campaignLevel];
@@ -155,12 +163,15 @@ const HELPERS = `
             if (Date.now() > deadline) throw new Error('partita bloccata');
             if (level.steps[S.campaignStep].seat === 1) { await __W(100); continue; }
             const action = Campaign.expected(S.campaignMatch, level);
-            for (const id of action.cardIds || (action.cardId !== undefined ? [action.cardId] : [])) __tap('[data-act="campaignSelect"][data-i="' + id + '"]');
-            __tap('[data-act="campaignMove"][data-type="' + action.type + '"]' + (action.meldId ? '[data-meld="' + action.meldId + '"]' : ''));
+            for (const id of action.cardIds || (action.cardId !== undefined ? [action.cardId] : [])) __tap('#hand [data-card="' + id + '"]');
+            const target = action.type === 'draw' ? '.stock' : action.type === 'discard' ? '.pile' : action.type === 'meld' ? '.newmeld' : '#felt [data-meld="' + action.meldId + '"]';
+            if (!__tap(target)) throw new Error('controllo di partita mancante: ' + target);
+            await __W(180);
             if (S.campaignFeedback) throw new Error(S.campaignFeedback);
             if (document.documentElement.scrollWidth > innerWidth + 1) throw new Error('overflow tavolo');
           }
-          if (!document.querySelector('.campaign-celebrate')) throw new Error('riepilogo assente');
+          await __W(1100);
+          if (!document.querySelector('.campaign-celebrate') || S.campaignActive || S.room || S.game) throw new Error('riepilogo o pulizia del tavolo assenti');
         };
       `);
       await shot('campagna-01-percorsi');
@@ -168,12 +179,12 @@ const HELPERS = `
         __tap('[data-act="campaignPath"][data-id="burraco"]');
         if (document.querySelectorAll('[data-act="campaignPreview"]:disabled').length !== 4) throw new Error('sblocco iniziale');
         await __campaignStart(0);
-        __tap('[data-act="campaignSelect"]'); __tap('[data-act="campaignMove"][data-type="meld"]');
+        await act('meld', { cardIds: [] });
         if (!S.campaignFeedback || campaignProgress().burraco.turno !== 0) throw new Error('errore assegna progresso');
         handlers.campaignMap(); await __campaignStart(0);
-        __tap('[data-act="campaignMove"][data-type="draw"]');
+        __tap('.stock'); await __W(100);
         const action = Campaign.expected(S.campaignMatch, campaignPath().levels[0]);
-        __tap('[data-act="campaignSelect"][data-i="' + action.cardId + '"]'); __tap('[data-act="campaignMove"][data-type="discard"]');
+        __tap('#hand [data-card="' + action.cardId + '"]'); __tap('.pile'); await __W(100);
         const abandoned = S.campaignMatch, index = abandoned.index;
         handlers.campaignMap(); await __W(1500);
         if (abandoned.index !== index) throw new Error('bot continua dopo uscita');

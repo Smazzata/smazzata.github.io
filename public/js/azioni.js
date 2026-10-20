@@ -157,6 +157,7 @@
       if (!r || !r.ok) { S.localGame = false; toast((r && r.error) || 'Partita non avviata', true); }
     },
     leave() {
+      if (S.campaignActive) { handlers.campaignMap(); return; }
       // in partita: una finestrella con tutte le scelte (uscire, arrendersi, terminare, chiudere)
       if (S.game && !S.game.over && S.game.you >= 0 && S.modalKind !== 'leave') {
         const slow = S.room.slow;
@@ -172,6 +173,7 @@
       handlers.leaveNow();
     },
     leaveNow() {
+      if (S.campaignActive) { handlers.campaignMap(); return; }
       closeModal();
       if (S.room && S.room.onDevice) {
         // partita sul telefono: finita si chiude, altrimenti resta salvata e si riprende dalla schermata iniziale

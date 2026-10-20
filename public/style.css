@@ -988,6 +988,14 @@ body.noanim *, body.noanim *::before, body.noanim *::after { animation-duration:
 .gtile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 84px; padding: 8px 4px;
   border-radius: 14px; border: 2px solid transparent; background: rgba(255,255,255,.1); color: #fff; font-size: 15px; font-weight: 700; line-height: 1.15; }
 .gtile span { font-size: 30px; line-height: 1; }
+#modal .gamegrid .gtile { color: #243d30; background: #edf3ed; border-color: #c5d2c8; }
+#modal .gamegrid .gtile.on { color: #173e28; background: #f9e5a4; border-color: #997315; }
+#modal .gamegrid .gtile:focus-visible { outline: 3px solid #285b40; outline-offset: 2px; }
+.campaign-table-coach { background: #fff2c9; color: #24352b; flex-shrink: 0; }
+.campaign-table-coach > span { flex: 1; }
+.campaign-table-coach ~ .floatbar { height: 38px; flex-shrink: 0; }
+.campaign-table-coach .btn { color: #24352b; background: #fffaf0; border-color: #987c3c; }
+#hand .campaign-guided-card { box-shadow: 0 0 0 3px #ffd45e, 0 0 12px #ffd45e; }
 .gtile.on { border-color: var(--gold); background: rgba(242,193,78,.22); }
 .swatch.big { padding: 10px 14px; font-size: 16px; }
 .joinbox { font-size: 16px; }

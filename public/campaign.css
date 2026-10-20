@@ -210,38 +210,3 @@ body[data-theme="notte"] .campaign-path small { color: #a8d38a; }
 body[data-theme="notte"] .cp-pips i { background: #48504b; }
 body[data-theme="notte"] .campaign-hero { background: linear-gradient(#24414f, #2c3a33 70%); color: #e6e6e1; }
 body[data-theme="notte"] .campaign-hero h1 { color: #e9f5e6; text-shadow: 0 2px 0 rgba(0, 0, 0, .4); }
-
-/* Tavolo degli spezzoni guidati: carte vere e bot con mano coperta. */
-.campaign-match { max-width: 1000px; }
-.campaign-coach { margin: 12px 0; padding: 14px 18px; border-radius: 16px; background: var(--panel, #fff4d8); color: var(--text, #242b27); border: 2px solid #c99732; }
-.campaign-coach p { margin: 6px 0; }
-.campaign-coach progress { width: 100%; height: 6px; accent-color: #45844c; }
-.campaign-felt { padding: 20px; border-radius: 26px; background: radial-gradient(ellipse at center, #28674f, #123c30); border: 7px solid #795639; color: #fff7e6; box-shadow: 0 12px 28px #0003; }
-.campaign-opponent { text-align: center; }
-.campaign-backs { display: flex; justify-content: center; margin: 10px 0 18px; padding-right: 12px; }
-.campaign-backs span { display: grid; place-items: center; width: 26px; height: 40px; border: 2px solid #eee1c3; border-radius: 5px; background: #354b87; margin-right: -12px; color: #d4dcf7; }
-.campaign-piles { display: flex; justify-content: center; gap: 28px; align-items: center; margin: 18px 0; }
-.campaign-stock, .campaign-pile { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 2px solid transparent; border-radius: 12px; padding: 8px; color: #fff7e6; background: #153d31; cursor: pointer; }
-.campaign-stock { font-size: 54px; }
-.campaign-piles small { font-size: 13px; }
-.campaign-melds { padding: 10px 0; border-top: 1px solid #fff3; }
-.campaign-melds > div { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0; }
-.campaign-meld { display: flex; flex-wrap: wrap; border: 2px solid transparent; border-radius: 10px; background: #0002; padding: 5px; cursor: pointer; }
-.campaign-meld .card { margin-right: -12px; }
-.campaign-meld .card:last-child { margin-right: 0; }
-.campaign-your-hand { border-top: 1px solid #fff3; padding-top: 12px; }
-.campaign-felt .campaign-hand { gap: 9px; margin: 15px 0; }
-.campaign-felt .guided { outline: 3px solid #ffd56a; outline-offset: 2px; }
-.campaign-felt .campaign-card.selected { outline: 3px solid #8ff4b0; transform: translateY(-7px); }
-.campaign-felt button:focus-visible { outline: 4px solid white; outline-offset: 4px; }
-.campaign-last-action { min-height: 1.5em; }
-@media (max-width: 520px) { .campaign-felt { padding: 12px; border-width: 4px; } .campaign-felt .campaign-hand { gap: 7px; } }
-.campaign-coach { background: #fff4d8; color: #242b27; }
-.campaign-match h1 { font-size: 26px; margin: 10px 0; }
-.campaign-match .campaign-coach { position: sticky; top: 8px; z-index: 5; box-shadow: 0 3px 12px #0003; }
-.campaign-match .campaign-coach p { font-size: 15px; line-height: 1.4; }
-.campaign-match .campaign-melds { font-size: 13px; padding: 6px 0; }
-.campaign-match .campaign-melds > div { padding: 4px 0; }
-.campaign-match .campaign-opponent { font-size: 14px; }
-.campaign-match .campaign-backs { margin: 8px 0; }
-.campaign-match .campaign-piles { margin: 12px 0; }

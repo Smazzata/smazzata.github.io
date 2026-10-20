@@ -407,12 +407,6 @@ function campaignConfetti() {
   const cols = ['#e5463b', '#ffd23f', '#2fae5c', '#3d7ee0', '#ff7aa2', '#1f2433'];
   return `<span class="cconf" aria-hidden="true">${Array.from({ length: 14 }, (_, i) => `<i style="left:${(i * 7.3 + 3) % 100}%;background:${cols[i % cols.length]};animation-delay:${(i % 5) * 0.12}s;--r:${(i % 2 ? 1 : -1) * (180 + i * 40)}deg"></i>`).join('')}</span>`;
 }
-function campaignCardName(c) { return c.r === 0 ? 'Jolly' : `${({1: 'Asso', 11: 'Fante', 12: 'Donna', 13: 'Re'})[c.r] || c.r} di ${{H: 'cuori', D: 'quadri', S: 'picche', C: 'fiori'}[c.s]}`; }
-function campaignPlayingCardHTML(c) {
-  const html = cardHTML(c);
-  // Il tavolo didattico è indipendente da S.game: in Scala 40 e Ramino i 2 non sono pinelle.
-  return campaignPath()?.id === 'burraco' ? html : html.replace(' two ', ' ');
-}
 function campaignExerciseHTML(path, level, note) {
   const step = level.steps[S.campaignStep];
   const nav = `<button class="btn ghost small" data-act="campaignMap">← Mappa di ${esc(path.name)}</button>`;
@@ -423,23 +417,47 @@ function campaignExerciseHTML(path, level, note) {
   }
   const session = S.campaignMatch;
   if (!session) return '<main class="page campaign">' + nav + '<h1 tabindex="-1">Preparazione del tavolo</h1><p role="status">' + esc(S.campaignLoadError || 'Caricamento della partita…') + '</p><button class="btn" data-act="campaignReplay">Riprova</button></main>';
-  const g = session.g, selected = S.campaignSelected || [], wanted = Campaign.expected(session, level);
-  const targets = wanted.cardIds || (wanted.cardId !== undefined ? [wanted.cardId] : []);
-  const bot = step.seat === 1;
-  return `<main class="page campaign campaign-match">${nav}
-    <header><span class="campaign-kicker">${esc(path.name)} · LIVELLO ${S.campaignLevel + 1} · PARTITA GUIDATA</span><h1 tabindex="-1">${esc(level.title)}</h1></header>
-    <aside class="campaign-coach" role="status"><strong>${bot ? '🤖 Osserva Luca' : '💡 Tocca a te'}</strong><p>${esc(step.tip)}</p><progress max="${level.steps.length}" value="${session.index}" aria-label="Avanzamento della partita"></progress></aside>
-    <section class="campaign-felt" aria-label="Tavolo di gioco">
-      <div class="campaign-opponent"><strong>🤖 Luca · Bot guidato</strong><div class="campaign-backs" aria-label="${g.players[1].hand.length} carte coperte">${g.players[1].hand.map(() => '<span aria-hidden="true">◆</span>').join('')}</div></div>
-      <div class="campaign-piles"><button class="btn campaign-stock ${!bot && step.type === 'draw' ? 'guided' : ''}" data-act="campaignMove" data-type="draw" ${bot ? 'disabled' : ''}>🂠<small>Tallone · ${g.stock.length}</small></button>
-      <button class="campaign-pile ${!bot && step.type === 'discard' ? 'guided' : ''}" data-act="campaignMove" data-type="discard" aria-label="Scarta la carta selezionata" ${bot ? 'disabled' : ''}>${g.discard.length ? campaignPlayingCardHTML(g.discard[g.discard.length - 1]) : ''}<small>Scarti · ${g.discard.length}</small></button></div>
-      ${g.teams.map((t, i) => `<div class="campaign-melds"><strong>${i === 0 ? 'Le tue combinazioni' : 'Le combinazioni di Luca'}</strong><div>${t.melds.length ? t.melds.map((m) => `<button class="campaign-meld ${!bot && step.type === 'add' && i === 0 ? 'guided' : ''}" data-act="campaignMove" data-type="add" data-meld="${m.id}" aria-label="Attacca alla combinazione ${m.id}" ${bot ? 'disabled' : ''}>${m.cards.map((c) => campaignPlayingCardHTML(c)).join('')}</button>`).join('') : '<small>Nessuna combinazione calata</small>'}</div></div>`).join('')}
-      <div class="campaign-your-hand"><strong>La tua mano · ${g.players[0].hand.length} carte</strong><div class="campaign-cards campaign-hand">${g.players[0].hand.map((c) => `<button class="campaign-card ${selected.includes(c.id) ? 'selected' : ''} ${!bot && targets.includes(c.id) ? 'guided' : ''}" data-act="campaignSelect" data-i="${c.id}" aria-label="${esc(campaignCardName(c))}" aria-pressed="${selected.includes(c.id)}" ${bot ? 'disabled' : ''}>${campaignPlayingCardHTML(c)}</button>`).join('')}</div></div>
-      <button class="btn primary" data-act="campaignMove" data-type="meld" ${bot || !selected.length ? 'disabled' : ''}>＋ Cala</button>
-    </section>
-    ${S.campaignFeedback ? `<p class="campaign-feedback" role="alert">${esc(S.campaignFeedback)}</p>` : ''}
-    <p class="campaign-last-action" aria-live="polite">${esc(g.log[g.log.length - 1] || 'Mano preparata: segui la guida e gioca le tue carte.')}</p>
-    <p class="campaign-note">Spezzone di partita con mosse guidate. L’obiettivo è completare i due turni, non vincere una partita intera.</p>${note}</main>`;
+  return gameHTML();
+}
+function campaignSyncTable() {
+  const path = campaignPath(), session = S.campaignMatch, g = session.g;
+  const room = {
+    code: 'Livello ' + (S.campaignLevel + 1), campaign: true, rules: g.cfg.rules, n: g.n,
+    seats: g.players.map((p) => ({ name: p.name, isBot: p.isBot, connected: true })),
+    host: 0, you: 0, isHost: true, started: true, ready: [], spectators: [],
+    hints: true, aids: true, tutorial: true, music: null, turnLeft: null, turnTime: 0,
+    botLevel: 'facile', ranked: false, quick: 0
+  };
+  onState(room, JSON.parse(JSON.stringify(window.BurracoGames[path.id].E.viewFor(g, 0))));
+}
+function campaignCoachHTML() {
+  const level = campaignPath().levels[S.campaignLevel], step = level.steps[S.campaignStep];
+  return '<div class="coach campaign-table-coach" role="status"><span><b>' + esc(level.title) + '</b><br>' + esc(S.campaignFeedback || step?.tip || 'Obiettivo completato!') + '</span><button class="btn small" data-act="campaignMap">← Mappa</button></div>';
+}
+function campaignDecorateTable() {
+  if (!S.campaignActive) return;
+  const level = campaignPath().levels[S.campaignLevel], step = level.steps[S.campaignStep];
+  if (!step || step.seat !== 0) return;
+  const action = Campaign.expected(S.campaignMatch, level);
+  for (const id of action.cardIds || (action.cardId !== undefined ? [action.cardId] : [])) {
+    const card = $('#hand [data-card="' + id + '"]'); if (card) card.classList.add('campaign-guided-card');
+  }
+  const target = action.type === 'draw' ? $('.stock') : action.type === 'discard' ? $('.pile') : action.type === 'meld' ? $('.newmeld') : $('#felt [data-meld="' + action.meldId + '"]');
+  if (target) target.classList.add('hinted');
+}
+function campaignStopTable() {
+  S.campaignActive = false; S.campaignLoadToken = null;
+  if (S.room?.campaign) { S.room = null; S.game = null; }
+  S.selected.clear(); S.hint = null; S.antic = null; clearAnticipated();
+  S.screen = 'campaign'; document.title = 'Smazzata'; keepScreenOn(false);
+}
+function campaignEvent(ev, data) {
+  if (ev === 'hint') return { ok: true, hint: Campaign.expected(S.campaignMatch, campaignPath().levels[S.campaignLevel]) };
+  if (['leaveRoom', 'closeTable', 'surrender', 'endGame'].includes(ev)) { handlers.campaignMap(); return { ok: true }; }
+  if (ev !== 'action') return { ok: false, error: 'Segui la guida del livello.' };
+  const level = campaignPath().levels[S.campaignLevel];
+  if (level.steps[S.campaignStep]?.seat !== 0) return { ok: false, error: 'Ora gioca il computer.' };
+  return campaignPerform(data);
 }
 function campaignPerform(action) {
   const path = campaignPath(), level = path && path.levels[S.campaignLevel], session = S.campaignMatch;
@@ -447,7 +465,7 @@ function campaignPerform(action) {
   try {
     if (!Campaign.act(session, level, window.BurracoGames[path.id].E, action)) {
       S.campaignFeedback = 'Segui la guida: ' + level.steps[session.index].tip;
-      S.campaignErrors++; render(); return;
+      S.campaignErrors++; render(); return { ok: false, error: S.campaignFeedback };
     }
     S.campaignSelected = []; S.campaignFeedback = null; S.campaignStep = session.index;
     if (session.index === level.steps.length) {
@@ -455,22 +473,28 @@ function campaignPerform(action) {
       S.campaignLastStars = S.campaignErrors ? (S.campaignErrors === 1 ? 2 : 1) : 3;
       campaignSaveStars(path, level, S.campaignLastStars);
     }
-    render();
-    if (session.index === level.steps.length) campaignFocus();
+    campaignSyncTable();
+    if (session.index === level.steps.length) {
+      setTimeout(() => {
+        if (!S.campaignActive || S.campaignMatch !== session) return;
+        campaignStopTable(); render(); campaignFocus();
+      }, 1000);
+    }
     if (level.steps[session.index]?.seat === 1) {
       setTimeout(() => {
-        if (S.screen !== 'campaign' || S.campaignMatch !== session || campaignPath() !== path || path.levels[S.campaignLevel] !== level) return;
+        if (!S.campaignActive || S.campaignMatch !== session || campaignPath() !== path || path.levels[S.campaignLevel] !== level) return;
         campaignPerform(Campaign.expected(session, level));
       }, 1300);
     }
-  } catch (e) { S.campaignFeedback = 'La mossa non è disponibile: ' + e.message; render(); }
+    return { ok: true };
+  } catch (e) { S.campaignFeedback = 'La mossa non è disponibile: ' + e.message; render(); return { ok: false, error: S.campaignFeedback }; }
 }
 
 Object.assign(handlers, {
   campaign() { closeModal(); S.campaignPath = null; S.campaignLevel = null; S.screen = 'campaign'; render(); window.scrollTo(0, 0); campaignFocus(); },
   campaignPaths() { S.campaignPath = null; S.campaignLevel = null; render(); window.scrollTo(0, 0); campaignFocus(); },
   campaignPath(el) { if (!Campaign.paths.some((p) => p.id === el.dataset.id)) return; S.campaignPath = el.dataset.id; S.campaignLevel = null; render(); campaignScrollToCurrent(); campaignFocus(); },
-  campaignMap() { closeModal(); S.campaignLevel = null; render(); campaignScrollToCurrent(); campaignFocus(); },
+  campaignMap() { closeModal(); campaignStopTable(); S.campaignLevel = null; render(); campaignScrollToCurrent(); campaignFocus(); },
   // tocco di un livello sulla mappa: finestrella con obiettivo, stelle e «Gioca!»
   campaignPreview(el) {
     const path = campaignPath(), i = Number(el.dataset.i), progress = campaignCurrentProgress();
@@ -485,6 +509,7 @@ Object.assign(handlers, {
     const path = campaignPath(), i = Number(el.dataset.i), progress = campaignCurrentProgress();
     if (!path || !Number.isInteger(i) || !path.levels[i] || (i > 0 && progress[path.id][path.levels[i - 1].id] < path.levels[i - 1].steps.length)) return;
     closeModal();
+    campaignStopTable();
     S.campaignLevel = i;
     S.campaignStep = 0; S.campaignMatch = null; S.campaignLoadError = null;
     S.campaignSelected = []; S.campaignFeedback = null; S.campaignErrors = 0; S.campaignLastStars = 0;
@@ -494,29 +519,14 @@ Object.assign(handlers, {
       await LocalServer.loadEngine('engine.js');
       if (S.campaignLoadToken !== token || S.screen !== 'campaign' || campaignPath() !== path || S.campaignLevel !== i) return;
       S.campaignMatch = Campaign.start(path, path.levels[i], window.BurracoGames[path.id].E);
-      render(); campaignFocus();
+      S.selected.clear(); S.handOrder = []; S.game = null; S.coachOff = false;
+      S.campaignActive = true; campaignSyncTable();
     } catch (e) {
       if (S.campaignLoadToken !== token || S.screen !== 'campaign' || campaignPath() !== path || S.campaignLevel !== i) return;
       S.campaignLoadError = 'Impossibile caricare il tavolo. Riprova quando il motore è disponibile.'; render();
     }
   },
   campaignReplay() { handlers.campaignLevel({ dataset: { i: S.campaignLevel } }); },
-  campaignSelect(el) {
-    const path = campaignPath(), level = path && path.levels[S.campaignLevel], session = S.campaignMatch, id = Number(el.dataset.i);
-    if (!session || !level || level.steps[session.index]?.seat !== 0 || !session.g.players[0].hand.some((c) => c.id === id)) return;
-    const selected = S.campaignSelected || [];
-    S.campaignSelected = selected.includes(id) ? selected.filter((v) => v !== id) : selected.concat(id);
-    S.campaignFeedback = null; render(); campaignFocus('[data-act="campaignSelect"][data-i="' + id + '"]');
-  },
-  campaignMove(el) {
-    const path = campaignPath(), level = path && path.levels[S.campaignLevel], session = S.campaignMatch;
-    if (!session || !level || level.steps[session.index]?.seat !== 0) return;
-    const type = el.dataset.type, selected = S.campaignSelected || [], action = { type };
-    if (type === 'discard') { if (selected.length !== 1) { S.campaignFeedback = 'Seleziona una sola carta da scartare.'; render(); return; } action.cardId = selected[0]; }
-    if (type === 'meld' || type === 'add') action.cardIds = selected;
-    if (type === 'add') action.meldId = Number(el.dataset.meld);
-    campaignPerform(action);
-  },
   campaignTrain() {
     const path = campaignPath(); if (!path || !requireName()) return;
     S.playMode = 'bots'; S.screen = 'setup';
