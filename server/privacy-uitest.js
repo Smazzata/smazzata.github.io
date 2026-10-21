@@ -19,12 +19,16 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
       server.stdout.on('data', (d) => { if (String(d).includes('ascolto')) { clearTimeout(timer); res(); } });
       server.once('exit', () => { clearTimeout(timer); rej(new Error('Server privacy terminato')); });
     });
-    browser = spawn(findBrowser(), ['--headless=new', '--no-first-run', '--no-default-browser-check', ...(process.env.CI ? ['--no-sandbox'] : []), '--remote-debugging-port=9335', `--user-data-dir=${path.join(root, 'browser')}`, 'about:blank'], { stdio: 'ignore' });
+    browser = spawn(findBrowser(), ['--headless=new', '--no-first-run', '--no-default-browser-check', ...(process.env.CI ? ['--no-sandbox'] : []), '--remote-debugging-port=9335', `--user-data-dir=${path.join(root, 'browser')}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
+    let browserLog = '', connectionError = '';
+    browser.stderr.on('data', (data) => { browserLog = (browserLog + data).slice(-6000); });
+    browser.on('error', (e) => { browserLog += '\n' + e.message; });
     let tabs;
-    for (let i = 0; i < 60; i++) {
-      try { tabs = await (await fetch('http://127.0.0.1:9335/json/list')).json(); break; } catch (e) { await wait(100); }
+    for (let i = 0; i < 120; i++) {
+      try { tabs = await (await fetch('http://127.0.0.1:9335/json/list')).json(); break; }
+      catch (e) { connectionError = String(e.cause || e); if (browser.exitCode !== null) break; await wait(200); }
     }
-    assert(tabs, 'browser avviato');
+    assert(tabs, `Browser privacy non avviato (uscita ${browser.exitCode}): ${connectionError}\n${browserLog}`);
     cdp = await connect(tabs.find((t) => t.type === 'page').webSocketDebuggerUrl);
     await cdp.send('Page.enable'); await cdp.send('Network.enable');
     await cdp.send('Emulation.setDeviceMetricsOverride', { width: 360, height: 800, deviceScaleFactor: 1, mobile: true });
