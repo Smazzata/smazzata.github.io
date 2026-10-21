@@ -120,6 +120,26 @@ const HELPERS = `
       if(document.querySelector('[data-act="campaign"]'))throw Error('Avventura ancora visibile nella home pubblica');
       if (choices.map((b) => b.dataset.act + ':' + (b.dataset.mode || '')).join(',') !== 'quickMenu:casual,quickMenu:ranked,playFriends:,playBots:') throw new Error('ordine delle modalità nella home');
       if (!choices[0].classList.contains('primary')) throw new Error('amichevole non evidenziata');
+      const shortcuts = [...document.querySelectorAll('.home-shortcut')];
+      if (shortcuts.map((b) => b.dataset.act).join(',') !== 'friends,daily,tournaments,leaders') throw new Error('scorciatoie community mancanti');
+      for (const button of shortcuts) {
+        const rect = button.getBoundingClientRect();
+        if (rect.width < 44 || rect.height < 44 || rect.right > innerWidth) throw new Error('scorciatoie non utilizzabili su telefono');
+        __tap(button); await __W(450);
+        if (S.modalKind !== button.dataset.act || document.querySelector('#modal').classList.contains('hidden')) throw new Error('scorciatoia non apre il contenuto: ' + button.dataset.act);
+        document.querySelector('.modal-close').click();
+      }
+      if (/Elo/i.test(document.querySelector('#app').innerText)) throw new Error('Elo visibile nella home');
+      for (const [rating, name] of [[800, 'Bronzo'], [1099, 'Bronzo'], [1100, 'Argento'], [1249, 'Argento'], [1250, 'Oro'], [1400, 'Platino'], [1600, 'Diamante'], [1800, 'Maestro'], [2000, 'Leggenda']]) {
+        if (playerRank(rating).name !== name) throw new Error('soglia grado errata: ' + rating);
+      }
+      for (const game of ['burraco', 'scala40', 'scopa']) {
+        const html = statsTable({elo: 1250, eloMax: 1600, games: 3, wins: 1}, game);
+        if (!html.includes('Oro') || !html.includes('Diamante') || /Elo|1250|1600/.test(html)) throw new Error('statistiche mostrano il punteggio interno');
+      }
+      socket.listeners('elo')[0]({game: 'burraco', before: 1099, after: 1108});
+      await __W(1900);
+      if (!document.querySelector('#toast').textContent.includes('Argento') || /1099|1108|Elo/.test(document.querySelector('#toast').textContent)) throw new Error('notifica grado errata');
       for (const mode of ['casual', 'ranked']) {
         __tap('[data-act="quickMenu"][data-mode="' + mode + '"]'); await __W(200);
         if (document.querySelectorAll('#modal [data-act="quick"][data-mode="' + mode + '"]').length !== 3) throw new Error('scelta formato pubblico');
@@ -143,7 +163,7 @@ const HELPERS = `
       __tap('[data-act="setupBotLevel"][data-val="difficile"]');
       if (S.prefs.botLevel !== 'difficile' || !document.querySelector('[data-act="setupBotLevel"][data-val="difficile"]').classList.contains('on')) throw new Error('selettore difficoltà');
       __tap('[data-act="setupBotLevel"][data-val="auto"]');
-      __tap('[data-act="goHome"]');`);
+      __tap('[data-act="goHome"]'); closeModal(); await __W(300);`);
     await shot('01-home');
     step('schermata iniziale e nickname');
     if (CAMPAIGN_ONLY) {

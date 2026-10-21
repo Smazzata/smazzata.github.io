@@ -359,19 +359,19 @@
     const row = (l, v) => `<tr><td>${l}</td><td><b>${v}</b></td></tr>`;
     if (['scopa', 'briscola', 'briscola5', 'tressette', 'rubamazzetto'].includes(gid)) {
       return `<table>
-      ${st.elo ? row('Punteggio di bravura (Elo)', `${st.elo}${st.eloMax > st.elo ? ` · record ${st.eloMax}` : ''}`) : ''}${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
+      ${st.elo ? row('Grado', rankHTML(st.elo)) + (playerRank(st.eloMax).min > playerRank(st.elo).min ? row('Grado migliore', rankHTML(st.eloMax)) : '') : ''}${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
       ${row('Smazzate giocate', st.hands)}${row('Smazzate vinte', `${st.handsWon} (${pct(st.handsWon, st.hands)})`)}
     </table>`;
     }
     if (gid === 'scala40') {
       return `<table>
-      ${st.elo ? row('Punteggio di bravura (Elo)', `${st.elo}${st.eloMax > st.elo ? ` · record ${st.eloMax}` : ''}`) : ''}${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
+      ${st.elo ? row('Grado', rankHTML(st.elo)) + (playerRank(st.eloMax).min > playerRank(st.elo).min ? row('Grado migliore', rankHTML(st.eloMax)) : '') : ''}${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
       ${row('Smazzate giocate', st.hands)}${row('Chiusure', `${st.closures} (${pct(st.closures, st.hands)})`)}
       ${row('Penalità media a smazzata', st.avgHand == null ? '—' : -st.avgHand)}
     </table>`;
     }
     return `<table>
-      ${st.elo ? row('Punteggio di bravura (Elo)', `${st.elo}${st.eloMax > st.elo ? ` · record ${st.eloMax}` : ''}`) : ''}${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
+      ${st.elo ? row('Grado', rankHTML(st.elo)) + (playerRank(st.eloMax).min > playerRank(st.elo).min ? row('Grado migliore', rankHTML(st.eloMax)) : '') : ''}${row('Partite giocate', st.games)}${row('Partite vinte', `${st.wins} (${pct(st.wins, st.games)})`)}
       ${row('Smazzate giocate', st.hands)}${row('Smazzate vinte', `${st.handsWon} (${pct(st.handsWon, st.hands)})`)}
       ${row(gid === 'canasta' ? 'Canaste fatte' : 'Burraco fatti', st.burraco)}${row('Chiusure', st.closures)}
       ${row('Miglior smazzata', st.bestHand == null ? '—' : st.bestHand)}${row('Media punti a smazzata', st.avgHand == null ? '—' : st.avgHand)}

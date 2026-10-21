@@ -1,0 +1,17 @@
+Community ‖ Community ‖ Comunidad ‖ Comunidade
+Partita classificata: contribuisce al tuo grado ‖ Ranked game: contributes to your rank ‖ Partida clasificatoria: contribuye a tu rango ‖ Partida ranqueada: contribui para sua patente
+Scala i gradi, da Bronzo a Leggenda ‖ Climb the ranks, from Bronze to Legend ‖ Sube de rango, de Bronce a Leyenda ‖ Suba de patente, de Bronze a Lenda
+Partita amichevole: il tuo grado non cambia. ‖ Friendly game: your rank does not change. ‖ Partida amistosa: tu rango no cambia. ‖ Partida amistosa: sua patente não muda.
+Il risultato contribuisce al tuo grado. ‖ The result contributes to your rank. ‖ El resultado contribuye a tu rango. ‖ O resultado contribui para sua patente.
+Il risultato non cambia il tuo grado. ‖ The result does not change your rank. ‖ El resultado no cambia tu rango. ‖ O resultado não muda sua patente.
+Grado ‖ Rank ‖ Rango ‖ Patente
+Grado migliore ‖ Best rank ‖ Mejor rango ‖ Melhor patente
+Bronzo ‖ Bronze ‖ Bronce ‖ Bronze
+Argento ‖ Silver ‖ Plata ‖ Prata
+Oro ‖ Gold ‖ Oro ‖ Ouro
+Platino ‖ Platinum ‖ Platino ‖ Platina
+Diamante ‖ Diamond ‖ Diamante ‖ Diamante
+Maestro ‖ Master ‖ Maestro ‖ Mestre
+Leggenda ‖ Legend ‖ Leyenda ‖ Lenda
+Ogni gioco ha il suo grado: Bronzo, Argento, Oro, Platino, Diamante, Maestro e Leggenda. ‖ Each game has its own rank: Bronze, Silver, Gold, Platinum, Diamond, Master and Legend. ‖ Cada juego tiene su rango: Bronce, Plata, Oro, Platino, Diamante, Maestro y Leyenda. ‖ Cada jogo tem sua patente: Bronze, Prata, Ouro, Platina, Diamante, Mestre e Lenda.
+Il grado cambia solo con le partite classificate (🏅 Classificata). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei. ‖ Your rank changes only in ranked games (🏅 Ranked). Friendly games (with friends or the computer) count for stats, level and trophies. ‖ El rango cambia solo con las partidas clasificatorias (🏅 Clasificatoria). Las amistosas (con amigos o con la computadora) cuentan para estadísticas, nivel y trofeos. ‖ A patente muda só com as partidas ranqueadas (🏅 Ranqueada). As amistosas (com amigos ou com o computador) contam para estatísticas, nível e troféus.

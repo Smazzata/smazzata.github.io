@@ -978,6 +978,20 @@ body.noanim *, body.noanim *::before, body.noanim *::after { animation-duration:
 .hello[data-act] { cursor: pointer; }
 .homebtns { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
 .homebtns .row { margin: 0; }
+.home-shortcuts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; margin-bottom: 6px; }
+.home-shortcut { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; min-height: 82px; padding: 10px 3px; border-radius: 14px; border: 1px solid #c9b68a; color: #173c2c; background: linear-gradient(160deg, #fffdf6, #eee3c9); box-shadow: 0 3px 0 #0003; font-size: 12px; font-weight: 800; line-height: 1.2; text-align: center; touch-action: manipulation; }
+.home-shortcut:hover { filter: brightness(1.05); }
+.home-shortcut:active { transform: translateY(2px); box-shadow: 0 1px 0 #0003; }
+.home-shortcut:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.shortcut-icon { display: grid; place-items: center; width: 34px; height: 34px; font-size: 24px; border-radius: 10px; background: #fff9; }
+.shortcut-count { position: absolute; right: 3px; top: 3px; min-width: 19px; padding: 2px 4px; border-radius: 12px; background: #ad202e; color: #fff; font-size: 11px; }
+.player-rank { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; padding: 3px 7px; border: 1px solid #a77c59; border-radius: 8px; color: #55301c; background: #f5e0cc; font-size: 12px; font-weight: 800; }
+.rank-silver { color: #344354; background: #e5edf4; border-color: #94a4b6; }
+.rank-gold { color: #664100; background: #fff0b0; border-color: #c39925; }
+.rank-platinum { color: #17514b; background: #d6f2e9; border-color: #68a89c; }
+.rank-diamond { color: #174f74; background: #d8f5ff; border-color: #65a8cd; }
+.rank-master { color: #5c2879; background: #f0dfff; border-color: #ad83c4; }
+.rank-legend { color: #832537; background: #ffe1e5; border-color: #cc8090; }
 .homebtn { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 19px; padding: 16px 18px; }
 .homebtn span { font-size: 24px; line-height: 1; }
 .homebtn small { display: block; font-size: 13px; font-weight: 400; margin-top: 5px; line-height: 1.35; }

@@ -160,8 +160,9 @@
   // livello del giocatore: si aggiorna a fine smazzata; quando sale, festa
   // punteggio di bravura (Elo) aggiornato a fine partita
   socket.on('elo', ({ game, after, before }) => {
-    const d = after - before;
-    setTimeout(() => toast(`${d >= 0 ? '📈' : '📉'} ${t('Punteggio')} ${RX.gameName({ game })}: ${after} (${d >= 0 ? '+' : ''}${d})`), 1800);
+    const rank = playerRank(after), previous = playerRank(before);
+    const icon = rank.min > previous.min ? '🎉' : '🏅';
+    setTimeout(() => toast(`${icon} ${RX.gameName({ game })} · ${t('Grado')}: ${t(rank.name)}`), 1800);
   });
   socket.on('progress', (p) => {
     // serie di giorni: festa quando sale (la prima smazzata di oggi)

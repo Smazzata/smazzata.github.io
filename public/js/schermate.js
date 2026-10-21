@@ -125,37 +125,41 @@
   const FULL = () => S.prefs.ui === 'completa';
 
   /**
-   * Pulsanti della schermata iniziale: pochi e grandi. Tutto il resto (sfida del giorno, tornei, classifica,
-   * statistiche, amici, regole, impostazioni…) sta nel menu «☰ Altro».
+   * Pulsanti della schermata iniziale: quattro modalità di gioco.
+   * Statistiche, regole e impostazioni restano nel menu «☰ Altro».
+   * Amici, sfida del giorno, tornei e classifica hanno scorciatoie in alto.
    */
   function homeButtonsHTML() {
     if (store.get('bur_lastroom', '') === '🤖') store.set('bur_lastroom', ''); // codice delle partite sul telefono: non è un tavolo
     const last = !OFFLINE && (store.get('bur_lastroom', '') || (savedLocalGame() ? '🤖' : ''));
     const reqs = S.social && S.social.reqIn ? S.social.reqIn.length : 0;
     return `<div class="homebtns">
+      ${OFFLINE ? '' : `<nav class="home-shortcuts" aria-label="Community">
+        <button class="home-shortcut" data-act="friends"><span class="shortcut-icon" aria-hidden="true">👥</span><span>Amici</span>${reqs ? `<b class="shortcut-count">${reqs}</b>` : ''}</button>
+        <button class="home-shortcut" data-act="daily"><span class="shortcut-icon" aria-hidden="true">📅</span><span>Sfida del giorno</span></button>
+        <button class="home-shortcut" data-act="tournaments"><span class="shortcut-icon" aria-hidden="true">🏆</span><span>Tornei</span></button>
+        <button class="home-shortcut" data-act="leaders"><span class="shortcut-icon" aria-hidden="true">🏅</span><span>Classifica</span></button>
+      </nav>`}
       ${S.pendingJoin && !OFFLINE ? `<div class="invitebox">✉️ Sei stato invitato al tavolo <b>${esc(S.pendingJoin)}</b>
         <button class="btn primary big grow" data-act="joinCode" data-code="${esc(S.pendingJoin)}">Entra al tavolo</button></div>` : ''}
       ${last ? `<button class="btn primary big grow" data-act="rejoin">↩ Torna alla partita</button>` : ''}
       ${S.tourMatch && !S.room ? `<div class="tourready">🏆 ${esc(S.tourMatch.text)} <button class="btn small primary" data-act="tourPlay" data-code="${esc(S.tourMatch.code)}">▶ Gioca</button></div>` : ''}
       ${OFFLINE ? '' : `<button class="btn ${last ? '' : 'primary'} big grow homebtn" data-act="quickMenu" data-mode="casual"><span>🃏</span><div>Amichevole online<small>Trova un tavolo · senza punti classifica</small></div></button>
-      <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked"><span>🏅</span><div>Classificata<small>Gioca per il tuo punteggio Elo</small></div></button>`}
+      <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked"><span>🏅</span><div>Classificata<small>Scala i gradi, da Bronzo a Leggenda</small></div></button>`}
       ${OFFLINE ? '' : `<button class="btn big grow homebtn" data-act="playFriends"><span>👥</span>Gioca con gli amici</button>`}
       <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots"><span>🤖</span>Gioca contro il computer</button>
       ${CAMPAIGN_VISIBLE ? '<button class="btn grow campaign-entry" data-act="campaign">🌱 Avventura<small>Tre percorsi: Burraco, Scala 40 e Ramino</small></button>' : ''}
       <button class="btn ghost grow" data-act="tutorial">📖 Regole e tutorial</button>
-      ${FULL() && !OFFLINE ? `<div class="row"><button class="btn grow" data-act="quickMenu">🃏 Amichevole online</button><button class="btn grow dailybtn" data-act="daily">📅 Sfida del giorno</button><button class="btn grow tourbtn" data-act="tournaments">🏆 Tornei</button></div>` : ''}
-      <button class="btn ghost grow morebtn" data-act="more">☰ Altro${reqs ? ` <span class="pill">${reqs}</span>` : ''}</button>
+      <button class="btn ghost grow morebtn" data-act="more">☰ Altro</button>
     </div>`;
   }
 
   /** menu «Altro»: tutte le funzioni che non servono per iniziare a giocare */
   function moreModal() {
     const so = S.social || {};
-    const reqs = so.reqIn ? so.reqIn.length : 0;
     const item = (act, icon, label, extra = '') => `<button class="menuitem" data-act="${act}"><span>${icon}</span>${label}${extra}</button>`;
     openModal('more', `<h2>☰ Altro</h2><div class="menulist">
-      ${so.nick ? item('profile', '👤', 'Il mio profilo') + item('friends', '👥', 'Amici', reqs ? ` <span class="pill">${reqs}</span>` : '') : ''}
-      ${OFFLINE ? '' : item('daily', '📅', 'Sfida del giorno') + item('quickMenu', '⚡', 'Amichevole online') + item('tournaments', '🏆', 'Tornei') + item('leaders', '🏅', 'Classifica')}
+      ${so.nick ? item('profile', '👤', 'Il mio profilo') : ''}
       ${item('stats', '📊', 'Le mie statistiche')}
       ${item('gamesRules', '📖', 'Regole dei giochi')}
       ${item('howto', '❓', 'Come si usa l\'app')}
@@ -261,7 +265,7 @@
       <div class="panel">
         <h2>Giocatori (${filled}/${r.n}) ${r.ranked ? `<span class="rankbadge" title="${RANKED_TIP}">🏅 Classificata</span>` : ''}</h2>
         ${r.quick ? `<p class="muted">${r.queueMode === 'casual' ? 'Amichevole online' : 'Classificata'} · ${Games2.idOf(r.rules) === 'burraco' ? 'Burraco Classico' : esc(RX.gameName(r.rules))} · ${r.n} giocatori.<br>In cerca di altri ${r.n - filled} giocatori. La partita parte appena il tavolo è pieno.</p>` : ''}
-        ${r.quick && !r.ranked ? '<p class="muted small">Partita amichevole: il punteggio Elo non cambia.</p>' : ''}
+        ${r.quick && !r.ranked ? '<p class="muted small">Partita amichevole: il tuo grado non cambia.</p>' : ''}
         <div class="seats">${seats}</div>
         ${isHost ? `<div class="row" style="margin-top:12px">
             <button class="btn primary big grow" data-act="${ready ? 'start' : 'startFill'}">${r.quick && !ready ? 'Gioca amichevole con il computer' : '▶ Inizia la partita'}</button></div>

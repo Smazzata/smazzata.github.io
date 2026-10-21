@@ -7,8 +7,8 @@
  * Solo le partite CLASSIFICATE cambiano l'Elo: «Gioca subito» tra sole persone (avversari scelti dal server per
  * punteggio, non dagli amici). Tutte le altre sono AMICHEVOLI (tavoli creati a mano o con gli amici, computer,
  * tutorial, sfida del giorno, tornei, partite sul telefono): contano per statistiche, livello e trofei, non per l'Elo.
- * Per ogni gioco si tengono elo, eloMax e rankedGames/rankedWins: le future leghe (Bronzo → Leggenda) si
- * calcoleranno da questi valori.
+ * Per ogni gioco si tengono elo, eloMax e rankedGames/rankedWins. L'interfaccia mostra soltanto il grado
+ * (Bronzo → Leggenda), calcolato da questi valori; soglie documentate in docs/player-ranks.md.
  */
 const START = 1000;
 const BOT_RATING = { facile: 800, normale: 1000, difficile: 1200, esperto: 1350 };

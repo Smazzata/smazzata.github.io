@@ -15,7 +15,25 @@
   };
 
   // spiegazione dell'etichetta 🏅 delle partite classificate (le sole che cambiano l'Elo)
-  const RANKED_TIP = 'Partita classificata: cambia il punteggio Elo';
+  const RANKED_TIP = 'Partita classificata: contribuisce al tuo grado';
+  // Soglie dei gradi per gioco. Il punteggio numerico resta usato per gli abbinamenti.
+  const PLAYER_RANKS = [
+    { min: 0, name: 'Bronzo', id: 'bronze' },
+    { min: 1100, name: 'Argento', id: 'silver' },
+    { min: 1250, name: 'Oro', id: 'gold' },
+    { min: 1400, name: 'Platino', id: 'platinum' },
+    { min: 1600, name: 'Diamante', id: 'diamond' },
+    { min: 1800, name: 'Maestro', id: 'master' },
+    { min: 2000, name: 'Leggenda', id: 'legend' },
+  ];
+  function playerRank(rating) {
+    const value = Number.isFinite(Number(rating)) ? Number(rating) : 1000;
+    return [...PLAYER_RANKS].reverse().find((rank) => value >= rank.min) || PLAYER_RANKS[0];
+  }
+  function rankHTML(rating) {
+    const rank = playerRank(rating);
+    return `<span class="player-rank rank-${rank.id}"><span aria-hidden="true">◆</span> ${esc(t(rank.name))}</span>`;
+  }
   // Avventura sospesa durante la preparazione della pubblicazione sul Play Store.
   // Livelli e salvataggi restano disponibili per riprendere lo sviluppo.
   const CAMPAIGN_VISIBLE = false;
