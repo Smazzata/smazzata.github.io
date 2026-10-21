@@ -21,6 +21,7 @@
       campaignDecorateTable();
     }
     if (changed && app.firstElementChild) app.firstElementChild.classList.add('enter');
+    campaignStoryMount();
     if (!S.connected && !S.localGame && !S.campaignActive && S.screen !== 'campaign') {
       app.insertAdjacentHTML('afterbegin', `<div class="offline"><span class="spin"></span>${S.lostConnection ? '📡 Connessione persa: mi ricollego…' : 'Connessione al server…'}</div>`);
       const gm = $('.game');

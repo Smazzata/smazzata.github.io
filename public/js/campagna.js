@@ -237,6 +237,7 @@ function cmapWave(mx, my, H, dy = 0) {
 }
 // Mappa del mondo: sentiero che sale dal basso verso il castello, a terrazzi; ogni livello ha il suo luogo a tema.
 function campaignWorldMapHTML(path, progress, stars) {
+  if (path.id === 'burraco') return campaignGardenMap(path, progress, stars);
   const k = cmapKit(path.id), t = k.t, u = k.u;
   const W = 360, GAP = 190, TOP = 340, BOTTOM = 120, n = path.levels.length, H = TOP + (n - 1) * GAP + BOTTOM;
   const XS = [200, 100, 260, 115, 255, 105];
@@ -354,6 +355,7 @@ function campaignFocus(selector = '.campaign h1') {
 }
 /** Piccolo paesaggio della stagione di un percorso (schede dei percorsi e finestrella del livello) */
 function campaignMiniArt(themeId, pre) {
+  if (themeId === 'burraco') return '<img class="cad-mini-paint" src="art/campaign/garden.webp" alt="" loading="lazy">';
   const k = cmapKit(themeId, pre), t = k.t, u = k.u;
   const trees = t.kind === 'palm' ? k.palm(30, 112, 1) + k.palm(318, 108, 0.9) : k.tree(28, 112, 1) + k.tree(322, 110, 0.9) + k.tree(300, 116, 0.7);
   return `<svg viewBox="0 0 340 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${k.defs}
@@ -400,7 +402,7 @@ function campaignHTML() {
   const mapPath = { ...path, levels: path.levels.slice(chapter * 10, chapter * 10 + 10) };
   return `<main class="page campaign campaign-world">${back}${campaignWalletHTML()}<header class="cmap-head"><span class="campaign-kicker">${esc(path.name)} · MONDO 1</span><h1 tabindex="-1">${esc(path.world)}</h1>
       <div class="cmap-stats"><span title="Livelli completati">🏁 ${completed}/${path.levels.length}</span><span title="Stelle raccolte"><i class="cstar">★</i> ${starSum}/${path.levels.length * 3}</span></div></header>
-    ${campaignDialogue(path.mentor, path.story)}
+    ${campaignWorldGreeting(path)}
     <nav class="cad-chapters" aria-label="Zone del mondo">${CAMPAIGN_CHAPTERS[path.id].map((name, i) => `<button class="btn small ${i === chapter ? 'primary' : ''}" data-act="campaignChapter" data-i="${i}" aria-pressed="${i === chapter}">${i + 1}. ${esc(name)}<small>${i * 10 + 1}–${i * 10 + 10}</small></button>`).join('')}</nav>
     <p class="campaign-note">${esc(CAMPAIGN_CHAPTERS[path.id][chapter])} · Livelli ${chapter * 10 + 1}–${chapter * 10 + 10} · Boss al 25 e al 50</p>
     ${campaignWorldMapHTML(mapPath, progress, stars)}

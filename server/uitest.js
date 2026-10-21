@@ -13,7 +13,8 @@ const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
 
-const CAMPAIGN_ONLY = process.argv.includes('--campaign');
+const CAMPAIGN_STORY_ONLY = process.argv.includes('--campaign-story');
+const CAMPAIGN_ONLY = process.argv.includes('--campaign') || CAMPAIGN_STORY_ONLY;
 const HOME_ONLY = process.argv.includes('--home') || CAMPAIGN_ONLY;
 const PORT = HOME_ONLY ? 3995 : 3996;
 const DEBUG_PORT = HOME_ONLY ? 9334 : 9333;
@@ -145,6 +146,8 @@ const HELPERS = `
     await shot('01-home');
     step('schermata iniziale e nickname');
     if (CAMPAIGN_ONLY) {
+      await require('./campaign-story-ui-flow')({ cdp, shot, open, URL, step, errors, DPR });
+      if (CAMPAIGN_STORY_ONLY) return;
       await require('./campaign-ui-flow')({ cdp, shot, open, URL, step, errors, DPR });
       return;
     }

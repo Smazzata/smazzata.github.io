@@ -25,6 +25,7 @@ function campaignWriteAttempt(remove = false) {
 }
 function campaignClock(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 function campaignPowerIcon(kind) {
+  if (typeof campaignArtPower === 'function') return campaignArtPower(kind);
   const art = {
     hint: '<path d="M23 43c0-7-10-10-10-21a19 19 0 0 1 38 0c0 11-10 14-10 21Z" fill="#ffe995"/><path d="m26 30 6 7 7-10M32 37v9" fill="none" stroke="#da8b29" stroke-width="3"/><path d="M24 47h16v8H24z" fill="#f4c254"/><path d="M27 57h10" stroke="#fff4c6" stroke-width="4"/><path d="M5 9 1 4m58 5 4-5M6 28H0m58 0h6" stroke="#fff7cb" stroke-width="3"/>',
     time: '<circle cx="32" cy="35" r="25" fill="#c9fcff"/><circle cx="32" cy="35" r="19" fill="#287aab"/><path d="M32 22v14l9 6" fill="none" stroke="white" stroke-width="4" stroke-linecap="round"/><path d="M25 3h14M32 3v7m19 3 5 5" stroke="#d6fbff" stroke-width="5" stroke-linecap="round"/>',
@@ -38,13 +39,15 @@ function campaignPowerEffect(kind, purchased = false) {
   const labels = { hint: 'La prossima mossa si illumina', coach: 'La guida è al tuo fianco', time: '+30 secondi', life: '+1 vita' };
   const fx = document.createElement('div'); fx.className = 'cad-power-effect'; fx.setAttribute('role', 'status');
   fx.innerHTML = `<div class="cad-power-halo"></div>${Array.from({length:12},(_,i)=>`<i style="--a:${i*30}deg;--d:${65+i%3*22}px"></i>`).join('')}<div class="cad-power-reveal">${campaignPowerIcon(kind)}<strong>${purchased ? 'Aggiunto allo zaino' : labels[kind]}</strong></div>`;
-  document.body.append(fx); setTimeout(() => fx.remove(), 1700);
+  document.body.append(fx); if (!purchased) campaignStoryPowerTravel(kind); setTimeout(() => fx.remove(), 1700);
 }
 function campaignWalletHTML() {
   const w = campaignWallet();
-  return `<div class="cad-wallet"><span data-cad-hearts aria-label="${w.lives} vite su 5">❤️ ${w.lives}/5</span><span>🪙 ${w.coins}</span><button class="btn small" data-act="campaignShop">🎒 Aiuti</button><small data-cad-lives>${w.lives < 5 ? 'Prossima vita fra ' + campaignClock(w.nextLife - Date.now()) : 'Vite al completo'}</small></div>`;
+  return `<div class="cad-wallet"><span class="cad-wallet-stat" data-cad-hearts aria-label="${w.lives} vite su 5"><i class="cad-wallet-heart" aria-hidden="true">♥</i><b data-cad-heart-value>${w.lives}/5</b></span><span class="cad-wallet-stat"><i class="cad-wallet-coin" aria-hidden="true">♦</i><b>${w.coins}</b></span><button class="btn small cad-wallet-bag" data-act="campaignShop">${campaignPowerIcon('coach')}<span>Zaino</span></button><small data-cad-lives>${w.lives < 5 ? 'Prossima vita fra ' + campaignClock(w.nextLife - Date.now()) : 'Vite al completo'}</small></div>`;
 }
 function campaignPortrait(c, small = false) {
+  const art = typeof campaignArtCharacter === 'function' && campaignArtCharacter(c, small);
+  if (art) return art;
   if (c.kind === 'crab' || c.kind === 'hedgehog') {
     const crab = c.kind === 'crab';
     const body = crab
@@ -57,7 +60,8 @@ function campaignPortrait(c, small = false) {
   return `<svg class="cad-portrait ${small ? 'small' : ''}" viewBox="0 0 100 110" role="img" aria-label="${esc(c.name)}"><defs><linearGradient id="cad-${c.kind}" x2="1" y2="1"><stop stop-color="${c.color}"/><stop offset="1" stop-color="#182e3a"/></linearGradient></defs><rect x="1" y="1" width="98" height="108" rx="26" fill="url(#cad-${c.kind})"/><path d="M12 110V92Q50 65 88 92v18Z" fill="${c.color}" stroke="#fff4c9" stroke-width="3"/>${animal ? `<path d="M16 50 9 40 24 41 20 25 35 32 42 16 52 30 68 20 70 38 89 32 82 52Z" fill="${c.kind === 'crab' ? '#d67553' : '#805234'}"/><ellipse cx="50" cy="55" rx="30" ry="25" fill="#e9ba85"/>` : `<ellipse cx="50" cy="49" rx="28" ry="30" fill="#f4cba3"/>${hat}`}<g class="cad-eyes"><ellipse cx="39" cy="48" rx="3" ry="4" fill="#22313b"/><ellipse cx="61" cy="48" rx="3" ry="4" fill="#22313b"/><circle cx="40" cy="47" r="1" fill="white"/><circle cx="62" cy="47" r="1" fill="white"/></g><ellipse cx="30" cy="58" rx="6" ry="3" fill="#ed9b89" opacity=".6"/><ellipse cx="70" cy="58" rx="6" ry="3" fill="#ed9b89" opacity=".6"/><path class="cad-mouth" d="M42 63q8 8 16 0" stroke="#784439" stroke-width="3" fill="none" stroke-linecap="round"/>${c.kind === 'clockmaker' || c.kind === 'baron' ? '<g stroke="#8c704d" stroke-width="2" fill="none"><circle cx="38" cy="48" r="9"/><circle cx="62" cy="48" r="9"/><path d="M47 48h6"/></g>' : ''}<text x="50" y="99" text-anchor="middle" font-size="20">${c.icon}</text></svg>`;
 }
 function campaignDialogue(c, text, compact = false) {
-  return `<div class="cad-dialogue ${compact ? 'compact' : ''}" style="--character-color:${c.color}"><div class="cad-character-stage">${campaignPortrait(c, compact)}<span class="cad-character-spark">✦</span></div><div class="cad-speech"><strong>${esc(c.name)}</strong><small>${esc(c.role)}</small><p>${esc(text)}</p></div></div>`;
+  const art = campaignArtCharacter(c,compact,S.campaignOutcome === 'won' ? 'joy' : 'idle') || campaignPortrait(c,compact);
+  return `<div class="cad-dialogue ${compact ? 'compact' : ''}" style="--character-color:${c.color}"><div class="cad-character-stage">${art}<span class="cad-character-spark">✦</span></div><div class="cad-speech"><strong>${esc(c.name)}</strong><small>${esc(c.role)}</small><p>${esc(text)}</p></div></div>`;
 }
 function campaignSpeak(text, force = false) {
   if (!('speechSynthesis' in window) || (!force && !store.get('cad_voice', false))) return;
@@ -85,8 +89,8 @@ function campaignSyncTable() {
 function campaignCoachHTML() {
   const path = campaignPath(), l = path.levels[S.campaignLevel], session = S.campaignMatch, x = campaignEngine();
   const detailed = l.number <= 10 || session.revealUntil > Date.now() || session.coachTurn === session.turns;
-  const text = S.campaignFeedback || (session.g.turn !== 0 ? Campaign.tip(session,l,x.E,x.Bot) : detailed ? Campaign.tip(session,l,x.E,x.Bot) : l.goalText);
-  return `<div class="coach campaign-table-coach cad-coach">${campaignPortrait(session.g.turn === 0 ? path.mentor : l.opponent, true)}<div class="cad-coach-copy"><strong>${esc(session.g.turn === 0 ? path.mentor.name : l.opponent.name)}</strong><p>${esc(text)}</p><div class="cad-tools"><b data-cad-clock>${campaignClock(session.remainingMs)}</b>${campaignGoalsHTML()}<button data-act="campaignPause" aria-label="Pausa">⏸</button><button data-act="campaignPower" data-power="coach" class="cad-power-button" title="Allenatore per un turno" aria-label="Allenatore per un turno">${campaignPowerIcon("coach")}</button><button data-act="campaignPower" data-power="time" class="cad-power-button" title="Aggiungi 30 secondi" aria-label="Aggiungi 30 secondi">${campaignPowerIcon("time")}<span>+30</span></button><button data-act="campaignVoice" aria-label="Ascolta la guida">🔊</button><button data-act="campaignMap">Mappa</button></div></div></div>`;
+  const line = campaignCoachLine(path,l,session,detailed);
+  return `<div class="coach campaign-table-coach cad-coach cad-live-coach"><div class="cad-coach-actor">${campaignArtCharacter(line.c,true,line.pose)||campaignPortrait(line.c,true)}</div><div class="cad-coach-copy"><strong>${esc(line.c.name)}</strong><p><button class="cad-bubble-copy" data-act="campaignStoryReveal" >${campaignStoryText(line.text,line.key)}</button></p><div class="cad-tools"><b data-cad-clock>${campaignClock(session.remainingMs)}</b>${campaignGoalsHTML()}<button data-act="campaignPause" aria-label="Pausa">⏸</button><button data-act="campaignPower" data-power="coach" class="cad-power-button" title="Allenatore per un turno" aria-label="Allenatore per un turno">${campaignPowerIcon("coach")}</button><button data-act="campaignPower" data-power="time" class="cad-power-button" title="Aggiungi 30 secondi" aria-label="Aggiungi 30 secondi">${campaignPowerIcon("time")}<span>+30</span></button><button data-act="campaignVoice" aria-label="Ascolta la guida">🔊</button><button data-act="campaignMap">Mappa</button></div></div></div>`;
 }
 function campaignDecorateTable() {
   if (!S.campaignActive) return;
@@ -148,6 +152,7 @@ function campaignPerform(action) {
   try {
     if(!Campaign.act(s,l,campaignEngine().E,action)) { S.campaignFeedback = l.guided ? 'Segui la guida: '+Campaign.tip(s,l,campaignEngine().E) : 'Questa mossa non è consentita dalle regole. Controlla la selezione.'; S.campaignErrors++; render(); return {ok:false,error:S.campaignFeedback}; }
     S.campaignFeedback = null; S.campaignStep = s.index; campaignWriteAttempt();
+    campaignStoryReact(action,s);
     if(s.status !== 'playing') { campaignFinish(); return {ok:true}; }
     S.campaignBusyUntil = Date.now() + 350;
     campaignSyncTable(); campaignScheduleBot();
@@ -197,7 +202,8 @@ Object.assign(handlers, {
     const p=campaignPath(),i=Number(el.dataset.i),progress=campaignCurrentProgress(),l=p?.levels[i];
     if(!l||!Number.isInteger(i)||(i>0&&progress[p.id][p.levels[i-1].id]<p.levels[i-1].steps.length))return;
     const pending=campaignAttempts()[p.id], resume=pending?.level===l.id;
-    openModal('campaign',`<div class="cad-brief"><span class="campaign-kicker">${esc(p.world)} · ${l.boss?'👑 BOSS':'LIVELLO'} ${l.number}/50</span><h2>${esc(l.title)}</h2>${campaignDialogue(l.boss?l.opponent:p.mentor,l.intro)}<div class="cad-mission"><strong>La tua missione</strong><p>${esc(l.goalText)}</p><small>⏱ ${campaignClock(l.time*1000)} di decisioni · massimo ${l.maxTurns} turni</small></div><p class="campaign-note">Il tempo si ferma durante il turno del computer, le pause e quando l’app è in secondo piano.</p><div class="row"><button class="btn" data-act="campaignVoice" data-intro="${i}">🔊 Ascolta</button><button class="btn primary grow big" data-act="campaignLevel" data-i="${i}">${resume?'Riprendi la partita':'Gioca!'}</button></div></div>`);
+    S.campaignConversation={index:i,at:0,resume,lines:campaignConversationLines(p,l)};
+    openModal('campaign',campaignConversationHTML(p,l,i,resume));campaignStoryMount();campaignSpeak(S.campaignConversation.lines[0].text);
   },
   async campaignLevel(el) {
     const p=campaignPath(),i=Number(el.dataset.i),progress=campaignCurrentProgress(),l=p?.levels[i];
@@ -205,7 +211,7 @@ Object.assign(handlers, {
     const pending=campaignAttempts()[p.id],resume=pending?.version===1&&pending.level===l.id&&pending.session?.status==='playing';
     const practice=progress[p.id][l.id]===l.steps.length;
     if(!resume&&!practice&&campaignWallet().lives===0){handlers.campaignShop();return;}
-    closeModal();campaignStopTable();S.campaignLevel=i;S.campaignOutcome=null;S.campaignMatch=null;S.campaignLoadError=null;S.campaignStep=0;S.campaignErrors=0;S.campaignLastStars=0;S.campaignFeedback=null;
+    closeModal();campaignStopTable();S.campaignReaction=null;S.campaignLevel=i;S.campaignOutcome=null;S.campaignMatch=null;S.campaignLoadError=null;S.campaignStep=0;S.campaignErrors=0;S.campaignLastStars=0;S.campaignFeedback=null;
     const token={};S.campaignLoadToken=token;render();window.scrollTo(0,0);
     try {
       await LocalServer.loadEngine('engine.js');
@@ -213,8 +219,9 @@ Object.assign(handlers, {
       let session;
       if(resume) { try { session=JSON.parse(JSON.stringify(pending.session));if(!Array.isArray(session.g.players)||session.g.players.length!==2||!Array.isArray(session.doneSteps)||!Number.isFinite(session.remainingMs)||session.remainingMs<=0)throw Error('Tentativo non valido');campaignEngine().E.viewFor(session.g,0); }catch(e){session=null;} }
       S.campaignMatch=session||Campaign.start(p,l,campaignEngine().E);S.campaignMatch.practice=practice;
+      S.campaignMatch.g.players[1].name=l.opponent.name;
       S.campaignStep=S.campaignMatch.index;S.selected.clear();S.handOrder=[];S.game=null;S.coachOff=false;S.campaignActive=true;S.campaignClockAt=Date.now();S.campaignClockRunning=false;S.campaignBusyUntil=Date.now()+1800;
-      campaignSyncTable();campaignWriteAttempt();campaignScheduleBot();campaignSpeak(l.intro);
+      campaignSyncTable();campaignWriteAttempt();campaignScheduleBot();campaignSpeak(Campaign.tip(S.campaignMatch,l,campaignEngine().E,campaignEngine().Bot));
     }catch(e){if(S.campaignLoadToken!==token)return;S.campaignActive=false;S.room=null;S.game=null;S.screen='campaign';S.campaignLoadError='Il tavolo non è disponibile. Puoi riprovare senza perdere vite.';render();}
   },
   campaignMap() { closeModal();campaignStopTable();const l=campaignPath()?.levels[S.campaignLevel];if(l)S.campaignChapter=l.chapter;S.campaignLevel=null;render();campaignScrollToCurrent();campaignFocus(); },
@@ -235,7 +242,7 @@ Object.assign(handlers, {
 setInterval(()=>{
   campaignChargeClock();
   const clock=$('[data-cad-clock]');if(clock&&S.campaignMatch){clock.textContent=campaignClock(S.campaignMatch.remainingMs);clock.classList.toggle('cad-urgent',S.campaignMatch.remainingMs<30000);}
-  const lives=$$('[data-cad-lives]');if(lives.length){const w=campaignWallet();for(const el of lives)el.textContent=w.lives<5?'Prossima vita fra '+campaignClock(w.nextLife-Date.now()):'Vite al completo';const hearts=$('[data-cad-hearts]');if(hearts){hearts.textContent='❤️ '+w.lives+'/5';hearts.setAttribute('aria-label',w.lives+' vite su 5');}}
+  const lives=$$('[data-cad-lives]');if(lives.length){const w=campaignWallet();for(const el of lives)el.textContent=w.lives<5?'Prossima vita fra '+campaignClock(w.nextLife-Date.now()):'Vite al completo';const hearts=$('[data-cad-hearts]');if(hearts){const value=hearts.querySelector('[data-cad-heart-value]');if(value)value.textContent=w.lives+'/5';hearts.setAttribute('aria-label',w.lives+' vite su 5');}}
   if(S.campaignActive&&Date.now()-(S.campaignLastPersist||0)>5000){campaignWriteAttempt();S.campaignLastPersist=Date.now();}
 },250);
 document.addEventListener('visibilitychange',()=>{S.campaignClockRunning=false;S.campaignClockAt=Date.now();if(S.campaignActive){campaignWriteAttempt();campaignScheduleBot();}});
