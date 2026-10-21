@@ -11,8 +11,8 @@
     : io({ reconnectionDelay: 300, reconnectionDelayMax: 2000, randomizationFactor: 0.3, autoConnect: false });
   // non "offline": è già la classe della striscia di connessione (body diventava flex e il tavolo sbordava)
   if (OFFLINE) document.body.classList.add('senza-rete');
-  // gioco senza internet: i risultati delle smazzate restano in coda e vanno al server alla prossima connessione
-  if (OFFLINE) socket.on('handOver', (p) => { autoLevelRecord(p); queueLocalResult(p); });
+  // La difficoltà automatica del computer resta locale e non assegna progressi al profilo.
+  if (OFFLINE) socket.on('handOver', autoLevelRecord);
 
   /*
    * Profilo e indirizzo che cambia: il server gira dietro un tunnel con un indirizzo nuovo a ogni riavvio, e ogni
@@ -210,8 +210,7 @@
 
   /* ---------- Partite contro il computer sul telefono (anche online) ----------
    * Le mosse non viaggiano fino al server: il "server nel telefono" (public/local-server.js) gioca la partita,
-   * quindi tutto è istantaneo. A fine smazzata il risultato va al server vero (statistiche, livello, trofei);
-   * senza internet aspetta sul telefono e parte appena ci si ricollega.
+   * quindi tutto è istantaneo. Queste partite sono allenamento e non assegnano progressi al profilo.
    */
   // attached: la partita sul telefono è quella sullo schermo (uscendo resta in sottofondo, salvata)
   const Local = { sock: null, ready: null, attached: false };
@@ -228,7 +227,7 @@
         for (const fn of socket.listeners(ev)) fn(p);
       });
     }
-    Local.sock.on('handOver', (p) => { autoLevelRecord(p); sendLocalResult(p); });
+    Local.sock.on('handOver', autoLevelRecord);
     Local.ready = new Promise((res, rej) => { Local.sock.on('connect', res); Local.sock.on('connect_error', rej); });
     Local.sock.connect();
     return Local.ready;
@@ -265,22 +264,9 @@
   function savedLocalGame() {
     try { const r = JSON.parse(localStorage.getItem('bur_offline_room') || 'null'); return !!(r && r.game && !r.game.over); } catch (e) { return false; }
   }
-  /** risultati delle smazzate giocate sul telefono: al server, o in coda finché non c'è la connessione */
-  const RESULTS_KEY = 'bur_local_results';
-  function queueLocalResult(p) {
-    const q = store.get(RESULTS_KEY, []).filter((x) => !(x.id === p.id && x.game.handNo === p.game.handNo && !!x.game.over === !!p.game.over));
-    store.set(RESULTS_KEY, q.concat([p]).slice(-20));
-  }
-  function sendLocalResult(p) {
-    if (OFFLINE || !S.connected || !S.social || !S.social.nick) { queueLocalResult(p); return; }
-    socket.emit('localResult', p, (r) => { if (!r || !r.ok) queueLocalResult(p); });
-  }
+  /** Scarta anche i risultati contro il computer rimasti in coda dalle versioni precedenti. */
   function flushLocalResults() {
-    if (OFFLINE || !S.connected || !S.social || !S.social.nick) return;
-    const q = store.get(RESULTS_KEY, []);
-    if (!q.length) return;
-    store.set(RESULTS_KEY, []);
-    for (const p of q) socket.emit('localResult', p, (r) => { if (!r || !r.ok) queueLocalResult(p); });
+    store.set('bur_local_results', []);
   }
 
   /** «Hai già una partita in corso su un altro dispositivo»: true se l'utente vuole procedere */

@@ -1,7 +1,7 @@
 // Service worker: notifiche e copia del gioco per giocare anche senza internet.
 // "Prima la rete": da collegati si usa sempre la versione più recente (e se ne salva una copia);
 // senza rete si usa l'ultima copia salvata. La connessione di gioco (socket.io) non passa mai dalla copia.
-const CACHE = 'burraco-gioco-v46';
+const CACHE = 'burraco-gioco-v47';
 const SHELL = [
   'campaign-story.css', 'js/campaign-story.js', 'art/campaign/garden.webp', 'art/campaign/rosa.webp', 'art/campaign/bruno.webp', 'art/campaign/barone.webp', 'art/campaign/boosters.webp',
   'art/campaign/clockwork.webp', 'art/campaign/arturo.webp', 'art/campaign/nina.webp', 'art/campaign/conte.webp', 'art/campaign/bay.webp', 'art/campaign/marina.webp', 'art/campaign/pippo.webp', 'art/campaign/nebbia.webp', 'art/campaign/boosters-scala40.webp', 'art/campaign/boosters-ramino.webp',

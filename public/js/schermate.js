@@ -144,10 +144,10 @@
         <button class="btn primary big grow" data-act="joinCode" data-code="${esc(S.pendingJoin)}">Entra al tavolo</button></div>` : ''}
       ${last ? `<button class="btn primary big grow" data-act="rejoin">↩ Torna alla partita</button>` : ''}
       ${S.tourMatch && !S.room ? `<div class="tourready">🏆 ${esc(S.tourMatch.text)} <button class="btn small primary" data-act="tourPlay" data-code="${esc(S.tourMatch.code)}">▶ Gioca</button></div>` : ''}
-      ${OFFLINE ? '' : `<button class="btn ${last ? '' : 'primary'} big grow homebtn" data-act="quickMenu" data-mode="casual"><span>🃏</span><div>Amichevole online<small>Trova un tavolo · senza punti classifica</small></div></button>
+      ${OFFLINE ? '' : `<button class="btn primary big grow homebtn" data-act="playFriends"><span>👥</span>Gioca con gli amici</button>`}
+      ${OFFLINE ? '' : `<button class="btn big grow homebtn" data-act="quickMenu" data-mode="casual"><span>🃏</span><div>Amichevole online<small>Trova un tavolo · senza punti classifica</small></div></button>
       <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked"><span>🏅</span><div>Classificata<small>Scala i gradi, da Bronzo a Leggenda</small></div></button>`}
-      ${OFFLINE ? '' : `<button class="btn big grow homebtn" data-act="playFriends"><span>👥</span>Gioca con gli amici</button>`}
-      <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots"><span>🤖</span>Gioca contro il computer</button>
+      <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots"><span>🤖</span><div>Gioca contro il computer<small>Allenamento · senza progressi o statistiche</small></div></button>
       ${CAMPAIGN_VISIBLE ? '<button class="btn grow campaign-entry" data-act="campaign">🌱 Avventura<small>Tre percorsi: Burraco, Scala 40 e Ramino</small></button>' : ''}
       <button class="btn ghost grow" data-act="tutorial">📖 Regole e tutorial</button>
       <button class="btn ghost grow morebtn" data-act="more">☰ Altro</button>

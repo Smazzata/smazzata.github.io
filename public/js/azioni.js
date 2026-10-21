@@ -512,7 +512,7 @@
       openModal('leaders', `<div class="result"><h2>🏆 Classifica</h2>${tabs}
         ${rows ? `<table><tr><th></th><th style="text-align:left">Giocatore</th><th>Grado</th><th>Vinte</th><th>%</th></tr>${rows}</table>` : '<p class="muted">Ancora nessuna partita completata. La classifica conta le partite finite tra giocatori umani (anche contro il computer).</p>'}
         <p class="muted small">Ogni gioco ha il suo grado: Bronzo, Argento, Oro, Platino, Diamante, Maestro e Leggenda.</p>
-        <p class="muted small">Il grado cambia solo con le partite classificate (🏅 Classificata). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei.</p></div>`);
+        <p class="muted small">Il grado cambia solo con le partite classificate (🏅 Classificata). Le partite tra persone contano per statistiche, livello e trofei.</p></div>`);
     },
     resetStats() { if (confirm('Azzerare le statistiche?')) { store.set('bur_stats', {}); statsModal(); } },
     musicStop() { emit('setMusic', { url: '' }).then(() => musicModal()); },

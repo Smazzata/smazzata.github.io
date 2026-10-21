@@ -63,7 +63,9 @@ const Tour = createTournaments({
     if (socks.length) for (const s of socks) { s.emit('notice', { text }); if (code) s.emit('tournamentMatch', { code, text }); }
     else ctx.push.send(token, { title: 'Smazzata: torneo 🏆', body: text, tag: 'torneo', url: code ? `${HOME_URL}?t=${code}` : HOME_URL }).catch(() => {});
   },
-  champion: (token) => awardTrophies(token, '', ['torneo']),
+  champion: (token, tournament) => {
+    if (tournament.players.every((p) => !p.bot)) awardTrophies(token, '', ['torneo']);
+  },
 });
 /** un torneo è cambiato: chi ha la finestra aperta la aggiorna */
 const tournamentsChanged = () => { io.emit('tournamentsChanged'); scheduleSave(); };

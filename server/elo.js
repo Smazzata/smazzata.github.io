@@ -5,8 +5,8 @@
  * media della coppia; con più squadre (Scala 40, Rubamazzetto…) ogni squadra si confronta con tutte le altre.
  *
  * Solo le partite CLASSIFICATE cambiano l'Elo: «Gioca subito» tra sole persone (avversari scelti dal server per
- * punteggio, non dagli amici). Tutte le altre sono AMICHEVOLI (tavoli creati a mano o con gli amici, computer,
- * tutorial, sfida del giorno, tornei, partite sul telefono): contano per statistiche, livello e trofei, non per l'Elo.
+ * punteggio, non dagli amici). Le altre partite sono AMICHEVOLI. Solo i tavoli tra persone contano per statistiche, livello e trofei;
+ * computer, tutorial e partite sul telefono sono allenamento senza progressi.
  * Per ogni gioco si tengono elo, eloMax e rankedGames/rankedWins. L'interfaccia mostra soltanto il grado
  * (Bronzo → Leggenda), calcolato da questi valori; soglie documentate in docs/player-ranks.md.
  */

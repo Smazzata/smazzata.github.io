@@ -301,6 +301,8 @@
 
   /** Conta ogni fine smazzata / fine partita una sola volta, anche ricaricando la pagina */
   function recordStats(room, game) {
+    if (!room || room.offline || room.onDevice || room.tutorial || room.progressEligible === false
+      || (room.progressEligible !== true && (room.seats || []).some((s) => s && s.isBot))) return;
     const hr = game.handResult;
     if (!hr || game.you < 0) return;
     const seen = store.get('bur_stats_seen', []);

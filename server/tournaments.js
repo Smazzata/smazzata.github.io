@@ -94,7 +94,7 @@ module.exports = function createTournaments({ tournaments, nickOf, openMatch, si
       t.champion = winners[0];
       t.endedAt = Date.now();
       const c = t.players[winners[0]];
-      if (!c.bot) champion(c.token);
+      if (!c.bot) champion(c.token, t);
       for (const p of t.players) if (!p.bot) notify(p.token, `🏆 Il torneo «${t.name}» è finito: vince ${nameOf(c)}!`, null);
       return;
     }

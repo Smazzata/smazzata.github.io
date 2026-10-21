@@ -507,6 +507,17 @@ function simulate(label, rules, n, games = 3) {
 }
 
 unitTests();
+{
+  const counts = require('./progress-rules');
+  const human = { token: 'persona' }, bot = { isBot: true };
+  assert(counts({ seats: [human, human] }), 'le amichevoli tra persone contano');
+  assert(!counts({ seats: [human, bot] }), 'il computer non assegna progressi');
+  assert(!counts({ seats: [human, human, human, bot] }), 'anche i tavoli misti sono allenamento');
+  assert(!counts({ localGame: true, seats: [human, human] }), 'i risultati locali non sono validi per la progressione');
+  assert(!counts({ tutorial: true, seats: [human, human] }), 'il tutorial non assegna progressi');
+  assert(!counts({ progressEligible: false, seats: [human, human] }), 'un allenamento non diventa valido dopo un rientro');
+  assert(counts({ progressEligible: true, seats: [human, { isBot: true, leftToken: 'abbandono' }] }), 'abbandonare una partita umana non annulla il risultato');
+}
 trophyTests();
 eloTests();
 dailyTests();

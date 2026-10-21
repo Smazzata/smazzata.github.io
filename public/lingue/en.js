@@ -796,6 +796,8 @@ I18N.load({"Per calare servono almeno 3 carte: selezionale e trascinale insieme"
 "Leggenda":"Legend",
 "Ogni gioco ha il suo grado: Bronzo, Argento, Oro, Platino, Diamante, Maestro e Leggenda.":"Each game has its own rank: Bronze, Silver, Gold, Platinum, Diamond, Master and Legend.",
 "Il grado cambia solo con le partite classificate (🏅 Classificata). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei.":"Your rank changes only in ranked games (🏅 Ranked). Friendly games (with friends or the computer) count for stats, level and trophies.",
+"Allenamento · senza progressi o statistiche":"Practice · no progress or stats",
+"Il grado cambia solo con le partite classificate (🏅 Classificata). Le partite tra persone contano per statistiche, livello e trofei.":"Your rank changes only in ranked games (🏅 Ranked). Games between people count for stats, level and trophies.",
 "⚡ Gioca subito":"⚡ Play now",
 "📅 Sfida del giorno":"📅 Daily challenge",
 "🏆 Tornei":"🏆 Tournaments",

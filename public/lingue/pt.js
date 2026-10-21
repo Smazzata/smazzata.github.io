@@ -796,6 +796,8 @@ I18N.load({"Per calare servono almeno 3 carte: selezionale e trascinale insieme"
 "Leggenda":"Lenda",
 "Ogni gioco ha il suo grado: Bronzo, Argento, Oro, Platino, Diamante, Maestro e Leggenda.":"Cada jogo tem sua patente: Bronze, Prata, Ouro, Platina, Diamante, Mestre e Lenda.",
 "Il grado cambia solo con le partite classificate (🏅 Classificata). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei.":"A patente muda só com as partidas ranqueadas (🏅 Ranqueada). As amistosas (com amigos ou com o computador) contam para estatísticas, nível e troféus.",
+"Allenamento · senza progressi o statistiche":"Treino · sem progresso ou estatísticas",
+"Il grado cambia solo con le partite classificate (🏅 Classificata). Le partite tra persone contano per statistiche, livello e trofei.":"A patente muda só com as partidas ranqueadas (🏅 Ranqueada). As partidas entre pessoas contam para estatísticas, nível e troféus.",
 "⚡ Gioca subito":"⚡ Jogar agora",
 "📅 Sfida del giorno":"📅 Desafio do dia",
 "🏆 Tornei":"🏆 Torneios",

@@ -16,6 +16,23 @@ const URL = `http://localhost:${PORT}`;
 const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'burraco-e2e-'));
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// I due client restano persone per il server: inviano mosse valide per completare
+// la partita e verificare i premi umani, invece di usare bot che ora sono allenamento.
+async function playHuman(p) {
+  const v = p.state.game;
+  if (!v || v.turn !== v.you || v.phase === 'handEnd') return;
+  const E = require('./engine');
+  const g = E.createGame({ rules: v.cfg.rules, players: v.players.map((x) => ({ name: x.name })) });
+  const cfg = g.cfg;
+  Object.assign(g, v, { cfg,
+    players: v.players.map((x, i) => ({ ...x, hand: i === v.you ? v.hand : Array(x.handCount).fill({ id: -1, r: 3, s: 'C' }) })),
+    stock: Array(v.stockCount).fill({ id: -2, r: 3, s: 'C' }),
+    pozzetti: v.pozzetti.map((n) => Array(n).fill({ id: -3, r: 3, s: 'C' })),
+    turnInfo: { ...g.turnInfo, singlePickId: v.singlePickId },
+  });
+  await p.call('action', require('./bot').nextAction(g, v.you));
+}
+
 function startServer() {
   const proc = spawn(process.execPath, [path.join(__dirname, 'index.js')], {
     env: { ...process.env, MAIL_TEST: '1', IP_LIMIT: '1000', PORT: String(PORT), DATA_DIR: dataDir, BOT_DELAY: '15', TIMER_SCALE: '0.01' },
@@ -293,13 +310,12 @@ async function signup(p, nick, email = mailOf()) {
       assert((await LG.call('localResult', res)).ok, 'risultato dal telefono accettato');
       assert((await LG.call('localResult', res)).ok, 'lo stesso risultato rimandato non dà errore');
       const ls = await LG.call('myStats');
-      assert(ls.stats && ls.stats.hands === 1, 'la smazzata conta una volta sola');
-      assert(LG.progress.some((x) => x.streak && x.streak.streak === 1 && x.streak.today), 'serie di giorni: oggi si è giocato');
-      if (lg.over) assert(ls.stats.games === 1 && ls.byGame.briscola && !ls.byGame.briscola.elo, 'partita registrata, Elo invariato');
+      assert(!ls.stats && !ls.history.length && ls.level.xp === 0, 'i vecchi risultati offline non assegnano statistiche o esperienza');
+      assert(LG.progress.every((p) => p.xp === 0 && !(p.streak && p.streak.today)) && !LG.trophies.length, 'nessun obiettivo, serie di giorni o livello contro il computer');
       const fake = JSON.parse(JSON.stringify(res)); fake.id = 'falso'; fake.game.players[1].isBot = false;
       assert(!(await LG.call('localResult', fake)).ok, 'un risultato con un altro giocatore umano è rifiutato');
       LG.sock.close();
-      step('partite sul telefono: statistiche dal risultato inviato, una volta sola, senza Elo');
+      step('partite sul telefono: vecchi risultati e duplicati ignorati, nessun progresso');
     }
 
     // l'email arriva nella lingua del dispositivo
@@ -352,6 +368,8 @@ async function signup(p, nick, email = mailOf()) {
     // timer: 30 s (accelerati) → i turni degli umani vanno avanti da soli
     assert((await A.call('setTurnTime', { seconds: 30 })).ok);
     assert((await A.call('addBot', {})).ok);
+    // Le verifiche successive di premi e statistiche devono usare una partita tra persone.
+    assert((await A.call('configure', { rules: { players: 2, target: 100 } })).ok);
     assert((await A.call('start')).ok);
     await B.until((s) => s.game, 'inizio partita');
     await A.until((s) => s.game && s.game.log.some((l) => l.includes('Tempo scaduto')), 'turno automatico per tempo scaduto', 30000);
@@ -365,7 +383,7 @@ async function signup(p, nick, email = mailOf()) {
     const ws = await W.until((s) => s.game, 'vista dello spettatore');
     assert.strictEqual(ws.room.you, -1, 'senza posto');
     assert.strictEqual(ws.game.hand.length, 0, 'nessuna carta in mano visibile');
-    assert(ws.game.players.length === 4 && ws.game.teams.length === 2, 'tavolo visibile');
+    assert(ws.game.players.length === 2 && ws.game.teams.length === 2, 'tavolo visibile');
     assert(!(await W.call('action', { type: 'draw' })).ok, 'lo spettatore non gioca');
     await A.until((s) => s.room.spectators.includes('Walter'), 'spettatore visibile ai giocatori');
     assert((await W.call('leaveRoom')).ok);
@@ -393,6 +411,7 @@ async function signup(p, nick, email = mailOf()) {
     while (!(A.state.game && A.state.game.over)) {
       if (Date.now() > end) throw new Error('la partita non finisce');
       for (const p of [A, B]) {
+        await playHuman(p);
         const g = p.state.game;
         if (g && g.phase === 'handEnd' && !g.over && !p.state.room.ready.includes(g.you)) await p.call('ready');
       }
@@ -478,6 +497,7 @@ async function signup(p, nick, email = mailOf()) {
     while (!(A.state.game && A.state.game.over)) {
       if (Date.now() > end2) throw new Error('la seconda partita non finisce');
       for (const p of [A, B]) {
+        await playHuman(p);
         const g = p.state.game;
         if (g && g.phase === 'handEnd' && !g.over && !p.state.room.ready.includes(g.you)) await p.call('ready');
       }
@@ -537,6 +557,8 @@ async function signup(p, nick, email = mailOf()) {
     assert(!(await Dd.call('replay')).ok, 'niente moviola nella sfida del giorno (rivelerebbe il mazzo)');
     const after = await Dd.call('daily');
     assert(after.mine && after.mine.score != null && after.myPos === 1 && after.top[0].name === 'Dora', 'punteggio nella classifica del giorno');
+    const dailyStats = await Dd.call('myStats');
+    assert(!dailyStats.stats && dailyStats.level.xp === 0 && !Dd.trophies.length, 'sfida contro il computer: classifica dedicata senza progressi al profilo');
     // stesse carte per tutti: un secondo giocatore riceve la stessa mano iniziale
     const Ee = player('Elio'); await Ee.hello(); assert((await signup(Ee, 'Elio')).ok);
     assert((await Ee.call('startDaily')).ok);
@@ -786,7 +808,7 @@ async function signup(p, nick, email = mailOf()) {
     assert(hrQ.teams.length === 2 && hrQ.teams.every((t) => t.total <= 0), 'penalità a fine smazzata');
     assert((await Q.call('replay')).ok, 'moviola della Scala 40');
     const qst = await Q.call('myStats');
-    assert(qst.byGame.scala40 && qst.byGame.scala40.hands >= 1 && !qst.byGame.burraco, 'statistiche della Scala 40 separate');
+    assert(!qst.stats && qst.level.xp === 0 && Q.progress.every((p) => p.xp === 0) && !Q.trophies.length, 'partita server contro il computer: niente statistiche, esperienza o obiettivi');
     const lb40 = await Q.call('leaderboard', { game: 'scala40' });
     assert(lb40.ok && lb40.game === 'scala40' && lb40.list.every((x) => x.name !== 'Anna'), 'classifica della Scala 40 senza le partite di Burraco');
     Q.sock.close();

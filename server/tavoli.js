@@ -63,6 +63,7 @@ function roomInfo(room) {
       level: s.isBot ? null : Levels.levelOf(leaderboard.get(s.token)).level,
     } : null)),
     started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
+    progressEligible: room.progressEligible,
     hints: !!room.hints && humanCount(room) <= 1, humans: humanCount(room),
     aids: room.aids !== false,
     music: room.music || null,
@@ -326,6 +327,7 @@ function startGame(room) {
   clearTimeout(room.botTimer);
   room.botTimer = null;
   room.rankedGame = Elo.isRanked({ ...room, game: null }); // classificata o amichevole: si decide ora, per tutta la partita
+  room.progressEligible = !room.tutorial && room.seats.every((s) => s && !s.isBot);
   room.game = GE(room).createGame({
     rules: room.rules,
     players: room.seats.map((s) => ({ name: s.name, isBot: !!s.isBot })),

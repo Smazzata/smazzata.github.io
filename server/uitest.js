@@ -118,8 +118,8 @@ const HELPERS = `
       await __W(2500);
       const choices = [...document.querySelectorAll('.homebtn')];
       if(document.querySelector('[data-act="campaign"]'))throw Error('Avventura ancora visibile nella home pubblica');
-      if (choices.map((b) => b.dataset.act + ':' + (b.dataset.mode || '')).join(',') !== 'quickMenu:casual,quickMenu:ranked,playFriends:,playBots:') throw new Error('ordine delle modalità nella home');
-      if (!choices[0].classList.contains('primary')) throw new Error('amichevole non evidenziata');
+      if (choices.map((b) => b.dataset.act + ':' + (b.dataset.mode || '')).join(',') !== 'playFriends:,quickMenu:casual,quickMenu:ranked,playBots:') throw new Error('ordine delle modalità nella home');
+      if (!choices[0].classList.contains('primary')) throw new Error('gioco con gli amici non evidenziato');
       const shortcuts = [...document.querySelectorAll('.home-shortcut')];
       if (shortcuts.map((b) => b.dataset.act).join(',') !== 'friends,daily,tournaments,leaders') throw new Error('scorciatoie community mancanti');
       for (const button of shortcuts) {
@@ -184,11 +184,14 @@ const HELPERS = `
     // la partita contro il computer gira sul telefono; il risultato della smazzata arriva comunque al server
     const onDev = await cdp.run(`
       if (!S.room || !S.room.onDevice) return 'non sul telefono';
-      for (let i = 0; i < 40; i++) { const r = await emit('myStats'); if (r.ok && r.stats && r.stats.hands >= 1) return 'ok'; await __W(250); }
-      return 'risultato non arrivato al server';`);
+      await __W(500);
+      const r = await emit('myStats');
+      if (!r.ok || (r.stats && r.stats.hands)) return 'statistiche assegnate contro il computer';
+      if (loadStats().hands || store.get('bur_local_results', []).length) return 'risultato computer salvato sul dispositivo';
+      return 'ok';`);
     if (onDev !== 'ok') throw new Error('partita sul telefono: ' + onDev);
     if (b.scroll > 3) throw new Error(`il tavolo del Burraco scorre (${b.scroll} volte)`);
-    step(`Burraco sul telefono: smazzata giocata toccando (${b.turns} turni), il tavolo non scorre, risultato arrivato al server`);
+    step(`Burraco sul telefono: smazzata giocata toccando (${b.turns} turni), nessuna statistica o risultato in coda`);
 
     // 3. moviola dalla fine della smazzata
     const mv = await cdp.run(`

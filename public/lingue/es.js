@@ -796,6 +796,8 @@ I18N.load({"Per calare servono almeno 3 carte: selezionale e trascinale insieme"
 "Leggenda":"Leyenda",
 "Ogni gioco ha il suo grado: Bronzo, Argento, Oro, Platino, Diamante, Maestro e Leggenda.":"Cada juego tiene su rango: Bronce, Plata, Oro, Platino, Diamante, Maestro y Leyenda.",
 "Il grado cambia solo con le partite classificate (🏅 Classificata). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei.":"El rango cambia solo con las partidas clasificatorias (🏅 Clasificatoria). Las amistosas (con amigos o con la computadora) cuentan para estadísticas, nivel y trofeos.",
+"Allenamento · senza progressi o statistiche":"Entrenamiento · sin progreso ni estadísticas",
+"Il grado cambia solo con le partite classificate (🏅 Classificata). Le partite tra persone contano per statistiche, livello e trofei.":"El rango cambia solo con las partidas clasificatorias (🏅 Clasificatoria). Las partidas entre personas cuentan para estadísticas, nivel y trofeos.",
 "⚡ Gioca subito":"⚡ Jugar ya",
 "📅 Sfida del giorno":"📅 Desafío del día",
 "🏆 Tornei":"🏆 Torneos",

@@ -9,6 +9,7 @@ const Trophies = require('./trophies');
 const ctx = require('./contesto');
 const Elo = require('./elo');
 const Premi = require('../shared/premi');
+const countsForProgress = require('./progress-rules');
 const { io, sessions, leaderboard, daily } = ctx;
 // funzioni degli altri moduli (lette dal contesto al momento della chiamata)
 const tournamentsChanged = (...a) => ctx.tournamentsChanged(...a);
@@ -80,19 +81,20 @@ function recordLeaderboard(room) {
   const g = room.game;
   if (!g || g.phase !== 'handEnd' || !g.handResult) return;
   if (room.daily) { recordDaily(room); return; }
+  const eligible = countsForProgress(room);
   const handKey = `${room.gameSeq}:${g.handNo}`;
   const hr = g.handResult;
   const gameEnds = g.over && room.recordedGame !== room.gameSeq;
   if (gameEnds) recordSeries(room);
   // punteggio Elo: si calcola una volta per partita, con i punteggi di tutti prima della partita
   const eloGid = Games.idOf(room.rules);
-  // solo le partite classificate cambiano l'Elo (vedi Elo.isRanked): le amichevoli contano per tutto il resto
+  // Solo le classificate cambiano l'Elo; le amichevoli tra persone contano per i progressi.
   const ranked = gameEnds && Elo.isRanked(room);
   const eloDelta = ranked ? rankedDeltas(room, eloGid) : null;
   // chi ha abbandonato una classificata (posto passato al computer) perde comunque i suoi punti
   if (eloDelta) room.seats.forEach((s, seat) => { if (s && s.isBot && s.leftToken) applyElo(s.leftToken, eloGid, eloDelta[seat], false); });
   room.seats.forEach((s, seat) => {
-    if (!s || s.isBot || !s.token) return;
+    if (!eligible || !s || s.isBot || !s.token) return;
     const e = { ...STATS0, ...(leaderboard.get(s.token) || {}) };
     e.name = s.name;
     const levelBefore = Levels.levelOf(e).level;
@@ -161,7 +163,7 @@ function recordLeaderboard(room) {
     const tr = room.tournament;
     setTimeout(() => { ctx.Tour.matchDone(tr.id, tr.round, tr.index, g.winners.includes(0) ? 'a' : 'b'); tournamentsChanged(); }, 0);
   }
-  if (gameEnds && !room.tutorial) {
+  if (gameEnds && eligible) {
     const players = room.seats.map((s, seat) => (s && !s.isBot && s.token ? { token: s.token, name: s.name, won: g.winners.includes(seat) } : null)).filter(Boolean);
     for (const t of ctx.League.recordGame(players)) awardTrophies(t, '', ['campione_lega']);
   }
@@ -184,6 +186,7 @@ function recordDaily(room) {
     // Briscola: in classifica i punti delle prese (il totale della smazzata è solo vinta/persa)
     const score = mine.points != null ? mine.points : mine.total;
     board[s.token] = { name: s.name, score, at: Date.now() };
+    if (!countsForProgress(room)) return;
     // trofei: sfida completata, primo in classifica al momento della chiusura
     const e = { ...STATS0, ...(leaderboard.get(s.token) || {}) };
     e.name = e.name || s.name;
