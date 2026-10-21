@@ -66,6 +66,13 @@ module.exports = async function campaignStoryUI({cdp,shot,step,errors,DPR}) {
     handlers.campaignContinue();await __W(250);campaignStoryComplete();
     if(document.documentElement.scrollWidth>innerWidth+1)throw Error('Overflow della guida a 320px');
     const felt=document.querySelector('#felt');if(felt.scrollHeight>felt.clientHeight+3)throw Error('Tavolo non adattato a 320px: '+felt.scrollHeight+'/'+felt.clientHeight);
+    const dock=document.querySelector('.cad-table-dock'),controls=[...dock.children].map(el=>el.getBoundingClientRect());
+    if(controls.some(r=>r.left<0||r.right>innerWidth+1)||Math.max(...controls.map(r=>r.top))-Math.min(...controls.map(r=>r.top))>8)throw Error('Controlli campagna non allineati a 320px');
+    const clock=document.querySelector('[data-cad-clock]'),range=document.createRange();range.selectNodeContents(clock);
+    const digits=range.getBoundingClientRect(),frame=clock.closest('.cad-timepiece').getBoundingClientRect();
+    if(digits.left<frame.left+3||digits.right>frame.right-3||clock.scrollWidth>clock.clientWidth+1)throw Error('Timer tagliato');
+    const hints=campaignWallet().hint;__tap('.cad-table-dock [data-act="hint"]');await __W(200);
+    if(S.campaignMatch.revealUntil<=Date.now()||campaignWallet().hint!==hints)throw Error('Suggerimento gratuito non disponibile dalla plancia');
   `);
   await shot('campagna-arte-07-mobile');
   await cdp.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});

@@ -369,7 +369,7 @@
     // ❓ dice cosa fare (si apre al tocco e sparisce da sola); 🕘 in alto apre lo storico dei turni
     const sel = S.selected.size;
     let actions = '';
-    if (myTurn && r.hints) actions += `<button class="ico ${r.campaign ? 'cad-hint-button' : ''}" data-act="hint" title="Suggerimento" aria-label="Suggerimento">${r.campaign ? campaignPowerIcon('hint') : '💡'}</button>`;
+    if (myTurn && r.hints && !r.campaign) actions += '<button class="ico" data-act="hint" title="Suggerimento" aria-label="Suggerimento">💡</button>';
     if (g.you >= 0 && !r.campaign) actions = '<button class="ico" data-act="reactPicker" title="Reazioni">😊</button>' + actions;
     if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';
     const sortLbl = { rank: '⇅ Valore', suit: '⇅ Seme', smart: '⇅ Giochi' }[S.sortMode] || '⇅ Ordina';

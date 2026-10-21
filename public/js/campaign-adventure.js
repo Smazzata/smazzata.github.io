@@ -76,7 +76,7 @@ function campaignHint() { const l = campaignPath().levels[S.campaignLevel], x = 
 function campaignGoalsHTML() {
   const l = campaignPath().levels[S.campaignLevel];
   const states = Campaign.goalState(S.campaignMatch, l), done = states.filter(x => x.done).length;
-  return `<button class="cad-goal" data-act="campaignObjectives" aria-label="Obiettivi: ${done} di ${states.length}">🎯 ${done}/${states.length}</button>`;
+  return `<button class="cad-goal" data-act="campaignObjectives" aria-label="Obiettivi: ${done} di ${states.length}"><span class="cad-goal-mark" aria-hidden="true">${done === states.length ? '✓' : '◇'}</span><b>${done}/${states.length}</b></button>`;
 }
 function campaignSyncTable() {
   const path = campaignPath(), session = S.campaignMatch, g = session.g, l = path.levels[S.campaignLevel];
@@ -87,10 +87,23 @@ function campaignSyncTable() {
   onState(room, JSON.parse(JSON.stringify(campaignEngine().E.viewFor(g, 0))));
 }
 function campaignCoachHTML() {
-  const path = campaignPath(), l = path.levels[S.campaignLevel], session = S.campaignMatch, x = campaignEngine();
+  const path = campaignPath(), l = path.levels[S.campaignLevel], session = S.campaignMatch;
   const detailed = l.number <= 10 || session.revealUntil > Date.now() || session.coachTurn === session.turns;
   const line = campaignCoachLine(path,l,session,detailed);
-  return `<div class="coach campaign-table-coach cad-coach cad-live-coach"><div class="cad-coach-actor">${campaignArtCharacter(line.c,true,line.pose)||campaignPortrait(line.c,true)}</div><div class="cad-coach-copy"><strong>${esc(line.c.name)}</strong><p><button class="cad-bubble-copy" data-act="campaignStoryReveal" >${campaignStoryText(line.text,line.key)}</button></p><div class="cad-tools"><b data-cad-clock>${campaignClock(session.remainingMs)}</b>${campaignGoalsHTML()}<button data-act="campaignPause" aria-label="Pausa">⏸</button><button data-act="campaignPower" data-power="coach" class="cad-power-button" title="Allenatore per un turno" aria-label="Allenatore per un turno">${campaignPowerIcon("coach")}</button><button data-act="campaignPower" data-power="time" class="cad-power-button" title="Aggiungi 30 secondi" aria-label="Aggiungi 30 secondi">${campaignPowerIcon("time")}<span>+30</span></button><button data-act="campaignVoice" aria-label="Ascolta la guida">🔊</button><button data-act="campaignMap">Mappa</button></div></div></div>`;
+  const w=campaignWallet(),bot=session.g.turn!==0,ratio=Math.min(1,session.remainingMs/(l.time*1000));
+  return `<section class="coach campaign-table-coach cad-coach cad-live-coach cad-table-panel" aria-label="Guida e aiuti">
+    <div class="cad-table-conversation"><div class="cad-coach-actor">${campaignArtCharacter(line.c,true,line.pose)||campaignPortrait(line.c,true)}</div>
+      <div class="cad-coach-copy cad-table-bubble"><div class="cad-table-speaker"><strong>${esc(line.c.name)}</strong><button class="cad-table-voice" data-act="campaignVoice" aria-label="Ascolta la guida" aria-pressed="${!!store.get('cad_voice',false)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 9 4 0 5-4v14l-5-4H4Zm13-1q5 4 0 8"/></svg></button></div><p><button class="cad-bubble-copy" data-act="campaignStoryReveal">${campaignStoryText(line.text,line.key)}</button></p></div>
+    </div>
+    <div class="cad-tools cad-table-dock">
+      <div class="cad-timepiece ${session.remainingMs<30000?'cad-time-low':''}" role="timer" aria-label="Tempo rimasto"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M9 2h6m-3 0v3m0 3v5l3 2"/></svg><div><small>TEMPO</small><b data-cad-clock>${campaignClock(session.remainingMs)}</b></div><span class="cad-time-track" aria-hidden="true"><i data-cad-time-fill style="transform:scaleX(${ratio})"></i></span></div>
+      ${campaignGoalsHTML()}
+      <button data-act="hint" class="cad-power-button cad-dock-power" data-power="hint" title="Suggerimento" aria-label="Suggerimento: ${l.number<=5?'gratuito':w.hint+' disponibili'}" ${bot?'disabled':''}>${campaignPowerIcon('hint')}<span class="cad-stock-count">${l.number<=5?'∞':w.hint}</span></button>
+      <button data-act="campaignPower" data-power="coach" class="cad-power-button cad-dock-power" title="Allenatore per un turno" aria-label="Allenatore: ${w.coach} disponibili" ${bot||session.coachTurn===session.turns?'disabled':''}>${campaignPowerIcon('coach')}<span class="cad-stock-count">${w.coach}</span></button>
+      <button data-act="campaignPower" data-power="time" class="cad-power-button cad-dock-power" title="Aggiungi 30 secondi" aria-label="Tempo extra: ${w.time} disponibili, aggiunge 30 secondi" ${bot||session.timeBoosts>=2?'disabled':''}>${campaignPowerIcon('time')}<span class="cad-stock-count">${w.time}</span></button>
+      <button class="cad-dock-utility" data-act="campaignPause" aria-label="Pausa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button>
+      <button class="cad-dock-utility" data-act="campaignMap" aria-label="Torna alla mappa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3Zm6-3v15m6-12v15"/></svg></button>
+    </div></section>`;
 }
 function campaignDecorateTable() {
   if (!S.campaignActive) return;
@@ -229,8 +242,8 @@ Object.assign(handlers, {
   campaignContinue() { closeModal();S.campaignClockAt=Date.now();S.campaignClockRunning=false;if(!S.campaignActive)render();campaignScheduleBot(); },
   campaignObjectives() { const l=campaignPath().levels[S.campaignLevel],states=Campaign.goalState(S.campaignMatch,l),labels={turns:'Turni completati',melds:'Combinazioni sul tavolo',seqs:'Scale',sets:'Tris o poker',adds:'Attacchi eseguiti',wild:'Giochi con una matta',swaps:'Jolly recuperati',pile:'Raccolte dagli scarti',burraco:'Burraco completato',clean:'Scala senza matte',close:'Chiusura della smazzata'};openModal('campaignPause',`<h2>🎯 ${esc(l.title)}</h2><p>${esc(l.goalText)}</p><ul class="cad-objectives">${states.map(x=>`<li>${x.done?'✅':'○'} ${labels[x.key]} <b>${typeof x.target==='boolean'?(x.done?'Completato':'Da completare'):x.value+'/'+x.target}</b></li>`).join('')}</ul><p>Turni completati: ${S.campaignMatch.turns}/${l.maxTurns}. L’obiettivo viene verificato alla fine del tuo turno.</p><button class="btn primary" data-act="campaignContinue">Torna al tavolo</button>`); },
   campaignPower(el) { const r=campaignUsePower(el.dataset.power);if(!r.ok&&r.error)toast(r.error,true); },
-  campaignVoice(el) { const intro=el?.dataset.intro!==undefined,p=campaignPath(),l=p?.levels[intro?Number(el.dataset.intro):S.campaignLevel];if(!l)return;if(!intro&&store.get('cad_voice',false)){handlers.campaignMute();return;}store.set('cad_voice',true);campaignSpeak(intro?l.intro:Campaign.tip(S.campaignMatch,l,campaignEngine().E,campaignEngine().Bot),true); },
-  campaignMute() { store.set('cad_voice',false);if('speechSynthesis'in window)window.speechSynthesis.cancel();document.body.classList.remove('cad-speaking');toast('Voce disattivata'); },
+  campaignVoice(el) { const intro=el?.dataset.intro!==undefined,p=campaignPath(),l=p?.levels[intro?Number(el.dataset.intro):S.campaignLevel];if(!l)return;if(!intro&&store.get('cad_voice',false)){handlers.campaignMute();return;}store.set('cad_voice',true);for(const button of $$('[data-act="campaignVoice"][aria-pressed]'))button.setAttribute('aria-pressed','true');campaignSpeak(intro?l.intro:Campaign.tip(S.campaignMatch,l,campaignEngine().E,campaignEngine().Bot),true); },
+  campaignMute() { store.set('cad_voice',false);for(const button of $$('[data-act="campaignVoice"][aria-pressed]'))button.setAttribute('aria-pressed','false');if('speechSynthesis'in window)window.speechSynthesis.cancel();document.body.classList.remove('cad-speaking');toast('Voce disattivata'); },
   campaignShop() {
     campaignChargeClock();const w=campaignWallet();
     const items=[['hint','💡 Suggerimento','Evidenzia una mossa per 20 secondi.',40],['coach','🎓 Allenatore','Guida e carte evidenziate per il turno attuale.',80],['time','⏱ Tempo extra','Aggiunge 30 secondi. Massimo due per tentativo.',30],['life','❤️ Una vita','Recupera una vita senza aspettare.',60]];
@@ -242,6 +255,7 @@ Object.assign(handlers, {
 setInterval(()=>{
   campaignChargeClock();
   const clock=$('[data-cad-clock]');if(clock&&S.campaignMatch){clock.textContent=campaignClock(S.campaignMatch.remainingMs);clock.classList.toggle('cad-urgent',S.campaignMatch.remainingMs<30000);}
+  const timeFill=$('[data-cad-time-fill]');if(timeFill&&S.campaignMatch){const l=campaignPath()?.levels[S.campaignLevel];if(l)timeFill.style.transform='scaleX('+Math.min(1,S.campaignMatch.remainingMs/(l.time*1000))+')';timeFill.closest('.cad-timepiece').classList.toggle('cad-time-low',S.campaignMatch.remainingMs<30000);}
   const lives=$$('[data-cad-lives]');if(lives.length){const w=campaignWallet();for(const el of lives)el.textContent=w.lives<5?'Prossima vita fra '+campaignClock(w.nextLife-Date.now()):'Vite al completo';const hearts=$('[data-cad-hearts]');if(hearts){const value=hearts.querySelector('[data-cad-heart-value]');if(value)value.textContent=w.lives+'/5';hearts.setAttribute('aria-label',w.lives+' vite su 5');}}
   if(S.campaignActive&&Date.now()-(S.campaignLastPersist||0)>5000){campaignWriteAttempt();S.campaignLastPersist=Date.now();}
 },250);
