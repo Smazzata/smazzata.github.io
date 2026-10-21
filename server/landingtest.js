@@ -79,6 +79,29 @@ module.exports = async (cdp) => {
     `));
   }
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+  // Regressione: una presa confermata può rimuovere la destinazione durante il volo.
+  // La scomparsa senza presa, invece, non deve essere scambiata per un atterraggio valido.
+  const captures = await cdp.run(`
+    const saved = S.game, results = [];
+    try {
+      for (const confirmed of [true, false]) {
+        const target = $('.pile .card.top').cloneNode(true);
+        target.dataset.card = 'landing-capture-fixture';
+        target.style.visibility = '';
+        $('#felt').appendChild(target);
+        S.game = { ...saved, presa: true, events: confirmed ? [{ type: 'take', cardIds: [target.dataset.card] }] : [] };
+        const flyer = fly($('.stock .deck'), target, target.outerHTML, { hold: true });
+        const n = __log.length;
+        landFlyer(flyer, target);
+        target.remove();
+        await __W(800);
+        results.push(__chk(__log[n]));
+      }
+    } finally { S.game = saved; }
+    return results;
+  `);
+  assert.ok(captures[0]?.done && !captures[0].visible && captures[0].captured, 'Presa confermata durante il volo non riconosciuta');
+  assert.ok(captures[1]?.done && !captures[1].visible && !captures[1].captured, 'Carta scomparsa senza una presa accettata dal controllo');
   console.table(results);
   for (const r of results) {
     assert.ok(r.removed && r.visible && r.frames > 2, 'Lo scarto deve completare un volo visibile');

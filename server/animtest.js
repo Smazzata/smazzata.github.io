@@ -52,6 +52,11 @@ const PROBE = `
           const live = document.querySelector(selector);
           if (live) rec.t = live.getBoundingClientRect();
           rec.visible = !!live && live.style.visibility !== 'hidden';
+          // Nei giochi a prese un bot può aver già raccolto la carta mentre il volo
+          // finisce. L'assenza è valida solo se un evento del motore conferma la presa
+          // di QUELLA carta; una carta ancora nel DOM ma nascosta resta un errore.
+          rec.captured = !live && !!(S.game && S.game.presa && (S.game.events || []).some((ev) =>
+            ev.type === 'take' && (ev.cardIds || []).some((id) => String(id) === target.dataset.card)));
         }
         rm();
       };
@@ -65,7 +70,7 @@ const PROBE = `
   window.__chk = (rec) => (rec && rec.last ? {
     dx: Math.round(rec.last.left + rec.last.width / 2 - (rec.t.left + rec.t.width / 2)),
     dy: Math.round(rec.last.top + rec.last.height / 2 - (rec.t.top + rec.t.height / 2)),
-    size: +(rec.last.width / rec.t.width).toFixed(2), done: !!rec.done, visible: !!rec.visible, face: rec.face } : null);
+    size: +(rec.last.width / rec.t.width).toFixed(2), done: !!rec.done, visible: !!rec.visible, captured: !!rec.captured, face: rec.face } : null);
   /** una mossa: quante carte partono prima della risposta, com'è l'atterraggio, se resta qualcosa sullo schermo */
   window.__try = async (type, extra = {}) => {
     if (type === 'discard' && S.game.phase === 'play') {
@@ -170,7 +175,7 @@ const GAMES = [
       if (expectLanding) {
         const l = r.landing;
         if (!l) { if (!mayFade) problems.push(`${line}: la carta non atterra al suo posto`); }
-        else if (Math.abs(l.dx) > tol || Math.abs(l.dy) > tol || Math.abs(l.size - 1) > 0.05 || !l.done || !l.visible) {
+        else if (Math.abs(l.dx) > tol || Math.abs(l.dy) > tol || Math.abs(l.size - 1) > 0.05 || !l.done || (!l.visible && !l.captured)) {
           problems.push(`${line}: atterraggio sbagliato ${JSON.stringify(l)}`);
         }
       }
