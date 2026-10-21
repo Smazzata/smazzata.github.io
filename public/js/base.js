@@ -15,6 +15,20 @@
   };
 
   // spiegazione dell'etichetta 🏅 delle partite classificate (le sole che cambiano l'Elo)
+  const PROGRESS_EPOCH = 1;
+  function resetDeviceProgress(epoch = PROGRESS_EPOCH) {
+    if (store.get('bur_progress_epoch', 0) >= epoch) return false;
+    try {
+      const keys = Object.keys(localStorage).filter((k) => k.startsWith('smazzata_campaign_') || k.startsWith('bur_rank_')
+        || ['bur_stats', 'bur_stats_seen', 'bur_local_results', 'bur_auto_level', 'bur_offline_room', 'bur_lastroom'].includes(k));
+      for (const key of keys) localStorage.removeItem(key);
+      const prefs = store.get('bur_prefs', {});
+      if (['oro', 'notte', 'smeraldo'].includes(prefs.back)) store.set('bur_prefs', { ...prefs, back: 'rosso' });
+      store.set('bur_progress_epoch', epoch);
+      return true;
+    } catch (e) { return false; }
+  }
+  resetDeviceProgress();
   const RANKED_TIP = 'Partita classificata: contribuisce al tuo grado';
   // Soglie dei gradi per gioco. Il punteggio numerico resta usato per gli abbinamenti.
   const PLAYER_RANKS = [

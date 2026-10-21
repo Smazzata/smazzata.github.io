@@ -499,21 +499,7 @@
     friendNo(el) { emit('friendRespond', { nick: el.dataset.nick, accept: false }); },
     unfriend(el) { if (confirm(`Rimuovere ${el.dataset.nick}?`)) emit('friendRemove', { nick: el.dataset.nick }); },
     toggleTheme() { S.prefs.theme = S.prefs.theme === 'scuro' ? 'chiaro' : 'scuro'; applyPrefs(); render(); },
-    async leaders(el) {
-      const d = (el && el.dataset) || {};
-      if (d.friends !== undefined) S.lbFriends = d.friends === '1';
-      if (d.game) S.lbGame = d.game;
-      const friends = !!S.lbFriends, game = S.lbGame || 'burraco';
-      const r = await emit('leaderboard', { friends, game });
-      if (!r.ok) return;
-      const tabs = `<div class="row tabs"><button class="swatch ${game === 'burraco' ? 'on' : ''}" data-act="leaders" data-game="burraco">🃏 Burraco</button><button class="swatch ${game === 'scala40' ? 'on' : ''}" data-act="leaders" data-game="scala40">🂡 Scala 40</button><button class="swatch ${game === 'ramino' ? 'on' : ''}" data-act="leaders" data-game="ramino">🧩 Ramino</button><button class="swatch ${game === 'canasta' ? 'on' : ''}" data-act="leaders" data-game="canasta">🎴 Canasta</button><button class="swatch ${game === 'scopa' ? 'on' : ''}" data-act="leaders" data-game="scopa">🧹 Scopa</button><button class="swatch ${game === 'briscola' ? 'on' : ''}" data-act="leaders" data-game="briscola">🍷 Briscola</button><button class="swatch ${game === 'briscola5' ? 'on' : ''}" data-act="leaders" data-game="briscola5">🍷 Briscola in 5</button><button class="swatch ${game === 'tressette' ? 'on' : ''}" data-act="leaders" data-game="tressette">🂱 Tressette</button><button class="swatch ${game === 'rubamazzetto' ? 'on' : ''}" data-act="leaders" data-game="rubamazzetto">🃁 Rubamazzetto</button></div>
-        <div class="row tabs"><button class="swatch ${friends ? '' : 'on'}" data-act="leaders" data-friends="0">Tutti</button><button class="swatch ${friends ? 'on' : ''}" data-act="leaders" data-friends="1">Solo amici</button></div>`;
-      const rows = r.list.map((e, i) => `<tr class="${e.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][i] || i + 1}</td><td style="text-align:left">${esc(e.name)} ${lvlHTML(e.level)}${e.me ? ' (tu)' : ''}</td><td>${rankHTML(e.elo)}</td><td>${e.wins}/${e.games}</td><td>${Math.round((e.wins / e.games) * 100)}%</td></tr>`).join('');
-      openModal('leaders', `<div class="result"><h2>🏆 Classifica</h2>${tabs}
-        ${rows ? `<table><tr><th></th><th style="text-align:left">Giocatore</th><th>Grado</th><th>Vinte</th><th>%</th></tr>${rows}</table>` : '<p class="muted">Ancora nessuna partita completata. La classifica conta le partite finite tra giocatori umani (anche contro il computer).</p>'}
-        <p class="muted small">Ogni gioco ha il suo grado: Bronzo, Argento, Oro, Platino, Diamante, Maestro e Leggenda.</p>
-        <p class="muted small">Il grado cambia solo con le partite classificate (🏅 Classificata). Le partite tra persone contano per statistiche, livello e trofei.</p></div>`);
-    },
+    leaders(el) { return openLeaguePage(el); },
     resetStats() { if (confirm('Azzerare le statistiche?')) { store.set('bur_stats', {}); statsModal(); } },
     musicStop() { emit('setMusic', { url: '' }).then(() => musicModal()); },
     botLevel(el) { emit('setBotLevel', { level: el.dataset.val }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },

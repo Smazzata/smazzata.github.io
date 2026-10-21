@@ -1,8 +1,9 @@
 // Service worker della pagina d'ingresso: salva la pagina e la copia del gioco (cartella gioca/)
 // così, senza internet, l'app si apre lo stesso e si può giocare contro il computer.
 // "Prima la rete": da collegati si usa sempre la versione più recente.
-const CACHE = 'burraco-ingresso-v32';
+const CACHE = 'burraco-ingresso-v33';
 const SHELL = [
+  'gioca/classifica.css', 'gioca/js/classifica.js', 'gioca/art/leagues/bronze.webp', 'gioca/art/leagues/silver.webp', 'gioca/art/leagues/gold.webp', 'gioca/art/leagues/platinum.webp', 'gioca/art/leagues/diamond.webp', 'gioca/art/leagues/master.webp', 'gioca/art/leagues/legend.webp',
   'gioca/campaign-story.css', 'gioca/js/campaign-story.js', 'gioca/art/campaign/garden.webp', 'gioca/art/campaign/rosa.webp', 'gioca/art/campaign/bruno.webp', 'gioca/art/campaign/barone.webp', 'gioca/art/campaign/boosters.webp',
   'gioca/art/campaign/clockwork.webp', 'gioca/art/campaign/arturo.webp', 'gioca/art/campaign/nina.webp', 'gioca/art/campaign/conte.webp', 'gioca/art/campaign/bay.webp', 'gioca/art/campaign/marina.webp', 'gioca/art/campaign/pippo.webp', 'gioca/art/campaign/nebbia.webp', 'gioca/art/campaign/boosters-scala40.webp', 'gioca/art/campaign/boosters-ramino.webp',
   './', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png',

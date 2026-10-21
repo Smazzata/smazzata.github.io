@@ -1,0 +1,44 @@
+La tua lega ‖ Your league ‖ Tu liga ‖ Sua liga
+Esplora le leghe ‖ Explore the leagues ‖ Explora las ligas ‖ Explore as ligas
+Il primo seme ‖ The first suit ‖ El primer palo ‖ O primeiro naipe
+Ogni campione comincia da una prima mano. ‖ Every champion starts with a first hand. ‖ Todo campeón empieza con una primera mano. ‖ Todo campeão começa com uma primeira mão.
+Il gioco prende forma ‖ Your game takes shape ‖ Tu juego toma forma ‖ Seu jogo ganha forma
+Costanza, lettura del tavolo e scelte sempre più sicure. ‖ Consistency, reading the table and ever more confident choices. ‖ Constancia, lectura de la mesa y decisiones cada vez más seguras. ‖ Constância, leitura da mesa e escolhas cada vez mais seguras.
+Il valore delle tue scelte ‖ The value of your choices ‖ El valor de tus decisiones ‖ O valor das suas escolhas
+La strategia brilla quando ogni carta ha uno scopo. ‖ Strategy shines when every card has a purpose. ‖ La estrategia brilla cuando cada carta tiene un propósito. ‖ A estratégia brilha quando cada carta tem um propósito.
+Oltre le abitudini ‖ Beyond the familiar ‖ Más allá de la costumbre ‖ Além do habitual
+Anticipa gli avversari e cambia il ritmo della partita. ‖ Anticipate your opponents and change the pace of the game. ‖ Anticipa a tus rivales y cambia el ritmo de la partida. ‖ Antecipe seus adversários e mude o ritmo da partida.
+Precisione cristallina ‖ Crystal clarity ‖ Precisión cristalina ‖ Precisão cristalina
+Sangue freddo e visione del gioco fanno la differenza. ‖ Composure and a clear view of the game make the difference. ‖ La calma y la visión del juego marcan la diferencia. ‖ A calma e a visão de jogo fazem a diferença.
+Il tavolo ti riconosce ‖ The table knows your name ‖ La mesa te reconoce ‖ A mesa reconhece você
+Esperienza e intuizione, una mano dopo l’altra. ‖ Experience and intuition, hand after hand. ‖ Experiencia e intuición, mano tras mano. ‖ Experiência e intuição, mão após mão.
+Lascia il tuo segno ‖ Leave your mark ‖ Deja tu huella ‖ Deixe sua marca
+Il traguardo più prestigioso delle leghe di Smazzata. ‖ The most prestigious achievement in Smazzata's leagues. ‖ El logro más prestigioso de las ligas de Smazzata. ‖ A conquista mais prestigiosa das ligas de Smazzata.
+La tua prima classificata è l’inizio del percorso. ‖ Your first ranked game starts the journey. ‖ Tu primera partida clasificatoria inicia el recorrido. ‖ Sua primeira partida ranqueada inicia a jornada.
+Prossima lega ‖ Next league ‖ Próxima liga ‖ Próxima liga
+Hai raggiunto la lega più prestigiosa. ‖ You have reached the most prestigious league. ‖ Has alcanzado la liga más prestigiosa. ‖ Você chegou à liga mais prestigiosa.
+Torna alla tua lega ‖ Back to your league ‖ Vuelve a tu liga ‖ Voltar à sua liga
+Il percorso delle leghe ‖ The league journey ‖ El recorrido de las ligas ‖ O caminho das ligas
+Tocca un’insegna per scoprirla. ‖ Tap a crest to discover it. ‖ Toca una insignia para descubrirla. ‖ Toque em um emblema para conhecê-lo.
+Tra amici ‖ Among friends ‖ Entre amigos ‖ Entre amigos
+La classifica ‖ The leaderboard ‖ La clasificación ‖ A classificação
+Filtra classifica ‖ Filter leaderboard ‖ Filtrar clasificación ‖ Filtrar classificação
+Classifica non disponibile ‖ Leaderboard unavailable ‖ Clasificación no disponible ‖ Classificação indisponível
+Controlla la connessione e riprova. ‖ Check your connection and try again. ‖ Comprueba tu conexión e inténtalo de nuevo. ‖ Verifique sua conexão e tente novamente.
+Caricamento classifica… ‖ Loading leaderboard… ‖ Cargando clasificación… ‖ Carregando classificação…
+Il tavolo dei campioni ti aspetta ‖ The champions' table awaits ‖ La mesa de los campeones te espera ‖ A mesa dos campeões espera por você
+Le partite completate dai tuoi amici appariranno qui. ‖ Your friends' completed games will appear here. ‖ Las partidas completadas por tus amigos aparecerán aquí. ‖ As partidas concluídas pelos seus amigos aparecerão aqui.
+Completa una partita tra persone per entrare in classifica. ‖ Complete a game against people to join the leaderboard. ‖ Completa una partida entre personas para entrar en la clasificación. ‖ Conclua uma partida entre pessoas para entrar na classificação.
+Gioca una classificata ‖ Play a ranked game ‖ Juega una clasificatoria ‖ Jogue uma ranqueada
+Una lega per ogni gioco ‖ A league for every game ‖ Una liga por juego ‖ Uma liga para cada jogo
+Le classificate fanno evolvere la tua lega. Le amichevoli tra persone contano per statistiche e livello. Contro il computer è solo allenamento. ‖ Ranked games advance your league. Friendly games between people count for stats and level. Games against the computer are practice only. ‖ Las clasificatorias hacen evolucionar tu liga. Las amistosas entre personas cuentan para estadísticas y nivel. Contra la computadora es solo entrenamiento. ‖ As ranqueadas fazem sua liga evoluir. As amistosas entre pessoas contam para estatísticas e nível. Contra o computador é apenas treino.
+Nuova lega! ‖ New league! ‖ ¡Nueva liga! ‖ Nova liga!
+Cambio di lega ‖ League change ‖ Cambio de liga ‖ Mudança de liga
+Le tue scelte al tavolo ti hanno portato più in alto. ‖ Your choices at the table have taken you higher. ‖ Tus decisiones en la mesa te han llevado más alto. ‖ Suas escolhas na mesa levaram você mais alto.
+Ogni partita è una nuova occasione per risalire. ‖ Every game is a new chance to climb back. ‖ Cada partida es una nueva oportunidad para subir. ‖ Cada partida é uma nova chance de subir.
+Torna alla home ‖ Back to home ‖ Volver al inicio ‖ Voltar ao início
+Posizione ‖ Position ‖ Posición ‖ Posição
+Vittorie ‖ Wins ‖ Victorias ‖ Vitórias
+Riprova ‖ Try again ‖ Reintentar ‖ Tentar novamente
+Continua ‖ Continue ‖ Continuar ‖ Continuar
+Scegli il gioco ‖ Choose the game ‖ Elige el juego ‖ Escolha o jogo

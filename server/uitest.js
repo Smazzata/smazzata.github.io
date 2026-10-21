@@ -15,7 +15,7 @@ const { spawn } = require('child_process');
 
 const CAMPAIGN_STORY_ONLY = process.argv.includes('--campaign-story');
 const CAMPAIGN_ONLY = process.argv.includes('--campaign') || CAMPAIGN_STORY_ONLY;
-const HOME_ONLY = process.argv.includes('--home') || CAMPAIGN_ONLY;
+const HOME_ONLY = process.argv.includes('--home') || process.argv.includes('--leagues') || CAMPAIGN_ONLY;
 const PORT = HOME_ONLY ? 3995 : 3996;
 const DEBUG_PORT = HOME_ONLY ? 9334 : 9333;
 const URL = `http://localhost:${PORT}`;
@@ -126,6 +126,15 @@ const HELPERS = `
         const rect = button.getBoundingClientRect();
         if (rect.width < 44 || rect.height < 44 || rect.right > innerWidth) throw new Error('scorciatoie non utilizzabili su telefono');
         __tap(button); await __W(450);
+        if (button.dataset.act === 'leaders') {
+          if (S.screen !== 'leaders' || !document.querySelector('.league-page')) throw new Error('la classifica non ha una pagina dedicata');
+          if (document.querySelectorAll('.league-step').length !== 7) throw new Error('insegne delle sette leghe mancanti');
+          for (let i = 0; i < 50 && [...document.querySelectorAll('.league-emblem')].some((image) => !image.complete || !image.naturalWidth); i++) await __W(50);
+          if ([...document.querySelectorAll('.league-emblem')].some((image) => !image.naturalWidth)) throw new Error('insegne delle leghe non caricate');
+          if (document.documentElement.scrollWidth > innerWidth) throw new Error('classifica esce dallo schermo');
+          __tap('[data-act="leagueBack"]');
+          continue;
+        }
         if (S.modalKind !== button.dataset.act || document.querySelector('#modal').classList.contains('hidden')) throw new Error('scorciatoia non apre il contenuto: ' + button.dataset.act);
         document.querySelector('.modal-close').click();
       }
@@ -139,7 +148,8 @@ const HELPERS = `
       }
       socket.listeners('elo')[0]({game: 'burraco', before: 1099, after: 1108});
       await __W(1900);
-      if (!document.querySelector('#toast').textContent.includes('Argento') || /1099|1108|Elo/.test(document.querySelector('#toast').textContent)) throw new Error('notifica grado errata');
+      if (!document.querySelector('.rank-transition.promotion')?.textContent.includes('Argento') || /1099|1108|Elo/.test(document.querySelector('.rank-transition').textContent)) throw new Error('animazione promozione errata');
+      __tap('[data-rank-continue]');
       for (const mode of ['casual', 'ranked']) {
         __tap('[data-act="quickMenu"][data-mode="' + mode + '"]'); await __W(200);
         if (document.querySelectorAll('#modal [data-act="quick"][data-mode="' + mode + '"]').length !== 3) throw new Error('scelta formato pubblico');
@@ -166,6 +176,10 @@ const HELPERS = `
       __tap('[data-act="goHome"]'); closeModal(); await __W(300);`);
     await shot('01-home');
     step('schermata iniziale e nickname');
+    if (!HOME_ONLY || process.argv.includes('--leagues')) {
+      await require('./league-ui-flow')({ cdp, shot, open, URL, step });
+      if (process.argv.includes('--leagues')) return;
+    }
     if (CAMPAIGN_ONLY) {
       await require('./campaign-story-ui-flow')({ cdp, shot, open, URL, step, errors, DPR });
       if (CAMPAIGN_STORY_ONLY) return;

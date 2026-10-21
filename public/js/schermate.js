@@ -11,6 +11,7 @@
     const changed = S.lastScreen !== S.screen;
     S.lastScreen = S.screen;
     if (S.screen === 'home') app.innerHTML = homeHTML();
+    else if (S.screen === 'leaders') { app.innerHTML = leadersHTML(); afterLeaguesRender(); }
     else if (S.screen === 'campaign') app.innerHTML = campaignHTML();
     else if (S.screen === 'setup') app.innerHTML = setupHTML();
     else if (S.screen === 'lobby') app.innerHTML = lobbyHTML();

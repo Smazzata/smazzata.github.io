@@ -57,7 +57,8 @@
     else if (hiddenAt) freshConnection();
   });
   window.addEventListener('online', () => { if (!socket.connected) socket.connect(); });
-  socket.on('welcome', ({ token, name, nick, mail }) => {
+  socket.on('welcome', ({ token, name, nick, mail, progressEpoch }) => {
+    if (progressEpoch) resetDeviceProgress(progressEpoch);
     S.mailOn = !!mail;
     // offline il codice del profilo salvato non va mai sovrascritto: serve quando si torna online
     if (!OFFLINE) {
@@ -161,8 +162,8 @@
   // punteggio di bravura (Elo) aggiornato a fine partita
   socket.on('elo', ({ game, after, before }) => {
     const rank = playerRank(after), previous = playerRank(before);
-    const icon = rank.min > previous.min ? '🎉' : '🏅';
-    setTimeout(() => toast(`${icon} ${RX.gameName({ game })} · ${t('Grado')}: ${t(rank.name)}`), 1800);
+    if (rank.id !== previous.id) setTimeout(() => showRankTransition(game, before, after), 1800);
+    else setTimeout(() => toast(`🏅 ${RX.gameName({ game })} · ${t('Grado')}: ${t(rank.name)}`), 1800);
   });
   socket.on('progress', (p) => {
     // serie di giorni: festa quando sale (la prima smazzata di oggi)
@@ -321,6 +322,7 @@
   function onState(room, game) {
     if (S.campaignActive && !room?.campaign) return;
     const prev = S.game;
+    const keepLeaguePage = S.screen === 'leaders' && room?.code === S.room?.code && !!game === !!prev;
     speakNewMoves(game);
     const prevMusic = S.room && S.room.music;
     if (room && room.music && (!prevMusic || prevMusic.at !== room.music.at)) {
@@ -333,12 +335,12 @@
     S.room = room;
     S.game = game;
     if (!room) {
-      if (!['setup', 'campaign'].includes(S.screen)) S.screen = 'home';
+      if (!['setup', 'campaign', 'leaders'].includes(S.screen)) S.screen = 'home';
       if (S.pendingJoin && S.social && S.social.nick) { const code = S.pendingJoin; S.pendingJoin = ''; joinRoom(code); }
     } else {
       S.pendingJoin = '';
       if (store.get('bur_lastroom', '') === room.code) store.set('bur_lastroom', '');
-      S.screen = game ? 'game' : 'lobby';
+      if (!keepLeaguePage) S.screen = game ? 'game' : 'lobby';
       if (location.search) history.replaceState(null, '', location.pathname);
     }
     if (game && game.over && room && store.get('bur_lastroom', '') === room.code) store.set('bur_lastroom', '');

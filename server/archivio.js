@@ -13,6 +13,7 @@ const { DATA_DIR } = require('./config');
  * 2 = ottobre 2026: password obbligatoria, email, chiavi per dispositivo. 3 = di nuovo, per riprovare la registrazione con conferma via email.
  */
 const ACCOUNTS_EPOCH = 3;
+const { PROGRESS_EPOCH, resetProgress } = require('./progress-reset');
 const ctx = require('./contesto');
 const { sessions, rooms, leaderboard, daily, leagues, tournaments } = ctx;
 // funzioni degli altri moduli (lette dal contesto al momento della chiamata)
@@ -30,6 +31,7 @@ function saveNow() {
     const data = {
       savedAt: Date.now(),
       accountsEpoch: ACCOUNTS_EPOCH,
+      progressEpoch: PROGRESS_EPOCH,
       sessions: [...sessions],
       leaderboard: [...leaderboard],
       reports: ctx.reports,
@@ -52,7 +54,7 @@ const store = openStore(DATA_DIR);
 
 function loadSaved() {
   try {
-    const data = store.load();
+    let data = store.load();
     console.log(`Archivio dati: ${store.kind === 'sqlite' ? 'database SQLite (data/burraco.db)' : 'file data/stato.json'}`);
     if (!data) return;
     if ((data.accountsEpoch || 1) < ACCOUNTS_EPOCH) {
@@ -61,6 +63,19 @@ function loadSaved() {
       console.log(`Profili azzerati (nuova epoca ${ACCOUNTS_EPOCH}): copia dei dati vecchi in ${copy}`);
       setTimeout(saveNow, 0);
       return;
+    }
+    if ((data.progressEpoch || 0) < PROGRESS_EPOCH) {
+      const copy = path.join(DATA_DIR, `prima-del-reset-progressi-${Date.now()}.json`);
+      // Se la copia o il salvataggio falliscono, non avviare un archivio vuoto.
+      try {
+        fs.writeFileSync(copy, JSON.stringify(data), { flag: 'wx' });
+        data = resetProgress(data);
+        store.save(data);
+      } catch (err) {
+        console.error('Reset progressi interrotto: archivio precedente conservato', err.message);
+        process.exit(1);
+      }
+      console.log(`Progressi azzerati (epoca ${PROGRESS_EPOCH}); profili e amicizie conservati`);
     }
     for (const [token, sess] of data.sessions || []) sessions.set(token, sess);
     for (const [token, e] of data.leaderboard || []) {

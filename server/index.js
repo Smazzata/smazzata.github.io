@@ -105,7 +105,7 @@ io.on('connection', (socket) => {
     // lingua del dispositivo: le email arrivano in questa lingua
     if (require('./posta').LANGS.includes(lang)) sess.lang = lang;
     socket.data.token = token;
-    socket.emit('welcome', { token: key, name: sess.name, nick: sess.nick || null, mail: require('./posta').enabled() });
+    socket.emit('welcome', { token: key, name: sess.name, nick: sess.nick || null, mail: require('./posta').enabled(), progressEpoch: require('./progress-reset').PROGRESS_EPOCH });
     socket.emit('progress', progressOf(leaderboard.get(token)));
     socket.emit('myGames', myGames(token));
     social.push(token);

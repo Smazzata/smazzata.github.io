@@ -82,8 +82,18 @@ async function signup(p, nick, email = mailOf()) {
 }
 
 (async () => {
+  fs.writeFileSync(path.join(dataDir, 'stato.json'), JSON.stringify({ accountsEpoch: 3,
+    sessions: [], leaderboard: [['legacy', { name: 'Vecchio risultato', games: 99 }]],
+    rooms: [], tournaments: [], leagues: [], daily: [], savedAt: Date.now() }));
   const server = await startServer();
   try {
+    const migrated = require('./store').exportData(dataDir);
+    assert.strictEqual(migrated.progressEpoch, require('./progress-reset').PROGRESS_EPOCH, 'epoca progressi persistita nel database');
+    assert.deepStrictEqual(migrated.leaderboard, [], 'statistiche precedenti azzerate all’avvio');
+    const backup = fs.readdirSync(dataDir).find((name) => name.startsWith('prima-del-reset-progressi-'));
+    assert(backup && JSON.parse(fs.readFileSync(path.join(dataDir, backup), 'utf8')).leaderboard[0][1].games === 99, 'copia integra prima del reset');
+    assert.strictEqual(require('./progress-reset').resetProgress(migrated), migrated, 'una rilettura del database non ripete il reset');
+    step('reset progressi all’avvio: backup integro e migrazione salvata nel database');
     // pagina di stato: solo con la chiave
     const key = fs.readFileSync(path.join(dataDir, 'admin-key.txt'), 'utf8').trim();
     assert.strictEqual((await fetch(`${URL}/stato`)).status, 403, 'senza chiave: accesso negato');
@@ -427,6 +437,7 @@ async function signup(p, nick, email = mailOf()) {
     // classifica: entrambi gli umani hanno una partita giocata
     const lb = await A.call('leaderboard');
     assert(lb.ok && lb.list.length === 2 && lb.list.every((e) => e.games === 1), 'classifica aggiornata');
+    assert(lb.mine && lb.mine.position >= 1 && lb.mine.games === 1, 'scheda personale della pagina leghe');
     assert.strictEqual(lb.list.filter((e) => e.me).length, 1);
     assert.strictEqual(lb.list.reduce((n, e) => n + e.wins, 0) >= 1, true);
     step('classifica aggiornata a fine partita');

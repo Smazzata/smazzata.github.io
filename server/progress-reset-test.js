@@ -1,0 +1,22 @@
+'use strict';
+module.exports = function resetTests() {
+  const assert = require('assert');
+  const { resetProgress, PROGRESS_EPOCH } = require('./progress-reset');
+  const original = { accountsEpoch: 3, sessions: [['a', { nick: 'Anna', pw: 'hash', email: 'anna@example.test', devices: ['device'], friends: ['b'], room: 'ABCD', localRec: { id: 'old' }, avatar: { e: 'A', c: '#fff', f: 'oro', t: 'Maestro', tid: 't_maestro' } }]], leaderboard: [['a', { games: 99, trophies: { amici: 1 } }]], daily: [['oggi', {}]], rooms: [{ code: 'ABCD' }], tournaments: [{ id: 'cup' }], leagues: [{ members: ['a', 'b'], standings: { a: { pts: 20 } }, past: [1], seasonStart: 1 }] };
+  const reset = resetProgress(original, 12345);
+  assert.strictEqual(reset.progressEpoch, PROGRESS_EPOCH);
+  for (const key of ['leaderboard', 'daily', 'rooms', 'tournaments']) assert.deepStrictEqual(reset[key], []);
+  const account = reset.sessions[0][1];
+  for (const key of ['nick', 'pw', 'email', 'devices', 'friends']) assert.deepStrictEqual(account[key], original.sessions[0][1][key]);
+  assert.strictEqual(account.room, null);
+  assert.strictEqual(account.localRec, undefined);
+  assert.deepStrictEqual(account.avatar, { e: 'A', c: '#fff' });
+  assert.deepStrictEqual(reset.leagues[0].members, ['a', 'b']);
+  assert.deepStrictEqual(reset.leagues[0].standings, {});
+  assert.deepStrictEqual(reset.leagues[0].past, []);
+  assert.strictEqual(reset.leagues[0].seasonStart, 12345);
+  assert.strictEqual(original.leaderboard.length, 1, 'la copia per il backup deve restare integra');
+  reset.leaderboard.push(['a', { games: 1 }]);
+  assert.strictEqual(resetProgress(reset), reset, 'il riavvio non deve azzerare i nuovi progressi');
+  console.log('reset progressi: identità conservate, reset una sola volta OK');
+};

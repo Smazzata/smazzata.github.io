@@ -60,7 +60,7 @@ function setup(app) {
   app.get('/health', (req, res) => {
     res.set('Access-Control-Allow-Origin', '*');
     res.set('Cache-Control', 'no-store');
-    res.json({ ok: true, tavoli: rooms.size });
+    res.json({ ok: true, tavoli: rooms.size, progressEpoch: require('./progress-reset').PROGRESS_EPOCH });
   });
 }
 

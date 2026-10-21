@@ -25,14 +25,17 @@ module.exports.register = function register(socket, handler) {
     const me = socket.data.token;
     const mine = sessions.get(me) || {};
     const allowed = friends ? new Set([me, ...(mine.friends || [])]) : null;
-    const list = [...leaderboard.entries()]
+    const all = [...leaderboard.entries()]
       .filter(([token]) => !allowed || allowed.has(token))
-      .map(([token, e]) => { const x = (e.byGame && e.byGame[gid]) || GSTATS0; return { name: e.name, games: x.games, wins: x.wins, points: x.points, burraco: x.burraco, elo: x.elo || 1000, level: Levels.levelOf(e).level, me: token === me }; })
+      .map(([token, e]) => { const x = (e.byGame && e.byGame[gid]) || GSTATS0; return { name: e.name, games: x.games, wins: x.wins, rankedGames: x.rankedGames || 0, points: x.points, burraco: x.burraco, elo: x.elo || 1000, avatar: (sessions.get(token) || {}).avatar || null, level: Levels.levelOf(e).level, me: token === me }; })
       .filter((e) => e.games > 0)
       // prima il punteggio di bravura (Elo), poi le vittorie
-      .sort((a, b) => b.elo - a.elo || b.wins - a.wins || b.points - a.points)
-      .slice(0, 30);
-    return { list, game: gid };
+      .sort((a, b) => b.elo - a.elo || b.wins - a.wins || b.points - a.points);
+    const mineStats = (((leaderboard.get(me) || {}).byGame || {})[gid]) || GSTATS0;
+    const position = all.findIndex((e) => e.me);
+    return { list: all.slice(0, 30).map((e, i) => ({ ...e, position: i + 1 })), game: gid,
+      mine: { name: mine.nick || mine.name || 'Tu', elo: mineStats.elo || 1000, rankedGames: mineStats.rankedGames || 0,
+        games: mineStats.games || 0, wins: mineStats.wins || 0, position: position >= 0 ? position + 1 : null } };
   }));
 
   // Le mie statistiche e il mio storico
