@@ -142,7 +142,8 @@ function recordLeaderboard(room) {
       }, ...(e.history || [])].slice(0, 20);
       // cronologia compatta per i grafici: data, gioco, vinta, avversari (le ultime 200 partite)
       const rivals = g.teams.filter((t) => t !== team).flatMap((t) => t.members.map((x) => room.seats[x].name.replace(/ \(bot\)$/, '')));
-      e.timeline = [...(e.timeline || []), { at: Date.now(), g: gid, w: g.winners.includes(seat) ? 1 : 0, o: rivals }].slice(-200);
+      const opponentTokens = g.teams.filter((t) => t !== team).flatMap((t) => t.members.map((x) => room.seats[x].token || room.seats[x].leftToken || null));
+      e.timeline = [...(e.timeline || []), { at: Date.now(), g: gid, w: g.winners.includes(seat) ? 1 : 0, o: rivals, opponentTokens }].slice(-200);
     }
     won.push(...Trophies.fromStats(e));
     e.trophies = { ...(e.trophies || {}) };

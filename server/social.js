@@ -26,12 +26,15 @@ const RESERVED = new Set(['admin', 'host', 'bot', 'computer', 'burraco', 'tu', '
 const AVATAR_EMOJI = ['😀', '😎', '🤠', '🥳', '😇', '🤓', '🧐', '😺', '🐶', '🦊', '🐻', '🐼', '🐸', '🦁', '🐯', '🐵', '🦄', '🐙', '🦉', '🐢', '🌻', '🍀', '⭐', '🔥', '♠️', '♥️', '♦️', '♣️'];
 const AVATAR_COLORS = ['#f2c14e', '#64b5f6', '#ef7d7d', '#81c784', '#ba68c8', '#ffb74d', '#4dd0e1', '#e0e0e0'];
 
-module.exports = function createSocial({ io, sessions, isConnected, roomOfToken, renamePlayer, onDelete, notifyOffline }) {
+module.exports = function createSocial({ io, sessions, isConnected, roomOfToken, renamePlayer, onDelete, onDeleted, notifyOffline }) {
   const nickIndex = new Map(); // nick in minuscolo → token
   const codeIndex = new Map(); // codice personale → token
   const devIndex = new Map(); // impronta della chiave di un dispositivo → token del profilo
   const emailIndex = new Map(); // email verificata (minuscolo) → token
   const attempts = new Map(); // limite tentativi di accesso: chiave → { n, until }
+  setInterval(() => {
+    for (const [key, a] of attempts) if (a.until <= Date.now()) attempts.delete(key);
+  }, 60000).unref();
 
   function rebuildIndexes() {
     nickIndex.clear(); codeIndex.clear(); devIndex.clear(); emailIndex.clear();
@@ -52,6 +55,9 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
   };
   const sess = (token) => withLists(sessions.get(token)) || fail('Sessione non valida');
   const nickOf = (token) => (sessions.get(token) || {}).nick;
+  function rememberNickname(s) {
+    if (s.nick) s.previousNicks = [...new Set([...(s.previousNicks || []), s.nick])];
+  }
 
   function checkNick(nick, selfToken) {
     nick = String(nick || '').trim();
@@ -188,22 +194,37 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
   /** Elimina il profilo: libera il nickname, cancella codice, password, email, amicizie e blocchi */
   function deleteProfileOf(token) {
     const s = sess(token);
-    for (const t of [...s.friends, ...s.reqIn, ...s.reqOut]) {
-      const o = withLists(sessions.get(t));
-      if (!o) continue;
+    if (onDelete) onDelete(token);
+    const affected = [];
+    for (const [t, other] of sessions) {
+      if (t === token) continue;
+      const o = withLists(other);
+      if ([...o.friends, ...o.reqIn, ...o.reqOut, ...o.blocked].includes(token)) affected.push(t);
       o.friends = o.friends.filter((x) => x !== token);
       o.reqIn = o.reqIn.filter((x) => x !== token);
       o.reqOut = o.reqOut.filter((x) => x !== token);
-      push(t);
+      o.blocked = o.blocked.filter((x) => x !== token);
     }
     if (s.nick) nickIndex.delete(s.nick.toLowerCase());
     if (s.code) codeIndex.delete(s.code);
     if (s.email) emailIndex.delete(s.email);
-    delete s.nick; delete s.code; delete s.pw; delete s.avatar; delete s.email; delete s.emailCode; delete s.resetCode; delete s.terms;
-    delete s.warn; delete s.chatBan;
-    s.friends = []; s.reqIn = []; s.reqOut = []; s.blocked = []; s.name = 'Giocatore';
-    if (onDelete) onDelete(token);
-    push(token);
+    for (const d of s.devices || []) devIndex.delete(d.h);
+    sessions.delete(token);
+    // Nessun dispositivo può continuare a operare con l'identificativo eliminato.
+    const sockets = [...io.sockets.sockets.values()].filter((so) => so.data.token === token);
+    for (const so of sockets) {
+      if (so.data.room) so.leave(so.data.room);
+      so.data.room = null; so.data.token = null; so.data.devKey = null;
+    }
+    if (onDeleted) onDeleted();
+    for (const t of affected) push(t);
+    // Lascia prima arrivare l'ack della richiesta; poi cancella anche le credenziali dei client.
+    setTimeout(() => {
+      for (const so of sockets) {
+        so.emit('loggedOut', { reason: 'Profilo eliminato', deleted: true });
+        so.disconnect(true);
+      }
+    }, 50).unref();
   }
 
   /** nickname libero «Giocatore1234» per chi aveva un nickname non permesso */
@@ -244,6 +265,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       case 'rinomina': {
         const n = freeNick();
         nickIndex.delete(name.toLowerCase());
+        rememberNickname(s);
         s.nick = n; s.name = n;
         nickIndex.set(n.toLowerCase(), token);
         s.warn = { at: Date.now(), seen: false, renamed: true };
@@ -316,6 +338,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if (!s.nick || !s.pw) setPw(s, password);
       if (!s.nick) s.terms = Date.now(); // quando ha dichiarato l'età e accettato le regole
       if (s.nick) nickIndex.delete(s.nick.toLowerCase());
+      rememberNickname(s);
       s.nick = nick;
       s.name = nick;
       nickIndex.set(nick.toLowerCase(), token);
@@ -391,7 +414,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       const token = codeIndex.get(normCode(code));
       if (!token) fail('Codice non valido');
       return { token: newDevice(token), nick: nickOf(token) };
-    }));
+    }, true));
 
     socket.on('login', handler(({ nick, password }) => {
       limit('ip:' + ip);
@@ -402,7 +425,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       const h = hashPassword(String(password || ''), s.pw.salt);
       if (!crypto.timingSafeEqual(Buffer.from(h, 'hex'), Buffer.from(s.pw.hash, 'hex'))) fail('Nickname o password errati');
       return { token: newDevice(t), nick: s.nick };
-    }));
+    }, true));
 
     // Password dimenticata: nickname + codice di recupero → nuova password
     socket.on('resetPassword', handler(({ nick, code, password }) => {

@@ -26,7 +26,7 @@ function scheduleSave() {
   saveTimer = setTimeout(() => { saveTimer = null; saveNow(); }, 1000);
 }
 
-function saveNow() {
+function saveNow(throwOnError = false) {
   try {
     const data = {
       savedAt: Date.now(),
@@ -44,8 +44,10 @@ function saveNow() {
       })),
     };
     store.save(data);
+    if (throwOnError === true && store.purgeResiduals) store.purgeResiduals();
   } catch (e) {
     console.error('Salvataggio non riuscito:', e.message);
+    if (throwOnError === true) throw e;
   }
 }
 

@@ -1,59 +1,31 @@
-# Smazzata sul Play Store — cosa c'è qui e come pubblicare
+# Smazzata sul Play Store
 
-## Materiale pronto in questa cartella
-- `icona-512.png` — icona per la scheda del Play Store (512×512).
-- `immagine-in-evidenza.png` — immagine in evidenza (1024×500).
-- `schermate/` — schermate del telefono (1080×1920). Si rigenerano con `STORE=1 node server/uitest.js`.
-- `testi.md` — nome, descrizione breve e descrizione completa in italiano, inglese, spagnolo e portoghese.
-- Il pacchetto da caricare (**Smazzata.aab**) viene creato da GitHub a ogni nuova versione dell'app,
-  nella pagina *Releases* del progetto, accanto a `Burraco.apk`. È costruito per Android 16 (API 36, Capacitor 8),
-  come chiede Google dal 31 agosto 2026. Serve la chiave di caricamento nei Secrets di GitHub (vedi sotto, punto 3):
-  senza, GitHub crea solo l'APK.
+La lista operativa aggiornata è [PRIMA-DI-PUBBLICARE.md](PRIMA-DI-PUBBLICARE.md). Contiene anche i blocchi ancora aperti: non considerare pronta la pubblicazione soltanto perché i file esistono.
 
-## Prima di pubblicare (da non dimenticare)
-- **Cambiare la chiave della pagina di stato** (è stata scritta in una chat): in Termux, in una nuova sessione,
-  `rm ~/burraco/data/admin-key.txt`, poi `pkill -f "node server/index.js"` (lo script riavvia il server con una
-  chiave nuova), poi `cat ~/burraco/data/admin-key.txt` per leggerla. Salvarla solo tra i preferiti, mai in chat.
-- ✅ Fatto: la versione per il Play Store (`Smazzata.aab`) non mostra l'avviso «scarica la nuova app» e ha il gioco dentro l'app (si apre anche senza internet). L'`Burraco.apk` delle Releases continua a mostrarlo.
-- Decidere il server: il telefono di casa va bene per gli amici, con utenti sconosciuti serve qualcosa di più stabile.
+## Materiale
 
-## Cosa devi fare tu (una volta sola)
-1. **Account sviluppatore Google Play**: https://play.google.com/console — costo unico di 25 dollari.
-   Serve un documento d'identità; Google può chiedere di verificare un numero di telefono.
-2. **Crea l'app** nella Console: nome «Smazzata», lingua predefinita italiano, *Gioco*, *Gratuita*.
-3. **Firma dell'app**: lascia attiva la «Firma dell'app da parte di Google Play». `Smazzata.aab` è firmato con la
-   *chiave di caricamento* segreta, che sta solo sul PC nella cartella `Smazzata-chiavi` (fuori dal progetto) e nei
-   Secrets di GitHub `PLAY_UPLOAD_KEY` e `PLAY_UPLOAD_KEY_PASSWORD` (istruzioni nel `LEGGIMI.txt` di quella cartella).
-   Non usare `android-app/burraco.p12` per il Play Store: è nel progetto pubblico, serve solo all'APK del sito.
-   Tieni una copia della cartella delle chiavi; se si perde, Google permette di chiedere una nuova chiave di caricamento.
-4. **Scheda dello Store**: copia i testi da `testi.md` e carica icona, immagine in evidenza e almeno 2 schermate.
-5. **Norme sulla privacy**: indirizzo https://smazzata.github.io/gioca/privacy.html
-6. **Sicurezza dei dati**: dichiara che l'app raccoglie **indirizzo email** (Informazioni personali → Indirizzo email:
-   obbligatorio, scopo «Gestione dell'account», non condiviso con terzi) e **ID utente** (il nickname). Salva anche
-   statistiche di gioco e una password cifrata; dati cifrati in transito (https); nessun dato venduto;
-   l'utente può eliminare il profilo dall'app (Profilo → Elimina il mio profilo).
-   **Link per eliminare l'account** (richiesto da Google): https://smazzata.github.io/gioca/elimina-profilo.html
-7. **Classificazione dei contenuti** (questionario): niente violenza, niente acquisti, **niente gioco d'azzardo
-   simulato** (nessun gioco con puntate o fiches: il Sette e mezzo è stato tolto apposta). Va invece dichiarato che
-   **gli utenti interagiscono** (chat scritta e amici; niente messaggi vocali), con la possibilità di segnalare e bloccare.
-   L'app non chiede più il microfono: nessun dato audio da dichiarare in «Sicurezza dei dati».
-   Moderazione: dalla pagina di stato (`/stato?k=…`, colonna «Moderazione») il gestore manda un avviso, blocca la chat
-   (7 giorni o per sempre), cambia un nickname non permesso (🚩) o elimina il profilo.
-8. **Pubblico di destinazione**: 14 anni in su (in Italia è l'età del consenso digitale, e c'è la chat tra giocatori):
-   alla creazione del profilo l'app chiede la spunta «Ho almeno 14 anni e accetto le regole», controllata anche dal server.
-   Google non ha una fascia che parte da 14: scegli 13-15, 16-17 e 18+ e scrivi che l'app non è rivolta ai bambini.
-   Regole di comportamento: https://smazzata.github.io/gioca/regole.html (nickname e chat hanno un filtro delle parolacce).
-9. **Test chiuso**: per i nuovi account personali Google chiede un test chiuso con almeno 12 tester per 14 giorni
-   prima della pubblicazione. Li inviti con la loro email Google (o un Gruppo Google). Se non conosci abbastanza
-   persone: scambio di tester tra sviluppatori (Reddit r/AndroidClosedTesting, r/TestersCommunity) e gruppi di
-   giocatori di Burraco/Scala 40 su Facebook. Mai account finti o emulatori: Google può chiudere l'account.
-10. **Produzione**: dopo il test, «Crea nuova release» → carica `Smazzata.aab` → invia per la revisione (qualche giorno).
+- `icona-512.png`: icona 512×512.
+- `immagine-in-evidenza.png`: immagine 1024×500.
+- `schermate/`: schermate attuali, rigenerabili con `STORE=1 node server/uitest.js` (in PowerShell: `$env:STORE='1'; node server/uitest.js`). Verificare che non contengano credenziali o dati reali prima di caricarle.
+- `testi.md`: nome, descrizione breve e completa in quattro lingue.
+- `SICUREZZA-DEI-DATI.md`: mappa dei dati per compilare il modulo, da confrontare con fornitori e AAB effettivi.
+- `../docs/privacy-operazioni.md`: cancellazioni, vecchi backup, gestione delle richieste e incidenti.
+- `../docs/licenze-pubblicazione.md`: inventario delle risorse e verifiche sulle licenze.
 
-## Da sapere
-- **Identificativo dell'app**: `it.smazzata.app` (prima `it.msf.burraco`). Non si cambia più dopo il primo caricamento.
-  Chi aveva il vecchio APK si ritrova un'app nuova accanto alla vecchia: disinstalla la vecchia ed entra con nickname e password.
-- **Pubblicità (in arrivo)**: quando la aggiungi, nella Console vanno aggiornati «Contiene annunci» (sì),
-  «Sicurezza dei dati» (ID pubblicità e dati raccolti dal servizio di annunci) e la pagina sulla privacy
-  (`public/privacy.html`, con il nome del servizio); in Europa serve anche la richiesta di consenso.
-- Ogni nuova versione: GitHub crea un nuovo `Smazzata.aab` (numero di versione già crescente): lo carichi come nuova release.
-- L'APK scaricato dal sito continua a funzionare come prima; chi installa dal Play Store riceve gli aggiornamenti da lì.
+## Pacchetto Android
+
+Identificativo fisso `it.smazzata.app`. `Smazzata.aab` viene creato dal workflow Android e pubblicato nelle Releases accanto a `Burraco.apk`. La compilazione corrente usa Capacitor 8 e target Android API 36; verificare in Console i requisiti al momento dell'invio.
+
+L'AAB deve essere firmato con la chiave upload **privata**, configurata nei Secrets `PLAY_UPLOAD_KEY` e `PLAY_UPLOAD_KEY_PASSWORD`, con Play App Signing. La chiave `android-app/burraco.p12` è pubblica e serve solo all'APK distribuito dal sito: non usarla per Google Play. Conservare separatamente una copia protetta della chiave privata; non inserirla nel repository.
+
+La versione store usa `SmazzataStore` e non mostra inviti a scaricare aggiornamenti APK esterni; contiene anche il gioco offline. Chi installa dallo store riceve gli aggiornamenti tramite Google Play.
+
+## URL pubblici da inserire
+
+- Privacy: https://smazzata.github.io/gioca/privacy.html
+- Cancellazione: https://smazzata.github.io/gioca/elimina-profilo.html
+- Condizioni e regole: https://smazzata.github.io/gioca/regole.html
+- Assistenza: smazzata.play@gmail.com
+- Richieste privacy: muliellostudio@gmail.com
+
+La nuova documentazione riguarda la versione gratuita senza annunci e acquisti. Aggiungerli richiederà prima una nuova valutazione tecnica e delle dichiarazioni: non basta riutilizzare il modulo attuale.

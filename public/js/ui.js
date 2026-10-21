@@ -215,8 +215,7 @@
     const isJam = mu && !embed;
     openModal('music', `<h2>🎵 Musica del tavolo</h2>
       ${mu ? `<p>${esc(mu.by)} ha condiviso ${isJam ? 'una <b>Jam</b> di Spotify: entrando ascoltate tutti la stessa musica, sincronizzata.' : 'questa musica:'}</p>
-        ${embed ? `<iframe class="spotify" src="${embed}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>` : ''}
-        <a class="btn primary big" style="display:block;text-align:center;text-decoration:none;margin-top:10px" href="${esc(mu.url)}" target="_blank" rel="noopener">${isJam ? '▶ Unisciti alla Jam su Spotify' : '▶ Apri in Spotify'}</a>`
+        <a class="btn primary big" style="display:block;text-align:center;text-decoration:none;margin-top:10px" href="${esc(mu.url)}" target="_blank" rel="noopener noreferrer">${isJam ? '▶ Unisciti alla Jam su Spotify' : '▶ Apri in Spotify'}</a>`
         : '<p class="muted">Nessuna musica condivisa per ora.</p>'}
       ${r.isHost ? `<h4>${mu ? 'Cambia musica' : 'Condividi la musica con il tavolo'}</h4>
         <p class="muted small">Su Spotify avvia una <b>Jam</b> (dal brano in riproduzione: icona dei dispositivi → <i>Avvia una Jam</i>) e copia il link d'invito, oppure copia il link di una playlist. Poi incollalo qui.</p>

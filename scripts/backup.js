@@ -49,7 +49,26 @@ function decrypt(text, pass) {
   }
 }
 
-module.exports = { encrypt, decrypt };
+/** Copie cifrate private, mai committate: intervallo 6 ore, scadenza per età. */
+function localBackup(dataDir, now = Date.now()) {
+  const { cleanCopies, privateCopies } = require('../server/privacy');
+  cleanCopies(dataDir, { now });
+  let pass;
+  try { pass = passphrase(); } catch (e) { return { enabled: false }; }
+  if (pass.length < 12) throw new Error('Frase del backup troppo corta (almeno 12 caratteri)');
+  const dir = path.join(dataDir, 'backups');
+  if (fs.existsSync(dir) && fs.lstatSync(dir).isSymbolicLink()) throw new Error('La cartella dei backup non può essere un collegamento');
+  fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
+  const latest = privateCopies(dataDir).filter((f) => path.dirname(f) === dir).reduce((n, f) => Math.max(n, fs.statSync(f).mtimeMs), 0);
+  if (latest && now - latest < 6 * 60 * 60 * 1000) return { enabled: true, created: false };
+  const data = require('../server/store').exportData(dataDir);
+  if (!data || !data.savedAt) return { enabled: true, created: false };
+  const dest = path.join(dir, `backup-${new Date(now).toISOString().replace(/:/g, '-')}.json`);
+  fs.writeFileSync(dest, encrypt(Buffer.from(JSON.stringify(data)), pass), { mode: 0o600, flag: 'wx' });
+  return { enabled: true, created: true };
+}
+
+module.exports = { encrypt, decrypt, localBackup };
 
 /** se la frase non è salvata, la si chiede a chi usa il terminale (senza mostrarla mentre si scrive) */
 function askPassphrase() {
@@ -65,17 +84,23 @@ if (require.main === module) {
   const [cmd, from, to] = process.argv.slice(2);
   (async () => {
     if (cmd === 'crea') {
+      // Blocca anche i vecchi processi Termux che tentano ancora di caricare copie su GitHub.
+      const allowed = path.resolve(path.dirname(from), 'backups');
+      if (path.dirname(path.resolve(to)) !== allowed || (fs.existsSync(allowed) && fs.lstatSync(allowed).isSymbolicLink())) {
+        throw new Error('I backup devono restare nella cartella privata data/backups; caricamento GitHub disattivato');
+      }
+      fs.mkdirSync(allowed, { recursive: true, mode: 0o700 });
       // dati dal database (se c'è) o da stato.json, nello stesso formato
       const plain = Buffer.from(JSON.stringify(require('../server/store').exportData(path.dirname(from))));
       const pass = await askPassphrase();
       if (pass.length < 12) throw new Error('Frase troppo corta (almeno 12 caratteri)');
-      fs.writeFileSync(to, encrypt(plain, pass));
+      fs.writeFileSync(to, encrypt(plain, pass), { mode: 0o600 });
       console.log(`Backup cifrato creato: ${to} (${plain.length} byte di dati)`);
     } else if (cmd === 'ripristina') {
       const plain = decrypt(fs.readFileSync(from, 'utf8'), await askPassphrase());
       JSON.parse(plain);
-      if (fs.existsSync(to)) fs.copyFileSync(to, to + '.prima-del-ripristino');
-      fs.writeFileSync(to, plain);
+      // Non accumulare un'altra copia in chiaro senza scadenza.
+      fs.writeFileSync(to, plain, { mode: 0o600 });
       console.log(`Dati ripristinati in ${to}`);
     } else {
       console.log('Uso: node scripts/backup.js crea <dati> <backup> | ripristina <backup> <dati>');

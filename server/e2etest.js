@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 /*
  * Prova multigiocatore end-to-end: avvia un server di prova, collega due giocatori
  * e verifica le funzioni del tavolo una dopo l'altra.  npm run e2e
@@ -189,8 +189,11 @@ async function signup(p, nick, email = mailOf()) {
     const soZ = (await Zm.call('social')).social;
     assert(/^Giocatore\d{4}$/.test(soZ.nick) && soZ.warn && soZ.warn.renamed, 'nickname cambiato con avviso');
     assert((await Zm.call('checkNick', { nick: 'Zeta_Prova' })).available, 'il vecchio nickname è libero');
+    let moderationDeleted = false;
+    Zm.sock.on('loggedOut', (m) => { moderationDeleted = m.deleted === true; });
     await modera(soZ.nick, 'elimina');
-    assert(!(await Zm.call('social')).social.nick, 'profilo eliminato');
+    await wait(100);
+    assert(moderationDeleted && (await A.call('checkNick', { nick: soZ.nick })).available, 'profilo eliminato e accesso revocato');
     Zm.sock.close();
     step('moderazione: avviso, chat bloccata, nickname cambiato e profilo eliminato dalla pagina di stato');
 
@@ -342,9 +345,25 @@ async function signup(p, nick, email = mailOf()) {
     assert((await signup(D, 'Tempo')).ok);
     assert((await D.call('friendRequest', { nick: 'Anna' })).ok);
     assert.deepStrictEqual((await socialOf(A)).reqIn, ['Tempo']);
+    const originalKey = D.token;
+    const deletedPeer = player('SecondoDispositivo'); await deletedPeer.hello();
+    const imported = await deletedPeer.call('login', { nick: 'Tempo', password: 'prova123' });
+    assert(imported.ok, 'accesso del secondo dispositivo prima della cancellazione');
+    await deletedPeer.hello(imported.token);
+    let deletedOnOtherDevice = false;
+    deletedPeer.sock.on('loggedOut', (m) => { deletedOnOtherDevice = m.deleted === true; });
     assert((await D.call('deleteProfile')).ok);
     assert.deepStrictEqual((await socialOf(A)).reqIn, [], 'richiesta sparita');
     assert((await C.call('checkNick', { nick: 'Tempo' })).available, 'nickname di nuovo libero');
+    await wait(100);
+    assert(deletedOnOtherDevice, 'cancellazione comunicata anche agli altri dispositivi');
+    const deletedStore = require('./store').exportData(dataDir);
+    assert(!deletedStore.sessions.some(([, s]) => s.nick === 'Tempo' || (s.devices || []).some((d) => d.h === require('crypto').createHash('sha256').update(originalKey).digest('hex'))), 'sessione e credenziali rimosse su disco');
+    assert(!(await C.call('login', { nick: 'Tempo', password: 'prova123' })).ok, 'vecchia password inutilizzabile');
+    const oldDevice = player('ChiaveRevocata');
+    const oldWelcome = await oldDevice.hello(originalKey);
+    assert(!oldWelcome.nick && oldWelcome.token !== originalKey, 'una vecchia chiave non recupera il profilo eliminato');
+    oldDevice.sock.close(); deletedPeer.sock.close();
     D.sock.close();
     C.sock.close();
     step("cambio dispositivo con codice personale e con nickname + password; eliminazione del profilo");

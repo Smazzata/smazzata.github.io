@@ -90,7 +90,16 @@
     toast(`🐢 ${text}`);
   });
   // la password è cambiata da un altro dispositivo: questo viene scollegato
-  socket.on('loggedOut', ({ reason }) => {
+  socket.on('loggedOut', ({ reason, deleted }) => {
+    if (deleted) {
+      // Le altre installazioni saranno scollegate dal server; su questa cancelliamo anche le copie locali.
+      try {
+        for (const key of Object.keys(localStorage)) {
+          if ((key.startsWith('bur_') && !['bur_prefs', 'bur_lang'].includes(key)) || key.startsWith('smazzata_campaign_')) localStorage.removeItem(key);
+        }
+        sessionStorage.clear();
+      } catch (e) { /* memoria non disponibile */ }
+    }
     store.set('bur_token', null);
     S.token = null;
     alert(reason || 'Sei stato scollegato dal profilo.');

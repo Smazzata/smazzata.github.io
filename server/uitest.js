@@ -94,6 +94,10 @@ const HELPERS = `
       if (m.method === 'Runtime.consoleAPICalled' && m.params.type === 'error') errors.push(m.params.args.map((a) => a.value || a.description).join(' '));
     });
     shot = async (name) => {
+      if (STORE) {
+        await cdp.run(`await document.fonts.ready; await Promise.all([...document.images].map(i=>i.decode().catch(()=>{}))); return true;`);
+        await wait(550); // le insegne devono essere oltre il fotogramma iniziale di comparsa
+      }
       const r = await cdp.send('Page.captureScreenshot', { format: 'png' });
       fs.writeFileSync(path.join(OUT, name + '.png'), Buffer.from(r.data, 'base64'));
     };

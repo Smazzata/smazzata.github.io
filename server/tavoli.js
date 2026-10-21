@@ -51,6 +51,7 @@ function renamePlayer(token, nick) {
 }
 
 function seatOfToken(room, token) {
+  if (!token) return -1;
   return room.seats.findIndex((s) => s && s.token === token);
 }
 

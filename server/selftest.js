@@ -508,6 +508,7 @@ function simulate(label, rules, n, games = 3) {
 
 unitTests();
 require('./progress-reset-test')();
+require('./privacy-test')();
 {
   const counts = require('./progress-rules');
   const human = { token: 'persona' }, bot = { isBot: true };

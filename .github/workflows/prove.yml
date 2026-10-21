@@ -26,6 +26,10 @@ jobs:
           timeout 720 npm test || { echo "::warning::Test del motore bloccato o fallito, lo ripeto una volta"; timeout 720 npm test; }
       - name: Prova multigiocatore end-to-end
         run: npm run e2e
+      - name: Privacy e cancellazione nel browser
+        run: node server/privacy-uitest.js
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
       - name: Campagna (150 livelli, obiettivi, vite e ricompense)
         run: npm run test:campagna
       - name: Prova delle animazioni delle carte (tutti i giochi, con il ritardo del server)

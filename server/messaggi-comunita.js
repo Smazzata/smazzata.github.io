@@ -45,7 +45,7 @@ module.exports.register = function register(socket, handler) {
     return {
       stats: publicStats(e),
       byGame: statsByGame(e),
-      timeline: e.timeline || [],
+      timeline: (e.timeline || []).map(({ opponentTokens, ...row }) => row),
       level: Levels.levelOf(e),
       trophies: Trophies.view(e),
       history: (e.history || []).map((h) => ({ at: h.at, game: h.game || 'burraco', preset: h.preset, won: h.won, ranked: !!h.ranked, hands: h.hands, teams: h.teams })),

@@ -61,15 +61,17 @@ if [ "${1:-}" = "--set-backup-pass" ]; then
 fi
 
 if [ "${1:-}" = "--restore" ]; then
-  # ripristina l'ultimo backup dal ramo "backup" del repository
-  tmp=$(mktemp -d)
-  git clone -q --depth 1 --branch backup "https://github.com/$GH_REPO.git" "$tmp/b" || { echo "Nessun backup trovato"; exit 1; }
-  last=$(ls -1 "$tmp/b"/backup-*.json | sort | tail -1)
+  # Ripristino solo locale: le vecchie copie GitHub richiedono una bonifica separata.
+  if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+    echo "Ferma prima lo script del server (Ctrl+C nella sua sessione), poi ripeti il ripristino."
+    exit 1
+  fi
+  last=$(find "$DIR/data/backups" -maxdepth 1 -type f -name 'backup-*.json' 2>/dev/null | sort | tail -1)
+  [ -n "$last" ] || { echo "Nessun backup locale trovato. Non ripristinare copie precedenti a cancellazioni di profili."; exit 1; }
   echo "Ripristino $(basename "$last")…"
   mkdir -p "$DIR/data"
   node "$DIR/scripts/backup.js" ripristina "$last" "$DIR/data/stato.json"
-  rm -rf "$tmp"
-  exit 0
+  exit $?
 fi
 
 if [ "${1:-}" = "--install-boot" ]; then
@@ -175,33 +177,8 @@ publish_url() {
   rm -rf "$tmp"
 }
 
-# 4b. Backup cifrato nel ramo "backup" (gli ultimi 7 giorni)
-backup_once() {
-  [ -s "$TOKEN_FILE" ] && [ -s "$PASS_FILE" ] && { [ -f "$DIR/data/burraco.db" ] || [ -f "$DIR/data/stato.json" ]; } || return
-  tmp=$(mktemp -d)
-  url="https://${GH_REPO%%/*}:$(cat "$TOKEN_FILE")@github.com/$GH_REPO.git"
-  if ! git clone -q --depth 1 --branch backup "$url" "$tmp/b" 2>/dev/null; then
-    mkdir -p "$tmp/b" && (cd "$tmp/b" && git init -q && git checkout -q -b backup)
-  fi
-  if node "$DIR/scripts/backup.js" crea "$DIR/data/stato.json" "$tmp/b/backup-$(date +%Y-%m-%d).json" >/dev/null; then
-    (
-      cd "$tmp/b" || exit 1
-      ls -1 backup-*.json | sort | head -n -7 | xargs -r rm -f
-      printf 'Backup cifrati di Burraco Online.
-Ripristino sul telefono: bash ~/burraco/scripts/android-server.sh --restore
-' > LEGGIMI.txt
-      git add -A
-      git -c user.name="Burraco server" -c user.email="server@burraco.invalid" commit -qm "Backup $(date +%Y-%m-%d)" 2>/dev/null
-      git push -q "$url" backup 2>/dev/null
-    ) && log "Backup salvato su GitHub" || log "Backup non riuscito"
-  fi
-  rm -rf "$tmp"
-}
-
-backup_loop() {
-  sleep 300
-  while true; do backup_once; sleep "$BACKUP_EVERY"; done
-}
+# 4b. Copie cifrate private e scadenze: server/index.js, cartella data/backups.
+# Nessun nuovo backup viene pubblicato su GitHub.
 
 cleanup() {
   log "Chiusura"
@@ -212,7 +189,6 @@ trap cleanup EXIT INT TERM
 
 server_loop &
 update_loop &
-backup_loop &
 sleep 3
 
 # 5. Tunnel pubblico (ripartito se cade). L'indirizzo cambia a ogni riavvio del tunnel.

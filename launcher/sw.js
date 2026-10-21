@@ -1,7 +1,7 @@
 // Service worker della pagina d'ingresso: salva la pagina e la copia del gioco (cartella gioca/)
 // così, senza internet, l'app si apre lo stesso e si può giocare contro il computer.
 // "Prima la rete": da collegati si usa sempre la versione più recente.
-const CACHE = 'burraco-ingresso-v33';
+const CACHE = 'burraco-ingresso-v34';
 const SHELL = [
   'gioca/classifica.css', 'gioca/js/classifica.js', 'gioca/art/leagues/bronze.webp', 'gioca/art/leagues/silver.webp', 'gioca/art/leagues/gold.webp', 'gioca/art/leagues/platinum.webp', 'gioca/art/leagues/diamond.webp', 'gioca/art/leagues/master.webp', 'gioca/art/leagues/legend.webp',
   'gioca/campaign-story.css', 'gioca/js/campaign-story.js', 'gioca/art/campaign/garden.webp', 'gioca/art/campaign/rosa.webp', 'gioca/art/campaign/bruno.webp', 'gioca/art/campaign/barone.webp', 'gioca/art/campaign/boosters.webp',
@@ -11,7 +11,7 @@ const SHELL = [
   'gioca/style.css', 'gioca/campaign.css', 'gioca/fonts/nunito.woff2', 'gioca/fonts/playfair.woff2', 'gioca/local-server.js', 'gioca/engine.js',
   'gioca/js/campaign-adventure.js',
   'gioca/shared/rules.js', 'gioca/shared/melds.js', 'gioca/shared/scala40.js', 'gioca/shared/ramino.js', 'gioca/shared/canasta.js', 'gioca/shared/scopa.js', 'gioca/shared/briscola.js', 'gioca/shared/tressette.js', 'gioca/shared/rubamazzetto.js', 'gioca/shared/briscola5.js', 'gioca/shared/campaign.js', 'gioca/shared/premi.js', 'gioca/icon.svg', 'gioca/manifest.webmanifest',
-  'gioca/privacy.html', 'gioca/regole.html', 'gioca/icons/icon-192.png',
+  'gioca/licenze.html', 'gioca/fonts/nunito-OFL.txt', 'gioca/fonts/playfair-OFL.txt', 'gioca/privacy.html', 'gioca/elimina-profilo.html', 'gioca/regole.html', 'gioca/icons/icon-192.png',
 ];
 
 self.addEventListener('install', (e) => {

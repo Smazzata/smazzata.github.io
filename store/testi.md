@@ -25,7 +25,7 @@ Ogni regola si può personalizzare: obiettivo, matte, pozzetti, punteggi e molto
 • Profilo con nickname, amici, inviti e chat
 • Partite «con calma»: ognuno gioca quando può, ti avvisiamo quando tocca a te
 • Tornei a eliminazione e campionati tra amici
-• Classifica con punteggio di bravura (Elo) e «Gioca subito» con giocatori del tuo livello
+• Partite amichevoli e classificate, con gradi dal Bronzo alla Leggenda
 
 🤖 CONTRO IL COMPUTER
 • Quattro livelli, da principiante a esperto
@@ -33,7 +33,7 @@ Ogni regola si può personalizzare: obiettivo, matte, pozzetti, punteggi e molto
 • Sfida del giorno: le stesse carte per tutti, una classifica nuova ogni giorno
 
 🎓 PER IMPARARE
-• Lezioni per ogni gioco e partita di allenamento con suggerimenti
+• Regole consultabili e allenamento contro il computer con suggerimenti
 • Moviola per rivedere l'ultima smazzata
 
 ✨ FATTO PER IL TELEFONO
@@ -42,7 +42,7 @@ Ogni regola si può personalizzare: obiettivo, matte, pozzetti, punteggi e molto
 • Accessibilità: testo grande, alto contrasto, mosse lette ad alta voce
 • Italiano, English, Español, Português
 
-Trofei, livelli, titoli e cornici da sbloccare giocando.
+Trofei, livelli, titoli e cornici da sbloccare nelle partite tra persone. Le partite contro il computer sono allenamento e non assegnano progressi al profilo online.
 
 ---
 
@@ -67,7 +67,7 @@ Every rule can be customised: target score, wild cards, kitties, scoring and muc
 • Profile with nickname, friends, invitations and chat
 • "Slow" games: everyone plays when they can, we tell you when it is your turn
 • Knockout tournaments and leagues with friends
-• Rankings with a skill rating (Elo) and "Play now" with players of your level
+• Friendly and ranked matches, with ranks from Bronze to Legend
 
 🤖 AGAINST THE COMPUTER
 • Four levels, from beginner to expert
@@ -75,7 +75,7 @@ Every rule can be customised: target score, wild cards, kitties, scoring and muc
 • Daily challenge: the same cards for everyone, a new ranking every day
 
 🎓 TO LEARN
-• Lessons for every game and a practice game with hints
+• Game rules and practice against the computer with hints
 • Replay to review the last hand
 
 ✨ MADE FOR YOUR PHONE
@@ -84,7 +84,7 @@ Every rule can be customised: target score, wild cards, kitties, scoring and muc
 • Accessibility: large text, high contrast, moves read aloud
 • Italiano, English, Español, Português
 
-Trophies, levels, titles and frames to unlock as you play.
+Unlock trophies, levels, titles and frames in matches between people. Computer matches are practice and do not award online profile progress.
 
 ---
 
@@ -109,7 +109,7 @@ Cada regla se puede personalizar: objetivo, comodines, muertos, puntuación y mu
 • Perfil con apodo, amigos, invitaciones y chat
 • Partidas «con calma»: cada uno juega cuando puede, te avisamos cuando te toca
 • Torneos de eliminación y ligas entre amigos
-• Clasificación con puntuación de habilidad (Elo) y «Jugar ya» con jugadores de tu nivel
+• Partidas amistosas y clasificatorias, con rangos de Bronce a Leyenda
 
 🤖 CONTRA LA COMPUTADORA
 • Cuatro niveles, de principiante a experto
@@ -117,7 +117,7 @@ Cada regla se puede personalizar: objetivo, comodines, muertos, puntuación y mu
 • Desafío del día: las mismas cartas para todos, una clasificación nueva cada día
 
 🎓 PARA APRENDER
-• Lecciones de cada juego y partida de práctica con sugerencias
+• Reglas y práctica contra la computadora con sugerencias
 • Repetición para ver de nuevo la última mano
 
 ✨ HECHO PARA EL TELÉFONO
@@ -126,7 +126,7 @@ Cada regla se puede personalizar: objetivo, comodines, muertos, puntuación y mu
 • Accesibilidad: texto grande, alto contraste, jugadas leídas en voz alta
 • Italiano, English, Español, Português
 
-Trofeos, niveles, títulos y marcos para desbloquear jugando.
+Desbloquea trofeos, niveles, títulos y marcos en partidas entre personas. Las partidas contra la computadora son de práctica y no otorgan progreso al perfil en línea.
 
 ---
 
@@ -151,7 +151,7 @@ Cada regra pode ser personalizada: objetivo, curingas, mortos, pontuação e mui
 • Perfil com apelido, amigos, convites e chat
 • Partidas «sem pressa»: cada um joga quando pode, avisamos quando for sua vez
 • Torneios eliminatórios e ligas entre amigos
-• Ranking com pontuação de habilidade (Elo) e «Jogar agora» com jogadores do seu nível
+• Partidas amistosas e ranqueadas, com ligas de Bronze a Lenda
 
 🤖 CONTRA O COMPUTADOR
 • Quatro níveis, de iniciante a especialista
@@ -159,7 +159,7 @@ Cada regra pode ser personalizada: objetivo, curingas, mortos, pontuação e mui
 • Desafio do dia: as mesmas cartas para todos, um ranking novo a cada dia
 
 🎓 PARA APRENDER
-• Lições de cada jogo e partida de treino com dicas
+• Regras e treino contra o computador com dicas
 • Replay para rever a última mão
 
 ✨ FEITO PARA O CELULAR
@@ -168,4 +168,4 @@ Cada regra pode ser personalizada: objetivo, curingas, mortos, pontuação e mui
 • Acessibilidade: texto grande, alto contraste, jogadas lidas em voz alta
 • Italiano, English, Español, Português
 
-Troféus, níveis, títulos e molduras para desbloquear jogando.
+Desbloqueie troféus, níveis, títulos e molduras em partidas entre pessoas. Partidas contra o computador são treino e não dão progresso ao perfil online.

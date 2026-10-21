@@ -62,12 +62,9 @@ ctx.social = createSocial({
     return true;
   },
   onDelete: (token) => {
-    leaderboard.delete(token);
-    const sess = sessions.get(token);
-    if (sess) sess.push = []; // niente più notifiche a quel dispositivo
-    ctx.League.forget(token);
-    scheduleSave();
+    require('./privacy').eraseRelated(ctx, token, DATA_DIR);
   },
+  onDeleted: () => ctx.saveNow(true),
 });
 ctx.push = createPush({ dataDir: DATA_DIR, sessions, contact: HOME_URL });
 const { social } = ctx;
@@ -76,12 +73,13 @@ const Premi = require('../shared/premi');
 const progressOf = (e) => { const lv = Levels.levelOf(e); return { ...lv, unlocks: Premi.unlockedIds({ level: lv.level, trophies: (e && e.trophies) || {} }), streak: ctx.streakOf(e) }; };
 
 io.on('connection', (socket) => {
-  const handler = (fn) => (data, cb) => {
+  const handler = (fn, allowHello = false) => (data, cb) => {
     const failed = (e) => {
       if (!(e instanceof E.GameError)) console.error(e);
       if (typeof cb === 'function') cb({ ok: false, error: e.message });
     };
     try {
+      if (!allowHello && !sessions.has(socket.data.token)) throw new E.GameError('Sessione non valida');
       const res = fn(data || {});
       // le risposte che aspettano qualcosa (es. l'invio di un'email) arrivano più tardi
       if (res && typeof res.then === 'function') res.then((r) => { if (typeof cb === 'function') cb({ ok: true, ...(r || {}) }); }, failed);
@@ -127,7 +125,7 @@ io.on('connection', (socket) => {
       }
     }
     socket.emit('state', { room: null, game: null });
-  }));
+  }, true));
 
   TableMessages.register(socket, handler);
   CommunityMessages.register(socket, handler);
@@ -143,6 +141,18 @@ io.on('connection', (socket) => {
 });
 
 ctx.loadSaved();
+
+// Scadenze controllate anche se nessun giocatore apre l'app.
+function privacyMaintenance() {
+  try {
+    const privacy = require('./privacy');
+    privacy.cleanCopies(DATA_DIR);
+    if (privacy.expireReports(ctx)) ctx.saveNow(true);
+    require('../scripts/backup').localBackup(DATA_DIR);
+  } catch (e) { console.error('Manutenzione privacy non riuscita:', e.message); }
+}
+privacyMaintenance();
+setInterval(privacyMaintenance, 60 * 60 * 1000).unref();
 
 server.listen(PORT, () => {
   const nets = require('os').networkInterfaces();
