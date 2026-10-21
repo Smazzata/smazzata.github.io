@@ -1,9 +1,9 @@
-# Impara giocando: percorsi a livelli (public/js/campagna.js, shared/campaign.js)
+# Avventura: percorsi a livelli (public/js/campagna.js, shared/campaign.js)
 # italiano ‖ English ‖ Español ‖ Português
 # (pozzetto = kitty / muerto / morto; tallone = stock / mazo / monte; burraco = burraco / burraco / canastra; pinella = pinella / pinella / curinga)
 
 # Pagina iniziale e interfaccia
-🌱 Impara giocando ‖ 🌱 Learn by playing ‖ 🌱 Aprende jugando ‖ 🌱 Aprenda jogando
+🌱 Avventura ‖ 🌱 Adventure ‖ 🌱 Aventura ‖ 🌱 Aventura
 Tre percorsi: Burraco, Scala 40 e Ramino ‖ Three paths: Burraco, Scala 40 and Rummy ‖ Tres caminos: Burraco, Scala 40 y Rummy ‖ Três caminhos: Burraco, Scala 40 e Rummy
 📖 Regole e tutorial ‖ 📖 Rules and tutorial ‖ 📖 Reglas y tutorial ‖ 📖 Regras e tutorial
 ← Tutti i percorsi ‖ ← All paths ‖ ← Todos los caminos ‖ ← Todos os caminhos
