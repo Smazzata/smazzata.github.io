@@ -34,6 +34,57 @@
 .cad-objectives { padding-left: 0; list-style: none; }
 .cad-objectives li { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #c8cbbd; }
 @media(max-width:360px) { .cad-dialogue { padding: 10px; gap: 10px; } .cad-dialogue .cad-portrait { width: 60px; height: 66px; flex-basis: 60px; } .cad-coach .cad-portrait { display: none; } }
+/* Linguaggio visivo della campagna: medaglioni, fumetti e oggetti smaltati. */
+.cad-dialogue { background: radial-gradient(ellipse at 0 100%,color-mix(in srgb,var(--character-color,#397257) 26%,transparent),transparent 70%),linear-gradient(135deg,#203c44,#122830); color:#fff8e7; border:1px solid #ffffff30; border-radius:26px; box-shadow:0 12px 28px #102c3533,inset 0 1px #ffffff20; padding:20px; gap:18px; overflow:hidden; animation:cad-arrive .35s ease-out both; }
+.cad-character-stage { position:relative; flex-shrink:0; align-self:center; }
+.cad-character-stage:before { content:''; position:absolute; inset:12% -10% 0; border-radius:50%; background:radial-gradient(circle,#ffe4a94a,transparent 70%); }
+.cad-character-stage .cad-portrait { width:100px; height:110px; filter:drop-shadow(0 8px 7px #0005); animation:cad-breathe 4s ease-in-out infinite; }
+.cad-character-spark { position:absolute; color:#ffe29a; right:-5px; top:3px; font-size:24px; animation:cad-spark 2.8s ease-in-out infinite; }
+.cad-dialogue .cad-speech { position:relative; flex:1; }
+.cad-dialogue strong { color:#ffe2a0; font-size:18px; letter-spacing:.2px; }
+.cad-dialogue small { color:#b9d4cf; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+.cad-dialogue p { color:#fff8eb; font-size:15px; line-height:1.55; animation:cad-arrive .5s .1s both; }
+.cad-eyes { transform-box:fill-box; transform-origin:center; animation:cad-blink 5.3s infinite; }
+.cad-mouth { transform-box:fill-box; transform-origin:center; }
+.cad-dialogue:hover .cad-mouth { animation:cad-talk .45s ease-in-out 4; }
+.cad-speaking .cad-mouth { animation:cad-talk .35s ease-in-out infinite; }
+.cad-coach { background:linear-gradient(115deg,#fffbee,#f5e8c6); border-top:2px solid #e5bd68; box-shadow:0 -5px 20px #102a3322; padding:9px 10px; gap:9px; }
+.cad-coach .cad-portrait { display:block; border-radius:18px; filter:drop-shadow(0 3px 3px #0003); }
+.cad-coach-copy > strong { color:#845a2c; letter-spacing:.3px; }
+.cad-tools { gap:5px; }
+.cad-tools button { box-shadow:0 2px 0 #c6b88e,inset 0 1px #fff; transition:transform .15s,filter .15s; }
+.cad-tools button:active,.cad-shop-item button:active { transform:translateY(2px) scale(.96); box-shadow:none; }
+.cad-tools .cad-power-button { display:inline-flex; align-items:center; gap:3px; border:0; background:transparent; box-shadow:none; padding:0 2px; }
+.cad-power-art { display:inline-grid; place-items:center; flex:0 0 auto; width:66px; height:66px; border-radius:21px; background:linear-gradient(145deg,#ffcf5b,#d58221); box-shadow:inset 0 2px 2px #fff8,inset 0 -4px 2px #0002,0 5px 0 #9a591b,0 8px 12px #0002; border:1px solid #fff6; }
+.cad-power-art svg { width:80%; height:80%; filter:drop-shadow(0 2px 1px #0003); }
+.cad-power-time { background:linear-gradient(145deg,#63dbec,#2286be); box-shadow:inset 0 2px 2px #fff8,inset 0 -4px 2px #0002,0 5px 0 #185e8a,0 8px 12px #0002; }
+.cad-power-coach { background:linear-gradient(145deg,#bda2fa,#7652b3); box-shadow:inset 0 2px 2px #fff8,inset 0 -4px 2px #0002,0 5px 0 #543782,0 8px 12px #0002; }
+.cad-power-life { background:linear-gradient(145deg,#ff91b1,#d73769); box-shadow:inset 0 2px 2px #fff8,inset 0 -4px 2px #0002,0 5px 0 #9a264d,0 8px 12px #0002; }
+.cad-tools .cad-power-art { width:29px; height:29px; border-radius:10px; box-shadow:inset 0 1px #fff8,0 2px 0 #0004; }
+.cad-hint-button .cad-power-art { width:28px; height:28px; border-radius:10px; box-shadow:inset 0 1px #fff8,0 2px 0 #98661d; }
+.cad-tools .cad-power-button > span:last-child:not(.cad-power-art) { font-size:11px; font-weight:800; }
+.cad-shop h2 { color:#32574e; }
+.cad-shop-item { padding:16px 12px; margin:12px 0; border:1px solid #ddcfaf; border-radius:20px; background:linear-gradient(135deg,#fffef8,#f5ecd9); box-shadow:0 4px 0 #dfd5bf; gap:15px; animation:cad-arrive .3s both; }
+.cad-shop-item strong { color:#344f4a; font-size:16px; }
+.cad-shop-item small { color:#52615b; font-size:12px; line-height:1.4; }
+.cad-shop-item .btn { background:linear-gradient(#438f68,#286144); color:white; border:1px solid #286144; box-shadow:0 3px 0 #183e2b; border-radius:12px; font-weight:800; }
+.cad-shop-item .btn:disabled { opacity:.45; }
+.cad-power-effect { position:fixed; z-index:100000; inset:0; display:grid; place-items:center; pointer-events:none; overflow:hidden; }
+.cad-power-halo { position:absolute; width:290px; height:290px; border-radius:50%; background:radial-gradient(circle,#fff4bc99,transparent 68%); animation:cad-halo 1.6s both; }
+.cad-power-reveal { display:flex; align-items:center; flex-direction:column; gap:20px; animation:cad-power-pop 1.65s both; }
+.cad-power-reveal .cad-power-art { width:94px; height:94px; border-radius:28px; }
+.cad-power-reveal strong { background:#183d40f5; color:#fff5d7; padding:12px 22px; border:1px solid #e6ca82; border-radius:30px; box-shadow:0 8px 24px #0004; max-width:90vw; text-align:center; }
+.cad-power-effect > i { position:absolute; left:50%; top:50%; width:7px; height:12px; background:#ffe19b; border-radius:3px; animation:cad-particle 1.2s both; }
+@keyframes cad-arrive { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes cad-breathe { 50% { transform:translateY(-3px) rotate(-1deg); } }
+@keyframes cad-blink { 0%,42%,46%,100% { transform:scaleY(1); } 44% { transform:scaleY(.1); } }
+@keyframes cad-talk { 50% { transform:scaleY(.35); } }
+@keyframes cad-spark { 50% { opacity:.4; transform:scale(.65) rotate(30deg); } }
+@keyframes cad-power-pop { 0% { opacity:0; transform:scale(.4) translateY(30px); } 18% { opacity:1; transform:scale(1.12); } 30%,75% { opacity:1; transform:scale(1); } 100% { opacity:0; transform:translateY(-55px) scale(.8); } }
+@keyframes cad-halo { 0% { opacity:0; transform:scale(.2); } 30% { opacity:1; } 100% { opacity:0; transform:scale(1.7); } }
+@keyframes cad-particle { 0% { opacity:0; transform:rotate(var(--a)) translateY(0); } 25% { opacity:1; } 100% { opacity:0; transform:rotate(var(--a)) translateY(calc(-1 * var(--d))) rotate(90deg); } }
+@media(max-width:400px) { .cad-dialogue { padding:14px; gap:12px; } .cad-character-stage .cad-portrait { width:70px; height:77px; flex-basis:70px; } .cad-dialogue strong { font-size:16px; } .cad-dialogue p { font-size:14px; } .cad-shop-item { padding:12px 8px; gap:10px; } .cad-shop-item > .cad-power-art { width:45px; height:45px; border-radius:15px; } .cad-shop-item .btn { padding:8px; } .cad-coach .cad-portrait { display:block; width:36px; height:40px; flex-basis:36px; } }
+@media(prefers-reduced-motion:reduce) { .cad-dialogue,.cad-dialogue p,.cad-character-stage .cad-portrait,.cad-eyes,.cad-dialogue:hover .cad-mouth,.cad-speaking .cad-mouth,.cad-character-spark,.cad-shop-item,.cad-power-reveal,.cad-power-halo,.cad-power-effect > i { animation:none; } .cad-power-effect > i,.cad-power-halo { display:none; } }
 .campaign-entry { background: #dfedce; color: #234c34; padding: 14px; font-size: 17px; }
 .campaign-entry small { display: block; margin-top: 5px; font-size: 12px; font-weight: 400; }
 .campaign { max-width: 700px; padding-bottom: 48px; }

@@ -24,21 +24,47 @@ function campaignWriteAttempt(remove = false) {
   S.campaignAttemptsSession = a; campaignPersist(CAMPAIGN_ATTEMPTS_KEY, a);
 }
 function campaignClock(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+function campaignPowerIcon(kind) {
+  const art = {
+    hint: '<path d="M23 43c0-7-10-10-10-21a19 19 0 0 1 38 0c0 11-10 14-10 21Z" fill="#ffe995"/><path d="m26 30 6 7 7-10M32 37v9" fill="none" stroke="#da8b29" stroke-width="3"/><path d="M24 47h16v8H24z" fill="#f4c254"/><path d="M27 57h10" stroke="#fff4c6" stroke-width="4"/><path d="M5 9 1 4m58 5 4-5M6 28H0m58 0h6" stroke="#fff7cb" stroke-width="3"/>',
+    time: '<circle cx="32" cy="35" r="25" fill="#c9fcff"/><circle cx="32" cy="35" r="19" fill="#287aab"/><path d="M32 22v14l9 6" fill="none" stroke="white" stroke-width="4" stroke-linecap="round"/><path d="M25 3h14M32 3v7m19 3 5 5" stroke="#d6fbff" stroke-width="5" stroke-linecap="round"/>',
+    coach: '<path d="m2 23 30-15 30 15-30 16Z" fill="#fff2c3"/><path d="M13 30v17q19 17 38 0V30L32 40Z" fill="#c8a0ff"/><path d="M59 25v24" stroke="#ffdf7e" stroke-width="3"/><circle cx="59" cy="51" r="4" fill="#ffdf7e"/><path d="m28 47 4 4 8-9" fill="none" stroke="white" stroke-width="3"/>',
+    life: '<path d="M32 57 8 34C-11 13 18-5 32 15 46-5 75 13 56 34Z" fill="#ff9bb8"/><path d="M12 23q0-10 11-9" fill="none" stroke="#ffe5ef" stroke-width="5" stroke-linecap="round"/>'
+  };
+  return `<span class="cad-power-art cad-power-${kind}" aria-hidden="true"><svg viewBox="-4 -4 72 72">${art[kind] || art.hint}</svg></span>`;
+}
+function campaignPowerEffect(kind, purchased = false) {
+  document.querySelector('.cad-power-effect')?.remove();
+  const labels = { hint: 'La prossima mossa si illumina', coach: 'La guida è al tuo fianco', time: '+30 secondi', life: '+1 vita' };
+  const fx = document.createElement('div'); fx.className = 'cad-power-effect'; fx.setAttribute('role', 'status');
+  fx.innerHTML = `<div class="cad-power-halo"></div>${Array.from({length:12},(_,i)=>`<i style="--a:${i*30}deg;--d:${65+i%3*22}px"></i>`).join('')}<div class="cad-power-reveal">${campaignPowerIcon(kind)}<strong>${purchased ? 'Aggiunto allo zaino' : labels[kind]}</strong></div>`;
+  document.body.append(fx); setTimeout(() => fx.remove(), 1700);
+}
 function campaignWalletHTML() {
   const w = campaignWallet();
   return `<div class="cad-wallet"><span data-cad-hearts aria-label="${w.lives} vite su 5">❤️ ${w.lives}/5</span><span>🪙 ${w.coins}</span><button class="btn small" data-act="campaignShop">🎒 Aiuti</button><small data-cad-lives>${w.lives < 5 ? 'Prossima vita fra ' + campaignClock(w.nextLife - Date.now()) : 'Vite al completo'}</small></div>`;
 }
 function campaignPortrait(c, small = false) {
+  if (c.kind === 'crab' || c.kind === 'hedgehog') {
+    const crab = c.kind === 'crab';
+    const body = crab
+      ? '<g fill="none" stroke="#dd7958" stroke-width="7" stroke-linecap="round"><path d="m27 72-14 5-7 12m23-5-13 8m57-20 14 5 7 12m-23-5 13 8M25 62 12 48m63 14 13-14"/></g><g fill="#ed9065" stroke="#913f39" stroke-width="2"><path d="M13 54C-6 50 3 27 10 30l3 12 9-10q14 18-9 22Z"/><path d="M87 54c19-4 10-27 3-24l-3 12-9-10q-14 18 9 22Z"/><ellipse cx="50" cy="73" rx="30" ry="23"/></g><path d="M36 57V42m28 15V42" stroke="#ed9065" stroke-width="8"/><g class="cad-eyes"><circle cx="36" cy="41" r="7" fill="#fff9d8"/><circle cx="64" cy="41" r="7" fill="#fff9d8"/><circle cx="37" cy="42" r="3" fill="#273842"/><circle cx="63" cy="42" r="3" fill="#273842"/></g><path class="cad-mouth" d="M41 77q9 11 18 0" fill="none" stroke="#913f39" stroke-width="3" stroke-linecap="round"/>'
+      : '<path d="m12 89-5-19 7-3-5-18 12 1-1-19 13 5 8-19 11 13 15-13 4 18 17-2-5 18 12 8-10 12 6 17Z" fill="#774d38" stroke="#bc8b55" stroke-width="3"/><path d="M23 79q-2-39 27-40 29 1 27 40l-8 16H31Z" fill="#f5d4a3"/><ellipse cx="50" cy="78" rx="12" ry="10" fill="#d9ab7c"/><ellipse cx="50" cy="71" rx="6" ry="4" fill="#46372f"/><g class="cad-eyes" fill="#273842"><ellipse cx="36" cy="59" rx="3" ry="4"/><ellipse cx="64" cy="59" rx="3" ry="4"/></g><path class="cad-mouth" d="M43 84q7 6 14 0" fill="none" stroke="#845344" stroke-width="2.5"/><path d="M28 97q22-10 44 0v13H28Z" fill="#599379"/><path d="m42 93 8 10 8-10" fill="#ffe7a7"/>';
+    return `<svg class="cad-portrait ${small?'small':''}" viewBox="0 0 100 110" role="img" aria-label="${esc(c.name)}"><rect x="1" y="1" width="98" height="108" rx="30" fill="${crab?'#245a70':'#3b5948'}"/><circle cx="74" cy="25" r="30" fill="#fff" opacity=".07"/>${body}</svg>`;
+  }
   const animal = c.kind === 'hedgehog' || c.kind === 'crab';
   const hat = c.kind === 'baron' || c.kind === 'pirate' ? '<path d="M23 28h54l-9-8V6H32v14Z" fill="#273048"/><path d="M31 19h38v7H31Z" fill="#e4b84f"/>' : c.kind === 'captain' ? '<path d="M20 24Q50-7 80 24L67 32H33Z" fill="#fff7df"/><path d="M32 27h36v9H32Z" fill="#274c69"/>' : c.kind === 'gardener' ? '<ellipse cx="50" cy="30" rx="35" ry="9" fill="#f3ca79"/><path d="M29 29V17Q50-1 71 17v12Z" fill="#e3b466"/><circle cx="68" cy="22" r="7" fill="#dd7791"/>' : '<path d="M25 30Q25-4 70 14l9 16Z" fill="#e9c28c"/>';
-  return `<svg class="cad-portrait ${small ? 'small' : ''}" viewBox="0 0 100 110" role="img" aria-label="${esc(c.name)}"><defs><linearGradient id="cad-${c.kind}" x2="1" y2="1"><stop stop-color="${c.color}"/><stop offset="1" stop-color="#182e3a"/></linearGradient></defs><rect x="1" y="1" width="98" height="108" rx="26" fill="url(#cad-${c.kind})"/><path d="M12 110V92Q50 65 88 92v18Z" fill="${c.color}" stroke="#fff4c9" stroke-width="3"/>${animal ? `<path d="M16 50 9 40 24 41 20 25 35 32 42 16 52 30 68 20 70 38 89 32 82 52Z" fill="${c.kind === 'crab' ? '#d67553' : '#805234'}"/><ellipse cx="50" cy="55" rx="30" ry="25" fill="#e9ba85"/>` : `<ellipse cx="50" cy="49" rx="28" ry="30" fill="#f4cba3"/>${hat}`}<ellipse cx="39" cy="48" rx="3" ry="4" fill="#22313b"/><ellipse cx="61" cy="48" rx="3" ry="4" fill="#22313b"/><path d="M42 63q8 8 16 0" stroke="#784439" stroke-width="3" fill="none" stroke-linecap="round"/>${c.kind === 'clockmaker' || c.kind === 'baron' ? '<g stroke="#8c704d" stroke-width="2" fill="none"><circle cx="38" cy="48" r="9"/><circle cx="62" cy="48" r="9"/><path d="M47 48h6"/></g>' : ''}<text x="50" y="99" text-anchor="middle" font-size="20">${c.icon}</text></svg>`;
+  return `<svg class="cad-portrait ${small ? 'small' : ''}" viewBox="0 0 100 110" role="img" aria-label="${esc(c.name)}"><defs><linearGradient id="cad-${c.kind}" x2="1" y2="1"><stop stop-color="${c.color}"/><stop offset="1" stop-color="#182e3a"/></linearGradient></defs><rect x="1" y="1" width="98" height="108" rx="26" fill="url(#cad-${c.kind})"/><path d="M12 110V92Q50 65 88 92v18Z" fill="${c.color}" stroke="#fff4c9" stroke-width="3"/>${animal ? `<path d="M16 50 9 40 24 41 20 25 35 32 42 16 52 30 68 20 70 38 89 32 82 52Z" fill="${c.kind === 'crab' ? '#d67553' : '#805234'}"/><ellipse cx="50" cy="55" rx="30" ry="25" fill="#e9ba85"/>` : `<ellipse cx="50" cy="49" rx="28" ry="30" fill="#f4cba3"/>${hat}`}<g class="cad-eyes"><ellipse cx="39" cy="48" rx="3" ry="4" fill="#22313b"/><ellipse cx="61" cy="48" rx="3" ry="4" fill="#22313b"/><circle cx="40" cy="47" r="1" fill="white"/><circle cx="62" cy="47" r="1" fill="white"/></g><ellipse cx="30" cy="58" rx="6" ry="3" fill="#ed9b89" opacity=".6"/><ellipse cx="70" cy="58" rx="6" ry="3" fill="#ed9b89" opacity=".6"/><path class="cad-mouth" d="M42 63q8 8 16 0" stroke="#784439" stroke-width="3" fill="none" stroke-linecap="round"/>${c.kind === 'clockmaker' || c.kind === 'baron' ? '<g stroke="#8c704d" stroke-width="2" fill="none"><circle cx="38" cy="48" r="9"/><circle cx="62" cy="48" r="9"/><path d="M47 48h6"/></g>' : ''}<text x="50" y="99" text-anchor="middle" font-size="20">${c.icon}</text></svg>`;
 }
 function campaignDialogue(c, text, compact = false) {
-  return `<div class="cad-dialogue ${compact ? 'compact' : ''}">${campaignPortrait(c, compact)}<div><strong>${esc(c.name)}</strong><small>${esc(c.role)}</small><p>${esc(text)}</p></div></div>`;
+  return `<div class="cad-dialogue ${compact ? 'compact' : ''}" style="--character-color:${c.color}"><div class="cad-character-stage">${campaignPortrait(c, compact)}<span class="cad-character-spark">✦</span></div><div class="cad-speech"><strong>${esc(c.name)}</strong><small>${esc(c.role)}</small><p>${esc(text)}</p></div></div>`;
 }
 function campaignSpeak(text, force = false) {
   if (!('speechSynthesis' in window) || (!force && !store.get('cad_voice', false))) return;
   window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text);
+  const speaking = active => document.body.classList.toggle('cad-speaking', active);
+  utterance.onstart = () => speaking(true);
+  utterance.onend = utterance.onerror = () => speaking(false);
   utterance.lang = 'it-IT'; utterance.rate = .95; window.speechSynthesis.speak(utterance);
 }
 function campaignEngine() { return window.BurracoGames[campaignPath().id]; }
@@ -60,7 +86,7 @@ function campaignCoachHTML() {
   const path = campaignPath(), l = path.levels[S.campaignLevel], session = S.campaignMatch, x = campaignEngine();
   const detailed = l.number <= 10 || session.revealUntil > Date.now() || session.coachTurn === session.turns;
   const text = S.campaignFeedback || (session.g.turn !== 0 ? Campaign.tip(session,l,x.E,x.Bot) : detailed ? Campaign.tip(session,l,x.E,x.Bot) : l.goalText);
-  return `<div class="coach campaign-table-coach cad-coach">${campaignPortrait(session.g.turn === 0 ? path.mentor : l.opponent, true)}<div class="cad-coach-copy"><strong>${esc(session.g.turn === 0 ? path.mentor.name : l.opponent.name)}</strong><p>${esc(text)}</p><div class="cad-tools"><b data-cad-clock>${campaignClock(session.remainingMs)}</b>${campaignGoalsHTML()}<button data-act="campaignPause" aria-label="Pausa">⏸</button><button data-act="campaignPower" data-power="coach" title="Allenatore per un turno">🎓</button><button data-act="campaignPower" data-power="time" title="Aggiungi 30 secondi">⏱ +30</button><button data-act="campaignVoice" aria-label="Ascolta la guida">🔊</button><button data-act="campaignMap">Mappa</button></div></div></div>`;
+  return `<div class="coach campaign-table-coach cad-coach">${campaignPortrait(session.g.turn === 0 ? path.mentor : l.opponent, true)}<div class="cad-coach-copy"><strong>${esc(session.g.turn === 0 ? path.mentor.name : l.opponent.name)}</strong><p>${esc(text)}</p><div class="cad-tools"><b data-cad-clock>${campaignClock(session.remainingMs)}</b>${campaignGoalsHTML()}<button data-act="campaignPause" aria-label="Pausa">⏸</button><button data-act="campaignPower" data-power="coach" class="cad-power-button" title="Allenatore per un turno" aria-label="Allenatore per un turno">${campaignPowerIcon("coach")}</button><button data-act="campaignPower" data-power="time" class="cad-power-button" title="Aggiungi 30 secondi" aria-label="Aggiungi 30 secondi">${campaignPowerIcon("time")}<span>+30</span></button><button data-act="campaignVoice" aria-label="Ascolta la guida">🔊</button><button data-act="campaignMap">Mappa</button></div></div></div>`;
 }
 function campaignDecorateTable() {
   if (!S.campaignActive) return;
@@ -93,6 +119,7 @@ function campaignStopTable() {
   S.campaignActive = false; S.campaignClockRunning = false; S.campaignLoadToken = null;
   if(S.campaignBotTimer)clearTimeout(S.campaignBotTimer); S.campaignBotTimer = null;
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  document.body.classList.remove('cad-speaking');
   S.burracoFx = null; for (const el of $$('.bigtoast, canvas.confetti')) el.remove();
   if (S.room?.campaign) { S.room = null; S.game = null; }
   S.selected.clear(); S.hint = null; S.antic = null; clearAnticipated();
@@ -141,7 +168,7 @@ function campaignUsePower(power) {
   if(power === 'time') { s.remainingMs += 30000; s.timeBoosts++; }
   else if(power === 'coach')s.coachTurn=s.turns;
   else s.revealUntil=Date.now()+20000;
-  campaignWriteAttempt(); render();
+  campaignWriteAttempt(); render(); campaignPowerEffect(power);
   return {ok:true,hint:power==='hint'?campaignHint():null};
 }
 function campaignEvent(ev,data) {
@@ -192,17 +219,17 @@ Object.assign(handlers, {
   },
   campaignMap() { closeModal();campaignStopTable();const l=campaignPath()?.levels[S.campaignLevel];if(l)S.campaignChapter=l.chapter;S.campaignLevel=null;render();campaignScrollToCurrent();campaignFocus(); },
   campaignPause() { campaignChargeClock();openModal('campaignPause',`<h2>⏸ Partita in pausa</h2><p>Il tavolo ti aspetta e il tempo è fermo.</p><button class="btn primary big" data-act="campaignContinue">Riprendi</button><button class="btn" data-act="campaignMap">Metti da parte e torna alla mappa</button>`);campaignWriteAttempt(); },
-  campaignContinue() { closeModal();S.campaignClockAt=Date.now();S.campaignClockRunning=false;campaignScheduleBot(); },
+  campaignContinue() { closeModal();S.campaignClockAt=Date.now();S.campaignClockRunning=false;if(!S.campaignActive)render();campaignScheduleBot(); },
   campaignObjectives() { const l=campaignPath().levels[S.campaignLevel],states=Campaign.goalState(S.campaignMatch,l),labels={turns:'Turni completati',melds:'Combinazioni sul tavolo',seqs:'Scale',sets:'Tris o poker',adds:'Attacchi eseguiti',wild:'Giochi con una matta',swaps:'Jolly recuperati',pile:'Raccolte dagli scarti',burraco:'Burraco completato',clean:'Scala senza matte',close:'Chiusura della smazzata'};openModal('campaignPause',`<h2>🎯 ${esc(l.title)}</h2><p>${esc(l.goalText)}</p><ul class="cad-objectives">${states.map(x=>`<li>${x.done?'✅':'○'} ${labels[x.key]} <b>${typeof x.target==='boolean'?(x.done?'Completato':'Da completare'):x.value+'/'+x.target}</b></li>`).join('')}</ul><p>Turni completati: ${S.campaignMatch.turns}/${l.maxTurns}. L’obiettivo viene verificato alla fine del tuo turno.</p><button class="btn primary" data-act="campaignContinue">Torna al tavolo</button>`); },
   campaignPower(el) { const r=campaignUsePower(el.dataset.power);if(!r.ok&&r.error)toast(r.error,true); },
   campaignVoice(el) { const intro=el?.dataset.intro!==undefined,p=campaignPath(),l=p?.levels[intro?Number(el.dataset.intro):S.campaignLevel];if(!l)return;if(!intro&&store.get('cad_voice',false)){handlers.campaignMute();return;}store.set('cad_voice',true);campaignSpeak(intro?l.intro:Campaign.tip(S.campaignMatch,l,campaignEngine().E,campaignEngine().Bot),true); },
-  campaignMute() { store.set('cad_voice',false);if('speechSynthesis'in window)window.speechSynthesis.cancel();toast('Voce disattivata'); },
+  campaignMute() { store.set('cad_voice',false);if('speechSynthesis'in window)window.speechSynthesis.cancel();document.body.classList.remove('cad-speaking');toast('Voce disattivata'); },
   campaignShop() {
     campaignChargeClock();const w=campaignWallet();
     const items=[['hint','💡 Suggerimento','Evidenzia una mossa per 20 secondi.',40],['coach','🎓 Allenatore','Guida e carte evidenziate per il turno attuale.',80],['time','⏱ Tempo extra','Aggiunge 30 secondi. Massimo due per tentativo.',30],['life','❤️ Una vita','Recupera una vita senza aspettare.',60]];
-    openModal('campaignShop',`<div class="cad-shop"><h2>🎒 La bottega degli aiuti</h2><p>🪙 ${w.coins} monete · ❤️ ${w.lives}/5 vite</p><p>Guadagni 15 monete completando un nuovo livello e 100 per un boss. Ogni dieci livelli ricevi anche due aiuti.</p>${items.map(([id,title,text,cost])=>`<div class="cad-shop-item"><div><strong>${title}</strong><small>${text}</small><small>${id==='life'?'':`Nello zaino: ${w[id]}`}</small></div><button class="btn" data-act="campaignBuy" data-item="${id}" ${w.coins<cost||(id==='life'&&w.lives>=5)?'disabled':''}>${cost} 🪙</button></div>`).join('')}<p data-cad-lives>${w.lives<5?'Prossima vita fra '+campaignClock(w.nextLife-Date.now()):'Vite al completo'}</p><button class="btn primary" data-act="campaignContinue">${S.campaignActive?'Torna al tavolo':'Continua'}</button></div>`);
+    openModal('campaignShop',`<div class="cad-shop"><h2>🎒 La bottega degli aiuti</h2><p>🪙 ${w.coins} monete · ❤️ ${w.lives}/5 vite</p><p>Guadagni 15 monete completando un nuovo livello e 100 per un boss. Ogni dieci livelli ricevi anche due aiuti.</p>${items.map(([id,title,text,cost])=>`<div class="cad-shop-item">${campaignPowerIcon(id)}<div><strong>${title.replace(/^[^ ]+ /, "")}</strong><small>${text}</small><small>${id==='life'?'':`Nello zaino: ${w[id]}`}</small></div><button class="btn" data-act="campaignBuy" data-item="${id}" ${w.coins<cost||(id==='life'&&w.lives>=5)?'disabled':''}>${cost} 🪙</button></div>`).join('')}<p data-cad-lives>${w.lives<5?'Prossima vita fra '+campaignClock(w.nextLife-Date.now()):'Vite al completo'}</p><button class="btn primary" data-act="campaignContinue">${S.campaignActive?'Torna al tavolo':'Continua'}</button></div>`);
   },
-  campaignBuy(el) { const costs={hint:40,coach:80,time:30,life:60},id=el.dataset.item,w=campaignWallet();if(!Object.hasOwn(costs,id)||w.coins<costs[id]||id==='life'&&w.lives>=5)return;w.coins-=costs[id];if(id==='life'){w.lives++;if(w.lives===5)w.nextLife=0;}else w[id]++;campaignWriteWallet(w);handlers.campaignShop(); },
+  campaignBuy(el) { const costs={hint:40,coach:80,time:30,life:60},id=el.dataset.item,w=campaignWallet();if(!Object.hasOwn(costs,id)||w.coins<costs[id]||id==='life'&&w.lives>=5)return;w.coins-=costs[id];if(id==='life'){w.lives++;if(w.lives===5)w.nextLife=0;}else w[id]++;campaignWriteWallet(w);handlers.campaignShop();campaignPowerEffect(id,true); },
 });
 // La verifica temporale aggiorna soltanto l’orologio, senza interrompere le animazioni.
 setInterval(()=>{
