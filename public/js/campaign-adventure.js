@@ -73,7 +73,7 @@ function campaignDecorateTable() {
 }
 function campaignChargeClock() {
   const s = S.campaignMatch, now = Date.now();
-  const running = !!(S.campaignActive && s?.status === 'playing' && s.g.turn === 0 && S.screen === 'game' && !document.hidden && !S.modalKind);
+  const running = !!(S.campaignActive && s?.status === 'playing' && s.g.turn === 0 && S.screen === 'game' && !document.hidden && !S.modalKind && now >= (S.campaignBusyUntil || 0));
   if (running && S.campaignClockRunning && S.campaignClockAt) s.remainingMs = Math.max(0, s.remainingMs - Math.min(2500, Math.max(0, now - S.campaignClockAt)));
   S.campaignClockAt = now; S.campaignClockRunning = running;
   if (running && s.remainingMs <= 0) { s.status = 'lost'; s.failure = 'Il tempo è finito. Puoi riprovare: la mano iniziale resta la stessa.'; campaignFinish(); }
@@ -122,6 +122,7 @@ function campaignPerform(action) {
     if(!Campaign.act(s,l,campaignEngine().E,action)) { S.campaignFeedback = l.guided ? 'Segui la guida: '+Campaign.tip(s,l,campaignEngine().E) : 'Questa mossa non è consentita dalle regole. Controlla la selezione.'; S.campaignErrors++; render(); return {ok:false,error:S.campaignFeedback}; }
     S.campaignFeedback = null; S.campaignStep = s.index; campaignWriteAttempt();
     if(s.status !== 'playing') { campaignFinish(); return {ok:true}; }
+    S.campaignBusyUntil = Date.now() + 350;
     campaignSyncTable(); campaignScheduleBot();
     if(s.g.turn === 0) campaignSpeak(Campaign.tip(s,l,campaignEngine().E,campaignEngine().Bot));
     return {ok:true};
@@ -185,14 +186,14 @@ Object.assign(handlers, {
       let session;
       if(resume) { try { session=JSON.parse(JSON.stringify(pending.session));if(!Array.isArray(session.g.players)||session.g.players.length!==2||!Array.isArray(session.doneSteps)||!Number.isFinite(session.remainingMs)||session.remainingMs<=0)throw Error('Tentativo non valido');campaignEngine().E.viewFor(session.g,0); }catch(e){session=null;} }
       S.campaignMatch=session||Campaign.start(p,l,campaignEngine().E);S.campaignMatch.practice=practice;
-      S.campaignStep=S.campaignMatch.index;S.selected.clear();S.handOrder=[];S.game=null;S.coachOff=false;S.campaignActive=true;S.campaignClockAt=Date.now();S.campaignClockRunning=false;
+      S.campaignStep=S.campaignMatch.index;S.selected.clear();S.handOrder=[];S.game=null;S.coachOff=false;S.campaignActive=true;S.campaignClockAt=Date.now();S.campaignClockRunning=false;S.campaignBusyUntil=Date.now()+1800;
       campaignSyncTable();campaignWriteAttempt();campaignScheduleBot();campaignSpeak(l.intro);
     }catch(e){if(S.campaignLoadToken!==token)return;S.campaignActive=false;S.room=null;S.game=null;S.screen='campaign';S.campaignLoadError='Il tavolo non è disponibile. Puoi riprovare senza perdere vite.';render();}
   },
   campaignMap() { closeModal();campaignStopTable();const l=campaignPath()?.levels[S.campaignLevel];if(l)S.campaignChapter=l.chapter;S.campaignLevel=null;render();campaignScrollToCurrent();campaignFocus(); },
   campaignPause() { campaignChargeClock();openModal('campaignPause',`<h2>⏸ Partita in pausa</h2><p>Il tavolo ti aspetta e il tempo è fermo.</p><button class="btn primary big" data-act="campaignContinue">Riprendi</button><button class="btn" data-act="campaignMap">Metti da parte e torna alla mappa</button>`);campaignWriteAttempt(); },
   campaignContinue() { closeModal();S.campaignClockAt=Date.now();S.campaignClockRunning=false;campaignScheduleBot(); },
-  campaignObjectives() { const l=campaignPath().levels[S.campaignLevel],states=Campaign.goalState(S.campaignMatch,l);openModal('campaignPause',`<h2>🎯 ${esc(l.title)}</h2><p>${esc(l.goalText)}</p><p>${states.filter(x=>x.done).length} obiettivi raggiunti su ${states.length}.</p><p>Turni completati: ${S.campaignMatch.turns}/${l.maxTurns}. L’obiettivo viene verificato alla fine del tuo turno.</p><button class="btn primary" data-act="campaignContinue">Torna al tavolo</button>`); },
+  campaignObjectives() { const l=campaignPath().levels[S.campaignLevel],states=Campaign.goalState(S.campaignMatch,l),labels={turns:'Turni completati',melds:'Combinazioni sul tavolo',seqs:'Scale',sets:'Tris o poker',adds:'Attacchi eseguiti',wild:'Giochi con una matta',swaps:'Jolly recuperati',pile:'Raccolte dagli scarti',burraco:'Burraco completato',clean:'Scala senza matte',close:'Chiusura della smazzata'};openModal('campaignPause',`<h2>🎯 ${esc(l.title)}</h2><p>${esc(l.goalText)}</p><ul class="cad-objectives">${states.map(x=>`<li>${x.done?'✅':'○'} ${labels[x.key]} <b>${typeof x.target==='boolean'?(x.done?'Completato':'Da completare'):x.value+'/'+x.target}</b></li>`).join('')}</ul><p>Turni completati: ${S.campaignMatch.turns}/${l.maxTurns}. L’obiettivo viene verificato alla fine del tuo turno.</p><button class="btn primary" data-act="campaignContinue">Torna al tavolo</button>`); },
   campaignPower(el) { const r=campaignUsePower(el.dataset.power);if(!r.ok&&r.error)toast(r.error,true); },
   campaignVoice(el) { const intro=el?.dataset.intro!==undefined,p=campaignPath(),l=p?.levels[intro?Number(el.dataset.intro):S.campaignLevel];if(!l)return;if(!intro&&store.get('cad_voice',false)){handlers.campaignMute();return;}store.set('cad_voice',true);campaignSpeak(intro?l.intro:Campaign.tip(S.campaignMatch,l,campaignEngine().E,campaignEngine().Bot),true); },
   campaignMute() { store.set('cad_voice',false);if('speechSynthesis'in window)window.speechSynthesis.cancel();toast('Voce disattivata'); },

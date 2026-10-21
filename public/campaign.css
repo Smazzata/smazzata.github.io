@@ -31,6 +31,8 @@
 .cad-shop-item > div { flex: 1; }
 .cad-shop-item small { display: block; font-size: 13px; margin-top: 4px; }
 .cad-shop-item button { flex-shrink: 0; }
+.cad-objectives { padding-left: 0; list-style: none; }
+.cad-objectives li { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #c8cbbd; }
 @media(max-width:360px) { .cad-dialogue { padding: 10px; gap: 10px; } .cad-dialogue .cad-portrait { width: 60px; height: 66px; flex-basis: 60px; } .cad-coach .cad-portrait { display: none; } }
 .campaign-entry { background: #dfedce; color: #234c34; padding: 14px; font-size: 17px; }
 .campaign-entry small { display: block; margin-top: 5px; font-size: 12px; font-weight: 400; }
