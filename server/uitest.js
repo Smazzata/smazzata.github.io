@@ -117,6 +117,7 @@ const HELPERS = `
     await cdp.run(`
       await __W(2500);
       const choices = [...document.querySelectorAll('.homebtn')];
+      if(document.querySelector('[data-act="campaign"]'))throw Error('Avventura ancora visibile nella home pubblica');
       if (choices.map((b) => b.dataset.act + ':' + (b.dataset.mode || '')).join(',') !== 'quickMenu:casual,quickMenu:ranked,playFriends:,playBots:') throw new Error('ordine delle modalità nella home');
       if (!choices[0].classList.contains('primary')) throw new Error('amichevole non evidenziata');
       for (const mode of ['casual', 'ranked']) {

@@ -2,6 +2,12 @@
 
 La direzione visiva approvata è applicata ai primi 50 livelli di ognuno dei tre giochi: Burraco, Scala 40 e Ramino. Ogni percorso ha una mappa illustrata, tre personaggi con tre pose ciascuno, dialoghi a tema e una serie di oggetti collezionabili con il medaglione della propria guida.
 
+## Sospensione per la preparazione Play Store
+
+Avventura è temporaneamente nascosta dalla home, sia online sia offline, tramite `CAMPAIGN_VISIBLE = false` in `public/js/base.js`. Il codice, le illustrazioni e i salvataggi della campagna rimangono intatti. Per ripristinare la voce si riporta la costante a `true`. Le prove dedicate possono continuare ad aprire la campagna direttamente attraverso i suoi gestori interni.
+
+La plancia degli aiuti conserva quattro elementi: tempo, mossa suggerita, guida del turno e tempo extra. Gli aiuti hanno etichette visibili, quantità separate e superfici toccabili di almeno 48 px. Gli obiettivi sono nel fumetto; la pausa è nella barra superiore e il ritorno alla mappa nel menu del tavolo.
+
 Il giardino di Burraco conserva Rosa, Bruno e il Barone di Picche. Il borgo di Scala 40 è costruito con botteghe, orologi e ingranaggi dei quattro semi: Arturo accompagna il giocatore, Nina presidia la porta e il Conte Quaranta controlla la torre. La baia di Ramino usa isole, pontili, velieri di carte e un faro: Marina guida il viaggio, Pippo sorveglia il molo e Capitan Nebbia aspetta al faro.
 
 Le mappe e le introduzioni usano la rispettiva ambientazione anche al tavolo. Le battute cambiano per zona e il boss finale cita la propria destinazione. Gli avversari mantengono il proprio nome nei primi livelli e nei tentativi ripresi, senza alternare nomi generici sulla stessa illustrazione. Regole, obiettivi, progressi e ricompense restano quelli delle partite esistenti.

@@ -16,6 +16,9 @@
 
   // spiegazione dell'etichetta 🏅 delle partite classificate (le sole che cambiano l'Elo)
   const RANKED_TIP = 'Partita classificata: cambia il punteggio Elo';
+  // Avventura sospesa durante la preparazione della pubblicazione sul Play Store.
+  // Livelli e salvataggi restano disponibili per riprendere lo sviluppo.
+  const CAMPAIGN_VISIBLE = false;
 
   // Senza internet (o aprendo la pagina con ?offline=1) si gioca contro il computer con il server locale
   const OFFLINE = (() => {

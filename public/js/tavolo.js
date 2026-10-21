@@ -383,7 +383,7 @@
         <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : r.tournament ? '<b>🏆 Torneo</b>' : `${r.ranked ? `<span class="rankbadge" title="${RANKED_TIP}">🏅</span> ` : ''}<b>${r.slow ? '🐢 ' : ''}${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, ${isS40Game() ? `eliminato a ${g.cfg.target}` : `si vince a ${g.cfg.target}`}">${g.game && g.game !== 'burraco' ? `${RX.gameName(g.cfg.rules)} · ` : ''}smazzata ${g.handNo}</span></span>
         ${FULL() ? `<button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
         ${OFFLINE || r.campaign ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}` : ''}
-        <button class="iconbtn" data-act="turnLog" title="Storico dei turni">🕘</button>
+        ${r.campaign ? '<button class="iconbtn" data-act="campaignPause" title="Pausa" aria-label="Pausa">⏸</button>' : '<button class="iconbtn" data-act="turnLog" title="Storico dei turni">🕘</button>'}
         ${r.campaign ? '' : `<button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>`}
         ${FULL() ? `<button class="iconbtn" data-act="scores" title="Punteggi">🏆</button>
         <button class="iconbtn" data-act="settings" title="Aspetto e suoni">⚙️</button>

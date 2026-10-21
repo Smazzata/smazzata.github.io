@@ -73,7 +73,9 @@ module.exports = async function campaignStoryUI({cdp,shot,step,errors,DPR}) {
     if(digits.left<frame.left+3||digits.right>frame.right-3||clock.scrollWidth>clock.clientWidth+1)throw Error('Timer tagliato');
     const hints=campaignWallet().hint;__tap('.cad-table-dock [data-act="hint"]');await __W(200);
     if(S.campaignMatch.revealUntil<=Date.now()||campaignWallet().hint!==hints)throw Error('Suggerimento gratuito non disponibile dalla plancia');
+    for(const button of document.querySelectorAll('.cad-table-dock .cad-dock-power')){const r=button.getBoundingClientRect();if(r.width<48||r.height<48)throw Error('Aiuto troppo piccolo da toccare');}
   `);
+  await cdp.run('await __W(1600);');
   await shot('campagna-arte-07-mobile');
   await cdp.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
   await cdp.run(`
