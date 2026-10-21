@@ -52,8 +52,8 @@
 .cad-scene-top > span { font-size:10px; letter-spacing:1px; font-weight:900; color:#fff3c7; }
 .cad-scene-skip,.cad-scene-voice { border:0; background:#15352eb3; color:#fff5d5; border-radius:16px; padding:7px 10px; font:inherit; font-size:11px; cursor:pointer; }
 .cad-conversation h2 { color:#fff3c7; text-shadow:0 3px 10px #102a34; font-family:var(--font-title); font-size:clamp(23px,6vw,30px); margin:16px 0 0; }
-.cad-conversation-stage { position:relative; height:230px; display:grid; place-items:center; margin:8px -12px -4px; }
-.cad-conversation-stage .cad-portrait { width:245px; height:245px; flex-basis:245px; align-self:end; animation:cad-actor-enter .4s cubic-bezier(.2,.7,.3,1) both; }
+.cad-conversation-stage { position:relative; height:230px; display:grid; place-items:center; margin:8px -12px -4px; animation:cad-actor-enter .4s cubic-bezier(.2,.7,.3,1) both; }
+.cad-conversation-stage .cad-portrait { width:245px; height:245px; flex-basis:245px; align-self:end; }
 .cad-scene-glow { position:absolute; width:260px; height:210px; background:radial-gradient(ellipse,#ffeeb273,transparent 67%); border-radius:50%; }
 .cad-floating-suit { position:absolute; color:#ffe4a9; text-shadow:0 3px 12px #31453b; font-size:32px; animation:cad-suit-drift 5s ease-in-out infinite; }
 .suit-one { left:14%; top:17%; color:#ffb8b0; }
@@ -106,4 +106,4 @@
 @media(max-width:360px) { .cad-conversation { padding:15px 15px 18px; } .cad-conversation-stage { height:190px; } .cad-conversation-stage .cad-portrait { width:205px; height:205px; } .cad-conversation h2 { font-size:23px; } .cad-conversation .cad-live-bubble { padding:12px 14px; min-height:133px; } .cad-conversation .cad-bubble-copy { font-size:15px; } .cad-coach-actor { flex-basis:52px; width:52px; } .cad-coach-actor .cad-rendered-character.small { width:90px; height:90px; left:-19px; } .cad-live-coach .cad-tools { gap:4px; } .cad-character-stage .cad-rendered-character { width:80px; height:80px; } }
 @media(max-height:680px) { .cad-conversation-stage { height:160px; } .cad-conversation-stage .cad-portrait { width:180px; height:180px; } .cad-conversation h2 { margin-top:10px; } }
 @media(max-width:360px) { .cad-live-coach .cad-tools .cad-item-render { width:28px; height:32px; } }
-@media(prefers-reduced-motion:reduce) { .cad-map-shimmer,.cad-conversation-stage .cad-portrait,.cad-is-talking .cad-conversation-stage .cad-rendered-character,.cad-speaking .cad-conversation-stage .cad-rendered-character,.cad-is-talking .cad-coach-actor .cad-rendered-character,.cad-floating-suit,.cad-conversation .cad-live-bubble,.cad-power-flight,.cad-power-arrived { animation:none; } .cad-power-flight { display:none; } }
+@media(prefers-reduced-motion:reduce) { .cad-map-shimmer,.cad-conversation-stage,.cad-conversation-stage .cad-portrait,.cad-is-talking .cad-conversation-stage .cad-rendered-character,.cad-speaking .cad-conversation-stage .cad-rendered-character,.cad-is-talking .cad-coach-actor .cad-rendered-character,.cad-floating-suit,.cad-conversation .cad-live-bubble,.cad-power-flight,.cad-power-arrived { animation:none; } .cad-power-flight { display:none; } }

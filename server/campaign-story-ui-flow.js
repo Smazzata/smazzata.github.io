@@ -19,6 +19,11 @@ module.exports = async function campaignStoryUI({cdp,shot,step,errors,DPR}) {
     if(document.querySelector('#modal [data-story-text]').textContent!==old)throw Error('Battuta riparte al render');
     const actor=document.querySelector('#modal .cad-rendered-character');
     if(!actor||!getComputedStyle(actor).backgroundImage.includes('rosa.webp'))throw Error('Rosa illustrata assente');
+    // Terminare o saltare la battuta non deve riavviare l'ingresso del ritratto.
+    for(let n=0;n<12;n++){
+      if(Number(getComputedStyle(actor).opacity)<.99||actor.getAnimations().some(a=>a.animationName==='cad-actor-enter'))throw Error('Personaggio lampeggia alla fine della battuta');
+      await __W(35);
+    }
   `);
   await cdp.run('await __W(450);');
   await shot('campagna-arte-02-rosa');
