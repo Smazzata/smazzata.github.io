@@ -152,6 +152,10 @@
   function tableMenuModal() {
     const r = S.room || {}, g = S.game;
     const item = (act, icon, label) => `<button class="menuitem" data-act="${act}"><span>${icon}</span>${label}</button>`;
+    if (r.campaign) {
+      openModal('tableMenu', `<h2>Il tuo viaggio</h2><div class="menulist">${item('campaignContinue','▶','Riprendi')}${item('campaignObjectives','🎯','Obiettivi del livello')}${item('campaignShop','🎒','Bottega degli aiuti')}${item('gameRules','📜','Regole del gioco')}${item('settings','⚙️','Aspetto e suoni')}${item('campaignMute','🔇','Disattiva la voce')}${item('campaignMap','🗺️','Metti in pausa e torna alla mappa')}</div>`);
+      return;
+    }
     openModal('tableMenu', `<h2>☰ Menu</h2><div class="menulist">
       ${item('scores', '🏆', 'Punteggi')}
       ${item('gameRules', '📜', 'Regole del gioco')}

@@ -288,7 +288,7 @@
     const rs = S.room && S.room.seats[seat];
     const off = rs && !rs.isBot && !rs.connected;
     return `<div class="seatchip pos-${pos} ${turn ? 'turn' : ''} ${partner ? 'partner' : ''} ${off ? 'offline' : ''}" data-seat="${seat}">
-      ${avatarHTML(p.name, seat, p.isBot, rs && rs.avatar)}
+      ${S.room?.campaign && p.isBot ? campaignPortrait(campaignPath().levels[S.campaignLevel].opponent, true) : avatarHTML(p.name, seat, p.isBot, rs && rs.avatar)}
       <div class="sinfo"><b ${rs && !rs.isBot && !p.isBot ? `data-act="playerMenu" data-nick="${esc(p.name)}"` : ''}>${esc(p.name)} ${lvlHTML(rs && rs.level)}</b>
         ${rs && rs.avatar && rs.avatar.t ? `<span class="stitle">${esc(rs.avatar.t)}</span>` : ''}
         <span class="smeta">${p.out ? '❌ eliminato · ' : ''}${off ? '📴 ' : ''}${partner ? '<span title="compagno">🤝</span> ' : ''}${p.handCount} carte</span></div>
@@ -370,7 +370,7 @@
     const sel = S.selected.size;
     let actions = '';
     if (myTurn && r.hints) actions += '<button class="ico" data-act="hint" title="Suggerimento">💡</button>';
-    if (g.you >= 0) actions = '<button class="ico" data-act="reactPicker" title="Reazioni">😊</button>' + actions;
+    if (g.you >= 0 && !r.campaign) actions = '<button class="ico" data-act="reactPicker" title="Reazioni">😊</button>' + actions;
     if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';
     const sortLbl = { rank: '⇅ Valore', suit: '⇅ Seme', smart: '⇅ Giochi' }[S.sortMode] || '⇅ Ordina';
     if (g.you >= 0) actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;
@@ -378,13 +378,13 @@
       ? '<button class="btn primary small" data-act="result">🏆 Risultati</button>'
       : `<button class="ico helpico ${myTurn ? 'pulse' : ''}" data-act="turnHelp" title="Cosa devo fare?">❓</button>${S.turnEnd && myTurn ? '<b class="cd chip" data-cd></b>' : ''}`;
 
-    return `<div class="game ${myTurn ? 'myturn' : ''}">
+    return `<div class="game ${myTurn ? 'myturn' : ''} ${r.campaign ? 'cad-game cad-world-' + campaignPath().id : ''}">
       <div class="topbar">
         <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : r.tournament ? '<b>🏆 Torneo</b>' : `${r.ranked ? `<span class="rankbadge" title="${RANKED_TIP}">🏅</span> ` : ''}<b>${r.slow ? '🐢 ' : ''}${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, ${isS40Game() ? `eliminato a ${g.cfg.target}` : `si vince a ${g.cfg.target}`}">${g.game && g.game !== 'burraco' ? `${RX.gameName(g.cfg.rules)} · ` : ''}smazzata ${g.handNo}</span></span>
         ${FULL() ? `<button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
-        ${OFFLINE ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}` : ''}
+        ${OFFLINE || r.campaign ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}` : ''}
         <button class="iconbtn" data-act="turnLog" title="Storico dei turni">🕘</button>
-        <button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>
+        ${r.campaign ? '' : `<button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>`}
         ${FULL() ? `<button class="iconbtn" data-act="scores" title="Punteggi">🏆</button>
         <button class="iconbtn" data-act="settings" title="Aspetto e suoni">⚙️</button>
         <button class="iconbtn" data-act="leave" title="Esci">⏏</button>`

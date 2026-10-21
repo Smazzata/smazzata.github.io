@@ -243,7 +243,7 @@ function campaignWorldMapHTML(path, progress, stars) {
   const pts = path.levels.map((l, i) => ({ x: i === n - 1 ? 180 : XS[i % XS.length], y: H - BOTTOM - i * GAP }));
   const castle = { x: 180, y: 262 };
   const isDone = (i) => progress[path.id][path.levels[i].id] >= path.levels[i].steps.length;
-  const isLocked = (i) => i > 0 && !isDone(i - 1);
+  const isLocked = (i) => { const globalI = path.levels[i].number - 1, previous = Campaign.paths.find(p => p.id === path.id).levels[globalI - 1]; return previous && progress[path.id][previous.id] < previous.steps.length; };
   const cur = path.levels.findIndex((l, i) => !isDone(i));
   const allDone = cur < 0;
   const route = [{ x: pts[0].x, y: H + 10 }].concat(pts, castle);
@@ -307,10 +307,10 @@ function campaignWorldMapHTML(path, progress, stars) {
   const river = `M-10 ${br ? br.y + 34 : 0} C40 ${br ? br.y + 40 : 0} ${br ? br.x - 70 : 0} ${br ? br.y + 6 : 0} ${br ? br.x : 0} ${br ? br.y : 0} S${br ? br.x + 120 : 0} ${br ? br.y - 30 : 0} 370 ${br ? br.y - 34 : 0}`;
   const nodes = path.levels.map((l, i) => {
     const done = isDone(i), locked = isLocked(i), here = !done && !locked, st = campaignLevelStars(path, l, progress, stars);
-    const label = `Livello ${i + 1}: ${l.title}. ${done ? `Completato, ${st} ${st === 1 ? 'stella' : 'stelle'}` : locked ? 'Bloccato' : 'Da giocare'}`;
+    const label = `Livello ${l.number}: ${l.title}. ${done ? `Completato, ${st} ${st === 1 ? 'stella' : 'stelle'}` : locked ? 'Bloccato' : 'Da giocare'}`;
     return `<div class="cmap-spot ${done ? 'done' : locked ? 'locked' : 'current'}" style="left:${(pts[i].x / W * 100).toFixed(3)}%;top:${(pts[i].y / H * 100).toFixed(3)}%">
       ${here ? `<span class="cmap-rays" aria-hidden="true"></span><span class="cmap-me ${(pts[i + 1] || castle).x > pts[i].x ? 'left' : 'right'}" aria-hidden="true">${campaignMyAvatar()}</span><i class="cmap-spark" aria-hidden="true"></i><i class="cmap-spark two" aria-hidden="true"></i>` : done ? campaignStarsHTML(st) : ''}
-      <button class="cmap-node" data-act="campaignPreview" data-i="${i}" ${locked ? 'disabled' : ''} ${here ? 'aria-current="step"' : ''} aria-label="${esc(label)}"><b>${i + 1}</b>${locked ? '<span class="cmap-lock" aria-hidden="true">🔒</span>' : ''}</button>
+      <button class="cmap-node ${l.boss ? 'cad-boss-node' : ''}" data-act="campaignPreview" data-i="${l.number - 1}" ${locked ? 'disabled' : ''} ${here ? 'aria-current="step"' : ''} aria-label="${esc(label)}"><b>${l.boss ? '👑' : l.number}</b>${locked ? '<span class="cmap-lock" aria-hidden="true">🔒</span>' : ''}</button>
       <span class="cmap-title" aria-hidden="true">${esc(l.title)}</span></div>`;
   }).join('');
   const kiteCols = t.kind === 'autumn' ? ['#e5463b', '#ffd23f'] : t.kind === 'palm' ? ['#ff6fa0', '#33c3f0'] : ['#e5463b', '#fff'];
@@ -340,7 +340,7 @@ function campaignWorldMapHTML(path, progress, stars) {
       ${k.butterfly(70, 430, t.flower[0], 'cmap-bfly')}${k.butterfly(300, 770, t.flower[3], 'cmap-bfly two')}
       ${allDone ? [[110, 120], [250, 110], [140, 70], [228, 160]].map(([sx, sy], i) => `<path d="M${sx} ${sy - 8} L${sx + 2} ${sy - 2} L${sx + 8} ${sy} L${sx + 2} ${sy + 2} L${sx} ${sy + 8} L${sx - 2} ${sy + 2} L${sx - 8} ${sy} L${sx - 2} ${sy - 2}Z" fill="#fff6a8" class="cmap-twinkle${i % 2 ? ' two' : ''}"/>`).join('') : ''}
       <g transform="translate(180 30)"><path d="M-58 -30 V-12 M58 -30 V-12" stroke="#7a4f2c" stroke-width="2"/><rect x="-80" y="-12" width="160" height="32" rx="7" fill="#5e3a1f" transform="translate(0 3)"/><rect x="-80" y="-14" width="160" height="32" rx="7" fill="${u('Wood')}" stroke="#7a4f2c" stroke-width="1.5"/>
-        <path d="M-74 -6 H74 M-74 8 H74" stroke="#7a4f2c" stroke-width=".8" opacity=".35"/><text y="7" text-anchor="middle" font-size="13" font-weight="800" fill="#fff6dd">🔒 Mondo 2 · presto</text></g>
+        <path d="M-74 -6 H74 M-74 8 H74" stroke="#7a4f2c" stroke-width=".8" opacity=".35"/><text y="7" text-anchor="middle" font-size="13" font-weight="800" fill="#fff6dd">${path.levels[path.levels.length - 1].number === 50 ? '🏰 Il cuore del mondo' : 'La prossima zona ti aspetta'}</text></g>
     </svg>
     ${nodes}
   </div>`;
@@ -386,19 +386,24 @@ function campaignHTML() {
   const path = campaignPath();
   const progress = campaignCurrentProgress();
   const back = `<button class="btn ghost small" data-act="${path ? 'campaignPaths' : 'goHome'}">← ${path ? 'Tutti i percorsi' : 'Home'}</button>`;
-  const note = `<p class="campaign-note">Progressi salvati su questo dispositivo e in questo browser. Nessuna vita, nessun limite di tempo.</p>${S.campaignSaveFailed ? '<p role="alert">Non riesco a salvare sul dispositivo. Puoi continuare, ma chiudendo la pagina perderai questi progressi.</p>' : ''}`;
+  const note = `<p class="campaign-note">Progressi, aiuti e partite in pausa salvati su questo dispositivo. Una vita si ricarica ogni 30 minuti. Puoi rigiocare i livelli completati senza consumare vite.</p>${S.campaignSaveFailed ? '<p role="alert">Non riesco a salvare sul dispositivo. Puoi continuare, ma chiudendo la pagina perderai questi progressi.</p>' : ''}`;
   const stars = campaignStars();
-  if (!path) return `<main class="page campaign">${back}
+  if (!path) return `<main class="page campaign">${back}${campaignWalletHTML()}
     <header class="campaign-hero"><span class="campaign-kicker">LA TUA AVVENTURA</span><h1 tabindex="-1">Un gioco, un percorso</h1><p>Scegli cosa vuoi imparare. Ogni avventura comincia da zero e cresce con te.</p>${campaignScene()}</header>
-    <div class="campaign-paths">${Campaign.paths.map((p) => { const n = campaignCompleted(p, progress), st = p.levels.reduce((s, l) => s + campaignLevelStars(p, l, progress, stars), 0); return `<button class="campaign-path cp-${p.id}" data-act="campaignPath" data-id="${p.id}"><span class="cp-art" aria-hidden="true">${campaignMiniArt(p.id)}</span><span class="campaign-path-icon" aria-hidden="true">${p.icon}</span><span class="cp-text"><strong>${p.name}</strong><span>${p.subtitle}</span><small>${n === p.levels.length ? 'Primo mondo completato · Rigioca' : n ? `Riprendi · ${n} di ${p.levels.length} livelli` : 'Inizia · 5 livelli guidati'}${st ? ` · <i class="cstar">★</i> ${st}/${p.levels.length * 3}` : ''}</small><span class="cp-pips" aria-hidden="true">${p.levels.map((l, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</span></span><b aria-hidden="true">▶</b></button>`; }).join('')}</div>
+    <div class="campaign-paths">${Campaign.paths.map((p) => { const n = campaignCompleted(p, progress), st = p.levels.reduce((s, l) => s + campaignLevelStars(p, l, progress, stars), 0); return `<button class="campaign-path cp-${p.id}" data-act="campaignPath" data-id="${p.id}"><span class="cp-art" aria-hidden="true">${campaignMiniArt(p.id)}</span><span class="campaign-path-icon" aria-hidden="true">${p.icon}</span><span class="cp-text"><strong>${p.name}</strong><span>${p.subtitle}</span><small>${n === p.levels.length ? 'Primo mondo completato · Rigioca' : n ? `Riprendi · ${n} di ${p.levels.length} livelli` : 'Inizia · 50 livelli · 2 boss'}${st ? ` · <i class="cstar">★</i> ${st}/${p.levels.length * 3}` : ''}</small><span class="cp-pips" aria-hidden="true">${Array.from({ length: 5 }, (_, i) => `<i class="${(i + 1) * 10 <= n ? 'on' : ''}"></i>`).join('')}</span></span><b aria-hidden="true">▶</b></button>`; }).join('')}</div>
     ${note}<button class="btn ghost" data-act="tutorial">📖 Preferisci leggere le regole?</button></main>`;
   const current = path.levels[S.campaignLevel];
   if (current) return campaignExerciseHTML(path, current, note);
   const completed = campaignCompleted(path, progress);
   const starSum = path.levels.reduce((s, l) => s + campaignLevelStars(path, l, progress, stars), 0);
-  return `<main class="page campaign campaign-world">${back}<header class="cmap-head"><span class="campaign-kicker">${esc(path.name)} · MONDO 1</span><h1 tabindex="-1">Il prato delle carte</h1>
+  const chapter = Number.isInteger(S.campaignChapter) ? S.campaignChapter : Math.min(4, Math.floor(completed / 10));
+  const mapPath = { ...path, levels: path.levels.slice(chapter * 10, chapter * 10 + 10) };
+  return `<main class="page campaign campaign-world">${back}${campaignWalletHTML()}<header class="cmap-head"><span class="campaign-kicker">${esc(path.name)} · MONDO 1</span><h1 tabindex="-1">${esc(path.world)}</h1>
       <div class="cmap-stats"><span title="Livelli completati">🏁 ${completed}/${path.levels.length}</span><span title="Stelle raccolte"><i class="cstar">★</i> ${starSum}/${path.levels.length * 3}</span></div></header>
-    ${campaignWorldMapHTML(path, progress, stars)}
+    ${campaignDialogue(path.mentor, path.story)}
+    <nav class="cad-chapters" aria-label="Zone del mondo">${CAMPAIGN_CHAPTERS[path.id].map((name, i) => `<button class="btn small ${i === chapter ? 'primary' : ''}" data-act="campaignChapter" data-i="${i}" aria-pressed="${i === chapter}">${i + 1}. ${esc(name)}<small>${i * 10 + 1}–${i * 10 + 10}</small></button>`).join('')}</nav>
+    <p class="campaign-note">${esc(CAMPAIGN_CHAPTERS[path.id][chapter])} · Livelli ${chapter * 10 + 1}–${chapter * 10 + 10} · Boss al 25 e al 50</p>
+    ${campaignWorldMapHTML(mapPath, progress, stars)}
     ${completed === path.levels.length ? `<div class="campaign-celebrate"><span class="cmedal" aria-hidden="true">🏰</span>${campaignConfetti()}<h2>Il primo mondo è tuo!</h2><p>Hai scoperto le basi di ${esc(path.name)}. Puoi rigiocare ogni livello o provarle al tavolo.</p><button class="btn primary" data-act="campaignTrain">Prova contro il computer</button></div>` : ''}
     ${note}<p class="campaign-note">${esc(path.rules)}. Le varianti personalizzate possono avere regole diverse.</p></main>`;
 }
@@ -407,125 +412,12 @@ function campaignConfetti() {
   const cols = ['#e5463b', '#ffd23f', '#2fae5c', '#3d7ee0', '#ff7aa2', '#1f2433'];
   return `<span class="cconf" aria-hidden="true">${Array.from({ length: 14 }, (_, i) => `<i style="left:${(i * 7.3 + 3) % 100}%;background:${cols[i % cols.length]};animation-delay:${(i % 5) * 0.12}s;--r:${(i % 2 ? 1 : -1) * (180 + i * 40)}deg"></i>`).join('')}</span>`;
 }
-function campaignExerciseHTML(path, level, note) {
-  const step = level.steps[S.campaignStep];
-  const nav = `<button class="btn ghost small" data-act="campaignMap">← Mappa di ${esc(path.name)}</button>`;
-  if (!step) {
-    const got = S.campaignLastStars || campaignLevelStars(path, level, campaignCurrentProgress(), campaignStars());
-    return `<main class="page campaign">${nav}<div class="campaign-celebrate"><span class="cmedal" aria-hidden="true">${level.icon}</span>${campaignConfetti()}<span class="campaign-kicker">LIVELLO ${S.campaignLevel + 1} COMPLETATO</span>${campaignStarsHTML(got, 'big')}<h1 tabindex="-1">${esc(level.title)}</h1><p>${got === 3 ? 'Perfetto, nessun errore!' : got === 2 ? 'Bravo! Un solo errore.' : 'Livello superato! Rigiocalo senza errori per avere 3 stelle.'}</p><p>Hai imparato: ${esc(level.goal.toLowerCase())}.</p>
-    <div class="campaign-end-actions">${S.campaignLevel < path.levels.length - 1 ? `<button class="btn primary big" data-act="campaignLevel" data-i="${S.campaignLevel + 1}">Prossimo livello →</button>` : '<button class="btn primary big" data-act="campaignMap">Completa il primo mondo 🏰</button>'}<button class="btn" data-act="campaignTrain">Prova una partita contro il computer</button><button class="btn ghost" data-act="campaignReplay">Rigioca il livello</button></div></div>${note}</main>`;
-  }
-  const session = S.campaignMatch;
-  if (!session) return '<main class="page campaign">' + nav + '<h1 tabindex="-1">Preparazione del tavolo</h1><p role="status">' + esc(S.campaignLoadError || 'Caricamento della partita…') + '</p><button class="btn" data-act="campaignReplay">Riprova</button></main>';
-  return gameHTML();
-}
-function campaignSyncTable() {
-  const path = campaignPath(), session = S.campaignMatch, g = session.g;
-  const room = {
-    code: 'Livello ' + (S.campaignLevel + 1), campaign: true, rules: g.cfg.rules, n: g.n,
-    seats: g.players.map((p) => ({ name: p.name, isBot: p.isBot, connected: true })),
-    host: 0, you: 0, isHost: true, started: true, ready: [], spectators: [],
-    hints: true, aids: true, tutorial: true, music: null, turnLeft: null, turnTime: 0,
-    botLevel: 'facile', ranked: false, quick: 0
-  };
-  onState(room, JSON.parse(JSON.stringify(window.BurracoGames[path.id].E.viewFor(g, 0))));
-}
-function campaignCoachHTML() {
-  const level = campaignPath().levels[S.campaignLevel], step = level.steps[S.campaignStep];
-  return '<div class="coach campaign-table-coach" role="status"><span><b>' + esc(level.title) + '</b><br>' + esc(S.campaignFeedback || step?.tip || 'Obiettivo completato!') + '</span><button class="btn small" data-act="campaignMap">← Mappa</button></div>';
-}
-function campaignDecorateTable() {
-  if (!S.campaignActive) return;
-  const level = campaignPath().levels[S.campaignLevel], step = level.steps[S.campaignStep];
-  if (!step || step.seat !== 0) return;
-  const action = Campaign.expected(S.campaignMatch, level);
-  for (const id of action.cardIds || (action.cardId !== undefined ? [action.cardId] : [])) {
-    const card = $('#hand [data-card="' + id + '"]'); if (card) card.classList.add('campaign-guided-card');
-  }
-  const target = action.type === 'draw' ? $('.stock') : action.type === 'discard' ? $('.pile') : action.type === 'meld' ? $('.newmeld') : $('#felt [data-meld="' + action.meldId + '"]');
-  if (target) target.classList.add('hinted');
-}
-function campaignStopTable() {
-  S.campaignActive = false; S.campaignLoadToken = null;
-  if (S.room?.campaign) { S.room = null; S.game = null; }
-  S.selected.clear(); S.hint = null; S.antic = null; clearAnticipated();
-  S.screen = 'campaign'; document.title = 'Smazzata'; keepScreenOn(false);
-}
-function campaignEvent(ev, data) {
-  if (ev === 'hint') return { ok: true, hint: Campaign.expected(S.campaignMatch, campaignPath().levels[S.campaignLevel]) };
-  if (['leaveRoom', 'closeTable', 'surrender', 'endGame'].includes(ev)) { handlers.campaignMap(); return { ok: true }; }
-  if (ev !== 'action') return { ok: false, error: 'Segui la guida del livello.' };
-  const level = campaignPath().levels[S.campaignLevel];
-  if (level.steps[S.campaignStep]?.seat !== 0) return { ok: false, error: 'Ora gioca il computer.' };
-  return campaignPerform(data);
-}
-function campaignPerform(action) {
-  const path = campaignPath(), level = path && path.levels[S.campaignLevel], session = S.campaignMatch;
-  if (!level || !session || !level.steps[session.index]) return;
-  try {
-    if (!Campaign.act(session, level, window.BurracoGames[path.id].E, action)) {
-      S.campaignFeedback = 'Segui la guida: ' + level.steps[session.index].tip;
-      S.campaignErrors++; render(); return { ok: false, error: S.campaignFeedback };
-    }
-    S.campaignSelected = []; S.campaignFeedback = null; S.campaignStep = session.index;
-    if (session.index === level.steps.length) {
-      campaignSave(path, level, level.steps.length);
-      S.campaignLastStars = S.campaignErrors ? (S.campaignErrors === 1 ? 2 : 1) : 3;
-      campaignSaveStars(path, level, S.campaignLastStars);
-    }
-    campaignSyncTable();
-    if (session.index === level.steps.length) {
-      setTimeout(() => {
-        if (!S.campaignActive || S.campaignMatch !== session) return;
-        campaignStopTable(); render(); campaignFocus();
-      }, 1000);
-    }
-    if (level.steps[session.index]?.seat === 1) {
-      setTimeout(() => {
-        if (!S.campaignActive || S.campaignMatch !== session || campaignPath() !== path || path.levels[S.campaignLevel] !== level) return;
-        campaignPerform(Campaign.expected(session, level));
-      }, 1300);
-    }
-    return { ok: true };
-  } catch (e) { S.campaignFeedback = 'La mossa non è disponibile: ' + e.message; render(); return { ok: false, error: S.campaignFeedback }; }
-}
 
 Object.assign(handlers, {
   campaign() { closeModal(); S.campaignPath = null; S.campaignLevel = null; S.screen = 'campaign'; render(); window.scrollTo(0, 0); campaignFocus(); },
   campaignPaths() { S.campaignPath = null; S.campaignLevel = null; render(); window.scrollTo(0, 0); campaignFocus(); },
   campaignPath(el) { if (!Campaign.paths.some((p) => p.id === el.dataset.id)) return; S.campaignPath = el.dataset.id; S.campaignLevel = null; render(); campaignScrollToCurrent(); campaignFocus(); },
   campaignMap() { closeModal(); campaignStopTable(); S.campaignLevel = null; render(); campaignScrollToCurrent(); campaignFocus(); },
-  // tocco di un livello sulla mappa: finestrella con obiettivo, stelle e «Gioca!»
-  campaignPreview(el) {
-    const path = campaignPath(), i = Number(el.dataset.i), progress = campaignCurrentProgress();
-    if (!path || !Number.isInteger(i) || !path.levels[i] || (i > 0 && progress[path.id][path.levels[i - 1].id] < path.levels[i - 1].steps.length)) return;
-    const l = path.levels[i], n = progress[path.id][l.id], done = n >= l.steps.length, st = campaignLevelStars(path, l, progress, campaignStars());
-    openModal('campaign', `<div class="cpop"><div class="cpop-art" aria-hidden="true">${campaignMiniArt(path.id)}</div><span class="campaign-kicker">${esc(path.name)} · LIVELLO ${i + 1}</span><div class="cpop-icon" aria-hidden="true">${l.icon}</div>
-      <h2>${esc(l.title)}</h2>${campaignStarsHTML(st, 'big')}<p>${esc(l.goal)}</p>
-      <p class="cpop-info">2 turni contro Luca · mano preparata · nessun limite di tempo</p>
-      <button class="btn primary big cpop-play" data-act="campaignLevel" data-i="${i}">${done ? 'Rigioca' : n ? 'Riprendi' : 'Gioca!'}</button></div>`);
-  },
-  async campaignLevel(el) {
-    const path = campaignPath(), i = Number(el.dataset.i), progress = campaignCurrentProgress();
-    if (!path || !Number.isInteger(i) || !path.levels[i] || (i > 0 && progress[path.id][path.levels[i - 1].id] < path.levels[i - 1].steps.length)) return;
-    closeModal();
-    campaignStopTable();
-    S.campaignLevel = i;
-    S.campaignStep = 0; S.campaignMatch = null; S.campaignLoadError = null;
-    S.campaignSelected = []; S.campaignFeedback = null; S.campaignErrors = 0; S.campaignLastStars = 0;
-    const token = {}; S.campaignLoadToken = token;
-    render(); window.scrollTo(0, 0); campaignFocus();
-    try {
-      await LocalServer.loadEngine('engine.js');
-      if (S.campaignLoadToken !== token || S.screen !== 'campaign' || campaignPath() !== path || S.campaignLevel !== i) return;
-      S.campaignMatch = Campaign.start(path, path.levels[i], window.BurracoGames[path.id].E);
-      S.selected.clear(); S.handOrder = []; S.game = null; S.coachOff = false;
-      S.campaignActive = true; campaignSyncTable();
-    } catch (e) {
-      if (S.campaignLoadToken !== token || S.screen !== 'campaign' || campaignPath() !== path || S.campaignLevel !== i) return;
-      S.campaignLoadError = 'Impossibile caricare il tavolo. Riprova quando il motore è disponibile.'; render();
-    }
-  },
   campaignReplay() { handlers.campaignLevel({ dataset: { i: S.campaignLevel } }); },
   campaignTrain() {
     const path = campaignPath(); if (!path || !requireName()) return;

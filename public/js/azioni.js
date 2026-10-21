@@ -371,6 +371,7 @@
           break;
         case 'meld': S.selected = new Set(h.cardIds); text = `Cala ${names(h.cardIds)}`; break;
         case 'add': S.selected = new Set(h.cardIds); text = `Attacca ${names(h.cardIds)} al gioco evidenziato`; break;
+        case 'swap': S.selected = new Set([h.cardId]); text = `Sostituisci il jolly con ${names([h.cardId])} nel gioco evidenziato`; break;
         case 'discard': S.selected = new Set([h.cardId]); text = `Scarta ${names([h.cardId])}`; break;
         default: text = 'Annulla le calate di questo turno e scarta';
       }

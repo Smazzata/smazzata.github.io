@@ -145,74 +145,7 @@ const HELPERS = `
     await shot('01-home');
     step('schermata iniziale e nickname');
     if (CAMPAIGN_ONLY) {
-      await cdp.run(`
-        localStorage.removeItem(CAMPAIGN_KEY); localStorage.removeItem(CAMPAIGN_STARS_KEY); S.campaignSession = null; S.campaignStarsSession = null;
-        handlers.campaign();
-        if (document.querySelectorAll('[data-act="campaignPath"]').length !== 3) throw new Error('percorsi mancanti');
-        window.__campaignStart = async (i) => {
-          __tap('[data-act="campaignPreview"][data-i="' + i + '"]'); __tap('#modal [data-act="campaignLevel"]');
-          for (let n = 0; n < 100 && !S.campaignMatch; n++) await __W(50);
-          if (!S.campaignMatch) throw new Error('tavolo non caricato'); await __W(1700);
-          if (S.screen !== 'game' || !document.querySelector('.game #felt') || !document.querySelector('.game #hand') || document.querySelector('.campaign-felt')) throw new Error('il livello deve usare il tavolo normale');
-          onState(null, null); if (S.screen !== 'game') throw new Error('lo stato remoto interrompe il livello');
-        };
-        window.__campaignPlay = async () => {
-          const level = campaignPath().levels[S.campaignLevel];
-          const deadline = Date.now() + 15000;
-          while (S.campaignStep < level.steps.length) {
-            if (Date.now() > deadline) throw new Error('partita bloccata');
-            if (level.steps[S.campaignStep].seat === 1) { await __W(100); continue; }
-            const action = Campaign.expected(S.campaignMatch, level);
-            for (const id of action.cardIds || (action.cardId !== undefined ? [action.cardId] : [])) __tap('#hand [data-card="' + id + '"]');
-            const target = action.type === 'draw' ? '.stock' : action.type === 'discard' ? '.pile' : action.type === 'meld' ? '.newmeld' : '#felt [data-meld="' + action.meldId + '"]';
-            if (!__tap(target)) throw new Error('controllo di partita mancante: ' + target);
-            await __W(180);
-            if (S.campaignFeedback) throw new Error(S.campaignFeedback);
-            if (document.documentElement.scrollWidth > innerWidth + 1) throw new Error('overflow tavolo');
-          }
-          await __W(1100);
-          if (!document.querySelector('.campaign-celebrate') || S.campaignActive || S.room || S.game) throw new Error('riepilogo o pulizia del tavolo assenti');
-        };
-      `);
-      await shot('campagna-01-percorsi');
-      await cdp.run(`
-        __tap('[data-act="campaignPath"][data-id="burraco"]');
-        if (document.querySelectorAll('[data-act="campaignPreview"]:disabled').length !== 4) throw new Error('sblocco iniziale');
-        await __campaignStart(0);
-        await act('meld', { cardIds: [] });
-        if (!S.campaignFeedback || campaignProgress().burraco.turno !== 0) throw new Error('errore assegna progresso');
-        handlers.campaignMap(); await __campaignStart(0);
-        __tap('.stock'); await __W(100);
-        const action = Campaign.expected(S.campaignMatch, campaignPath().levels[0]);
-        __tap('#hand [data-card="' + action.cardId + '"]'); __tap('.pile'); await __W(100);
-        const abandoned = S.campaignMatch, index = abandoned.index;
-        handlers.campaignMap(); await __W(1500);
-        if (abandoned.index !== index) throw new Error('bot continua dopo uscita');
-        if (campaignProgress().burraco.turno !== 0) throw new Error('salvato spezzone incompleto');
-        onState(null, null); if (S.screen !== 'campaign') throw new Error('riconnessione interrompe campagna');
-        socket.disconnect();
-      `);
-      for (const game of ['burraco', 'scala40', 'ramino']) {
-        await cdp.run(`handlers.campaignPaths(); __tap('[data-act="campaignPath"][data-id="${game}"]');`);
-        for (let i = 0; i < 5; i++) {
-          await cdp.run(`await __campaignStart(${i});`);
-          if (i === 4) await shot('campagna-tavolo-' + game);
-          await cdp.run(`await __campaignPlay(); handlers.campaignMap();`);
-        }
-        await cdp.run(`
-          if (campaignCompleted(campaignPath(), campaignProgress()) !== 5) throw new Error('mondo incompleto');
-          if (campaignPath().levels.some((l) => campaignStars()[campaignPath().id][l.id] !== 3)) throw new Error('stelle errate');
-        `);
-      }
-      await shot('campagna-02-mondo-completato');
-      await cdp.send('Emulation.setDeviceMetricsOverride', { width: 320, height: 740, deviceScaleFactor: DPR, mobile: true });
-      await cdp.run(`await __campaignStart(4); await __campaignPlay(); handlers.campaignMap(); await __campaignStart(4); if (document.documentElement.scrollWidth > innerWidth + 1) throw new Error('overflow a 320px');`);
-      await shot('campagna-03-carte');
-      await open(URL);
-      await cdp.run(`handlers.campaign(); handlers.campaignPath({ dataset: { id: 'ramino' } }); if (campaignCompleted(campaignPath(), campaignProgress()) !== 5) throw new Error('progressi persi dopo reload');`);
-      const real = errors.filter((e) => !/vibrate|Failed to load resource|favicon/.test(e));
-      if (real.length) throw new Error(real.join('\n'));
-      step('campagna: 15 partite, mosse reali, sblocchi, uscita durante bot, replay, offline e schermo 320px OK');
+      await require('./campaign-ui-flow')({ cdp, shot, open, URL, step, errors, DPR });
       return;
     }
     if (HOME_ONLY) { step('home, formati pubblici e selettore difficoltà: tutto OK'); return; }
@@ -324,8 +257,9 @@ const HELPERS = `
       const waitFor = async (sel) => { for (let i = 0; i < 40 && !document.querySelector(sel); i++) await __W(150); return document.querySelector(sel); };
       __tap(await waitFor('[data-act="tourFill"]'));
       __tap(await waitFor('[data-act="tourStart"]'));
-      await waitFor('[data-act="tourPlay"]');
-      return { bracket: !!document.querySelector('.bracket'), play: !!document.querySelector('[data-act="tourPlay"]') };`);
+      // Il pulsante della home arriva prima del tabellone aggiornato nel modale.
+      await waitFor('#modal .bracket [data-act="tourPlay"]');
+      return { bracket: !!document.querySelector('#modal .bracket'), play: !!document.querySelector('#modal .bracket [data-act="tourPlay"]') };`);
     await shot('05-torneo');
     if (!tour.bracket || !tour.play) throw new Error('torneo: ' + JSON.stringify(tour));
     step('torneo: creato, riempito con il computer, avviato, tabellone con «Vai al tavolo»');
