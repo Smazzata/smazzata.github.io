@@ -511,7 +511,7 @@ I18N.load({"Per calare servono almeno 3 carte: selezionale e trascinale insieme"
 "Se succede di nuovo, la chat può essere bloccata o il profilo eliminato.":"Si vuelve a pasar, el chat puede ser bloqueado o el perfil eliminado.",
 "Leggi le regole di comportamento":"Lee las normas de conducta",
 "Ho capito":"Entendido",
-"🌱 Impara giocando":"🌱 Aprende jugando",
+"🌱 Avventura":"🌱 Aventura",
 "Tre percorsi: Burraco, Scala 40 e Ramino":"Tres caminos: Burraco, Scala 40 y Rummy",
 "📖 Regole e tutorial":"📖 Reglas y tutorial",
 "← Tutti i percorsi":"← Todos los caminos",

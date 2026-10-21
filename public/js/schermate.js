@@ -141,7 +141,7 @@
       <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked"><span>🏅</span><div>Classificata<small>Gioca per il tuo punteggio Elo</small></div></button>`}
       ${OFFLINE ? '' : `<button class="btn big grow homebtn" data-act="playFriends"><span>👥</span>Gioca con gli amici</button>`}
       <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots"><span>🤖</span>Gioca contro il computer</button>
-      <button class="btn grow campaign-entry" data-act="campaign">🌱 Impara giocando<small>Tre percorsi: Burraco, Scala 40 e Ramino</small></button>
+      <button class="btn grow campaign-entry" data-act="campaign">🌱 Avventura<small>Tre percorsi: Burraco, Scala 40 e Ramino</small></button>
       <button class="btn ghost grow" data-act="tutorial">📖 Regole e tutorial</button>
       ${FULL() && !OFFLINE ? `<div class="row"><button class="btn grow" data-act="quickMenu">🃏 Amichevole online</button><button class="btn grow dailybtn" data-act="daily">📅 Sfida del giorno</button><button class="btn grow tourbtn" data-act="tournaments">🏆 Tornei</button></div>` : ''}
       <button class="btn ghost grow morebtn" data-act="more">☰ Altro${reqs ? ` <span class="pill">${reqs}</span>` : ''}</button>
