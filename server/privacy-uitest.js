@@ -22,7 +22,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     browser = spawn(findBrowser(), ['--headless=new', '--no-first-run', '--no-default-browser-check', ...(process.env.CI ? ['--no-sandbox'] : []), '--remote-debugging-port=9335', `--user-data-dir=${path.join(root, 'browser')}`, 'about:blank'], { stdio: 'ignore' });
     let tabs;
     for (let i = 0; i < 60; i++) {
-      try { tabs = await (await fetch('http://localhost:9335/json')).json(); break; } catch (e) { await wait(100); }
+      try { tabs = await (await fetch('http://127.0.0.1:9335/json/list')).json(); break; } catch (e) { await wait(100); }
     }
     assert(tabs, 'browser avviato');
     cdp = await connect(tabs.find((t) => t.type === 'page').webSocketDebuggerUrl);
