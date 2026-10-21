@@ -1,9 +1,10 @@
 // Service worker: notifiche e copia del gioco per giocare anche senza internet.
 // "Prima la rete": da collegati si usa sempre la versione più recente (e se ne salva una copia);
 // senza rete si usa l'ultima copia salvata. La connessione di gioco (socket.io) non passa mai dalla copia.
-const CACHE = 'burraco-gioco-v44';
+const CACHE = 'burraco-gioco-v45';
 const SHELL = [
   'campaign-story.css', 'js/campaign-story.js', 'art/campaign/garden.webp', 'art/campaign/rosa.webp', 'art/campaign/bruno.webp', 'art/campaign/barone.webp', 'art/campaign/boosters.webp',
+  'art/campaign/clockwork.webp', 'art/campaign/arturo.webp', 'art/campaign/nina.webp', 'art/campaign/conte.webp', 'art/campaign/bay.webp', 'art/campaign/marina.webp', 'art/campaign/pippo.webp', 'art/campaign/nebbia.webp', 'art/campaign/boosters-scala40.webp', 'art/campaign/boosters-ramino.webp',
   './', 'index.html', 'intro.css', 'style.css', 'campaign.css', 'shared/campaign.js', 'js/campagna.js', 'js/campaign-adventure.js', 'fonts/nunito.woff2', 'fonts/playfair.woff2',
   'js/lingue.js', 'lingue/en.js', 'lingue/es.js', 'lingue/pt.js', 'js/base.js', 'js/connessione.js', 'js/carte.js', 'js/ui.js', 'js/profilo.js', 'js/tutorial.js', 'js/schermate.js', 'js/tavolo.js', 'js/animazioni.js', 'js/finestre.js', 'js/moviola.js', 'js/azioni.js', 'js/comandi.js', 'local-server.js', 'engine.js',
   'shared/rules.js', 'shared/melds.js', 'shared/scala40.js', 'shared/ramino.js', 'shared/canasta.js', 'shared/scopa.js', 'shared/briscola.js', 'shared/tressette.js', 'shared/rubamazzetto.js', 'shared/briscola5.js', 'shared/premi.js', 'icon.svg', 'manifest.webmanifest', 'privacy.html', 'regole.html', 'icons/icon-192.png',

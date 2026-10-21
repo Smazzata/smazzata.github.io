@@ -1,6 +1,10 @@
-# Il giardino dei quattro semi
+# Avventura: giardino, borgo e baia
 
-Prima applicazione della direzione visiva approvata: mondo Burraco, personaggi Rosa/Bruno/Barone, dialoghi interattivi e oggetti collezionabili. Gli altri due percorsi usano il sistema di conversazione e i nuovi aiuti, conservando le proprie ambientazioni e i propri personaggi precedenti.
+La direzione visiva approvata è applicata ai primi 50 livelli di ognuno dei tre giochi: Burraco, Scala 40 e Ramino. Ogni percorso ha una mappa illustrata, tre personaggi con tre pose ciascuno, dialoghi a tema e una serie di oggetti collezionabili con il medaglione della propria guida.
+
+Il giardino di Burraco conserva Rosa, Bruno e il Barone di Picche. Il borgo di Scala 40 è costruito con botteghe, orologi e ingranaggi dei quattro semi: Arturo accompagna il giocatore, Nina presidia la porta e il Conte Quaranta controlla la torre. La baia di Ramino usa isole, pontili, velieri di carte e un faro: Marina guida il viaggio, Pippo sorveglia il molo e Capitan Nebbia aspetta al faro.
+
+Le mappe e le introduzioni usano la rispettiva ambientazione anche al tavolo. Le battute cambiano per zona e il boss finale cita la propria destinazione. Gli avversari mantengono il proprio nome nei primi livelli e nei tentativi ripresi, senza alternare nomi generici sulla stessa illustrazione. Regole, obiettivi, progressi e ricompense restano quelli delle partite esistenti.
 
 ## Risorse
 
@@ -15,6 +19,23 @@ File distribuiti in `public/art/campaign/`:
 | bruno.webp | Riccio: attesa, sfida, sorpresa | 2172 × 724, alpha |
 | barone.webp | Barone: attesa, sfida, sconfitta | 2172 × 724, alpha |
 | boosters.webp | Bacchetta jolly, cronometro, medaglione, vita | 2172 × 724, alpha |
+
+Estensione agli altri due mondi, generata con ImageGen integrato usando le illustrazioni di Burraco come riferimento stilistico:
+
+| Risorsa | Contenuto |
+| --- | --- |
+| clockwork.webp | Borgo degli orologi e torre di Quaranta |
+| arturo.webp | Arturo: attesa, spiegazione, celebrazione |
+| nina.webp | Nina: attesa, sfida, reazione |
+| conte.webp | Conte Quaranta: attesa, sfida, sconfitta |
+| bay.webp | Baia, pontili e faro nella nebbia |
+| marina.webp | Marina: attesa, spiegazione, celebrazione |
+| pippo.webp | Pippo: attesa, sfida, reazione |
+| nebbia.webp | Capitan Nebbia: attesa, sfida, sconfitta |
+| boosters-scala40.webp | Aiuti con medaglione di Arturo |
+| boosters-ramino.webp | Aiuti con medaglione di Marina |
+
+I prompt completi dell’estensione sono in `docs/campaign-worlds-prompts.json`. Le sprite restano trasparenti, con tre pose orizzontali per personaggio e quattro celle per gli aiuti. I service worker comprendono tutte le nuove immagini anche nella copia Pages/Android.
 
 I PNG generati sono stati esportati in WebP a qualità 86, preservando la trasparenza. Le cinque risorse pesano complessivamente circa 1,9 MB. Personaggi in tre celle orizzontali uguali, aiuti in quattro; il CSS sceglie la posa senza scaricare nuove immagini. Le pose sono illustrazioni animate con trasformazioni, non video né animazioni scheletriche o sincronizzazione labiale.
 

@@ -1,10 +1,10 @@
-/* Il giardino dei quattro semi: illustrazioni originali e regia di dialogo. */
+/* Giardino, borgo e baia: illustrazioni originali e regia di dialogo. */
 .cad-rendered-character { display:block; background-image:var(--character-sheet); background-repeat:no-repeat; background-size:300% 100%; background-position:0 50%; width:160px; height:160px; flex-basis:160px; border-radius:0; filter:drop-shadow(0 8px 7px #102a3433); }
 .cad-rendered-character.cad-pose-talk { background-position:50% 50%; }
 .cad-rendered-character.cad-pose-joy { background-position:100% 50%; }
 .cad-character-stage .cad-rendered-character { width:130px; height:130px; }
 .cad-rendered-character.small { width:54px; height:54px; flex-basis:54px; }
-.cad-item-render.cad-power-art { background:url('art/campaign/boosters.webp') var(--item-x) 50% / 400% 100% no-repeat; border:0; border-radius:0; box-shadow:none; filter:drop-shadow(0 4px 3px #44250d44); }
+.cad-item-render.cad-power-art { background:var(--item-sheet,url('art/campaign/boosters.webp')) var(--item-x) 50% / 400% 100% no-repeat; border:0; border-radius:0; box-shadow:none; filter:drop-shadow(0 4px 3px #44250d44); }
 .cad-wallet { padding:8px 12px; gap:14px; background:linear-gradient(120deg,#fff8dd,#f4e5ba); border:1px solid #dfc27d; border-radius:24px; box-shadow:inset 0 2px #fff9,0 4px 0 #b79855,0 8px 20px #082b2b33; }
 .cad-wallet-stat { display:flex; align-items:center; gap:7px; font-size:17px; }
 .cad-wallet-heart { font-style:normal; color:#d94868; font-size:29px; text-shadow:0 2px #a52948,0 -1px #ffc8c7; }
@@ -25,9 +25,9 @@
 .campaign-world:has(.cad-painted-map) .cad-chapters { flex-wrap:nowrap; overflow-x:auto; padding:3px 2px 8px; gap:7px; margin:12px 0 0; }
 .campaign-world:has(.cad-painted-map) .cad-chapters .btn { flex:0 0 106px; border-radius:14px; font-size:12px; padding:9px 5px; }
 .campaign-world:has(.cad-painted-map) .cmap-head h1 { font-size:28px; margin:10px 0; }
-.campaign-path.cp-burraco .cp-art { height:170px; }
+.campaign-path .cp-art { height:170px; }
 .cad-painted-map { aspect-ratio:1 / 3; isolation:isolate; background:#264b34; }
-.cad-map-paint { position:absolute; inset:0; background:url('art/campaign/garden.webp') center / 100% 100% no-repeat; }
+.cad-map-paint { position:absolute; inset:0; background:var(--world-art) center / 100% 100% no-repeat; }
 .cad-zone-1 .cad-map-paint { filter:saturate(1.07); }
 .cad-zone-2 .cad-map-paint { filter:saturate(.9) hue-rotate(9deg); }
 .cad-zone-3 .cad-map-paint { filter:brightness(.85) saturate(.9); }
@@ -47,7 +47,7 @@
 .modal-box:has(.cad-conversation) .sheet-handle { position:absolute; z-index:5; left:calc(50% - 18px); background:#fff7; }
 .modal-box:has(.cad-conversation) .modal-close { position:absolute; right:10px; top:10px; float:none; z-index:5; color:white; background:#183c36aa; }
 .cad-conversation { position:relative; isolation:isolate; color:#fff6de; padding:22px 22px 18px; background:radial-gradient(ellipse at 50% 35%,#57927b,#153d37 80%); overflow:hidden; text-align:center; }
-.cad-garden-scene:before { content:''; z-index:-2; position:absolute; inset:0; background:linear-gradient(#102e4033,#0e342a33 42%,#0e332a 83%),url('art/campaign/garden.webp') 50% 25% / cover; }
+.cad-painted-scene:before { content:''; z-index:-2; position:absolute; inset:0; background:linear-gradient(#102e4033,#0e342a33 42%,var(--cad-world-dark,#0e332a) 83%),var(--world-art) 50% 25% / cover; }
 .cad-scene-top { display:flex; align-items:center; justify-content:space-between; gap:10px; padding-right:23px; margin-top:12px; text-align:left; }
 .cad-scene-top > span { font-size:10px; letter-spacing:1px; font-weight:900; color:#fff3c7; }
 .cad-scene-skip,.cad-scene-voice { border:0; background:#15352eb3; color:#fff5d5; border-radius:16px; padding:7px 10px; font:inherit; font-size:11px; cursor:pointer; }
@@ -88,6 +88,19 @@
 .cad-is-talking .cad-conversation-stage .cad-rendered-character,.cad-speaking .cad-conversation-stage .cad-rendered-character { animation:cad-actor-talk 1.5s ease-in-out infinite; }
 .cad-is-talking .cad-coach-actor .cad-rendered-character { animation:cad-coach-talk 1.6s ease-in-out infinite; }
 .cad-game.cad-world-burraco { background:linear-gradient(#123e34dc,#113c33e8),url('art/campaign/garden.webp') 50% 35% / cover; }
+.cad-game.cad-world-scala40 { background:linear-gradient(#3e2c24d9,#312820e8),url('art/campaign/clockwork.webp') 50% 35% / cover; }
+.cad-game.cad-world-ramino { background:linear-gradient(#123d52d9,#103447e8),url('art/campaign/bay.webp') 50% 35% / cover; }
+.cad-scene-scala40 { --cad-world-dark:#382b24; }
+.cad-scene-ramino { --cad-world-dark:#11394c; }
+.cad-map-scala40 .cad-map-plaque,.cad-greeting-scala40 { background:linear-gradient(#685036f5,#352c25fa); }
+.cad-map-ramino .cad-map-plaque,.cad-greeting-ramino { background:linear-gradient(#235b6af5,#143b50fa); }
+.cad-world-scala40 .cad-live-coach.cad-table-panel { background:linear-gradient(115deg,#59432ef7,#322b23f7); }
+.cad-world-ramino .cad-live-coach.cad-table-panel { background:linear-gradient(115deg,#205266f7,#12394cf7); }
+.cad-world-scala40 .cad-table-dock .cad-timepiece,.cad-world-scala40 .cad-table-dock .cad-goal,.cad-world-scala40 .cad-table-dock .cad-dock-utility { background:#342b23; box-shadow:inset 0 1px #ffffff12,0 2px 0 #231d19; }
+.cad-world-ramino .cad-table-dock .cad-timepiece,.cad-world-ramino .cad-table-dock .cad-goal,.cad-world-ramino .cad-table-dock .cad-dock-utility { background:#10394b; box-shadow:inset 0 1px #ffffff12,0 2px 0 #092d3e; }
+.cad-world-scala40 .cad-table-dock .cad-time-low,.cad-world-ramino .cad-table-dock .cad-time-low { background:#622f2d; }
+.cad-adventure-panorama { display:flex; height:180px; margin:18px -1px -1px; overflow:hidden; border-radius:22px 22px 0 0; box-shadow:0 -1px #e7ca83; }
+.cad-adventure-panorama img { width:33.333%; min-width:0; height:100%; object-fit:cover; object-position:50% 24%; border-right:1px solid #f3d791; }
 .cad-game.cad-world-burraco .felt { box-shadow:0 0 0 2px #c49e51,0 6px 20px #081e21aa; }
 .cad-game.cad-world-burraco .seat .cad-rendered-character { width:70px; height:70px; flex-basis:70px; }
 .cad-game .seatchip .cad-rendered-character.small { width:44px; height:44px; flex-basis:44px; }

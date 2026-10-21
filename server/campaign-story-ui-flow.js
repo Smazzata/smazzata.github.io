@@ -84,13 +84,65 @@ module.exports = async function campaignStoryUI({cdp,shot,step,errors,DPR}) {
     if(getComputedStyle(actor).animationName!=='none')throw Error('Personaggio animato con movimento ridotto');
     handlers.campaignMap();
     const cache=await caches.open('campaign-art-ui-test');
-    const assets=['campaign-story.css','js/campaign-story.js',...['garden','rosa','bruno','barone','boosters'].map(n=>'art/campaign/'+n+'.webp')];
+    const names=[...new Set(Object.values(CAMPAIGN_WORLD_ART).flatMap(art=>[art.background,art.boosters,...art.characters]))];
+    const assets=['campaign-story.css','js/campaign-story.js',...names.map(n=>'art/campaign/'+n+'.webp')];
     await cache.addAll(assets);
     for(const file of assets)if(!(await cache.match(file)))throw Error('Elemento grafico non salvabile offline: '+file);
     await caches.delete('campaign-art-ui-test');
   `);
   await cdp.send('Emulation.setEmulatedMedia',{features:[]});
   await cdp.send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:DPR,mobile:true});
+  for(const game of ['scala40','ramino']) {
+    await cdp.run(`
+      handlers.campaignPaths();handlers.campaignPath({dataset:{id:'${game}'}});
+      const art=CAMPAIGN_WORLD_ART['${game}'];
+      for(const name of [art.background,art.boosters,...art.characters]) {
+        const image=new Image();image.src=CAMPAIGN_ART+name+'.webp';await image.decode();
+        if(!image.naturalWidth)throw Error('Illustrazione assente: '+name);
+      }
+      if(!getComputedStyle(document.querySelector('.cad-map-paint')).backgroundImage.includes(art.background+'.webp'))throw Error('Mondo illustrato errato');
+      if(document.querySelectorAll('.cad-painted-map [data-act="campaignPreview"]:disabled').length!==9)throw Error('Sblocchi della nuova mappa errati');
+    `);
+    await shot('campagna-arte-'+game+'-mappa');
+    await cdp.run(`
+      handlers.campaignPreview({dataset:{i:0}});campaignStoryComplete();await __W(450);
+      if(!getComputedStyle(document.querySelector('#modal .cad-rendered-character')).backgroundImage.includes(CAMPAIGN_WORLD_ART['${game}'].characters[0]+'.webp'))throw Error('Guida del nuovo mondo assente');
+      if(document.querySelectorAll('#modal .cad-conversation-stage .cad-portrait').length!==1)throw Error('Personaggio duplicato');
+      handlers.campaignStoryNext();campaignStoryComplete();await __W(450);
+      if(!getComputedStyle(document.querySelector('#modal .cad-rendered-character')).backgroundImage.includes(CAMPAIGN_WORLD_ART['${game}'].characters[1]+'.webp'))throw Error('Rivale del nuovo mondo assente');
+    `);
+    await shot('campagna-arte-'+game+'-dialogo');
+    await cdp.run(`
+      __tap('#modal [data-act="campaignLevel"]');
+      for(let n=0;n<100&&!S.campaignActive;n++)await __W(30);
+      await __W(1900);campaignStoryComplete();
+      if(!S.campaignActive||!getComputedStyle(document.querySelector('.cad-game')).backgroundImage.includes(CAMPAIGN_WORLD_ART['${game}'].background+'.webp'))throw Error('Tavolo senza ambientazione');
+      if(!getComputedStyle(document.querySelector('[data-power="coach"] .cad-item-render')).backgroundImage.includes(CAMPAIGN_WORLD_ART['${game}'].boosters+'.webp'))throw Error('Medaglione della guida errato');
+    `);
+    await cdp.send('Emulation.setDeviceMetricsOverride',{width:320,height:740,deviceScaleFactor:DPR,mobile:true});
+    await cdp.run(`
+      await __W(300);const felt=document.querySelector('#felt');
+      if(document.documentElement.scrollWidth>innerWidth+1||felt.scrollHeight>felt.clientHeight+3)throw Error('Nuovo mondo non adattato a 320px');
+      const rects=[...document.querySelector('.cad-table-dock').children].map(e=>e.getBoundingClientRect());
+      if(rects.some(r=>r.right>innerWidth+1))throw Error('Aiuti fuori schermo');
+    `);
+    await shot('campagna-arte-'+game+'-tavolo-mobile');
+    await cdp.send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:DPR,mobile:true});
+    for(const boss of [24,49]) {
+      await cdp.run(`
+        handlers.campaignMap();const p=campaignPath(),progress=campaignCurrentProgress();
+        for(const l of p.levels.slice(0,${boss}))progress[p.id][l.id]=l.steps.length;
+        S.campaignSession=progress;handlers.campaignChapter({dataset:{i:Math.floor(${boss}/10)}});
+        handlers.campaignPreview({dataset:{i:${boss}}});campaignStoryComplete();await __W(450);
+        const expected=CAMPAIGN_WORLD_ART[p.id].characters[${boss===49?2:1}];
+        if(!getComputedStyle(document.querySelector('#modal .cad-rendered-character')).backgroundImage.includes(expected+'.webp'))throw Error('Personaggio boss errato');
+        if(p.id!=='burraco'&&document.querySelector('#modal [data-story-text]').dataset.storyText.includes('castello'))throw Error('Dialogo boss non coerente con il mondo');
+      `);
+      await shot('campagna-arte-'+game+'-boss-'+(boss+1));
+    }
+    await cdp.run('handlers.campaignMap();');
+    step('campagna illustrata '+game+': mappa, personaggi, aiuti, boss 25/50 e tavolo mobile OK');
+  }
   const real=errors.filter(e=>!/vibrate|Failed to load resource|favicon|speechSynthesis/.test(e));
   if(real.length)throw Error(real.join('\n'));
   step('campagna illustrata: conversazione, reazioni, potenziamenti, 320px, movimento ridotto e risorse offline OK');

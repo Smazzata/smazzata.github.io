@@ -237,7 +237,7 @@ function cmapWave(mx, my, H, dy = 0) {
 }
 // Mappa del mondo: sentiero che sale dal basso verso il castello, a terrazzi; ogni livello ha il suo luogo a tema.
 function campaignWorldMapHTML(path, progress, stars) {
-  if (path.id === 'burraco') return campaignGardenMap(path, progress, stars);
+  if (CAMPAIGN_WORLD_ART[path.id]) return campaignGardenMap(path, progress, stars);
   const k = cmapKit(path.id), t = k.t, u = k.u;
   const W = 360, GAP = 190, TOP = 340, BOTTOM = 120, n = path.levels.length, H = TOP + (n - 1) * GAP + BOTTOM;
   const XS = [200, 100, 260, 115, 255, 105];
@@ -355,7 +355,7 @@ function campaignFocus(selector = '.campaign h1') {
 }
 /** Piccolo paesaggio della stagione di un percorso (schede dei percorsi e finestrella del livello) */
 function campaignMiniArt(themeId, pre) {
-  if (themeId === 'burraco') return '<img class="cad-mini-paint" src="art/campaign/garden.webp" alt="" loading="lazy">';
+  if (CAMPAIGN_WORLD_ART[themeId]) return `<img class="cad-mini-paint" src="art/campaign/${CAMPAIGN_WORLD_ART[themeId].background}.webp" alt="" loading="lazy">`;
   const k = cmapKit(themeId, pre), t = k.t, u = k.u;
   const trees = t.kind === 'palm' ? k.palm(30, 112, 1) + k.palm(318, 108, 0.9) : k.tree(28, 112, 1) + k.tree(322, 110, 0.9) + k.tree(300, 116, 0.7);
   return `<svg viewBox="0 0 340 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${k.defs}
@@ -369,6 +369,9 @@ function campaignMiniArt(themeId, pre) {
   </svg>`;
 }
 function campaignScene() {
+  return `<div class="cad-adventure-panorama" aria-hidden="true">${Object.values(CAMPAIGN_WORLD_ART).map(world=>`<img src="art/campaign/${world.background}.webp" alt="">`).join('')}</div>`;
+}
+function campaignLegacyScene() {
   const k = cmapKit('burraco', 'hero'), u = k.u, a = cmapKit('scala40', 'heroA'), m = cmapKit('ramino', 'heroM');
   return `<svg class="campaign-scene" viewBox="0 0 700 190" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${k.defs}${a.defs}${m.defs}
     <circle cx="560" cy="44" r="46" fill="${u('Sun')}"/><circle cx="560" cy="44" r="18" fill="#fff6c9"/>
