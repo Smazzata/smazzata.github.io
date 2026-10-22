@@ -116,7 +116,7 @@
     // avviso del gestore (regole di comportamento): si mostra finché non si tocca «Ho capito»
     if (soc && soc.warn && S.modalKind !== 'warn') { warnModal(soc.warn); return; }
     if (S.modalKind === 'friends') friendsModal();
-    if (S.screen === 'home' || S.screen === 'lobby') render();
+    if (S.screen === 'home' || S.screen === 'lobby' || S.screen === 'rankedLobby') render();
   });
   socket.on('invite', ({ from, code, started }) => {
     Sound.play('turn');
@@ -344,7 +344,7 @@
     S.room = room;
     S.game = game;
     if (!room) {
-      if (!['setup', 'campaign', 'leaders'].includes(S.screen)) S.screen = 'home';
+      if (!['setup', 'campaign', 'leaders', 'rankedLobby'].includes(S.screen)) S.screen = 'home';
       if (S.pendingJoin && S.social && S.social.nick) { const code = S.pendingJoin; S.pendingJoin = ''; joinRoom(code); }
     } else {
       S.pendingJoin = '';

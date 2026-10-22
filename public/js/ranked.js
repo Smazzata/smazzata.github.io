@@ -56,7 +56,7 @@ leadersHTML = function() {
     ${rankedSelectionHTML(game)}
     ${!data ? `<p role="status">${t(S.leagueError ? 'Classifica non disponibile' : 'Caricamento classifica…')}</p>` : `
     <section class="league-hero"><div class="league-halo" aria-hidden="true"></div>${leagueEmblem(preview, 'league-hero-emblem')}<h2>${t(preview.name)} ${preview.division || ''}</h2>${!S.rankPreview || preview.id === current.id ? rankedCard(p) : ''}
-    <button class="btn primary" data-act="rankedSearch">${t('Cerca partita')}</button><button class="btn small" data-act="rankedProfile">${t('Profilo competitivo')}</button>
+    <button class="btn primary" data-act="rankedSearch">${t(S.rankedQueue === 'duo' ? 'Crea tavolo Duo' : 'Cerca partita')}</button><button class="btn small" data-act="rankedProfile">${t('Profilo competitivo')}</button>
     <p>${t('Stagione')} ${data.season + 1} · ${t('Fine stagione')}: ${new Date(data.ends).toLocaleDateString()}</p></section>
     <section class="league-journey"><h2>${t('Il percorso delle leghe')}</h2><div class="league-path">${PLAYER_RANKS.map((rank) => `<button class="league-step ${rank.id === preview.id ? 'selected' : ''}" data-act="leaguePreview" data-rank="${rank.id}">${leagueEmblem(rank)}<b>${t(rank.name)}</b></button>`).join('')}</div></section>
     <section class="ranked-legend" ${data.archived ? 'hidden' : ''}><h2>${t('Leggenda')} · Top 1%</h2><p>${t('Giocatori idonei')}: ${legend.eligible} · ${t('Posti disponibili')}: ${legend.slots}</p>
@@ -77,12 +77,17 @@ Object.assign(handlers, {
   async rankedSearch(el) {
     const game = el?.dataset.game || S.lbGame || 'burraco', n = Number(el?.dataset.n || S.rankedN || 2), queue = el?.dataset.queue || S.rankedQueue || 'solo';
     if (queue === 'duo' && !el?.dataset.friend) {
-      openModal('rankedDuo', `<div class="result"><h2>Ranked Duo</h2><p>${t('Entrambi devono accettare la ricerca.')}</p><label>${t('Nickname amico')}<input id="rankedFriend" maxlength="18" autocomplete="off"></label><button class="btn primary" data-act="rankedDuoInvite" data-game="${game}" data-n="${n}">${t('Invita')}</button></div>`); return;
+      if (S.rankedParty?.game === game) { S.screen='rankedLobby'; closeModal(); render(); return; }
+      const r=await emit('rankedPartyCreate',{game}); if(r.ok) rankedPartyState(r.party); return;
     }
     const r = await emit('rankedJoin', { game, n, queue, friend: el?.dataset.friend });
     if (r.ok && r.invited) openModal('rankedWaiting', `<div class="result"><p>${t('In attesa del tuo amico…')}</p><button class="btn" data-act="rankedCancel">${t('Annulla ricerca')}</button></div>`);
   },
-  rankedDuoInvite(el) { return handlers.rankedSearch({ dataset: { ...el.dataset, queue: 'duo', friend: $('#rankedFriend').value.trim() } }); },
+  rankedPartyInvite(el) { return emit('rankedPartyInvite',{nick:el.dataset.nick}); },
+  async rankedPartyAccept(el) { const r=await emit('rankedPartyAccept',{id:el.dataset.id}); if(r.ok) rankedPartyState(r.party); },
+  rankedPartyReady() { return emit('rankedPartyReady'); },
+  async rankedPartyLeave() { const r=await emit('rankedPartyLeave'); if(r.ok) {S.screen='home';render();} },
+  rankedPartyOpen() { if(S.rankedParty) {S.screen='rankedLobby';render();} },
   async rankedAccept(el) { await emit('rankedAccept', { id: el.dataset.id }); },
   async rankedCancel() { const r = await emit('rankedCancel'); if (r.ok) closeModal(); },
   async rankedProfile() {
@@ -95,7 +100,7 @@ Object.assign(handlers, {
   leaguePlay() { return handlers.rankedSearch(); },
 });
 const originalQuickMenu = handlers.quickMenu;
-handlers.quickMenu = function(el) { if (el?.dataset.mode === 'ranked') return openLeaguePage(el); return originalQuickMenu(el); };
+handlers.quickMenu = function(el) { if (el?.dataset.mode === 'ranked') return openLeaguePage({dataset:{...el.dataset,game:el.dataset.game || homeGame()}}); return originalQuickMenu(el); };
 function rankedQueueState(r) {
   S.rankedSearching = r.searching;
   document.getElementById('rankedQueueStatus')?.remove();
@@ -106,10 +111,14 @@ function rankedQueueState(r) {
 }
 socket.on('rankedQueue', rankedQueueState);
 socket.on('disconnect', () => { S.rankedSearching = false; document.getElementById('rankedQueueStatus')?.remove(); });
-socket.on('welcome', async () => { if (OFFLINE) return; const r = await emit('rankedProfile'); if (r.queue) rankedQueueState(r.queue); });
-for (const name of ['playBots', 'playFriends']) {
+socket.on('welcome', async () => { if (OFFLINE) return; const r = await emit('rankedProfile'); if (r.party) rankedPartyState(r.party); if (r.queue) rankedQueueState(r.queue); });
+for (const name of ['playBots', 'playFriends', 'goSetup']) {
   const previous = handlers[name];
-  handlers[name] = function(...args) { if (S.rankedSearching) emit('rankedCancel'); return previous(...args); };
+  handlers[name] = async function(...args) {
+    if (S.rankedParty) { const r=await emit('rankedPartyLeave'); if(!r.ok) return; }
+    else if (S.rankedSearching) { const r=await emit('rankedCancel'); if(!r.ok) return; }
+    return previous(...args);
+  };
 }
 socket.on('rankedInvite', (r) => openModal('rankedInvite', `<div class="result"><h2>Ranked Duo</h2><p>${esc(r.from)} · ${esc(r.game)}</p><button class="btn primary" data-act="rankedAccept" data-id="${esc(r.id)}">${t('Accetta ricerca')}</button><button class="btn" data-act="rankedCancel">${t('Annulla ricerca')}</button></div>`));
 socket.on('rankedResult', (r) => {
@@ -127,3 +136,23 @@ socket.on('state', async (st) => {
     if (S.modalKind === 'result') showResult();
   }
 });
+
+function rankedLobbyHTML() {
+  const p=S.rankedParty;
+  if(!p) return '<main class="page"></main>';
+  const me=p.members.find(m=>m.me), friends=(S.social?.friends||[]).filter(f=>f.online&&!p.members.some(m=>m.name===f.nick));
+  const game=LEAGUE_GAMES.find(([id])=>id===p.game)?.[1] || p.game;
+  return `<main class="page ranked-party"><header class="league-header"><button class="league-back" data-act="goHome" aria-label="${t('Torna alla home')}">←</button><div><small>RANKED DUO · ${esc(game)}</small><h1>${t('Il tuo tavolo')}</h1></div></header>
+    <section class="panel"><h2>${t('La tua coppia')}</h2><div class="ranked-party-seats">${[0,1].map(i=>{const m=p.members[i];return `<div class="ranked-party-seat">${m?avatarHTML(m.name,0,false):'<span class="ranked-empty-seat">+</span>'}<b>${m?esc(m.name):t('Posto per un amico')}</b><small>${m?t(m.online?(m.ready?'Pronto':'Non pronto'):'offline'):t('Invita un amico dalla lista')}</small></div>`;}).join('')}</div><p class="ranked-format-note">${t('Gli avversari vengono scelti dal matchmaking.')}</p>
+    ${p.searching?`<p role="status">${t('Ricerca di avversari in corso…')}</p><button class="btn" data-act="rankedCancel">${t('Annulla ricerca')}</button>`:`<button class="btn primary" data-act="rankedPartyReady" ${p.members.length<2?'disabled':''}>${t(me?.ready?'Non sono pronto':'Sono pronto')}</button><p>${t('La ricerca parte quando entrambi siete pronti.')}</p>`}</section>
+    ${p.host&&p.members.length<2?`<section class="panel"><h2>${t('Invita un amico')}</h2>${p.invited?`<p role="status">${t('Invito in attesa')}: ${esc(p.invited)}</p>`:''}${friends.map(f=>`<div class="friend">${avatarHTML(f.nick,0,false,f.avatar)}<b class="grow">${esc(f.nick)}</b><button class="btn small" data-act="rankedPartyInvite" data-nick="${esc(f.nick)}">${t('Invita')}</button></div>`).join('')||`<p>${t('Nessun amico online. Aggiungi un amico o attendi che si colleghi.')}</p>`}<button class="btn small" data-act="friends">${t('Amici')}</button></section>`:''}
+    <button class="btn" data-act="rankedPartyLeave">${t(p.host?'Chiudi il tavolo':'Esci dal tavolo')}</button></main>`;
+}
+function rankedPartyState(p) {
+  S.rankedParty=p;
+  if(p) { closeModal(); S.screen='rankedLobby'; render(); }
+  else if(S.screen==='rankedLobby') {closeModal(); S.screen='home';render();}
+  else if(S.screen==='home') render();
+}
+socket.on('rankedParty',rankedPartyState);
+socket.on('rankedPartyInvite',r=>openModal('rankedPartyInvite',`<div class="result"><h2>${t('Invito al tavolo Duo')}</h2><p>${esc(r.from)} · ${esc(LEAGUE_GAMES.find(([id])=>id===r.game)?.[1]||r.game)}</p><p>${t('Entra nel tavolo e conferma quando sei pronto.')}</p><button class="btn primary" data-act="rankedPartyAccept" data-id="${esc(r.id)}">${t('Entra al tavolo')}</button><button class="btn" data-act="closeModal">${t('No grazie')}</button></div>`));

@@ -93,10 +93,10 @@
       // dalla pagina fissa si torna alla pagina d'ingresso, che cerca il server
       location.href = /\/gioca\//.test(location.pathname) ? '../' : location.pathname;
     },
-    goSetup() { if (!requireName()) return; S.screen = 'setup'; render(); },
+    goSetup() { if (!requireName()) return; applyHomeGame(); S.screen = 'setup'; render(); },
     // schermata iniziale semplice: contro il computer, con gli amici, menu «Altro»
-    playBots() { if (!requireName()) return; S.playMode = 'bots'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
-    playFriends() { if (!requireName()) return; S.playMode = 'friends'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
+    playBots() { if (!requireName()) return; applyHomeGame(); S.playMode = 'bots'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
+    playFriends() { if (!requireName()) return; applyHomeGame(); S.playMode = 'friends'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
     more() { moreModal(); },
     turnHelp() { turnHelp(); },
     turnLog() { turnLogModal(); },
@@ -402,7 +402,7 @@
       }
     },
     profile: profileModal,
-    tutorial() { tutorialModal(0); },
+    tutorial() { tutorialModal(0, S.screen === 'home' ? homeGame() : undefined); },
     report() {
       openModal('report', `<h2>🐞 Segnala un problema</h2>
         <p class="muted small">Descrivi cosa è successo e cosa ti aspettavi. Insieme al messaggio inviamo la situazione del tavolo
@@ -434,13 +434,12 @@
     quickMenu(el) {
       if (!requireName()) return;
       const mode = el && el.dataset.mode === 'ranked' ? 'ranked' : 'casual';
-      const game = GAME_TILES.some(([id]) => id === el?.dataset.game) ? el.dataset.game : 'burraco';
+      const game = GAME_TILES.some(([id]) => id === el?.dataset.game) ? el.dataset.game : homeGame();
       const base = game === 'burraco' ? R.PRESETS[0].rules : RX.presetById(game).rules;
       const rules = RX.normalize(base);
       const formats = (RX.schema(rules).find((f) => f.key === 'players')?.choices || [[rules.players, String(rules.players)]])
         .filter(([n]) => RX.normalize({ ...base, players: n }).players === n);
       openModal('quick', `<div class="result" style="text-align:center"><h2>${mode === 'ranked' ? '🏅 Classificata' : '🃏 Amichevole online'}</h2>
-        <h3>Scegli il gioco</h3><div class="gamegrid">${GAME_TILES.map(([id, icon, name]) => `<button class="gtile ${id === game ? 'on' : ''}" data-act="quickMenu" data-mode="${mode}" data-game="${id}" aria-pressed="${id === game}"><span>${icon}</span>${name}</button>`).join('')}</div>
         <h3>${game === 'burraco' ? 'Burraco Classico' : esc(RX.gameName(rules))}</h3>
         <p>${mode === 'ranked' ? 'Il risultato contribuisce al tuo grado.' : 'Il risultato non cambia il tuo grado.'} Si parte quando il tavolo è pieno.</p>
         ${formats.map(([players]) => `<details><summary>Regole in ${players} giocatori</summary><div class="rules-text">${RX.describe(RX.normalize({ ...base, players }))}</div></details>`).join('')}
@@ -500,7 +499,7 @@
     friendNo(el) { emit('friendRespond', { nick: el.dataset.nick, accept: false }); },
     unfriend(el) { if (confirm(`Rimuovere ${el.dataset.nick}?`)) emit('friendRemove', { nick: el.dataset.nick }); },
     toggleTheme() { S.prefs.theme = S.prefs.theme === 'scuro' ? 'chiaro' : 'scuro'; applyPrefs(); render(); },
-    leaders(el) { return openLeaguePage(el); },
+    leaders(el) { return openLeaguePage(S.screen === 'home' ? {dataset:{...el?.dataset,game:homeGame()}} : el); },
     resetStats() { if (confirm('Azzerare le statistiche?')) { store.set('bur_stats', {}); statsModal(); } },
     musicStop() { emit('setMusic', { url: '' }).then(() => musicModal()); },
     botLevel(el) { emit('setBotLevel', { level: el.dataset.val }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },

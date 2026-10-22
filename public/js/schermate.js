@@ -15,6 +15,7 @@
     else if (S.screen === 'campaign') app.innerHTML = campaignHTML();
     else if (S.screen === 'setup') app.innerHTML = setupHTML();
     else if (S.screen === 'lobby') app.innerHTML = lobbyHTML();
+    else if (S.screen === 'rankedLobby') app.innerHTML = rankedLobbyHTML();
     else if (S.screen === 'game') {
       S.flipFrom = changed ? null : cardRects();
       app.innerHTML = gameHTML();
@@ -135,6 +136,8 @@
     const last = !OFFLINE && (store.get('bur_lastroom', '') || (savedLocalGame() ? '🤖' : ''));
     const reqs = S.social && S.social.reqIn ? S.social.reqIn.length : 0;
     return `<div class="homebtns">
+      ${S.rankedParty ? `<button class="btn primary" data-act="rankedPartyOpen">${t('Torna al tavolo Duo')}</button>` : ''}
+      <label class="field home-game"><span>${t('Scegli il gioco')}</span><select id="homeGame">${GAME_TILES.map(([id,,name])=>`<option value="${id}" ${id===homeGame()?'selected':''}>${esc(name)}</option>`).join('')}</select></label>
       ${OFFLINE ? '' : `<nav class="home-shortcuts" aria-label="Community">
         <button class="home-shortcut" data-act="friends"><span class="shortcut-icon" aria-hidden="true">👥</span><span>Amici</span>${reqs ? `<b class="shortcut-count">${reqs}</b>` : ''}</button>
         <button class="home-shortcut" data-act="daily"><span class="shortcut-icon" aria-hidden="true">📅</span><span>Sfida del giorno</span></button>
@@ -183,6 +186,12 @@
   const GAME_TILES = [['burraco', '🃏', 'Burraco'], ['scala40', '🪜', 'Scala 40'], ['ramino', '🧩', 'Ramino'], ['canasta', '🧺', 'Canasta'],
     ['scopa', '🧹', 'Scopa'], ['scopone', '🤝', 'Scopone'], ['briscola', '🍷', 'Briscola'],
     ['briscola5', '🖐️', 'Briscola in 5'], ['tressette', '3️⃣', 'Tressette'], ['rubamazzetto', '🦝', 'Rubamazzetto']];
+  function homeGame() { const id=store.get('smazzata_home_game','burraco'); return GAME_TILES.some(([g])=>g===id)?id:'burraco'; }
+  function applyHomeGame() {
+    const game=homeGame();
+    if(pickedGame(S.rules)!==game) S.rules=RX.normalize(game==='burraco'?R.PRESETS[0].rules:RX.presetById(game).rules);
+    store.set('bur_rules',S.rules); S.lbGame=game;
+  }
 
   /**
    * Nuova partita, in due tocchi: il gioco (griglia di riquadri grandi) e «Inizia».

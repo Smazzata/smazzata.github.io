@@ -84,8 +84,9 @@ module.exports = async function leagueFlow({ cdp, shot, open, URL, step }) {
     await openLeaguePage({dataset:{game:'burraco',n:'4',queue:'duo'}});
     if (S.leagueData.queue !== 'duo') throw new Error('coda Duo persa');
     __tap('[data-act="rankedSearch"]'); await __W(100);
-    if (!document.querySelector('#rankedFriend')) throw new Error('invito Duo mancante');
-    closeModal();
+    if (S.screen!=='rankedLobby' || !document.querySelector('.ranked-party-seats') || document.querySelector('#rankedFriend')) throw new Error('tavolo Duo mancante');
+    if (!document.querySelector('[data-act="rankedPartyReady"]').disabled) throw new Error('pronto senza compagno');
+    await handlers.rankedPartyLeave();
     await openLeaguePage({dataset:{game:'burraco',n:'2',queue:'solo'}});
     S.leagueData.mine={...S.leagueData.mine,tier:2,league:'Oro',id:'gold',division:'I',lp:100,provisional:false,promo:{results:[1,0],target:3}};
     render();
@@ -101,6 +102,9 @@ module.exports = async function leagueFlow({ cdp, shot, open, URL, step }) {
   }
   await cdp.run(`store.set('bur_prefs', {...S.prefs,lang:'it'}); return true;`);
   await open(URL);
+  await cdp.run(`await openLeaguePage({dataset:{game:'burraco',queue:'duo'}}); await handlers.rankedSearch(); await __W(1800);`);
+  await shot('ranked-duo-lobby');
+  await cdp.run(`await handlers.rankedPartyLeave();`);
   await cdp.send('Emulation.setDeviceMetricsOverride', { width: 900, height: 1050, deviceScaleFactor: 1, mobile: false });
   await cdp.run(`document.body.innerHTML='<main style="padding:28px;background:#101c2d;color:#f8f2e6;min-height:100vh;font-family:Nunito,sans-serif"><h1>SMAZZATA · Ranked</h1><p>33 insegne originali · IV → III → II → I</p><div style="display:grid;grid-template-columns:repeat(9,1fr);gap:8px">'+PLAYER_RANKS.map(r=>'<div style="text-align:center"><h3 style="font-size:12px">'+r.name+'</h3>'+ (r.id==='legend'?['']:['IV','III','II','I']).map(d=>'<img style="display:block;width:100%;margin-top:18px" src="art/ranked/'+r.id+(d?'-'+d:'')+'.svg"><small>'+d+'</small>').join('')+'</div>').join('')+'</div></main>'; await Promise.all([...document.images].map(i=>i.decode()));`);
   await shot('ranked-emblems');

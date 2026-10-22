@@ -29,12 +29,17 @@ async function until(fn) {for(let i=0;i<100;i++){if(fn())return;await wait(50);}
 (async()=>{
   try {
     await start();await connectAll();const [a,b,c,d,out]=clients;
-    assert.ok((await a.call('rankedJoin',{game:'burraco',n:4,queue:'duo',friend:'Ranked1'})).invited);
-    await until(()=>b.invites.length);assert.equal(a.state.room,null);
-    assert.equal((await out.call('rankedAccept',{id:b.invites[0].id})).ok,false);
-    assert.ok((await b.call('rankedAccept',{id:b.invites[0].id})).ok);
-    assert.ok((await c.call('rankedJoin',{game:'burraco',n:4,queue:'duo',friend:'Ranked3'})).ok);
-    await until(()=>d.invites.length);assert.ok((await d.call('rankedAccept',{id:d.invites[0].id})).ok);
+    const first=await a.call('rankedPartyCreate',{game:'burraco'}); assert.ok(first.party);
+    assert.equal((await a.call('rankedPartyReady')).ok,false);
+    assert.ok((await a.call('rankedPartyInvite',{nick:'Ranked1'})).ok);
+    assert.equal((await out.call('rankedPartyAccept',{id:first.party.id})).ok,false);
+    assert.ok((await b.call('rankedPartyAccept',{id:first.party.id})).ok);
+    assert.ok((await a.call('rankedPartyReady')).ok); assert.equal((await a.call('rankedProfile')).party.searching,false);
+    assert.ok((await b.call('rankedPartyReady')).ok); assert.equal((await a.call('rankedProfile')).party.searching,true);
+    const second=await c.call('rankedPartyCreate',{game:'burraco'});
+    assert.ok((await c.call('rankedPartyInvite',{nick:'Ranked3'})).ok);
+    assert.ok((await d.call('rankedPartyAccept',{id:second.party.id})).ok);
+    assert.ok((await c.call('rankedPartyReady')).ok); assert.ok((await d.call('rankedPartyReady')).ok);
     await until(()=>clients.slice(0,4).every(p=>p.state.game));
     assert.deepEqual(a.state.room.seats.map(s=>s.name),['Ranked0','Ranked2','Ranked1','Ranked3']);
     assert.equal((await out.call('joinRoom',{code:a.state.room.code})).ok,false);

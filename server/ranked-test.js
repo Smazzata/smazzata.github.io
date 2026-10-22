@@ -167,3 +167,17 @@ test('timer scaduto offline si riarma alla riconnessione', () => {
     ctx.isConnected=()=>true;ctx.scheduleTurnTimer(room);assert.ok(room.turnTimerHandle);assert.ok(room.turnDeadline>Date.now());
   } finally {clearTimeout(room.turnTimerHandle);ctx.isConnected=previous;}
 });
+
+test('tavolo Duo: invito, consenso, annullamento, uscita e disconnessione', () => {
+  const f=fixture(), p=f.ranked.party;
+  const room=p.create('p0','burraco').party;
+  assert.throws(()=>p.ready('p0'));
+  p.invite('p0','Player1'); assert.throws(()=>p.accept('p2',room.id));
+  p.accept('p1',room.id); p.ready('p0'); assert.equal(f.ranked.queue.size,0);
+  p.ready('p1'); assert.equal(f.ranked.queue.size,1);
+  p.reset('p1'); assert.equal(f.ranked.queue.size,0); assert.ok(p.mine('p0').members.every(m=>!m.ready));
+  p.ready('p0'); p.ready('p1'); f.sockets[1].offline=true; f.ranked.tick();
+  assert.equal(f.ranked.queue.size,0); assert.ok(p.mine('p0').members.every(m=>!m.ready));
+  f.advance(120001); f.ranked.tick(); assert.equal(p.mine('p1'),null); assert.equal(p.mine('p0').members.length,1);
+  p.leave('p0'); assert.equal(p.parties.size,0);
+});

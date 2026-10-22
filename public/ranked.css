@@ -32,3 +32,8 @@
 .ranked-choice:focus-visible{outline:3px solid #88caff;outline-offset:3px}
 .ranked-selection .ranked-solo-formats{margin-top:18px}.ranked-formats .ranked-choice b{font-size:22px}
 .ranked-format-note{font-size:13px;line-height:1.5;margin:12px 0 0;color:#ccd5e2}
+.home-game select{width:100%;min-height:50px;font:inherit;font-weight:800;padding:10px 14px;border-radius:12px}
+.ranked-party-seats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.ranked-party-seat{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 8px;border:1px solid #ffffff30;border-radius:16px;text-align:center}
+.ranked-empty-seat{font-size:38px;line-height:48px;color:#c5ad7e}.ranked-party-seat small{opacity:.75}
+.ranked-party .panel{margin-top:18px}.ranked-party .friend{margin:8px 0}

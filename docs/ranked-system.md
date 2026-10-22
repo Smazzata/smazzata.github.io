@@ -73,7 +73,7 @@ Comandi aggiunti: `npm run test:ranked`, `npm run e2e:ranked`, `npm run sim:rank
 
 Verifica locale finale: superati `npm test`, `npm run test:rapido`, `npm run e2e`, `npm run test:ranked`, `npm run e2e:ranked`, `npm run sim:ranked`, `npm run ui -- --leagues` e `npm run ui`. La prova completa dell'interfaccia copre anche partite precedenti, moviola, tornei, offline, aggiornamento app e lingue, senza errori della pagina. Il primo tentativo E2E generale ha incontrato un timeout nella Briscola con CPU; la ripetizione completa è passata. Rigenerate con successo la build web e gli asset `android-app/www`; controlli sintattici JavaScript e `git diff --check` superati. APK/AAB nativo non compilato in questa verifica.
 
-29 test automatici: riferimento Glicko, RD, squadre, tutte le sei BO3, residui/retrocessioni, piazzamenti, isolamento giochi/code/varianti, doppio consenso Duo, Solo 2v2, finestre, disconnessione/riconnessione e riarmo del timer, cooldown, pareggi, idempotenza, rollback e recupero da errore disco, persistenza, stagioni e Leggenda (limite, parità, frequenza, uscita, esclusioni). Verificati sia con SQLite sia con il fallback JSON (`node --no-experimental-sqlite --test server/ranked-test.js`).
+30 test automatici: riferimento Glicko, RD, squadre, tutte le sei BO3, residui/retrocessioni, piazzamenti, isolamento giochi/code/varianti, doppio consenso Duo, Solo 2v2, finestre, disconnessione/riconnessione e riarmo del timer, cooldown, pareggi, idempotenza, rollback e recupero da errore disco, persistenza, stagioni e Leggenda (limite, parità, frequenza, uscita, esclusioni). Verificati sia con SQLite sia con il fallback JSON (`node --no-experimental-sqlite --test server/ranked-test.js`).
 
 E2E dedicato: cinque socket su server reale, squadre Duo, inviti autorizzati, intruso respinto, annullamenti vietati, promozione reale completata, arresto forzato e riavvio con SQLite, risultato applicato una volta, `localResult` ininfluente, Solo e abbandono con cooldown.
 
@@ -126,3 +126,19 @@ La selezione Ranked presenta prima Coda singola / Coda Duo. La singola mostra i 
 supportati in ordine crescente (Burraco: 2, 3, 4); la Duo forza quattro giocatori e mostra
 un riepilogo fisso delle due coppie. Il formato Solo viene ricordato per gioco quando si
 passa alla Duo e viceversa. I giochi senza coppie non mostrano l'opzione Duo.
+
+## Tavolo Duo e gioco nella home
+
+La home ricorda il gioco scelto nel selettore `homeGame`; amici, computer, amichevole,
+Ranked, classifica e tutorial si aprono su quel gioco. La selezione è locale al dispositivo.
+Le configurazioni avanzate restano disponibili nella creazione delle partite private.
+
+La nuova sala Duo (`server/ranked-party.js`) contiene il creatore e un amico invitato
+tramite la lista amici online. Accettare l'invito occupa il secondo posto; la coda parte
+soltanto dopo due conferme «Sono pronto». Gli avversari sono assegnati dal matchmaking.
+Annullare la ricerca azzera entrambi i pronti; l'ospite può uscire e l'host può chiudere
+la sala. Una disconnessione sospende la ricerca e azzera i pronti; dopo 120 secondi il
+posto viene liberato (o la sala chiusa se manca l'host). La sala è recuperabile ricaricando
+il browser, ma è effimera e va ricreata dopo un riavvio del server, senza penalità.
+Il match successivo usa la normale persistenza e le protezioni Ranked già descritte.
+Gli eventi legacy di invito diretto restano compatibili con i client precedenti.

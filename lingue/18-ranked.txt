@@ -58,3 +58,21 @@ Giocatori al tavolo ‖ Players at the table ‖ Jugadores en la mesa ‖ Jogado
 4 giocatori · 2 coppie ‖ 4 players · 2 teams ‖ 4 jugadores · 2 parejas ‖ 4 jogadores · 2 duplas
 Tu e il tuo amico contro un’altra coppia. ‖ You and your friend against another team. ‖ Tú y tu amigo contra otra pareja. ‖ Você e seu amigo contra outra dupla.
 Il compagno viene scelto dal matchmaking. ‖ Matchmaking chooses your teammate. ‖ El emparejamiento elige a tu compañero. ‖ O pareamento escolhe seu parceiro.
+Il tuo tavolo ‖ Your table ‖ Tu mesa ‖ Sua mesa
+La tua coppia ‖ Your team ‖ Tu pareja ‖ Sua dupla
+Posto per un amico ‖ Seat for a friend ‖ Asiento para un amigo ‖ Lugar para um amigo
+Invita un amico dalla lista ‖ Invite a friend from the list ‖ Invita a un amigo de la lista ‖ Convide um amigo da lista
+Gli avversari vengono scelti dal matchmaking. ‖ Matchmaking chooses your opponents. ‖ El emparejamiento elige a los rivales. ‖ O pareamento escolhe seus adversários.
+Non sono pronto ‖ Not ready ‖ No estoy listo ‖ Não estou pronto
+Sono pronto ‖ I'm ready ‖ Estoy listo ‖ Estou pronto
+Non pronto ‖ Not ready ‖ No listo ‖ Não pronto
+La ricerca parte quando entrambi siete pronti. ‖ The search starts when you are both ready. ‖ La búsqueda comienza cuando ambos estén listos. ‖ A busca começa quando ambos estiverem prontos.
+Invito in attesa ‖ Invitation pending ‖ Invitación pendiente ‖ Convite pendente
+Nessun amico online. Aggiungi un amico o attendi che si colleghi. ‖ No friends online. Add a friend or wait for them to connect. ‖ No hay amigos conectados. Añade un amigo o espera a que se conecte. ‖ Nenhum amigo online. Adicione um amigo ou espere ele se conectar.
+Chiudi il tavolo ‖ Close table ‖ Cerrar mesa ‖ Fechar mesa
+Torna al tavolo Duo ‖ Return to Duo table ‖ Volver a la mesa Dúo ‖ Voltar à mesa Duo
+Invito al tavolo Duo ‖ Duo table invitation ‖ Invitación a la mesa Dúo ‖ Convite para a mesa Duo
+Entra nel tavolo e conferma quando sei pronto. ‖ Join the table and confirm when ready. ‖ Entra en la mesa y confirma cuando estés listo. ‖ Entre na mesa e confirme quando estiver pronto.
+Invito Ranked non disponibile ‖ Ranked invitation unavailable ‖ Invitación Ranked no disponible ‖ Convite Ranked indisponível
+Attendi il tuo compagno ‖ Wait for your teammate ‖ Espera a tu compañero ‖ Aguarde seu parceiro
+Crea tavolo Duo ‖ Create Duo table ‖ Crear mesa Dúo ‖ Criar mesa Duo

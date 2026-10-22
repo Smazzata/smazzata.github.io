@@ -230,6 +230,7 @@
 
   document.addEventListener('change', (e) => {
     const el = e.target;
+    if (el.id === 'homeGame') { store.set('smazzata_home_game',el.value); applyHomeGame(); }
     if (el.dataset && el.dataset.rule) {
       const target = S.modalKind === 'editRules' ? 'edit' : 'setup';
       const value = el.type === 'checkbox' ? el.checked : el.value;

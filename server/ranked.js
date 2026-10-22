@@ -13,6 +13,7 @@ function createRanked(ctx, options = {}) {
   const c = { ...R.CONFIG, ...options.config }, clock = options.clock || Date.now;
   const view = (p) => R.view(p, c);
   const queue = new Map(), invites = new Map();
+  const party = require('./ranked-party')({ctx,clock,checked,format,enter,cancel,queue,emit});
   if (!ctx.ranked) ctx.ranked = empty();
   const persist = () => ctx.saveNow('ranked');
   function transaction(fn) {
@@ -50,6 +51,7 @@ function createRanked(ctx, options = {}) {
   }
   function enter(tokens, f) {
     tokens.forEach(checked);
+    for (const t of tokens) if (party.mine(t) && party.mine(t).id !== f.id) party.leave(t);
     if (tokens.some((t) => !ctx.isConnected(t))) throw new E.GameError('Entrambi i giocatori devono essere online');
     const now = clock();
     const profiles = tokens.map((t) => profile(t, f.key, now));
@@ -61,6 +63,7 @@ function createRanked(ctx, options = {}) {
   }
   function join(token, data) {
     const f = format(data); checked(token);
+    party.leave(token);
     if (f.queue === 'solo') return enter([token], f);
     const sess = ctx.sessions.get(token);
     const friend = [...ctx.sessions].find(([t, s]) => (sess.friends || []).includes(t) && s.nick === data.friend);
@@ -116,10 +119,12 @@ function createRanked(ctx, options = {}) {
       // Tutti i posti sono fissati dal server prima dell'avvio; nessun invito diretto può inserirsi.
       tokens.forEach((t) => { const s = ctx.socketsOf(t)[0]; if (s.data.room) ctx.leaveRoom(s); s.join(code); s.data.room = code; ctx.sessions.get(t).room = code; });
       ctx.startGame(room); persist();
+      party.matched(tokens);
       tokens.forEach(cancel);
     } catch (e) { ctx.rooms.delete(code); throw e; }
   }
   function tick() {
+    party.tick();
     for (const room of ctx.rooms.values()) {
       if (!room.rankedMatch || !room.game) continue;
       if (room.game.over) {
@@ -244,11 +249,16 @@ function createRanked(ctx, options = {}) {
   function register(socket, handler) {
     socket.on('rankedJoin', handler((data) => join(socket.data.token, data)));
     socket.on('rankedAccept', handler(({ id }) => accept(socket.data.token, id)));
-    socket.on('rankedCancel', handler(() => { cancel(socket.data.token); return {}; }));
+    socket.on('rankedCancel', handler(() => { cancel(socket.data.token); party.reset(socket.data.token); return {}; }));
+    socket.on('rankedPartyCreate', handler(({game}) => party.create(socket.data.token,game)));
+    socket.on('rankedPartyInvite', handler(({nick}) => party.invite(socket.data.token,nick)));
+    socket.on('rankedPartyAccept', handler(({id}) => party.accept(socket.data.token,id)));
+    socket.on('rankedPartyReady', handler(() => party.ready(socket.data.token)));
+    socket.on('rankedPartyLeave', handler(() => {party.leave(socket.data.token);return {};}));
     socket.on('rankedBoard', handler((data) => board(socket.data.token, data)));
-    socket.on('rankedProfile', handler(() => ({ ranks: mine(socket.data.token), queue: [...queue.values()].find((e) => e.tokens.includes(socket.data.token)) ? { searching: true } : null })));
+    socket.on('rankedProfile', handler(() => ({ ranks: mine(socket.data.token), party:party.mine(socket.data.token), queue: [...queue.values()].find((e) => e.tokens.includes(socket.data.token)) ? { searching: true } : null })));
     socket.on('disconnect', () => { if (!ctx.isConnected(socket.data.token)) cancel(socket.data.token); });
   }
-  return { register, join, accept, cancel, tick, record, board, mine, legends, profile, queue, invites, windowFor, arrangement, transaction, format };
+  return { register, join, accept, cancel:token=>{cancel(token);party.leave(token);}, tick, record, board, mine, legends, profile, queue, invites, party, windowFor, arrangement, transaction, format };
 }
 module.exports = { createRanked, empty, keyOf };

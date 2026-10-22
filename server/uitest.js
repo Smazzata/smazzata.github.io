@@ -159,7 +159,8 @@ const HELPERS = `
         if (document.querySelectorAll('#modal [data-act="quick"][data-mode="' + mode + '"]').length !== 3) throw new Error('scelta formato pubblico');
         if (!document.querySelector('#modal').textContent.includes('Burraco Classico')) throw new Error('variante pubblica non indicata');
         for (const [game] of GAME_TILES) {
-          __tap('#modal [data-act="quickMenu"][data-game="' + game + '"]');
+          closeModal(); const selector=document.querySelector('#homeGame'); selector.value=game; selector.dispatchEvent(new Event('change',{bubbles:true}));
+          __tap('[data-act="quickMenu"][data-mode="' + mode + '"]');
           const buttons = [...document.querySelectorAll('#modal [data-act="quick"]')];
           if (!buttons.length || buttons.some((b) => b.dataset.game !== game || b.dataset.mode !== mode)) throw new Error('gioco o modalità persi');
           for (const tile of document.querySelectorAll('#modal .gtile')) {
@@ -172,7 +173,16 @@ const HELPERS = `
           if (game === 'scopone' && (buttons.length !== 1 || buttons[0].dataset.n !== '4')) throw new Error('scopone');
         }
         document.querySelector('.modal-close').click();
+        store.set('smazzata_home_game','burraco'); applyHomeGame(); render();
       }
+      const selected=document.querySelector('#homeGame'); selected.value='scopa'; selected.dispatchEvent(new Event('change',{bubbles:true}));
+      for(const act of ['playFriends','playBots']) {
+        __tap('[data-act="'+act+'"]'); if(pickedGame(S.rules)!=='scopa') throw Error('gioco home perso in '+act);
+        __tap('[data-act="goHome"]');
+      }
+      __tap('[data-act="quickMenu"][data-mode="ranked"]'); await __W(500);
+      if(S.leagueData.game!=='scopa') throw Error('Ranked ignora il gioco home');
+      handlers.goHome(); store.set('smazzata_home_game','burraco'); applyHomeGame(); render();
       __tap('[data-act="playBots"]'); await __W(100);
       __tap('[data-act="setupBotLevel"][data-val="difficile"]');
       if (S.prefs.botLevel !== 'difficile' || !document.querySelector('[data-act="setupBotLevel"][data-val="difficile"]').classList.contains('on')) throw new Error('selettore difficoltà');
