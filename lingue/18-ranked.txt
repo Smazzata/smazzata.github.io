@@ -49,3 +49,12 @@ Turni di 60 secondi. Hai 120 secondi per riconnetterti; abbandoni e inattività 
 Non classificato ‖ Unranked ‖ Sin clasificar ‖ Sem classificação
 Piazzamenti completati! ‖ Placements complete! ‖ ¡Posicionamiento completado! ‖ Colocações concluídas!
 Il tuo grado iniziale è stato assegnato. ‖ Your initial rank has been assigned. ‖ Se ha asignado tu rango inicial. ‖ Sua classificação inicial foi atribuída.
+Come vuoi giocare? ‖ How do you want to play? ‖ ¿Cómo quieres jugar? ‖ Como você quer jogar?
+Coda singola ‖ Solo queue ‖ Cola individual ‖ Fila individual
+Coda Duo ‖ Duo queue ‖ Cola Dúo ‖ Fila Duo
+Entra da solo ‖ Join on your own ‖ Entra por tu cuenta ‖ Entre sozinho
+Gioca con un amico ‖ Play with a friend ‖ Juega con un amigo ‖ Jogue com um amigo
+Giocatori al tavolo ‖ Players at the table ‖ Jugadores en la mesa ‖ Jogadores na mesa
+4 giocatori · 2 coppie ‖ 4 players · 2 teams ‖ 4 jugadores · 2 parejas ‖ 4 jogadores · 2 duplas
+Tu e il tuo amico contro un’altra coppia. ‖ You and your friend against another team. ‖ Tú y tu amigo contra otra pareja. ‖ Você e seu amigo contra outra dupla.
+Il compagno viene scelto dal matchmaking. ‖ Matchmaking chooses your teammate. ‖ El emparejamiento elige a tu compañero. ‖ O pareamento escolhe seu parceiro.

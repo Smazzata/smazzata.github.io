@@ -9,7 +9,14 @@ function rankedFormats(game) {
   const base = game === 'burraco' ? R.PRESETS[0].rules : RX.presetById(game).rules;
   const rules = RX.normalize(base);
   return (RX.schema(rules).find((f) => f.key === 'players')?.choices || [[rules.players, String(rules.players)]])
-    .filter(([n]) => RX.normalize({ ...base, players: n }).players === n);
+    .filter(([n]) => RX.normalize({ ...base, players: n }).players === n).sort((a, b) => a[0] - b[0]);
+}
+function rankedSelectionHTML(game) {
+  const duo = S.rankedQueue === 'duo', canDuo = RANKED_TEAMS.includes(game) && rankedFormats(game).some(([n]) => n === 4);
+  return `<section class="ranked-selection" aria-label="${t('Come vuoi giocare?')}"><fieldset><legend>${t('Come vuoi giocare?')}</legend><div class="ranked-queues">
+    <button class="ranked-choice ${!duo ? 'selected' : ''}" data-act="leaders" data-queue="solo" aria-pressed="${!duo}"><b>${t('Coda singola')}</b><small>${t('Entra da solo')}</small></button>
+    ${canDuo ? `<button class="ranked-choice ${duo ? 'selected' : ''}" data-act="leaders" data-queue="duo" aria-pressed="${duo}"><b>${t('Coda Duo')}</b><small>${t('Gioca con un amico')}</small></button>` : ''}</div></fieldset>
+    ${duo ? `<p class="ranked-format-note"><b>${t('4 giocatori · 2 coppie')}</b><br>${t('Tu e il tuo amico contro un’altra coppia.')}</p>` : `<fieldset class="ranked-solo-formats"><legend>${t('Giocatori al tavolo')}</legend><div class="ranked-formats">${rankedFormats(game).map(([n]) => `<button class="ranked-choice ${n === S.rankedN ? 'selected' : ''}" data-act="leaders" data-n="${n}" aria-pressed="${n === S.rankedN}"><b>${n}</b><small>${t('Giocatori')}</small></button>`).join('')}</div>${S.rankedN === 4 && canDuo ? `<p class="ranked-format-note">${t('Il compagno viene scelto dal matchmaking.')}</p>` : ''}</fieldset>`}</section>`;
 }
 function rankedCard(p) {
   if (!p) return '';
@@ -23,12 +30,14 @@ function rankedCard(p) {
 }
 openLeaguePage = async function(el) {
   const d = el?.dataset || {};
+  S.rankedSoloFormats ||= {};
+  if (S.rankedQueue === 'solo' && S.rankedN) S.rankedSoloFormats[S.lbGame || 'burraco'] = S.rankedN;
   if (d.game) S.lbGame = d.game;
   const game = S.lbGame || 'burraco', formats = rankedFormats(game);
-  S.rankedN = Number(d.n || S.rankedN || formats[0][0]);
-  if (!formats.some(([n]) => n === S.rankedN)) S.rankedN = formats[0][0];
   S.rankedQueue = d.queue || S.rankedQueue || 'solo';
-  if (S.rankedN !== 4 || !RANKED_TEAMS.includes(game)) S.rankedQueue = 'solo';
+  if (!RANKED_TEAMS.includes(game) || !formats.some(([n]) => n === 4)) S.rankedQueue = 'solo';
+  S.rankedN = S.rankedQueue === 'duo' ? 4 : Number(d.n || S.rankedSoloFormats[game] || formats[0][0]);
+  if (!formats.some(([n]) => n === S.rankedN)) S.rankedN = formats[0][0];
   if (d.friends !== undefined) S.lbFriends = d.friends === '1';
   if (d.season !== undefined) S.rankedSeason = Number(d.season);
   const request = S.leagueRequest = (S.leagueRequest || 0) + 1;
@@ -44,8 +53,7 @@ leadersHTML = function() {
   const legend = data?.legend;
   return `<main class="page league-page theme-${preview.id}"><header class="league-header"><button class="league-back" data-act="leagueBack" aria-label="${t('Torna alla home')}">←</button><div><small>SMAZZATA RANKED</small><h1>${t('Classifica')}</h1></div></header>
     <nav class="league-games">${LEAGUE_GAMES.map(([id, name]) => `<button class="league-game ${id === game ? 'on' : ''}" data-act="leaders" data-game="${id}">${name}</button>`).join('')}<button class="league-game ${game === 'scopone' ? 'on' : ''}" data-act="leaders" data-game="scopone">Scopone</button></nav>
-    <div class="ranked-controls">${rankedFormats(game).map(([n, label]) => `<button class="btn small ${n === S.rankedN ? 'primary' : ''}" data-act="leaders" data-n="${n}">${esc(label)}</button>`).join('')}
-    <button class="btn small ${S.rankedQueue === 'solo' ? 'primary' : ''}" data-act="leaders" data-queue="solo">Ranked Solo</button>${S.rankedN === 4 && RANKED_TEAMS.includes(game) ? `<button class="btn small ${S.rankedQueue === 'duo' ? 'primary' : ''}" data-act="leaders" data-queue="duo">Ranked Duo</button>` : ''}</div>
+    ${rankedSelectionHTML(game)}
     ${!data ? `<p role="status">${t(S.leagueError ? 'Classifica non disponibile' : 'Caricamento classifica…')}</p>` : `
     <section class="league-hero"><div class="league-halo" aria-hidden="true"></div>${leagueEmblem(preview, 'league-hero-emblem')}<h2>${t(preview.name)} ${preview.division || ''}</h2>${!S.rankPreview || preview.id === current.id ? rankedCard(p) : ''}
     <button class="btn primary" data-act="rankedSearch">${t('Cerca partita')}</button><button class="btn small" data-act="rankedProfile">${t('Profilo competitivo')}</button>

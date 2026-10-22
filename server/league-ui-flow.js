@@ -73,6 +73,14 @@ module.exports = async function leagueFlow({ cdp, shot, open, URL, step }) {
     await __W(500);
     if (!S.rankedSearching || S.modalKind !== 'rankedSearch') throw new Error('ricerca Ranked non avviata');
     await emit('rankedCancel');
+    await openLeaguePage({dataset:{game:'burraco',n:'3',queue:'solo'}});
+    if ([...document.querySelectorAll('.ranked-formats [data-n]')].map(e=>e.dataset.n).join(',') !== '2,3,4') throw new Error('formati Solo non ordinati');
+    __tap('.ranked-queues [data-queue="duo"]'); await __W(600);
+    if (S.leagueData.queue !== 'duo' || S.leagueData.n !== 4 || document.querySelector('.ranked-solo-formats')) throw new Error('Duo non forza quattro giocatori');
+    __tap('.ranked-queues [data-queue="solo"]'); await __W(600);
+    if (S.leagueData.n !== 3 || S.leagueData.queue !== 'solo') throw new Error('formato Solo perso tornando dalla Duo');
+    await openLeaguePage({dataset:{game:'scala40'}});
+    if (document.querySelector('.ranked-queues [data-queue="duo"]')) throw new Error('Duo mostrata per un gioco non supportato');
     await openLeaguePage({dataset:{game:'burraco',n:'4',queue:'duo'}});
     if (S.leagueData.queue !== 'duo') throw new Error('coda Duo persa');
     __tap('[data-act="rankedSearch"]'); await __W(100);

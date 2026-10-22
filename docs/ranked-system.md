@@ -121,3 +121,8 @@ persistono `placementMatch`, così il riepilogo non scambia la calibrazione per 
 anche dopo riconnessione. Le nuove stringhe sono tradotte nelle quattro lingue.
 Il rating e le regole di piazzamento non sono cambiati. Il test UI verifica stati 0/10,
 9/10, assenza di LP e transizioni premature e rivelazione finale Bronzo IV.
+
+La selezione Ranked presenta prima Coda singola / Coda Duo. La singola mostra i formati
+supportati in ordine crescente (Burraco: 2, 3, 4); la Duo forza quattro giocatori e mostra
+un riepilogo fisso delle due coppie. Il formato Solo viene ricordato per gioco quando si
+passa alla Duo e viceversa. I giochi senza coppie non mostrano l'opzione Duo.
