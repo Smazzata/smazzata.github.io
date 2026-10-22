@@ -230,7 +230,6 @@
 
   document.addEventListener('change', (e) => {
     const el = e.target;
-    if (el.id === 'homeGame') { store.set('smazzata_home_game',el.value); applyHomeGame(); }
     if (el.dataset && el.dataset.rule) {
       const target = S.modalKind === 'editRules' ? 'edit' : 'setup';
       const value = el.type === 'checkbox' ? el.checked : el.value;
@@ -309,6 +308,15 @@
   });
 
   document.addEventListener('keydown', (e) => {
+    if (S.modalKind === 'homeGamePicker') {
+      if(e.key==='Escape') { e.preventDefault();closeModal();$('#homeGame')?.focus();return; }
+      if(e.key==='Tab') {
+        const buttons=[...document.querySelectorAll('#modal button:not([disabled])')].filter(b=>b.getClientRects().length);
+        const first=buttons[0],last=buttons[buttons.length-1];
+        if(e.shiftKey&&document.activeElement===first) {e.preventDefault();last?.focus();}
+        else if(!e.shiftKey&&document.activeElement===last) {e.preventDefault();first?.focus();}
+      }
+    }
     if (e.key === 'Escape' && S.modalKind) closeModal();
     if (e.key === 'Enter' && e.target.id === 'joinCode') handlers.join();
   });

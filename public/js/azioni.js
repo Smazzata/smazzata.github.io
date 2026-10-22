@@ -98,6 +98,11 @@
     playBots() { if (!requireName()) return; applyHomeGame(); S.playMode = 'bots'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
     playFriends() { if (!requireName()) return; applyHomeGame(); S.playMode = 'friends'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
     more() { moreModal(); },
+    homeGameMenu,
+    homeGameChoose(el) {
+      if(!GAME_TILES.some(([id])=>id===el.dataset.game)) return;
+      store.set('smazzata_home_game',el.dataset.game); applyHomeGame(); closeModal(); render(); $('#homeGame')?.focus();
+    },
     turnHelp() { turnHelp(); },
     turnLog() { turnLogModal(); },
     gamesRules() { gamesRulesModal(); },

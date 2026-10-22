@@ -142,3 +142,9 @@ posto viene liberato (o la sala chiusa se manca l'host). La sala è recuperabile
 il browser, ma è effimera e va ricreata dopo un riavvio del server, senza penalità.
 Il match successivo usa la normale persistenza e le protezioni Ranked già descritte.
 Gli eventi legacy di invito diretto restano compatibili con i client precedenti.
+
+Il selettore della home è un menu Smazzata personalizzato (nessun `<select>` nativo):
+riquadri per tutti i giochi, raggruppati per mazzo, selezione evidenziata, apertura
+accessibile da tastiera e chiusura con Escape. La configurazione della nuova partita
+non ripropone più la griglia dei giochi: mostra il nome scelto nella home, numero di
+giocatori, difficoltà e opzioni pertinenti. Per cambiare gioco si torna alla home.

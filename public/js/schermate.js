@@ -137,7 +137,7 @@
     const reqs = S.social && S.social.reqIn ? S.social.reqIn.length : 0;
     return `<div class="homebtns">
       ${S.rankedParty ? `<button class="btn primary" data-act="rankedPartyOpen">${t('Torna al tavolo Duo')}</button>` : ''}
-      <label class="field home-game"><span>${t('Scegli il gioco')}</span><select id="homeGame">${GAME_TILES.map(([id,,name])=>`<option value="${id}" ${id===homeGame()?'selected':''}>${esc(name)}</option>`).join('')}</select></label>
+      <div class="home-game"><span id="homeGameLabel">${t('Scegli il gioco')}</span><button id="homeGame" class="home-game-trigger" data-act="homeGameMenu" aria-haspopup="dialog" aria-labelledby="homeGameLabel homeGameName"><span class="home-game-symbol" aria-hidden="true">${GAME_TILES.find(([id])=>id===homeGame())[1]}</span><b id="homeGameName">${esc(GAME_TILES.find(([id])=>id===homeGame())[2])}</b><span class="home-game-chevron" aria-hidden="true">⌄</span></button></div>
       ${OFFLINE ? '' : `<nav class="home-shortcuts" aria-label="Community">
         <button class="home-shortcut" data-act="friends"><span class="shortcut-icon" aria-hidden="true">👥</span><span>Amici</span>${reqs ? `<b class="shortcut-count">${reqs}</b>` : ''}</button>
         <button class="home-shortcut" data-act="daily"><span class="shortcut-icon" aria-hidden="true">📅</span><span>Sfida del giorno</span></button>
@@ -192,9 +192,13 @@
     if(pickedGame(S.rules)!==game) S.rules=RX.normalize(game==='burraco'?R.PRESETS[0].rules:RX.presetById(game).rules);
     store.set('bur_rules',S.rules); S.lbGame=game;
   }
+  function homeGameMenu() {
+    openModal('homeGamePicker', `<section class="home-game-menu"><small>SMAZZATA</small><h2>${t('Scegli il gioco')}</h2><p>${t('Un solo gioco per tutte le modalità della home.')}</p>${[['Carte francesi',GAME_TILES.slice(0,4)],['Carte italiane',GAME_TILES.slice(4)]].map(([label,games])=>`<h3>${t(label)}</h3><div class="home-game-options">${games.map(([id,icon,name])=>`<button class="home-game-option ${id===homeGame()?'selected':''}" data-act="homeGameChoose" data-game="${id}" aria-pressed="${id===homeGame()}"><span class="home-game-symbol" aria-hidden="true">${icon}</span><b>${esc(name)}</b><span class="home-game-check" aria-hidden="true">${id===homeGame()?'✓':''}</span></button>`).join('')}</div>`).join('')}</section>`);
+    document.querySelector('.home-game-option.selected')?.focus();
+  }
 
   /**
-   * Nuova partita, in due tocchi: il gioco (griglia di riquadri grandi) e «Inizia».
+   * Nuova partita: il gioco è già scelto nella home; qui si configura il tavolo.
    * Varianti e regole personalizzate restano in «Regole e varianti» (aperto in modalità completa).
    */
   function setupHTML() {
@@ -205,8 +209,7 @@
       <div class="row"><button class="btn ghost small" data-act="goHome">← Indietro</button></div>
       ${friends ? `<div class="panel joinbox"><b>Un amico ti ha dato un codice?</b>
         <div class="row" style="margin-top:6px"><input type="text" id="joinCode" class="grow codein" maxlength="4" placeholder="Codice" value="${esc(S.pendingJoin)}"><button class="btn primary" data-act="join">Entra</button></div></div>` : ''}
-      <h2 class="bigtitle">${friends ? 'Oppure crea un tavolo: a cosa giocate?' : 'A cosa vuoi giocare?'}</h2>
-      <div class="gamegrid">${GAME_TILES.map(([id, icon, name]) => `<button class="gtile ${pickedGame(S.rules) === id ? 'on' : ''}" data-act="pickGame" data-game="${id}"><span>${icon}</span>${name}</button>`).join('')}</div>
+      <header class="setup-game-heading"><small>${t(friends ? 'Crea il tavolo' : 'Nuova partita')}</small><h2 class="bigtitle">${esc(RX.gameName(S.rules))}</h2></header>
       <div class="panel">
         ${pf ? `<h3>Quanti giocatori?</h3><div class="row">${pf.choices.map(([v, l]) => `<button class="swatch big ${Number(S.rules.players) === Number(v) ? 'on' : ''}" data-act="pickPlayers" data-n="${v}">${esc(l)}</button>`).join('')}</div>` : ''}
         ${friends ? '' : `<h3>Difficoltà del computer</h3><div class="row">${[['auto', 'Automatica'], ['facile', 'Facile'], ['normale', 'Normale'], ['difficile', 'Difficile'], ['esperto', 'Esperto']].map(([v, label]) => `<button class="swatch ${(S.prefs.botLevel || 'auto') === v ? 'on' : ''}" data-act="setupBotLevel" data-val="${v}" aria-pressed="${(S.prefs.botLevel || 'auto') === v}">${label}</button>`).join('')}</div><p class="muted small">Automatica: si adatta ai tuoi risultati.</p>`}

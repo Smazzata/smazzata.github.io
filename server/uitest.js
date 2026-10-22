@@ -159,7 +159,7 @@ const HELPERS = `
         if (document.querySelectorAll('#modal [data-act="quick"][data-mode="' + mode + '"]').length !== 3) throw new Error('scelta formato pubblico');
         if (!document.querySelector('#modal').textContent.includes('Burraco Classico')) throw new Error('variante pubblica non indicata');
         for (const [game] of GAME_TILES) {
-          closeModal(); const selector=document.querySelector('#homeGame'); selector.value=game; selector.dispatchEvent(new Event('change',{bubbles:true}));
+          closeModal(); __tap('[data-act="homeGameMenu"]'); __tap('[data-act="homeGameChoose"][data-game="' + game + '"]');
           __tap('[data-act="quickMenu"][data-mode="' + mode + '"]');
           const buttons = [...document.querySelectorAll('#modal [data-act="quick"]')];
           if (!buttons.length || buttons.some((b) => b.dataset.game !== game || b.dataset.mode !== mode)) throw new Error('gioco o modalità persi');
@@ -175,9 +175,9 @@ const HELPERS = `
         document.querySelector('.modal-close').click();
         store.set('smazzata_home_game','burraco'); applyHomeGame(); render();
       }
-      const selected=document.querySelector('#homeGame'); selected.value='scopa'; selected.dispatchEvent(new Event('change',{bubbles:true}));
+      if(document.querySelector('select#homeGame')) throw Error('selettore nativo presente'); __tap('[data-act="homeGameMenu"]'); __tap('[data-act="homeGameChoose"][data-game="scopa"]');
       for(const act of ['playFriends','playBots']) {
-        __tap('[data-act="'+act+'"]'); if(pickedGame(S.rules)!=='scopa') throw Error('gioco home perso in '+act);
+        __tap('[data-act="'+act+'"]'); if(document.querySelector('[data-act="pickGame"]') || !document.querySelector('.setup-game-heading').textContent.includes('Scopa')) throw Error('scelta gioco ripetuta nella configurazione'); if(pickedGame(S.rules)!=='scopa') throw Error('gioco home perso in '+act);
         __tap('[data-act="goHome"]');
       }
       __tap('[data-act="quickMenu"][data-mode="ranked"]'); await __W(500);
@@ -189,6 +189,9 @@ const HELPERS = `
       __tap('[data-act="setupBotLevel"][data-val="auto"]');
       __tap('[data-act="goHome"]'); closeModal(); await __W(300);`);
     await shot('01-home');
+    await cdp.run(`__tap('[data-act="homeGameMenu"]'); await __W(350); if(document.querySelectorAll('.home-game-option').length!==10) throw Error('giochi nel menu incompleti'); if(document.documentElement.scrollWidth>innerWidth) throw Error('menu fuori schermo');`);
+    await shot('01-game-menu');
+    await cdp.run(`document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true})); if(S.modalKind || document.activeElement.id!=='homeGame') throw Error('chiusura menu e focus'); await __W(250);`);
     step('schermata iniziale e nickname');
     if (!HOME_ONLY || process.argv.includes('--leagues')) {
       await require('./league-ui-flow')({ cdp, shot, open, URL, step });
@@ -248,8 +251,7 @@ const HELPERS = `
     const s40 = await cdp.run(`
       await __menu('leave'); await __W(400);
       if (document.querySelector('[data-act="leaveNow"]')) { __tap('[data-act="leaveNow"]'); await __W(800); }
-      __tap('[data-act="playBots"]'); await __W(400);
-      __tap('[data-act="pickGame"][data-game="scala40"]'); await __W(400);
+      __tap('[data-act="homeGameMenu"]'); __tap('[data-act="homeGameChoose"][data-game="scala40"]'); __tap('[data-act="playBots"]'); await __W(400);
       __tap('[data-act="createBots"]'); await __W(1500);
       const title = document.querySelector('.topbar .title').textContent;
       const hand = document.querySelectorAll('#hand .card').length;
@@ -266,8 +268,7 @@ const HELPERS = `
       await __menu('leave'); await __W(400);
       if (document.querySelector('[data-act="leaveNow"]')) { __tap('[data-act="leaveNow"]'); await __W(800); }
       if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); await __menu('leave'); await __W(800); }
-      __tap('[data-act="playBots"]'); await __W(400);
-      __tap('[data-act="pickGame"][data-game="canasta"]'); await __W(400);
+      __tap('[data-act="homeGameMenu"]'); __tap('[data-act="homeGameChoose"][data-game="canasta"]'); __tap('[data-act="playBots"]'); await __W(400);
       __tap('[data-act="createBots"]'); await __W(1500);
       const t = document.querySelector('.topbar .title').textContent;
       if (!document.querySelectorAll('#hand .card').length) throw new Error('Canasta non partita: ' + t);
@@ -280,8 +281,7 @@ const HELPERS = `
       await __menu('leave'); await __W(400);
       if (document.querySelector('[data-act="leaveNow"]')) { __tap('[data-act="leaveNow"]'); await __W(800); }
       if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); await __menu('leave'); await __W(800); }
-      __tap('[data-act="playBots"]'); await __W(400);
-      __tap('[data-act="pickGame"][data-game="scopa"]'); await __W(400);
+      __tap('[data-act="homeGameMenu"]'); __tap('[data-act="homeGameChoose"][data-game="scopa"]'); __tap('[data-act="playBots"]'); await __W(400);
       __tap('[data-act="createBots"]'); await __W(1500);
       if (document.querySelectorAll('#hand .card.it').length !== 3) throw new Error('Scopa: niente carte italiane in mano');
       return true;`, 30000);
@@ -329,7 +329,7 @@ const HELPERS = `
     await cdp.run(HELPERS);
     const o = await cdp.run(`
       if (!document.querySelector('.offbanner')) throw new Error('niente schermata offline');
-      __tap('[data-act="playBots"]'); await __W(400); __tap('[data-act="pickGame"][data-game="burraco"]'); await __W(300);
+      __tap('[data-act="homeGameMenu"]'); __tap('[data-act="homeGameChoose"][data-game="burraco"]'); __tap('[data-act="playBots"]'); await __W(400);
       __tap('[data-act="createBots"]'); await __W(2500);
       return { hand: document.querySelectorAll('#hand .card').length, title: document.querySelector('.topbar .title').textContent };`);
     await shot('05-offline');

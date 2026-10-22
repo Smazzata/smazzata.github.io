@@ -76,3 +76,7 @@ Entra nel tavolo e conferma quando sei pronto. ‖ Join the table and confirm wh
 Invito Ranked non disponibile ‖ Ranked invitation unavailable ‖ Invitación Ranked no disponible ‖ Convite Ranked indisponível
 Attendi il tuo compagno ‖ Wait for your teammate ‖ Espera a tu compañero ‖ Aguarde seu parceiro
 Crea tavolo Duo ‖ Create Duo table ‖ Crear mesa Dúo ‖ Criar mesa Duo
+Un solo gioco per tutte le modalità della home. ‖ One game for every mode on the home screen. ‖ Un juego para todos los modos de inicio. ‖ Um jogo para todos os modos da tela inicial.
+Carte francesi ‖ French-suited cards ‖ Baraja francesa ‖ Baralho francês
+Carte italiane ‖ Italian-suited cards ‖ Baraja italiana ‖ Baralho italiano
+Crea il tavolo ‖ Create table ‖ Crear mesa ‖ Criar mesa
