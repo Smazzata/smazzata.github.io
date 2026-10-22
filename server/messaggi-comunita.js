@@ -44,6 +44,7 @@ module.exports.register = function register(socket, handler) {
     if (!e) return { stats: null, history: [], trophies: Trophies.view(null), level: Levels.levelOf(null) };
     return {
       stats: publicStats(e),
+      ranked: ctx.Ranked.mine(socket.data.token),
       byGame: statsByGame(e),
       timeline: (e.timeline || []).map(({ opponentTokens, ...row }) => row),
       level: Levels.levelOf(e),
@@ -68,6 +69,7 @@ module.exports.register = function register(socket, handler) {
     };
     return {
       nick: sess.nick, avatar: sess.avatar || null,
+      ranked: Object.fromEntries(Object.entries(ctx.Ranked.mine(token)).map(([k, p]) => [k, { ...p, history: undefined, seasons: undefined }])),
       stats: e ? publicStats(e) : null,
       byGame: statsByGame(e),
       level: Levels.levelOf(e).level,

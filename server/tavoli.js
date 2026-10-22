@@ -78,6 +78,7 @@ function roomInfo(room) {
     quick: room.quick || 0,
     queueMode: room.queueMode || 'ranked',
     ranked: Elo.isRanked(room), // partita classificata: cambia l'Elo
+    rankedFormat: room.rankedMatch ? { id: room.rankedMatch.id, key: room.rankedMatch.key, queue: room.rankedMatch.queue } : null,
     series: room.series || null,
     surrender: room.surrenderVotes && room.surrenderVotes.length ? room.surrenderVotes : null,
     turnLeft: room.turnDeadline ? Math.max(0, room.turnDeadline - Date.now()) : null,
@@ -164,6 +165,7 @@ function checkReady(room) {
   if (!g || g.phase !== 'handEnd') return;
   const humans = room.seats.map((s, i) => (s && !s.isBot && isConnected(s.token) ? i : -1)).filter((i) => i >= 0);
   const allReady = humans.length > 0 && humans.every((i) => room.ready.has(i));
+  if (g.over && room.rankedMatch) { broadcast(room); return; }
   if (allReady && g.over) { startGame(room); return; }
   if (allReady) {
     GE(room).nextHand(g);
@@ -201,6 +203,12 @@ function leaveRoom(socket, abandon = false) {
   }
   room.spectators = (room.spectators || []).filter((t) => t !== socket.data.token);
   const seat = seatOfToken(room, socket.data.token);
+  if (seat >= 0 && room.rankedMatch && room.game && !room.game.over) {
+    room.rankedMatch.abandoned = [...new Set([...(room.rankedMatch.abandoned || []), socket.data.token])];
+    // La resa è decisa dal motore: evita partite finite contro sostituti CPU e cancellazioni senza esito.
+    GE(room).surrender(room.game, seat);
+    afterAction(room);
+  }
   if (seat >= 0 && !room.game) room.seats[seat] = null;
   if (seat >= 0 && room.game) {
     // in partita: il posto passa a un bot
@@ -266,6 +274,7 @@ function takeOver(socket, mode) {
 
 function joinRoom(socket, room) {
   const token = socket.data.token;
+  if (room.rankedMatch && !room.rankedMatch.tokens.includes(token)) throw new E.GameError('Tavolo riservato al matchmaking Ranked');
   const sess = sessions.get(token);
   let seat = seatOfToken(room, token);
   room.spectators = room.spectators || [];
@@ -308,6 +317,7 @@ function getRoom(socket) {
 }
 
 function requireHost(socket, room) {
+  if (room.rankedMatch && room.game && !room.game.over) throw new E.GameError('Le regole Ranked sono fissate dal server');
   if (room.hostToken !== socket.data.token) throw new E.GameError('Solo chi ha creato il tavolo può farlo');
 }
 
@@ -324,6 +334,7 @@ function fillBots(room) {
 }
 
 function startGame(room) {
+  if (room.rankedMatch && (room.game || ctx.ranked.matches[room.rankedMatch.id])) throw new E.GameError('Rientra in coda per una nuova Ranked');
   if (room.series && room.series.champion) room.series = { ...room.series, wins: Array(room.n).fill(0), games: 0, champion: null };
   clearTimeout(room.botTimer);
   room.botTimer = null;

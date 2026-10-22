@@ -620,13 +620,13 @@ async function signup(p, nick, email = mailOf()) {
     }
     const br1 = await Q1.call('quickPlay', { game: 'briscola', n: 2, mode: 'ranked' });
     const br2 = await Q2.call('quickPlay', { game: 'briscola', n: 2, mode: 'ranked' });
-    assert(br1.ok && br1.code === br2.code, 'abbinamento Briscola classificata');
+    assert(br1.ok && br2.ok && br1.searching, 'ricerca Briscola classificata');
     await Q1.until((st) => st.game && st.game.game === 'briscola', 'avvio del gioco scelto');
     assert((await Q1.call('surrender')).done);
     await Q2.until((st) => st.game && st.game.over, 'Briscola classificata finita');
-    const brStats = (await Q1.call('myStats')).byGame;
-    assert.strictEqual(brStats.briscola.rankedGames, 1, 'Elo del gioco scelto');
-    assert(!(brStats.burraco || {}).rankedGames, 'Burraco non modificato dalla Briscola');
+    const brStats = (await Q1.call('rankedProfile')).ranks;
+    assert.strictEqual(brStats['briscola:2:solo'].games, 1, 'Glicko del gioco scelto');
+    assert(!brStats['burraco:2:solo'], 'Burraco non modificato dalla Briscola');
     await Q1.call('leaveRoom'); await Q2.call('leaveRoom');
     step('partita rapida: selezione di tutti i giochi, code separate, avvio Briscola ed Elo indipendente');
     const casual = await Q1.call('quickPlay', { n: 2, mode: 'casual' });
@@ -634,7 +634,7 @@ async function signup(p, nick, email = mailOf()) {
     assert(casual.ok && ranked.ok && casual.code !== ranked.code, 'code amichevole e classificata separate');
     assert(!(await Q1.call('configure', { rules: { players: 2, target: 505 } })).ok, 'regole pubbliche non modificabili');
     assert(!(await Q1.call('setSlow', { on: true })).ok, 'coda pubblica sempre in tempo reale');
-    assert((await Q2.call('leaveRoom')).ok);
+    assert((await Q2.call('rankedCancel')).ok);
     const casualJoin = await Q2.call('quickPlay', { n: 2, mode: 'casual' });
     assert.strictEqual(casualJoin.code, casual.code, 'stesso formato amichevole abbinato');
     await Q1.until((s) => s.game && s.room.queueMode === 'casual', 'amichevole pubblica avviata');
@@ -648,24 +648,28 @@ async function signup(p, nick, email = mailOf()) {
     assert(q1.ok && q2.ok && q1.code === q2.code, 'stesso tavolo veloce');
     await Q1.until((s) => s.game && s.room.quick === 2, 'partita veloce avviata');
     assert(Q1.state.room.ranked && Q2.state.room.ranked, 'gioca subito tra persone: partita classificata');
-    // classificata: chi si arrende perde punti Elo, l'avversario li guadagna
+    // Nessuna mutazione client può annullare una Ranked o registrare un risultato.
+    assert(!(await Q1.call('endGame')).ok);
+    assert(!(await Q1.call('closeTable')).ok);
+    assert(!(await Q1.call('configure', {rules:{players:2,target:1}})).ok);
     assert((await Q1.call('surrender')).done);
     await Q2.until((s) => s.game && s.game.over, 'classificata finita');
-    const eloQ = async (P) => ((await P.call('myStats')).byGame.burraco || {});
-    let e1 = await eloQ(Q1), e2 = await eloQ(Q2);
-    assert(e1.elo < 1000 && e2.elo > 1000 && e1.rankedGames === 1 && e2.rankedWins === 1, `Elo cambiato (${e1.elo}, ${e2.elo})`);
-    // rivincita, poi Quinto abbandona (posto al computer) e Sesto si arrende: per chi abbandona conta come persa
-    assert((await Q1.call('ready')).ok); assert((await Q2.call('ready')).ok);
-    await Q2.until((s) => s.game && !s.game.over, 'rivincita classificata');
-    assert((await Q1.call('leaveRoom', { abandon: true })).ok);
-    await Q2.until((s) => s.room.seats.some((x) => x && x.isBot), 'posto di Quinto al computer');
-    assert(Q2.state.room.ranked, 'resta classificata anche dopo un abbandono');
-    assert((await Q2.call('surrender')).done);
-    await Q2.until((s) => s.game && s.game.over, 'seconda classificata finita');
-    const f1 = await eloQ(Q1), f2 = await eloQ(Q2);
-    assert(f1.elo < e1.elo && f2.elo < e2.elo && f1.rankedGames === 2, `chi abbandona perde comunque (${f1.elo}, ${f2.elo})`);
+    const rankedQ = async (P) => (await P.call('rankedProfile')).ranks['burraco:2:solo'];
+    const e1=await rankedQ(Q1),e2=await rankedQ(Q2);
+    assert(e1.games===1&&e1.losses===1&&e2.games===1&&e2.wins===1,'risultato Ranked autorevole');
+    assert(!(await Q1.call('backToLobby')).ok,'rivincita Ranked vietata');
+    await Q1.call('ready'); assert(!(await Q2.call('ready')).ok,'riavvio stesso match vietato');
+    assert.equal((await rankedQ(Q1)).games,1,'nessuna doppia registrazione');
+    await Q1.call('leaveRoom');await Q2.call('leaveRoom');
+    assert((await Q1.call('rankedJoin',{game:'scopa',n:2})).ok);
+    assert((await Q2.call('rankedJoin',{game:'scopa',n:2})).ok);
+    await Q2.until(s=>s.game&&!s.game.over&&s.room.rules.game==='scopa','nuovo gioco Ranked');
+    assert((await Q1.call('leaveRoom',{abandon:true})).ok);
+    await Q2.until(s=>s.game&&s.game.over,'abbandono decide la partita');
+    assert.equal((await Q1.call('rankedProfile')).ranks['scopa:2:solo'].losses,1);
+    assert(!(await Q1.call('rankedJoin',{game:'scala40',n:2})).ok,'cooldown abbandono');
     Q1.sock.close(); Q2.sock.close();
-    step('gioca subito: tavolo veloce che parte da solo, classificata (Elo che cambia, anche per chi abbandona)');
+    step('Ranked: risultati autorevoli, code separate, nessuna rivincita, abbandoni e cooldown');
 
     // giocatore offline: senza timer, il computer gioca al suo posto e il tavolo non si blocca
     const O1 = player('Ottavio'), O2 = player('Nora');

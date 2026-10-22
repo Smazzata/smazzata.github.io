@@ -18,6 +18,11 @@ Variabili d'ambiente: `PORT` (default 3000), `BOT_DELAY` in ms tra le mosse del 
 
 ## Come funziona
 
+- **Ranked**: code Solo/Duo separate, rating Glicko-2, nove leghe con divisioni e LP,
+  promozioni BO3, Leggenda Top 1% e stagioni da 90 giorni. Implementazione, migrazione,
+  configurazione e limiti: [documentazione Ranked](docs/ranked-system.md).
+  Verifiche: `npm run test:ranked`, `npm run e2e:ranked`, `npm run sim:ranked`.
+
 - **Preset**: Burraco Classico (regole da torneo), Burraco Reale, Buraco Brasiliano Aberto e Fechado.
   Sono punti di partenza: ogni regola (giocatori 2/3/4, jolly, matte, tris, scarti aperti/chiusi,
   condizioni di chiusura, fine tallone, vulnerabilità, punteggi e bonus, obiettivo) è modificabile.

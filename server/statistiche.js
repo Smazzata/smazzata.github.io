@@ -90,7 +90,8 @@ function recordLeaderboard(room) {
   const eloGid = Games.idOf(room.rules);
   // Solo le classificate cambiano l'Elo; le amichevoli tra persone contano per i progressi.
   const ranked = gameEnds && Elo.isRanked(room);
-  const eloDelta = ranked ? rankedDeltas(room, eloGid) : null;
+  if (gameEnds && room.rankedMatch) ctx.Ranked.record(room);
+  const eloDelta = ranked && !room.rankedMatch ? rankedDeltas(room, eloGid) : null;
   // chi ha abbandonato una classificata (posto passato al computer) perde comunque i suoi punti
   if (eloDelta) room.seats.forEach((s, seat) => { if (s && s.isBot && s.leftToken) applyElo(s.leftToken, eloGid, eloDelta[seat], false); });
   room.seats.forEach((s, seat) => {

@@ -36,6 +36,7 @@ require('./gare');
 require('./archivio');
 const TableMessages = require('./messaggi-tavolo');
 const CommunityMessages = require('./messaggi-comunita');
+ctx.Ranked = require('./ranked').createRanked(ctx);
 const { sessions, rooms, leaderboard } = ctx;
 const { seatOfToken, broadcast, myGames, cleanName, checkReady, roomOfToken, renamePlayer, isConnected, scheduleSave } = ctx;
 
@@ -129,6 +130,7 @@ io.on('connection', (socket) => {
 
   TableMessages.register(socket, handler);
   CommunityMessages.register(socket, handler);
+  ctx.Ranked.register(socket, handler);
   social.register(socket, handler);
 
   socket.on('disconnect', () => {
@@ -141,6 +143,9 @@ io.on('connection', (socket) => {
 });
 
 ctx.loadSaved();
+// Riprende risultati conclusi prima di un arresto; il registro match rende il replay idempotente.
+for (const room of rooms.values()) ctx.Ranked.record(room);
+setInterval(() => { try { ctx.Ranked.tick(); ctx.Ranked.legends(); } catch (e) { console.error('Ranked:', e.message); } }, 2000).unref();
 
 // Scadenze controllate anche se nessun giocatore apre l'app.
 function privacyMaintenance() {

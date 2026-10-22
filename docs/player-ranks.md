@@ -1,5 +1,8 @@
 # Gradi visibili ai giocatori
 
+> **Sistema attuale:** [Ranked Glicko-2, Solo/Duo, LP, divisioni e stagioni](ranked-system.md).
+> Le soglie sotto documentano esclusivamente il precedente sistema Elo, conservato per i dati storici e i tavoli già avviati prima dell'aggiornamento. Non governano le nuove Ranked.
+
 L'Elo rimane il valore interno per gli abbinamenti e l'ordinamento della classifica.
 L'interfaccia mostra solo il grado, distinto per ciascun gioco, senza numeri o variazioni numeriche a fine partita.
 Le amichevoli non cambiano il grado. Livello esperienza e cornici del profilo sono indipendenti.

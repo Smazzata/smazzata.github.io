@@ -34,6 +34,11 @@
     } else if (g.over && S.room.tournament) {
       footer = `<div class="winner">${g.winners.includes(g.you) ? '🎉 Passi al turno successivo!' : 'Fuori dal torneo, alla prossima!'}</div>
         <div class="row"><button class="btn primary grow" data-act="tourBack" data-id="${esc(S.room.tournament.id)}">🏆 Torna al tabellone</button></div>`;
+    } else if (g.over && S.room.rankedFormat) {
+      const result = S.rankedLast?.matchId === S.room.rankedFormat.id ? S.rankedLast : null;
+      footer = `<div class="winner">${t(g.winners.includes(g.you) ? 'Vittoria' : 'Sconfitta')}</div>
+        ${result ? `${rankedCard(result.after)}${result.after.provisional || result.placementMatch ? '' : `<p>${result.delta > 0 ? '+' : ''}${result.delta} LP</p>`}` : ''}
+        <div class="endopts"><button class="btn primary" data-act="rankedAgain">${t('Cerca partita')}</button><button class="btn" data-act="rankedProfile">${t('Profilo competitivo')}</button><button class="btn" data-act="leaveNow">${t('Esci dal tavolo')}</button></div>`;
     } else if (g.over) {
       // fine partita: tre strade chiare (rivincita, di nuovo al tavolo, uscire)
       const solo = S.room.onDevice || S.room.offline || humans.length <= 1;

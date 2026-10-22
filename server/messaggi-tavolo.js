@@ -63,6 +63,7 @@ module.exports.register = function register(socket, handler) {
 
   socket.on('createRoom', handler(({ rules, vsBots, tutorial, botLevel }) => {
     checkOtherDevice(socket, null);
+    ctx.Ranked.cancel(socket.data.token);
     // allenamento: Classico in 2 (a 505) oppure un altro gioco in 2, contro un computer facile e lento, con i suggerimenti
     const other = tutorial && rules && Games.idOf(rules) !== 'burraco' ? Games.idOf(rules) : null;
     const r = tutorial
@@ -113,6 +114,8 @@ module.exports.register = function register(socket, handler) {
 
   socket.on('quickPlay', handler(({ n, mode = 'ranked', game = 'burraco' }) => {
     if (!['casual', 'ranked'].includes(mode)) throw new E.GameError('Modalità non valida');
+    if (mode === 'ranked') return ctx.Ranked.join(socket.data.token, { game, n, queue: 'solo' });
+    ctx.Ranked.cancel(socket.data.token);
     checkOtherDevice(socket, null);
     const publicRules = Games.publicRules(game, n);
     n = publicRules.players;
@@ -144,6 +147,7 @@ module.exports.register = function register(socket, handler) {
     const room = rooms.get(String(code || '').toUpperCase().trim());
     if (!room) throw new E.GameError('Tavolo non trovato');
     checkOtherDevice(socket, room.code);
+    ctx.Ranked.cancel(socket.data.token);
     joinRoom(socket, room);
   }));
 
@@ -328,6 +332,7 @@ module.exports.register = function register(socket, handler) {
   // Partita finita: chiunque sia seduto può riportare il tavolo nella sala d'attesa (regole, posti, computer)
   socket.on('backToLobby', handler(() => {
     const room = getRoom(socket);
+    if (room.rankedMatch) throw new E.GameError('Rientra in coda per una nuova Ranked');
     const seat = seatOfToken(room, socket.data.token);
     if (seat < 0) throw new E.GameError('Solo chi è seduto al tavolo può farlo');
     if (!room.game || !room.game.over) throw new E.GameError('La partita non è ancora finita');
@@ -404,6 +409,7 @@ module.exports.register = function register(socket, handler) {
   socket.on('ready', handler(() => {
     const room = getRoom(socket);
     const g = room.game;
+    if (room.rankedMatch && g?.over) throw new E.GameError('Rientra in coda per una nuova Ranked');
     if (!g || g.phase !== 'handEnd') throw new E.GameError('Nessuna smazzata da chiudere');
     if (room.daily) throw new E.GameError('La sfida del giorno è una sola smazzata: riprova domani!');
     if (room.tournament && g.over) throw new E.GameError('La partita del torneo è finita: guarda il tabellone in 🏆 Tornei');

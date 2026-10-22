@@ -434,6 +434,7 @@
     const r = await emit('myStats');
     if (!r.ok) return;
     openModal('stats', `<div class="result"><h2>📊 Le tue statistiche</h2>
+      <button class="btn small" data-act="rankedProfile">Profilo competitivo</button>
       ${r.level ? `<div class="lvlbox">${lvlHTML(r.level.level)}<div><b>Livello ${r.level.level}</b>
         <em class="xpbar"><u style="width:${Math.round((r.level.into / r.level.need) * 100)}%"></u></em>
         <span class="muted small">${r.level.into}/${r.level.need} punti esperienza al livello ${r.level.level + 1} · partite, vittorie, burraco, chiusure e trofei fanno salire</span></div></div>` : ''}

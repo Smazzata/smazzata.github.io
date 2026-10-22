@@ -132,7 +132,7 @@ const HELPERS = `
         __tap(button); await __W(450);
         if (button.dataset.act === 'leaders') {
           if (S.screen !== 'leaders' || !document.querySelector('.league-page')) throw new Error('la classifica non ha una pagina dedicata');
-          if (document.querySelectorAll('.league-step').length !== 7) throw new Error('insegne delle sette leghe mancanti');
+          if (document.querySelectorAll('.league-step').length !== 9) throw new Error('insegne delle nove leghe mancanti');
           for (let i = 0; i < 50 && [...document.querySelectorAll('.league-emblem')].some((image) => !image.complete || !image.naturalWidth); i++) await __W(50);
           if ([...document.querySelectorAll('.league-emblem')].some((image) => !image.naturalWidth)) throw new Error('insegne delle leghe non caricate');
           if (document.documentElement.scrollWidth > innerWidth) throw new Error('classifica esce dallo schermo');
@@ -143,7 +143,7 @@ const HELPERS = `
         document.querySelector('.modal-close').click();
       }
       if (/Elo/i.test(document.querySelector('#app').innerText)) throw new Error('Elo visibile nella home');
-      for (const [rating, name] of [[800, 'Bronzo'], [1099, 'Bronzo'], [1100, 'Argento'], [1249, 'Argento'], [1250, 'Oro'], [1400, 'Platino'], [1600, 'Diamante'], [1800, 'Maestro'], [2000, 'Leggenda']]) {
+      for (const [rating, name] of [[800, 'Bronzo'], [1099, 'Bronzo'], [1100, 'Argento'], [1249, 'Argento'], [1250, 'Oro'], [1400, 'Platino'], [1600, 'Diamante'], [1800, 'Maestro'], [2000, 'Gran Maestro'], [2200, 'Campione'], [2600, 'Leggenda']]) {
         if (playerRank(rating).name !== name) throw new Error('soglia grado errata: ' + rating);
       }
       for (const game of ['burraco', 'scala40', 'scopa']) {
@@ -154,7 +154,7 @@ const HELPERS = `
       await __W(1900);
       if (!document.querySelector('.rank-transition.promotion')?.textContent.includes('Argento') || /1099|1108|Elo/.test(document.querySelector('.rank-transition').textContent)) throw new Error('animazione promozione errata');
       __tap('[data-rank-continue]');
-      for (const mode of ['casual', 'ranked']) {
+      for (const mode of ['casual']) {
         __tap('[data-act="quickMenu"][data-mode="' + mode + '"]'); await __W(200);
         if (document.querySelectorAll('#modal [data-act="quick"][data-mode="' + mode + '"]').length !== 3) throw new Error('scelta formato pubblico');
         if (!document.querySelector('#modal').textContent.includes('Burraco Classico')) throw new Error('variante pubblica non indicata');

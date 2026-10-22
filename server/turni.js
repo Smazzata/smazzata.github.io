@@ -57,6 +57,10 @@ function playForAbsent(room, key) {
   const seat = g.turn;
   const s = room.seats[seat];
   if (!s || s.isBot || isConnected(s.token)) return;
+  if (room.rankedMatch) {
+    // Il watchdog Ranked concede 120 secondi per riconnettersi, senza mosse CPU.
+    room.absentKey = null; return;
+  }
   GE(room).note(g, `🤖 ${s.name} è offline: il computer gioca al suo posto`);
   const memo = { level: 'normale' };
   for (let i = 0; i < 60 && g.turn === seat && g.phase !== 'handEnd'; i++) {
@@ -80,6 +84,15 @@ function autoPlay(room, key) {
   const g = room.game;
   if (!g || turnTimerKey(room) !== key) return;
   const seat = g.turn;
+  if (room.rankedMatch) {
+    if (!isConnected(room.seats[seat]?.token)) {
+      // Al rientro il broadcast deve poter riarmare il timer, anche se turno e mano
+      // sono gli stessi. Il watchdog continua intanto a misurare i 120 secondi.
+      room.timerKey = null; room.turnDeadline = null; room.turnTimerHandle = null; return;
+    }
+    room.rankedMatch.abandoned = [...new Set([...(room.rankedMatch.abandoned || []), room.seats[seat].token])];
+    GE(room).surrender(g, seat); afterAction(room); return;
+  }
   const memo = { noMeld: true }; // niente calate automatiche: solo pesca e scarto
   GE(room).note(g, `⏱ Tempo scaduto per ${g.players[seat].name}: pesca e scarta in automatico`);
   for (let i = 0; i < 6 && g.turn === seat && g.phase !== 'handEnd'; i++) {

@@ -16,7 +16,10 @@
     "test:rapido": "node -e \"process.env.TEST_RAPIDO=1;require('./server/selftest.js')\"",
     "anim": "node server/animtest.js",
     "suoni": "node scripts/suoni-wav.js",
-    "app:www": "node scripts/build-pages.js android-app/www"
+    "app:www": "node scripts/build-pages.js android-app/www",
+    "test:ranked": "node --test server/ranked-test.js",
+    "sim:ranked": "node server/ranked-simulation.js",
+    "e2e:ranked": "node server/ranked-e2e.js"
   },
   "engines": {
     "node": ">=18"

@@ -38,9 +38,13 @@
     { min: 1400, name: 'Platino', id: 'platinum' },
     { min: 1600, name: 'Diamante', id: 'diamond' },
     { min: 1800, name: 'Maestro', id: 'master' },
-    { min: 2000, name: 'Leggenda', id: 'legend' },
+    { min: 2000, name: 'Gran Maestro', id: 'grandmaster' },
+    { min: 2200, name: 'Campione', id: 'champion' },
+    { min: 2600, name: 'Leggenda', id: 'legend' },
   ];
   function playerRank(rating) {
+    if (rating?.provisional) return { ...rating, min: -1, tier: -1, id: 'unranked', name: 'Non classificato', division: null };
+    if (rating && typeof rating === 'object') return { ...PLAYER_RANKS[rating.tier || 0], ...rating, name: rating.league || PLAYER_RANKS[rating.tier || 0].name };
     const value = Number.isFinite(Number(rating)) ? Number(rating) : 1000;
     return [...PLAYER_RANKS].reverse().find((rank) => value >= rank.min) || PLAYER_RANKS[0];
   }

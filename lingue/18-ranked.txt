@@ -1,0 +1,51 @@
+Ranked Solo ‖ Ranked Solo ‖ Ranked Solo ‖ Ranked Solo
+Ranked Duo ‖ Ranked Duo ‖ Ranked Duo ‖ Ranked Duo
+Gran Maestro ‖ Grandmaster ‖ Gran Maestro ‖ Grão-Mestre
+Piazzamenti ‖ Placements ‖ Posicionamiento ‖ Colocações
+Grado provvisorio ‖ Provisional rank ‖ Rango provisional ‖ Classificação provisória
+Promozione BO3 ‖ Best-of-three promotion ‖ Promoción al mejor de tres ‖ Promoção melhor de três
+Partite rimanenti ‖ Games remaining ‖ Partidas restantes ‖ Partidas restantes
+Sconfitte ‖ Losses ‖ Derrotas ‖ Derrotas
+Cerca partita ‖ Find match ‖ Buscar partida ‖ Buscar partida
+Profilo competitivo ‖ Competitive profile ‖ Perfil competitivo ‖ Perfil competitivo
+Stagione ‖ Season ‖ Temporada ‖ Temporada
+Fine stagione ‖ Season ends ‖ Fin de temporada ‖ Fim da temporada
+Giocatori idonei ‖ Eligible players ‖ Jugadores elegibles ‖ Jogadores elegíveis
+Posti disponibili ‖ Available places ‖ Plazas disponibles ‖ Vagas disponíveis
+Posizione mondiale ‖ World position ‖ Posición mundial ‖ Posição mundial
+Percentile ‖ Percentile ‖ Percentil ‖ Percentil
+Rating competitivo ‖ Competitive rating ‖ Puntuación competitiva ‖ Pontuação competitiva
+Distanza dalla soglia ‖ Distance from threshold ‖ Distancia al umbral ‖ Distância do limite
+Partite richieste ‖ Games required ‖ Partidas requeridas ‖ Partidas necessárias
+Leggenda viene aggiornata ogni 24 ore. ‖ Legend updates every 24 hours. ‖ Leyenda se actualiza cada 24 horas. ‖ Lenda é atualizada a cada 24 horas.
+Classifica stagionale ‖ Season leaderboard ‖ Clasificación de temporada ‖ Classificação da temporada
+Solo e Duo hanno progressi separati. Le partite contro il computer non contano. ‖ Solo and Duo have separate progress. Computer matches do not count. ‖ Solo y Duo tienen progreso separado. Las partidas contra la computadora no cuentan. ‖ Solo e Duo têm progresso separado. Partidas contra o computador não contam.
+Ricerca Ranked ‖ Ranked search ‖ Búsqueda Ranked ‖ Busca Ranked
+Ricerca di avversari in corso… ‖ Finding opponents… ‖ Buscando oponentes… ‖ Buscando adversários…
+La ricerca amplia gradualmente il rating senza mescolare Solo e Duo. ‖ The rating range expands gradually without mixing Solo and Duo. ‖ El rango de puntuación se amplía sin mezclar Solo y Duo. ‖ A faixa de pontuação aumenta sem misturar Solo e Duo.
+Annulla ricerca ‖ Cancel search ‖ Cancelar búsqueda ‖ Cancelar busca
+Entrambi devono accettare la ricerca. ‖ Both players must accept the search. ‖ Ambos jugadores deben aceptar la búsqueda. ‖ Ambos os jogadores devem aceitar a busca.
+Nickname amico ‖ Friend's nickname ‖ Apodo del amigo ‖ Apelido do amigo
+In attesa del tuo amico… ‖ Waiting for your friend… ‖ Esperando a tu amigo… ‖ Aguardando seu amigo…
+Accetta ricerca ‖ Accept search ‖ Aceptar búsqueda ‖ Aceitar busca
+Miglior grado stagionale ‖ Season best rank ‖ Mejor rango de temporada ‖ Melhor classificação da temporada
+Miglior grado storico ‖ All-time best rank ‖ Mejor rango histórico ‖ Melhor classificação histórica
+Storico competitivo ‖ Competitive history ‖ Historial competitivo ‖ Histórico competitivo
+Stagioni e ricompense ‖ Seasons and rewards ‖ Temporadas y recompensas ‖ Temporadas e recompensas
+Insegna stagionale ‖ Season badge ‖ Insignia de temporada ‖ Insígnia da temporada
+Completa i piazzamenti per ottenere un grado. ‖ Complete placements to earn a rank. ‖ Completa el posicionamiento para obtener un rango. ‖ Complete as colocações para obter uma classificação.
+Ranked non disponibile per questo profilo ‖ Ranked is unavailable for this profile ‖ Ranked no está disponible para este perfil ‖ Ranked indisponível para este perfil
+Completa prima la partita in corso ‖ Finish your current match first ‖ Termina primero la partida actual ‖ Termine a partida atual primeiro
+Pausa Ranked dopo un abbandono ‖ Ranked cooldown after leaving a match ‖ Pausa Ranked tras abandonar una partida ‖ Pausa Ranked após abandonar uma partida
+Coda non valida per questo formato ‖ Invalid queue for this format ‖ Cola no válida para este formato ‖ Fila inválida para este formato
+Entrambi i giocatori devono essere online ‖ Both players must be online ‖ Ambos jugadores deben estar conectados ‖ Ambos os jogadores devem estar online
+Differenza di rating troppo alta per la Duo ‖ Rating gap too large for Duo ‖ Diferencia de puntuación demasiado alta para Duo ‖ Diferença de pontuação muito alta para Duo
+Scegli un amico online ‖ Choose an online friend ‖ Elige un amigo conectado ‖ Escolha um amigo online
+Invito Ranked scaduto ‖ Ranked invitation expired ‖ Invitación Ranked caducada ‖ Convite Ranked expirado
+Tavolo riservato al matchmaking Ranked ‖ Table reserved for Ranked matchmaking ‖ Mesa reservada para emparejamiento Ranked ‖ Mesa reservada para partidas Ranked
+Le regole Ranked sono fissate dal server ‖ Ranked rules are fixed by the server ‖ El servidor fija las reglas Ranked ‖ As regras Ranked são fixadas pelo servidor
+Rientra in coda per una nuova Ranked ‖ Queue again for a new Ranked match ‖ Vuelve a la cola para otra partida Ranked ‖ Entre na fila para uma nova partida Ranked
+Turni di 60 secondi. Hai 120 secondi per riconnetterti; abbandoni e inattività comportano sconfitta e pausa Ranked. ‖ 60-second turns. You have 120 seconds to reconnect; leaving or inactivity causes a loss and a Ranked cooldown. ‖ Turnos de 60 segundos. Tienes 120 segundos para reconectarte; abandonar o estar inactivo supone derrota y pausa Ranked. ‖ Turnos de 60 segundos. Você tem 120 segundos para reconectar; abandonar ou ficar inativo causa derrota e pausa Ranked.
+Non classificato ‖ Unranked ‖ Sin clasificar ‖ Sem classificação
+Piazzamenti completati! ‖ Placements complete! ‖ ¡Posicionamiento completado! ‖ Colocações concluídas!
+Il tuo grado iniziale è stato assegnato. ‖ Your initial rank has been assigned. ‖ Se ha asignado tu rango inicial. ‖ Sua classificação inicial foi atribuída.

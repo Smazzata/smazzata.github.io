@@ -1,9 +1,10 @@
 // Service worker: notifiche e copia del gioco per giocare anche senza internet.
 // "Prima la rete": da collegati si usa sempre la versione più recente (e se ne salva una copia);
 // senza rete si usa l'ultima copia salvata. La connessione di gioco (socket.io) non passa mai dalla copia.
-const CACHE = 'burraco-gioco-v49';
+const CACHE = 'burraco-gioco-v52';
 const SHELL = [
-  'classifica.css', 'js/classifica.js', 'art/leagues/bronze.webp', 'art/leagues/silver.webp', 'art/leagues/gold.webp', 'art/leagues/platinum.webp', 'art/leagues/diamond.webp', 'art/leagues/master.webp', 'art/leagues/legend.webp',
+  'ranked.css', 'js/ranked.js', 'art/ranked/bronze-I.svg', 'art/ranked/bronze-II.svg', 'art/ranked/bronze-III.svg', 'art/ranked/bronze-IV.svg', 'art/ranked/champion-I.svg', 'art/ranked/champion-II.svg', 'art/ranked/champion-III.svg', 'art/ranked/champion-IV.svg', 'art/ranked/diamond-I.svg', 'art/ranked/diamond-II.svg', 'art/ranked/diamond-III.svg', 'art/ranked/diamond-IV.svg', 'art/ranked/gold-I.svg', 'art/ranked/gold-II.svg', 'art/ranked/gold-III.svg', 'art/ranked/gold-IV.svg', 'art/ranked/grandmaster-I.svg', 'art/ranked/grandmaster-II.svg', 'art/ranked/grandmaster-III.svg', 'art/ranked/grandmaster-IV.svg', 'art/ranked/legend.svg', 'art/ranked/master-I.svg', 'art/ranked/master-II.svg', 'art/ranked/master-III.svg', 'art/ranked/master-IV.svg', 'art/ranked/platinum-I.svg', 'art/ranked/platinum-II.svg', 'art/ranked/platinum-III.svg', 'art/ranked/platinum-IV.svg', 'art/ranked/silver-I.svg', 'art/ranked/silver-II.svg', 'art/ranked/silver-III.svg', 'art/ranked/silver-IV.svg',
+  'classifica.css', 'js/classifica.js', 'art/leagues/unranked.webp', 'art/leagues/bronze.webp', 'art/leagues/silver.webp', 'art/leagues/gold.webp', 'art/leagues/platinum.webp', 'art/leagues/diamond.webp', 'art/leagues/master.webp', 'art/leagues/grandmaster.webp', 'art/leagues/champion.webp', 'art/leagues/legend.webp',
   'campaign-story.css', 'js/campaign-story.js', 'art/campaign/garden.webp', 'art/campaign/rosa.webp', 'art/campaign/bruno.webp', 'art/campaign/barone.webp', 'art/campaign/boosters.webp',
   'art/campaign/clockwork.webp', 'art/campaign/arturo.webp', 'art/campaign/nina.webp', 'art/campaign/conte.webp', 'art/campaign/bay.webp', 'art/campaign/marina.webp', 'art/campaign/pippo.webp', 'art/campaign/nebbia.webp', 'art/campaign/boosters-scala40.webp', 'art/campaign/boosters-ramino.webp',
   './', 'index.html', 'intro.css', 'style.css', 'campaign.css', 'shared/campaign.js', 'js/campagna.js', 'js/campaign-adventure.js', 'fonts/nunito.woff2', 'fonts/playfair.woff2',

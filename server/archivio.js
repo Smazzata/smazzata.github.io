@@ -35,11 +35,12 @@ function saveNow(throwOnError = false) {
       sessions: [...sessions],
       leaderboard: [...leaderboard],
       reports: ctx.reports,
+      ranked: ctx.ranked,
       daily: [...daily].map(([d, m]) => [d, m]),
       leagues: [...leagues.values()],
       tournaments: [...tournaments.values()],
       rooms: [...rooms.values()].map((r) => ({
-        code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game,
+        code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game, rankedMatch: r.rankedMatch,
         ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, queueMode: r.queueMode, series: r.series, daily: r.daily, seed: r.seed, slow: r.slow, lastActionAt: r.lastActionAt, tournament: r.tournament, rankedGame: r.rankedGame, progressEligible: r.progressEligible,
       })),
     };
@@ -47,7 +48,7 @@ function saveNow(throwOnError = false) {
     if (throwOnError === true && store.purgeResiduals) store.purgeResiduals();
   } catch (e) {
     console.error('Salvataggio non riuscito:', e.message);
-    if (throwOnError === true) throw e;
+    if (throwOnError) throw e;
   }
 }
 
@@ -88,6 +89,7 @@ function loadSaved() {
       leaderboard.set(token, e);
     }
     ctx.reports = data.reports || [];
+    ctx.ranked = data.ranked || require('./ranked').empty();
     for (const [d, m] of data.daily || []) daily.set(d, m);
     for (const lg of data.leagues || []) leagues.set(lg.id, lg);
     for (const t of data.tournaments || []) tournaments.set(t.id, t);

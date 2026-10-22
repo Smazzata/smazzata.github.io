@@ -459,6 +459,7 @@
         <h3>Insieme</h3>
         ${t.games ? `<p>${t.games} partite insieme: ${t.asPartners} in coppia (${t.winsTogether} vinte), ${t.games - t.asPartners} da avversari (tu ne hai vinte ${t.winsAgainst}).</p>${historyHTML(t.recent.map((h) => ({ ...h, preset: '', hands: 0 })))}` : '<p class="muted">Non avete ancora finito una partita insieme.</p>'}
         <h3>Statistiche</h3>${r.stats ? byGameHTML(r.byGame, r.stats) : '<p class="muted">Nessuna partita completata.</p>'}
+        ${r.ranked ? rankedSummaryHTML(r.ranked) : ''}
         ${r.trophies && r.trophies.length ? `<h3>🏆 Trofei (${r.trophies.length})</h3><div class="trophyrow">${r.trophies.map((t) => `<span title="${esc(t.name)}">${esc(t.e)}</span>`).join('')}</div>` : ''}
         ${r.nick !== (S.social && S.social.nick) ? `<div class="row" style="margin-top:12px"><button class="btn small danger" data-act="block" data-nick="${esc(r.nick)}">🚫 Rimuovi e blocca</button><button class="btn small" data-act="reportPlayer" data-nick="${esc(r.nick)}">⚠️ Segnala</button></div>` : ''}</div>`);
     },

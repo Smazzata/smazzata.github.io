@@ -57,6 +57,11 @@ function eraseRelated(ctx, token, dataDir) {
   // Se fallisce, la richiesta restituisce un errore e può essere ripetuta.
   cleanCopies(dataDir, { all: true });
   ctx.leaderboard.delete(token);
+  if (ctx.Ranked) ctx.Ranked.cancel(token);
+  if (ctx.ranked) {
+    delete ctx.ranked.players[token];
+    scrub(ctx.ranked, token, names);
+  }
   for (const e of ctx.leaderboard.values()) {
     // Gli storici salvati prima di un cambio nickname possono contenere il vecchio nome.
     if (e.history) e.history = scrub(e.history.filter((h) => !(h.tokens || []).includes(token)), token, names);
@@ -97,7 +102,7 @@ function eraseRelated(ctx, token, dataDir) {
     room.spectators = (room.spectators || []).filter((t) => t !== token);
     if (room.hostToken === token) room.hostToken = ((room.seats || []).find((s) => s && !s.isBot) || {}).token || null;
     // Non attraversare timer e memorie runtime: solo i dati di gioco serializzabili.
-    for (const key of ['game', 'series', 'chatLog', 'music']) if (room[key]) scrub(room[key], token, names);
+    for (const key of ['game', 'series', 'chatLog', 'music', 'rankedMatch']) if (room[key]) scrub(room[key], token, names);
     if (!room.seats.some((s) => s && !s.isBot)) {
       clearTimeout(room.botTimer); ctx.rooms.delete(room.code);
     } else ctx.broadcast(room);
