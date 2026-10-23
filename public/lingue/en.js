@@ -938,6 +938,8 @@ I18N.load({"Per calare servono almeno 3 carte: selezionale e trascinale insieme"
 "Miglior lega raggiunta":"Highest league reached",
 "Nessuna partita nelle stagioni precedenti.":"No matches played in previous seasons.",
 "Ultime partite classificate":"Recent ranked matches",
+"Lega attuale":"Current league",
+"Un unico punteggio per le partite a 2, 3 e 4 giocatori.":"One shared rating for 2-, 3- and 4-player matches.",
 "⚡ Gioca subito":"⚡ Play now",
 "📅 Sfida del giorno":"📅 Daily challenge",
 "🏆 Tornei":"🏆 Tournaments",

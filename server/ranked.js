@@ -5,9 +5,10 @@ const R = require('./ranked-rules');
 const Games = require('./games');
 const BurracoRules = require('../shared/rules');
 const E = require('./engine');
-const empty = () => ({ version: 1, players: {}, matches: {}, legends: {}, legendAt: 0 });
+const Migration = require('./ranked-migration');
+const empty = () => ({ version: 2, players: {}, matches: {}, legends: {}, legendAt: 0 });
 const clone = (x) => JSON.parse(JSON.stringify(x));
-const keyOf = (game, n, queue) => `${game}:${n}:${queue}`;
+const keyOf = (game, n, queue) => queue === 'solo' ? `${game}:solo` : `${game}:${n}:${queue}`;
 const teamGames = new Set(['burraco', 'reale', 'aberto', 'fechado', 'canasta', 'scopa', 'scopone', 'briscola', 'tressette']);
 function createRanked(ctx, options = {}) {
   const c = { ...R.CONFIG, ...options.config }, clock = options.clock || Date.now;
@@ -23,6 +24,7 @@ function createRanked(ctx, options = {}) {
     catch (e) { ctx.ranked = previous; throw e; }
   }
   function profile(token, key, now = clock()) {
+    key = Migration.ratingKey(key);
     const all = ctx.ranked.players[token] ||= {};
     const p = all[key] ||= R.fresh(now, c);
     return R.rollover(p, now, c);
@@ -157,7 +159,7 @@ function createRanked(ctx, options = {}) {
     // Ricerca limitata a 24 candidati per testa: limita il lavoro sul telefono-server.
     for (const entry of [...queue.values()]) {
       if (![...queue.values()].includes(entry)) continue;
-      const pool = [...queue.values()].filter((x) => x.key === entry.key && x !== entry).slice(0, 23);
+      const pool = [...queue.values()].filter((x) => x.key === entry.key && x.n === entry.n && x !== entry).slice(0, 23);
       const needed = entry.queue === 'duo' ? 2 : entry.n;
       let selection = null, seats = null, explored = 0;
       function search(chosen, offset) {
@@ -175,6 +177,7 @@ function createRanked(ctx, options = {}) {
     if (!m || !g?.over || !room.rankedGame || ctx.ranked.matches[m.id]) return null;
     if (room.localGame || room.daily || room.tournament || room.tutorial || new Set(m.tokens).size !== room.n || m.tokens.some((t) => !ctx.sessions.has(t))) return null;
     if (!g.teams?.length || !g.winners?.length) return null;
+    m.key = Migration.ratingKey(m.key);
     const updates = transaction(() => {
       const now = clock(), ps = m.tokens.map((t) => clone(rating(t, m.key)));
       const teams = g.teams.map((t) => t.members);
@@ -189,7 +192,7 @@ function createRanked(ctx, options = {}) {
         const delta = R.progress(p, score, c); p.lastAt = now;
         const opponents = teams.filter((_, k) => k !== i).flatMap((t) => t.map((s) => m.tokens[s]));
         p.recent = [{ at: now, opponents }, ...(p.recent || []).filter((r) => now - r.at < c.rematchMs)].slice(0, 20);
-        p.history = [{ id: m.id, at: now, score, delta, placementMatch: before.provisional, league: view(p).league, division: view(p).division, lp: p.lp, abandoned }, ...p.history].slice(0, 100);
+        p.history = [{ id: m.id, at: now, n: room.n, score, delta, placementMatch: before.provisional, league: view(p).league, division: view(p).division, lp: p.lp, abandoned }, ...p.history].slice(0, 100);
         ctx.ranked.players[token][m.key] = p;
         results.push({ token, matchId: m.id, key: m.key, before, after: view(p), delta, placementMatch: before.provisional });
       }));
@@ -266,6 +269,12 @@ function createRanked(ctx, options = {}) {
     }));
     socket.on('disconnect', () => { if (!ctx.isConnected(socket.data.token)) cancel(socket.data.token); });
   }
-  return { register, join, accept, cancel:token=>{cancel(token);party.leave(token);}, tick, record, board, mine, legends, profile, queue, invites, party, windowFor, arrangement, transaction, format };
+  function migrate() {
+    if ((ctx.ranked.version || 1) < 2) transaction(() => Migration.migrate(ctx.ranked, clock(), c));
+    // Anche un tavolo iniziato con la vecchia versione aggiorna il punteggio comune.
+    for (const room of ctx.rooms.values()) if (room.rankedMatch) room.rankedMatch.key = Migration.ratingKey(room.rankedMatch.key);
+  }
+  migrate();
+  return { register, join, accept, cancel:token=>{cancel(token);party.leave(token);}, tick, record, board, mine, legends, profile, queue, invites, party, windowFor, arrangement, transaction, format, migrate };
 }
 module.exports = { createRanked, empty, keyOf };

@@ -107,3 +107,5 @@
 .ranked-report-note{color:#f8f1de;font-size:15px;line-height:1.5}
 .ranked-overview summary:focus-visible{outline:3px solid #886322;outline-offset:4px}
 @media(min-width:620px){.ranked-queue-reports{display:grid;grid-template-columns:1fr 1fr;gap:24px}.ranked-queue-report+.ranked-queue-report{border-top:0}}
+
+.ranked-queue-report .ranked-progress>strong{display:none}

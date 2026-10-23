@@ -938,6 +938,8 @@ I18N.load({"Per calare servono almeno 3 carte: selezionale e trascinale insieme"
 "Miglior lega raggiunta":"Melhor liga alcançada",
 "Nessuna partita nelle stagioni precedenti.":"Nenhuma partida nas temporadas anteriores.",
 "Ultime partite classificate":"Últimas partidas classificadas",
+"Lega attuale":"Liga atual",
+"Un unico punteggio per le partite a 2, 3 e 4 giocatori.":"Uma pontuação única para partidas de 2, 3 e 4 jogadores.",
 "⚡ Gioca subito":"⚡ Jogar agora",
 "📅 Sfida del giorno":"📅 Desafio do dia",
 "🏆 Tornei":"🏆 Torneios",

@@ -47,8 +47,9 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 La disponibilità è definita in `shared/available-games.js`: Burraco, Scala 40, Ramino e Canasta.
 I motori dei giochi italiani restano conservati e testati, ma i loro accessi online/offline sono disabilitati.
 Il gioco si sceglie nella Home: setup e Classificate ereditano la scelta senza riproporre un selettore.
-Il pulsante «Classifica» apre il resoconto personale (`rankedOverview`): risultati Solo/Duo per formato e storico stagionale. Il pulsante «Classificata» apre invece la scelta della coda e la ricerca (`leaders`).
+Il pulsante «Classifica» apre il resoconto personale (`rankedOverview`): risultati Solo/Duo e storico stagionale. Il pulsante «Classificata» apre invece la scelta della coda e la ricerca (`leaders`).
 La Home privilegia le modalità di gioco; comandi secondari compatti in alto, testi leggibili e pulsanti facili da toccare.
+Ranked: ogni gioco ha un solo punteggio Solo (`gioco:solo`), comune ai tavoli da 2, 3 e 4, e un punteggio Duo separato (`gioco:4:duo`). Il matchmaking continua a separare i tavoli per dimensione. La migrazione v2 accorpa i vecchi profili Solo conservandone gli originali in `legacyFormats`.
 Il pubblico di riferimento è adulto/maturo: mantenere un aspetto tradizionale da tavolo da carte, etichette chiare e contrasti netti.
 
 ## Funzioni principali (oltre al gioco)

@@ -96,3 +96,6 @@ Stagioni precedenti ‖ Previous seasons ‖ Temporadas anteriores ‖ Temporada
 Miglior lega raggiunta ‖ Highest league reached ‖ Mejor liga alcanzada ‖ Melhor liga alcançada
 Nessuna partita nelle stagioni precedenti. ‖ No matches played in previous seasons. ‖ Ninguna partida en temporadas anteriores. ‖ Nenhuma partida nas temporadas anteriores.
 Ultime partite classificate ‖ Recent ranked matches ‖ Últimas partidas clasificatorias ‖ Últimas partidas classificadas
+
+Lega attuale ‖ Current league ‖ Liga actual ‖ Liga atual
+Un unico punteggio per le partite a 2, 3 e 4 giocatori. ‖ One shared rating for 2-, 3- and 4-player matches. ‖ Una puntuación compartida para partidas de 2, 3 y 4 jugadores. ‖ Uma pontuação única para partidas de 2, 3 e 4 jogadores.

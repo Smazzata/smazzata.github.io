@@ -143,6 +143,7 @@ io.on('connection', (socket) => {
 });
 
 ctx.loadSaved();
+ctx.Ranked.migrate();
 // Riprende risultati conclusi prima di un arresto; il registro match rende il replay idempotente.
 for (const room of rooms.values()) ctx.Ranked.record(room);
 setInterval(() => { try { ctx.Ranked.tick(); ctx.Ranked.legends(); } catch (e) { console.error('Ranked:', e.message); } }, 2000).unref();

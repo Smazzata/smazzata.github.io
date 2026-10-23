@@ -17,7 +17,7 @@ function fixture(count = 4, config = {}) {
     socketsOf: (t) => sockets.filter((s) => s.data.token === t && !s.offline), isConnected: (t) => sockets.some((s)=>s.data.token===t&&!s.offline),
     newCode: () => 'R'+(++codes), startGame(room) { room.rankedGame = true; room.game = require('./games').of(room).E.createGame({rules:room.rules,players:room.seats.map(s=>({name:s.name,isBot:false}))}); }, leaveRoom() {}, afterAction(room) { ranked.record(room); } };
   const ranked = createRanked(ctx, { clock: () => now, config });
-  const match = (tokens = ['p0','p1'], key = 'burraco:2:solo', id = 'm1') => ({ rules: { game: key.split(':')[0] }, n: tokens.length, rankedGame: true,
+  const match = (tokens = ['p0','p1'], key = 'burraco:solo', id = 'm1') => ({ rules: { game: key.split(':')[0] }, n: tokens.length, rankedGame: true,
     rankedMatch: { id, key, tokens }, game: { over: true, winners: [0], teams: tokens.map((_, i) => ({ members: [i] })) } });
   return { ctx, ranked, sockets, match, advance(ms) { now += ms; }, fail(on) { fail = on; }, saved: () => JSON.parse(saved) };
 }
@@ -53,15 +53,15 @@ test('piazzamenti differenziati e tetto anti-fortuna', () => {
 });
 test('persistenza atomica, replay risultato e isolamento code/giochi', () => {
   const f=fixture(); const a=f.match(); f.ranked.record(a); const saved=JSON.stringify(f.ctx.ranked);
-  const placed = f.ctx.ranked.players.p0['burraco:2:solo'];
+  const placed = f.ctx.ranked.players.p0['burraco:solo'];
   assert.equal(placed.history[0].placementMatch, true);
   assert.equal(R.view(placed).placementTotal, 10);
   assert.equal(f.ranked.record(a),null); assert.equal(JSON.stringify(f.ctx.ranked),saved);
   f.ctx.ranked=f.saved(); const restarted=createRanked(f.ctx,{clock:()=>now0}); assert.equal(restarted.record(a),null);
-  restarted.record(f.match(['p0','p1'],'ramino:2:solo','m2'));
+  restarted.record(f.match(['p0','p1'],'ramino:solo','m2'));
   restarted.record(f.match(['p0','p1'],'burraco:4:duo','m3'));
-  assert.equal(f.ctx.ranked.players.p0['burraco:2:solo'].games,1); assert.equal(f.ctx.ranked.players.p0['ramino:2:solo'].games,1);
-  f.fail(true); const before=JSON.stringify(f.ctx.ranked); assert.throws(()=>restarted.record(f.match(['p0','p1'],'burraco:2:solo','fail')),/disco pieno/); assert.equal(JSON.stringify(f.ctx.ranked),before);
+  assert.equal(f.ctx.ranked.players.p0['burraco:solo'].games,1); assert.equal(f.ctx.ranked.players.p0['ramino:solo'].games,1);
+  f.fail(true); const before=JSON.stringify(f.ctx.ranked); assert.throws(()=>restarted.record(f.match(['p0','p1'],'burraco:solo','fail')),/disco pieno/); assert.equal(JSON.stringify(f.ctx.ranked),before);
 });
 test('formato Solo/Duo, consenso e abbinamento 2v2', () => {
   const f=fixture(); assert.throws(()=>f.ranked.join('p0',{game:'scala40',n:4,queue:'duo'}));
@@ -77,14 +77,14 @@ test('Solo non incontra Duo; annullamento e disconnessione puliscono entrambi', 
   f.ranked.cancel('p0'); assert.equal(f.ranked.queue.size,1);
 });
 test('matchmaking progressivo e limite compagni', () => {
-  const f=fixture(); const key='ramino:2:solo'; f.ranked.profile('p1',key).rating=1700;
+  const f=fixture(); const key='ramino:solo'; f.ranked.profile('p1',key).rating=1700;
   f.ranked.join('p0',{game:'ramino',n:2}); f.ranked.join('p1',{game:'ramino',n:2}); assert.equal(f.ctx.rooms.size,0);
   f.advance(60000); f.ranked.tick(); assert.equal(f.ctx.rooms.size,1);
   const d=fixture(); d.ranked.profile('p1','burraco:4:duo').rating=2200;
   d.ranked.join('p0',{game:'burraco',n:4,queue:'duo',friend:'Player1'}); assert.throws(()=>d.ranked.accept('p1',[...d.ranked.invites.keys()][0]),/Differenza/);
 });
 test('Leggenda: cap 1%, abilità minima, esclusioni e retrocessione', () => {
-  const f=fixture(205), key='ramino:2:solo';
+  const f=fixture(205), key='ramino:solo';
   for(let i=0;i<205;i++) Object.assign(f.ranked.profile('p'+i,key),{games:30,rating:2800-i});
   f.ctx.sessions.get('p0').suspended=true; f.ranked.profile('p1',key).games=29; f.ranked.profile('p2',key).lastAt=now0-31*R.DAY;
   f.ranked.legends(true); assert.equal(f.ctx.ranked.legends[key].eligible,202);
@@ -101,14 +101,14 @@ test('cambio stagione conserva abilità, archivia premio e chiude promozione', (
 test('nessun punto CPU/localResult; abbandono e protezione rematch', () => {
   const f=fixture(), room=f.match(); room.localGame=true; assert.equal(f.ranked.record(room),null);
   room.localGame=false; room.rankedMatch.abandoned=['p1']; f.ranked.record(room);
-  assert.equal(f.ranked.profile('p1','burraco:2:solo').losses,1); assert.throws(()=>f.ranked.join('p1',{game:'burraco',n:2}),/Pausa/);
+  assert.equal(f.ranked.profile('p1','burraco:solo').losses,1); assert.throws(()=>f.ranked.join('p1',{game:'burraco',n:2}),/Pausa/);
   const entries=['p0','p1'].map(t=>({...f.ranked.format({game:'burraco',n:2}),tokens:[t],at:now0})); assert.equal(f.ranked.arrangement(entries),null);
-  f.advance(16*60000); f.ranked.profile('p0','burraco:2:solo').rating=1500; f.ranked.profile('p1','burraco:2:solo').rating=1500; assert.ok(f.ranked.arrangement(entries));
+  f.advance(16*60000); f.ranked.profile('p0','burraco:solo').rating=1500; f.ranked.profile('p1','burraco:solo').rating=1500; assert.ok(f.ranked.arrangement(entries));
 });
 test('archivio SQLite/JSON preserva Ranked e vecchie statistiche', () => {
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'smazzata-ranked-')); const f=fixture(); f.ranked.record(f.match());
   const store=openStore(dir); store.save({ranked:f.ctx.ranked,leaderboard:[['legacy',{byGame:{burraco:{elo:1234}}}]],savedAt:now0});
-  const restored=openStore(dir).load(); assert.equal(restored.ranked.players.p0['burraco:2:solo'].games,1); assert.equal(restored.leaderboard[0][1].byGame.burraco.elo,1234);
+  const restored=openStore(dir).load(); assert.equal(restored.ranked.players.p0['burraco:solo'].games,1); assert.equal(restored.leaderboard[0][1].byGame.burraco.elo,1234);
 });
 test('Campione I completato non è Leggenda e non avvia BO3', () => {
   const p={...R.fresh(now0),games:40,tier:7,division:3,lp:99,rating:2800};R.progress(p,1);
@@ -116,9 +116,9 @@ test('Campione I completato non è Leggenda e non avvia BO3', () => {
   R.rollover(p,now0+90*R.DAY);assert.ok(p.rewards[0].endsWith('-7'));
 });
 test('promo isolata: una partita Duo non modifica la Solo', () => {
-  const f=fixture();const p=f.ranked.profile('p0','burraco:2:solo');Object.assign(p,{games:20,promo:{results:[1],target:1},division:3,lp:100});
+  const f=fixture();const p=f.ranked.profile('p0','burraco:solo');Object.assign(p,{games:20,promo:{results:[1],target:1},division:3,lp:100});
   f.ranked.record(f.match(['p0','p1'],'burraco:4:duo'));
-  assert.deepEqual(f.ranked.profile('p0','burraco:2:solo').promo.results,[1]);
+  assert.deepEqual(f.ranked.profile('p0','burraco:solo').promo.results,[1]);
 });
 test('giochi disabilitati e varianti Burraco separate', () => {
   const f=fixture();for (const game of ['scopa','scopone','briscola','briscola5','tressette','rubamazzetto']) assert.throws(() => f.ranked.format({game,n:4}), /non disponibile/);
@@ -127,20 +127,20 @@ test('giochi disabilitati e varianti Burraco separate', () => {
 test('disconnessione: riconnessione entro grazia, poi resa autorevole', () => {
   const f=fixture();f.ranked.join('p0',{game:'ramino',n:2});f.ranked.join('p1',{game:'ramino',n:2});
   const room=[...f.ctx.rooms.values()][0];f.sockets[0].offline=true;f.ranked.tick();f.advance(100000);f.sockets[0].offline=false;f.ranked.tick();assert.equal(room.game.over,false);
-  f.sockets[0].offline=true;f.ranked.tick();f.advance(121000);f.ranked.tick();assert.equal(room.game.over,true);assert.equal(f.ranked.profile('p0','ramino:2:solo').losses,1);
+  f.sockets[0].offline=true;f.ranked.tick();f.advance(121000);f.ranked.tick();assert.equal(room.game.over,true);assert.equal(f.ranked.profile('p0','ramino:solo').losses,1);
 });
 test('pareggio: Glicko aggiornato, BO3 non consumata', () => {
-  const f=fixture();Object.assign(f.ranked.profile('p0','burraco:2:solo'),{games:20,promo:{results:[1],target:1},tier:0,division:3,lp:100});
+  const f=fixture();Object.assign(f.ranked.profile('p0','burraco:solo'),{games:20,promo:{results:[1],target:1},tier:0,division:3,lp:100});
   const room=f.match();room.game.winners=[0,1];f.ranked.record(room);
-  const p=f.ranked.profile('p0','burraco:2:solo');assert.equal(p.draws,1);assert.deepEqual(p.promo.results,[1]);assert.ok(p.rd<350);
+  const p=f.ranked.profile('p0','burraco:solo');assert.equal(p.draws,1);assert.deepEqual(p.promo.results,[1]);assert.ok(p.rd<350);
 });
 test('Leggenda: pari merito deterministico e frequenza giornaliera', () => {
-  const f=fixture(3),key='ramino:2:solo';for(let i=0;i<3;i++)Object.assign(f.ranked.profile('p'+i,key),{games:30,rating:2700});
+  const f=fixture(3),key='ramino:solo';for(let i=0;i<3;i++)Object.assign(f.ranked.profile('p'+i,key),{games:30,rating:2700});
   f.ranked.legends(true);assert.equal(f.ranked.profile('p0',key).legend,true);f.ranked.profile('p1',key).rating=3000;f.ranked.legends();assert.equal(f.ranked.profile('p0',key).legend,true);
   f.advance(R.DAY);f.ranked.legends();assert.equal(f.ranked.profile('p1',key).legend,true);
 });
 test('Solo 2v2 sceglie coppie bilanciate per rating', () => {
-  const f=fixture(),key='burraco:4:solo';[1300,1400,1600,1700].forEach((rating,i)=>{f.ranked.profile('p'+i,key).rating=rating;});
+  const f=fixture(),key='burraco:solo';[1300,1400,1600,1700].forEach((rating,i)=>{f.ranked.profile('p'+i,key).rating=rating;});
   const entries=[0,1,2,3].map(i=>({...f.ranked.format({game:'burraco',n:4}),tokens:['p'+i],at:now0}));
   const order=f.ranked.arrangement(entries);assert.ok(order);const val=t=>f.ranked.profile(t,key).rating;assert.equal(val(order[0])+val(order[2]),val(order[1])+val(order[3]));
 });
@@ -148,13 +148,13 @@ test('classifica passata conserva la stagione senza alterare la corrente', () =>
   const f=fixture();f.ranked.record(f.match());f.advance(90*R.DAY);
   const current=f.ranked.board('p0',{game:'burraco',n:2});assert.equal(current.mine.games,0);assert.equal(current.currentSeason,1);
   const past=f.ranked.board('p0',{game:'burraco',n:2,season:0});assert.equal(past.archived,true);assert.equal(past.mine.games,1);assert.equal(past.list.length,2);
-  assert.equal(f.ranked.profile('p0','burraco:2:solo').games,0);
+  assert.equal(f.ranked.profile('p0','burraco:solo').games,0);
 });
 test('la soglia della promo non assegna già il miglior rank successivo', () => {
   const p={...R.fresh(now0),games:20,tier:0,division:3,lp:99,rating:1700};R.progress(p,1);assert.equal(p.best,399);R.progress(p,1);R.progress(p,1);assert.equal(p.best,400);
 });
 test('risultato riprovato dopo errore del disco senza duplicati', () => {
-  const f=fixture();const room=f.match();f.ctx.rooms.set('test',room);f.fail(true);assert.throws(()=>f.ranked.record(room));f.fail(false);f.ranked.tick();f.ranked.tick();assert.equal(f.ranked.profile('p0','burraco:2:solo').games,1);
+  const f=fixture();const room=f.match();f.ctx.rooms.set('test',room);f.fail(true);assert.throws(()=>f.ranked.record(room));f.fail(false);f.ranked.tick();f.ranked.tick();assert.equal(f.ranked.profile('p0','burraco:solo').games,1);
 });
 test('timer scaduto offline si riarma alla riconnessione', () => {
   const ctx=require('./contesto'), previous=ctx.isConnected;
@@ -186,9 +186,68 @@ test('tavolo Duo: invito, consenso, annullamento, uscita e disconnessione', () =
   const Games = require('./games'), Daily = require('./daily');
   assert.deepEqual(Games.ids, ['burraco','scala40','ramino','canasta']);
   for (let day=1; day<=28; day++) assert(Games.enabled(Daily.challenge('2026-10-'+String(day).padStart(2,'0')).rules));
-  const f=fixture(); const old=f.match(['p0','p1'],'scopa:2:solo');
+  const f=fixture(); const old=f.match(['p0','p1'],'scopa:solo');
   f.ctx.rooms.set('vecchio',old); f.ranked.record(old); f.ranked.tick();
   assert.equal(f.ctx.rooms.get('vecchio'),old); assert.equal(f.ctx.ranked.players.p0,undefined);
   old.game.over=false; old.seats=[{token:'p0'},{token:'p1'}];
   assert.doesNotThrow(()=>f.ranked.join('p0',{game:'ramino',n:2}));
+});
+
+test('Solo: stessi punti, piazzamenti e promozione per 2, 3 e 4 giocatori', () => {
+  const f=fixture();
+  assert.equal(new Set([2,3,4].map(n=>f.ranked.format({game:'burraco',n}).key)).size,1);
+  assert.notEqual(f.ranked.format({game:'burraco',n:4,queue:'duo'}).key,'burraco:solo');
+  const p=f.ranked.profile('p0','burraco:solo'); Object.assign(p,{games:9,wins:9});
+  f.ranked.record(f.match(['p0','p1','p2'],'burraco:solo','in3'));
+  for(const n of [2,3,4]) { const board=f.ranked.board('p0',{game:'burraco',n}); assert.equal(board.mine.games,10); assert.equal(board.mine.provisional,false); }
+  Object.assign(f.ranked.profile('p0','burraco:solo'),{tier:0,division:3,lp:100,promo:{results:[1],target:1}});
+  const room=f.match(['p0','p1','p2','p3'],'burraco:solo','in4'); room.game.teams=[{members:[0,2]},{members:[1,3]}];
+  f.ranked.record(room);
+  assert.equal(f.ranked.board('p0',{game:'burraco',n:2}).mine.league,'Argento');
+  assert.equal(f.ranked.mine('p0')['burraco:solo'].games,11);
+  assert.deepEqual(Object.keys(f.ranked.mine('p0')),['burraco:solo']);
+});
+
+test('Solo: rating unico ma tavoli di dimensioni diverse non vengono mescolati', () => {
+  const f=fixture(9);
+  for(const [token,n] of [['p0',2],['p1',3],['p2',4]]) f.ranked.join(token,{game:'burraco',n});
+  assert.equal(f.ctx.rooms.size,0);
+  for(const [token,n] of [['p3',2],['p4',3],['p5',3],['p6',4],['p7',4],['p8',4]]) f.ranked.join(token,{game:'burraco',n});
+  assert.deepEqual([...f.ctx.rooms.values()].map(r=>r.n).sort(),[2,3,4]);
+  for(const room of f.ctx.rooms.values()) { assert.equal(room.seats.length,room.n); assert.equal(room.rankedMatch.key,'burraco:solo'); }
+});
+
+test('migrazione Solo: progressi, storico, stagioni e tavoli salvati; Duo invariata', () => {
+  const f=fixture(); const old=R.fresh(now0);
+  const a={...structuredClone(old),games:20,wins:12,losses:8,tier:2,division:1,lp:45,best:945,allTimeBest:1000,rating:1700,rd:80,history:[{id:'a',at:now0,score:1}],seasons:[{season:0,games:12,wins:7,losses:5,best:900}]};
+  const b={...structuredClone(old),games:10,wins:6,losses:4,tier:1,division:2,lp:20,best:620,rating:1550,rd:100,history:[{id:'b',at:now0-100,score:0}],seasons:[{season:0,games:10,wins:6,losses:4,best:600}]};
+  const duo={...structuredClone(old),games:15,wins:8,losses:7};
+  f.ctx.ranked={version:1,players:{p0:{'burraco:2:solo':a,'burraco:4:solo':b,'burraco:4:duo':duo}},matches:{a:{at:now0,key:'burraco:2:solo'}},legends:{old:{}},legendAt:now0};
+  const pending=f.match(['p0','p1'],'burraco:2:solo','pending'); f.ctx.rooms.set('old',pending);
+  f.ranked.migrate();
+  const merged=f.ctx.ranked.players.p0['burraco:solo'];
+  assert.equal(merged.games,30); assert.equal(merged.wins,18); assert.equal(merged.losses,12);
+  assert.equal(merged.tier,2); assert.equal(merged.lp,45); assert.equal(merged.rd,100);
+  assert.equal(merged.seasons[0].games,22); assert.equal(merged.seasons[0].best,900);
+  assert.deepEqual(merged.history.map(h=>h.n),[2,4]);
+  assert.deepEqual(merged.legacyFormats['burraco:2:solo'],a);
+  assert.deepEqual(f.ctx.ranked.players.p0['burraco:4:duo'],duo);
+  assert.equal(pending.rankedMatch.key,'burraco:solo'); assert.equal(f.ctx.ranked.matches.a.key,'burraco:solo');
+  const once=JSON.stringify(f.ctx.ranked);f.ranked.migrate();assert.equal(JSON.stringify(f.ctx.ranked),once);
+  f.ranked.record(pending);assert.equal(f.ctx.ranked.players.p0['burraco:solo'].games,31);
+  f.ranked.record(pending);assert.equal(f.ctx.ranked.players.p0['burraco:solo'].games,31);
+});
+
+test('migrazione Solo atomica, piazzamenti cumulativi e riavvio da database', () => {
+  const f=fixture();
+  const p={...R.fresh(now0),games:5,wins:3,losses:2};
+  f.ctx.ranked={version:1,players:{p0:{'burraco:2:solo':structuredClone(p),'burraco:3:solo':structuredClone(p)}},matches:{},legends:{},legendAt:0};
+  const before=JSON.stringify(f.ctx.ranked);f.fail(true);assert.throws(()=>f.ranked.migrate(),/disco pieno/);assert.equal(JSON.stringify(f.ctx.ranked),before);
+  f.fail(false);f.ranked.migrate();assert.equal(f.ranked.mine('p0')['burraco:solo'].placements,10);assert.equal(f.ranked.mine('p0')['burraco:solo'].provisional,false);
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'ranked-migration-')),store=openStore(dir);
+  {
+    store.save({ranked:f.ctx.ranked});const loaded=store.load();
+    assert.equal(loaded.ranked.version,2);assert.deepEqual(loaded.ranked.players,f.ctx.ranked.players);
+    const restarted={...f.ctx,ranked:loaded.ranked};createRanked(restarted,{clock:()=>now0});assert.deepEqual(restarted.ranked.players,f.ctx.ranked.players);
+  }
 });

@@ -11,7 +11,10 @@ const wait = ms => new Promise(r=>setTimeout(r,ms));
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'ranked-e2e-')), port=3994;
 const keys=Array.from({length:5},()=>crypto.randomBytes(18).toString('hex'));
 const state=empty(), key='burraco:4:duo';
+state.version=1;
 for(let i=0;i<5;i++) state.players['p'+i]={[key]:{...R.fresh(Date.now()),games:20,tier:2,division:3,lp:100,promo:{results:[1],target:3}}};
+state.players.p4['burraco:2:solo']={...R.fresh(Date.now()),games:4,wins:2,losses:2};
+state.players.p4['burraco:3:solo']={...R.fresh(Date.now()),games:3,wins:2,losses:1};
 fs.writeFileSync(path.join(dir,'stato.json'),JSON.stringify({accountsEpoch:3,progressEpoch:require('./progress-reset').PROGRESS_EPOCH,savedAt:Date.now(),ranked:state,
   sessions:keys.map((key,i)=>['p'+i,{nick:'Ranked'+i,name:'Ranked'+i,code:'CODE'+i,devices:[{h:crypto.createHash('sha256').update(key).digest('hex'),at:Date.now()}],friends:keys.map((_,j)=>'p'+j).filter(t=>t!=='p'+i)}])}));
 let server, clients=[];
@@ -54,6 +57,8 @@ async function until(fn) {for(let i=0;i<100;i++){if(fn())return;await wait(50);}
     assert.equal(report.currentSeason,R.seasonOf(Date.now()));
     assert.equal(report.ends,R.CONFIG.epoch+(report.currentSeason+1)*R.CONFIG.seasonMs);
     const persisted=report.ranks[key];
+    const migrated=(await clients[4].call('rankedProfile')).ranks;
+    assert.equal(migrated['burraco:solo'].games,7);assert.equal(migrated['burraco:solo'].wins,4);assert.ok(!migrated['burraco:2:solo']);
     assert.equal(persisted.games,21);assert.equal(persisted.league,'Platino');assert.equal(persisted.promo,null);
     assert.equal((await clients[0].call('ready')).ok,false);
     assert.equal((await clients[0].call('rankedProfile')).ranks[key].games,21);
@@ -64,10 +69,10 @@ async function until(fn) {for(let i=0;i<100;i++){if(fn())return;await wait(50);}
     await clients[0].call('leaveRoom'); await clients[1].call('leaveRoom');
     assert.ok((await clients[0].call('quickPlay',{game:'ramino',n:2,mode:'ranked'})).ok);
     assert.ok((await clients[1].call('quickPlay',{game:'ramino',n:2,mode:'ranked'})).ok);
-    await until(()=>clients[0].state.room?.rankedFormat?.key==='ramino:2:solo');
+    await until(()=>clients[0].state.room?.rankedFormat?.key==='ramino:solo');
     assert.ok((await clients[0].call('leaveRoom',{abandon:true})).ok);
     await until(()=>clients[1].state.game?.over);
-    assert.equal((await clients[0].call('rankedProfile')).ranks['ramino:2:solo'].losses,1);
+    assert.equal((await clients[0].call('rankedProfile')).ranks['ramino:solo'].losses,1);
     assert.equal((await clients[0].call('rankedJoin',{game:'scala40',n:2})).ok,false);
     console.log('Ranked E2E OK: Duo 2v2, doppio consenso, accessi negati, promo reale, crash/riavvio, replay, localResult e abbandono');
   } finally {clients.forEach(p=>p.socket.disconnect());if(server&&server.exitCode===null)await stop();}

@@ -3,7 +3,7 @@
 const RANKED_TEAMS = ['burraco', 'reale', 'aberto', 'fechado', 'canasta', 'scopa', 'scopone', 'briscola', 'tressette'];
 LEAGUE_GAMES.push(['reale', 'Burraco Reale'], ['aberto', 'Buraco Aberto'], ['fechado', 'Buraco Fechado']);
 function rankedSummaryHTML(ranks) {
-  return `<h3>${t('Profilo competitivo')}</h3>${Object.entries(ranks).filter(([key]) => AvailableGames.enabled(key.split(':')[0]) || ['reale','aberto','fechado'].includes(key.split(':')[0])).map(([key,p]) => `<div class="ranked-profile">${leagueEmblem(playerRank(p),'league-row-emblem')}<b>${esc(key.split(':').join(' · '))}</b>${rankedCard(p)}</div>`).join('')}`;
+  return `<h3>${t('Profilo competitivo')}</h3>${Object.entries(ranks).filter(([key]) => AvailableGames.enabled(key.split(':')[0]) || ['reale','aberto','fechado'].includes(key.split(':')[0])).map(([key,p]) => `<div class="ranked-profile">${leagueEmblem(playerRank(p),'league-row-emblem')}<b>${esc(rankedFormatLabel(key))}</b>${rankedCard(p)}</div>`).join('')}`;
 }
 function rankedFormats(game) {
   const base = game === 'burraco' ? R.PRESETS[0].rules : RX.presetById(game).rules;
@@ -18,15 +18,15 @@ function rankedSelectionHTML(game) {
     ${canDuo ? `<button class="ranked-choice ${duo ? 'selected' : ''}" data-act="leaders" data-queue="duo" aria-pressed="${duo}"><b>${t('Coda Duo')}</b><small>${t('Gioca con un amico')}</small></button>` : ''}</div></fieldset>
     ${duo ? `<p class="ranked-format-note"><b>${t('4 giocatori · 2 coppie')}</b><br>${t('Tu e il tuo amico contro un’altra coppia.')}</p>` : `<fieldset class="ranked-solo-formats"><legend>${t('Giocatori al tavolo')}</legend><div class="ranked-formats">${rankedFormats(game).map(([n]) => `<button class="ranked-choice ${n === S.rankedN ? 'selected' : ''}" data-act="leaders" data-n="${n}" aria-pressed="${n === S.rankedN}"><b>${n}</b><small>${t('Giocatori')}</small></button>`).join('')}</div>${S.rankedN === 4 && canDuo ? `<p class="ranked-format-note">${t('Il compagno viene scelto dal matchmaking.')}</p>` : ''}</fieldset>`}</section>`;
 }
-function rankedCard(p) {
+function rankedCard(p, showRecord = true) {
   if (!p) return '';
-  if (p.provisional) return `<div class="ranked-progress ranked-placement"><strong>${t('Non classificato')}</strong><p>${t('Piazzamenti')}: ${p.placements}/${p.placementTotal || 10}</p><progress max="${p.placementTotal || 10}" value="${p.placements}" aria-label="${t('Piazzamenti')}"></progress><p>${t('Completa i piazzamenti per ottenere un grado.')}</p><p>${t('Vittorie')}: ${p.wins} · ${t('Sconfitte')}: ${p.losses}</p></div>`;
+  if (p.provisional) return `<div class="ranked-progress ranked-placement"><strong>${t('Non classificato')}</strong><p>${t('Piazzamenti')}: ${p.placements}/${p.placementTotal || 10}</p><progress max="${p.placementTotal || 10}" value="${p.placements}" aria-label="${t('Piazzamenti')}"></progress><p>${t('Completa i piazzamenti per ottenere un grado.')}</p>${showRecord ? `<p>${t('Vittorie')}: ${p.wins} · ${t('Sconfitte')}: ${p.losses}</p>` : ''}</div>`;
   const promo = p.promo;
   return `<div class="ranked-progress"><strong>${esc(t(p.league))} ${p.division || ''}</strong>
     <p>${p.tier === 8 ? `${t('Rating competitivo')}: ${p.rating}` : p.provisional ? `${t('Piazzamenti')}: ${p.placements}/10 · ${t('Grado provvisorio')}` : `${p.lp}/100 LP`}</p>
     ${p.tier === 8 ? '' : `<progress max="100" value="${p.lp}" aria-label="LP"></progress>`}
     ${promo ? `<div class="ranked-promo"><b>${t('Promozione BO3')} · ${t(PLAYER_RANKS[promo.target].name)}</b><div>${[0, 1, 2].map((i) => `<span class="${promo.results[i] === 1 ? 'win' : promo.results[i] === 0 ? 'loss' : ''}">${promo.results[i] === 1 ? t('Vittoria') : promo.results[i] === 0 ? t('Sconfitta') : '—'}</span>`).join('')}</div><p>${t('Partite rimanenti')}: ${3 - promo.results.length}</p></div>` : ''}
-    <p>${t('Vittorie')}: ${p.wins} · ${t('Sconfitte')}: ${p.losses}</p></div>`;
+    ${showRecord ? `<p>${t('Vittorie')}: ${p.wins} · ${t('Sconfitte')}: ${p.losses}</p>` : ''}</div>`;
 }
 // Il resoconto personale non modifica code, formato o ricerca di una partita.
 async function openRankedOverview() {
@@ -55,26 +55,18 @@ function rankedAchievement(value, qualified = true) {
 }
 function rankedLabel(rank) { return `${t(rank.name)}${rank.division ? ' ' + rank.division : ''}`; }
 function rankedFormatLabel(key) {
-  const [game, n, queue] = key.split(':');
+  const parts = key.split(':'), game = parts[0], queue = parts[parts.length - 1];
   const name = LEAGUE_GAMES.find(([id]) => id === game)?.[1] || game;
-  return `${name} · ${t(queue === 'duo' ? 'Coda Duo' : 'Coda singola')} · ${n} ${t('Giocatori').toLowerCase()}`;
+  return `${name} · ${t(queue === 'duo' ? 'Coda Duo' : 'Coda singola')}`;
 }
 function rankedQueueOverview(game, queue, entries) {
-  const profiles = entries.map(([, p]) => p);
-  const qualified = profiles.filter((p) => !p.provisional);
-  const value = (p) => p.tier === 8 ? 3300 : p.tier * 400 + ['IV', 'III', 'II', 'I'].indexOf(p.division) * 100 + p.lp;
-  const best = qualified.sort((a, b) => value(b) - value(a))[0];
-  const rank = playerRank(best || { provisional: true });
-  const formats = queue === 'duo' ? [[4]] : rankedFormats(game);
+  const profiles = entries.map(([, p]) => p), p = profiles[0];
+  const rank = playerRank(p || { provisional: true });
   return `<section class="ranked-queue-report" data-report-queue="${queue}"><h3>${t(queue === 'duo' ? 'Coda Duo' : 'Coda singola')}</h3>
-    <div class="ranked-current">${leagueEmblem(rank, 'ranked-report-emblem')}<div><small>${t('Miglior lega attuale')}</small><strong>${esc(rankedLabel(rank))}</strong></div></div>
+    <div class="ranked-current">${leagueEmblem(rank, 'ranked-report-emblem')}<div><small>${t('Lega attuale')}</small><strong>${esc(rankedLabel(rank))}</strong></div></div>
     ${rankedRecordHTML(profiles)}
-    <p class="ranked-detail">${t('Ogni formato ha una lega separata.')}</p>
-    <ul class="ranked-format-report">${formats.map(([n]) => {
-      const p = entries.find(([key]) => Number(key.split(':')[1]) === n)?.[1];
-      const current = playerRank(p || { provisional: true });
-      return `<li><b>${n} ${t('Giocatori').toLowerCase()}</b><span>${esc(rankedLabel(current))}${p ? `<small>${p.provisional ? `${t('Piazzamenti')}: ${p.placements}/${p.placementTotal || 10}` : p.tier === 8 ? `${t('Rating competitivo')}: ${p.rating}` : `${p.lp}/100 LP`} · ${p.wins} ${t('Vittorie').toLowerCase()} · ${p.losses} ${t('Sconfitte').toLowerCase()}</small>` : `<small>${t('Nessuna partita giocata')}</small>`}</span></li>`;
-    }).join('')}</ul></section>`;
+    ${p ? rankedCard(p, false) : `<p class="ranked-detail">${t('Nessuna partita giocata')}</p>`}
+    ${queue === 'solo' ? `<p class="ranked-detail">${t('Un unico punteggio per le partite a 2, 3 e 4 giocatori.')}</p>` : ''}</section>`;
 }
 function rankedOverviewHTML() {
   const data = S.overviewData;
@@ -145,7 +137,7 @@ function searchModal() {
 }
 Object.assign(handlers, {
   async rankedAgain() {
-    const [game, n, queue] = S.room.rankedFormat.key.split(':');
+    const game = S.room.rankedFormat.key.split(':')[0], n = S.room.n, queue = S.room.rankedFormat.queue;
     const r = await emit('leaveRoom'); if (r.ok) { await openLeaguePage({ dataset: { game, n, queue } }); await handlers.rankedSearch(); }
   },
   async rankedSearch(el) {

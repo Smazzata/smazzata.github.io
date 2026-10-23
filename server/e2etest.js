@@ -625,8 +625,8 @@ async function signup(p, nick, email = mailOf()) {
     assert((await Q1.call('surrender')).done);
     await Q2.until((st) => st.game && st.game.over, 'Scala 40 classificata finita');
     const brStats = (await Q1.call('rankedProfile')).ranks;
-    assert.strictEqual(brStats['scala40:2:solo'].games, 1, 'Glicko del gioco scelto');
-    assert(!brStats['burraco:2:solo'], 'Burraco non modificato dalla Scala 40');
+    assert.strictEqual(brStats['scala40:solo'].games, 1, 'Glicko del gioco scelto');
+    assert(!brStats['burraco:solo'], 'Burraco non modificato dalla Scala 40');
     await Q1.call('leaveRoom'); await Q2.call('leaveRoom');
     step('partita rapida: selezione di tutti i giochi, code separate, avvio Scala 40 ed Elo indipendente');
     const casual = await Q1.call('quickPlay', { n: 2, mode: 'casual' });
@@ -654,7 +654,7 @@ async function signup(p, nick, email = mailOf()) {
     assert(!(await Q1.call('configure', {rules:{players:2,target:1}})).ok);
     assert((await Q1.call('surrender')).done);
     await Q2.until((s) => s.game && s.game.over, 'classificata finita');
-    const rankedQ = async (P) => (await P.call('rankedProfile')).ranks['burraco:2:solo'];
+    const rankedQ = async (P) => (await P.call('rankedProfile')).ranks['burraco:solo'];
     const e1=await rankedQ(Q1),e2=await rankedQ(Q2);
     assert(e1.games===1&&e1.losses===1&&e2.games===1&&e2.wins===1,'risultato Ranked autorevole');
     assert(!(await Q1.call('backToLobby')).ok,'rivincita Ranked vietata');
@@ -666,7 +666,7 @@ async function signup(p, nick, email = mailOf()) {
     await Q2.until(s=>s.game&&!s.game.over&&s.room.rules.game==='ramino','nuovo gioco Ranked');
     assert((await Q1.call('leaveRoom',{abandon:true})).ok);
     await Q2.until(s=>s.game&&s.game.over,'abbandono decide la partita');
-    assert.equal((await Q1.call('rankedProfile')).ranks['ramino:2:solo'].losses,1);
+    assert.equal((await Q1.call('rankedProfile')).ranks['ramino:solo'].losses,1);
     assert(!(await Q1.call('rankedJoin',{game:'scala40',n:2})).ok,'cooldown abbandono');
     Q1.sock.close(); Q2.sock.close();
     step('Ranked: risultati autorevoli, code separate, nessuna rivincita, abbandoni e cooldown');
