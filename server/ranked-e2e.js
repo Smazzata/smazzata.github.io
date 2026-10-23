@@ -50,7 +50,10 @@ async function until(fn) {for(let i=0;i<100;i++){if(fn())return;await wait(50);}
     assert.equal((await a.call('rankedProfile')).ranks[key].games,21);
     const disk=exportData(dir);assert.equal(disk.ranked.players.p0[key].games,21);assert.equal(Object.keys(disk.ranked.matches).length,1);
     clients.forEach(p=>p.socket.disconnect());await stop();await start();await connectAll();
-    const persisted=(await clients[0].call('rankedProfile')).ranks[key];
+    const report=await clients[0].call('rankedProfile');
+    assert.equal(report.currentSeason,R.seasonOf(Date.now()));
+    assert.equal(report.ends,R.CONFIG.epoch+(report.currentSeason+1)*R.CONFIG.seasonMs);
+    const persisted=report.ranks[key];
     assert.equal(persisted.games,21);assert.equal(persisted.league,'Platino');assert.equal(persisted.promo,null);
     assert.equal((await clients[0].call('ready')).ok,false);
     assert.equal((await clients[0].call('rankedProfile')).ranks[key].games,21);

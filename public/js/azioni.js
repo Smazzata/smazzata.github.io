@@ -507,7 +507,7 @@
     friendNo(el) { emit('friendRespond', { nick: el.dataset.nick, accept: false }); },
     unfriend(el) { if (confirm(`Rimuovere ${el.dataset.nick}?`)) emit('friendRemove', { nick: el.dataset.nick }); },
     toggleTheme() { S.prefs.theme = S.prefs.theme === 'scuro' ? 'chiaro' : 'scuro'; applyPrefs(); render(); },
-    leaders(el) { return openLeaguePage(S.screen === 'home' ? {dataset:{...el?.dataset,game:homeGame()}} : el); },
+    leaders(el) { return S.screen === 'leaders' ? openLeaguePage(el) : openRankedOverview(); },
     resetStats() { if (confirm('Azzerare le statistiche?')) { store.set('bur_stats', {}); statsModal(); } },
     musicStop() { emit('setMusic', { url: '' }).then(() => musicModal()); },
     botLevel(el) { emit('setBotLevel', { level: el.dataset.val }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },

@@ -99,6 +99,8 @@ module.exports = async function leagueFlow({ cdp, shot, open, URL, step }) {
     await open(URL);
     await cdp.run(`store.set('smazzata_home_game','burraco'); await openLeaguePage({dataset:{game:'burraco',n:'4',queue:'duo'}}); await __W(300); if(document.documentElement.scrollWidth>innerWidth)throw Error('overflow ${lang}'); if(LANG!=='${lang}')throw Error('lingua non caricata');`);
     await shot('ranked-' + lang);
+    await cdp.run(`await openRankedOverview(); if(document.documentElement.scrollWidth>innerWidth)throw Error('resoconto fuori schermo ${lang}'); if(document.querySelector('[data-act="rankedSearch"]'))throw Error('ricerca nel resoconto ${lang}');`);
+    await shot('ranked-resoconto-' + lang);
   }
   await cdp.run(`store.set('bur_prefs', {...S.prefs,lang:'it'}); return true;`);
   await open(URL);

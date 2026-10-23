@@ -82,3 +82,17 @@ Carte italiane ‖ Italian-suited cards ‖ Baraja italiana ‖ Baralho italiano
 Crea il tavolo ‖ Create table ‖ Crear mesa ‖ Criar mesa
 
 Gioco non disponibile ‖ Game unavailable ‖ Juego no disponible ‖ Jogo indisponível
+
+Le tue classificate ‖ Your ranked record ‖ Tus clasificatorias ‖ Suas classificadas
+Vittorie in percentuale ‖ Win rate ‖ Porcentaje de victorias ‖ Percentual de vitórias
+Pareggi ‖ Draws ‖ Empates ‖ Empates
+Miglior lega attuale ‖ Highest current league ‖ Mejor liga actual ‖ Melhor liga atual
+Ogni formato ha una lega separata. ‖ Each format has a separate league. ‖ Cada formato tiene una liga independiente. ‖ Cada formato tem uma liga separada.
+Nessuna partita giocata ‖ No matches played ‖ Ninguna partida jugada ‖ Nenhuma partida jogada
+La stagione in corso ‖ Current season ‖ Temporada actual ‖ Temporada atual
+Tutti i giochi ‖ All games ‖ Todos los juegos ‖ Todos os jogos
+La coda Duo non è disponibile per questo gioco. ‖ The Duo queue is unavailable for this game. ‖ La cola Dúo no está disponible para este juego. ‖ A fila Duo não está disponível para este jogo.
+Stagioni precedenti ‖ Previous seasons ‖ Temporadas anteriores ‖ Temporadas anteriores
+Miglior lega raggiunta ‖ Highest league reached ‖ Mejor liga alcanzada ‖ Melhor liga alcançada
+Nessuna partita nelle stagioni precedenti. ‖ No matches played in previous seasons. ‖ Ninguna partida en temporadas anteriores. ‖ Nenhuma partida nas temporadas anteriores.
+Ultime partite classificate ‖ Recent ranked matches ‖ Últimas partidas clasificatorias ‖ Últimas partidas classificadas

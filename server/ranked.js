@@ -259,7 +259,11 @@ function createRanked(ctx, options = {}) {
     socket.on('rankedPartyReady', handler(() => party.ready(socket.data.token)));
     socket.on('rankedPartyLeave', handler(() => {party.leave(socket.data.token);return {};}));
     socket.on('rankedBoard', handler((data) => board(socket.data.token, data)));
-    socket.on('rankedProfile', handler(() => ({ ranks: mine(socket.data.token), party:party.mine(socket.data.token), queue: [...queue.values()].find((e) => e.tokens.includes(socket.data.token)) ? { searching: true } : null })));
+    socket.on('rankedProfile', handler(() => {
+      const currentSeason = R.seasonOf(clock(), c);
+      return { ranks: mine(socket.data.token), currentSeason, ends: c.epoch + (currentSeason + 1) * c.seasonMs,
+        party: party.mine(socket.data.token), queue: [...queue.values()].find((e) => e.tokens.includes(socket.data.token)) ? { searching: true } : null };
+    }));
     socket.on('disconnect', () => { if (!ctx.isConnected(socket.data.token)) cancel(socket.data.token); });
   }
   return { register, join, accept, cancel:token=>{cancel(token);party.leave(token);}, tick, record, board, mine, legends, profile, queue, invites, party, windowFor, arrangement, transaction, format };

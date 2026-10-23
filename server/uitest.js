@@ -131,10 +131,9 @@ const HELPERS = `
         if (rect.width < 44 || rect.height < 44 || rect.right > innerWidth) throw new Error('scorciatoie non utilizzabili su telefono');
         __tap(button); await __W(450);
         if (button.dataset.act === 'leaders') {
-          if (S.screen !== 'leaders' || !document.querySelector('.league-page')) throw new Error('la classifica non ha una pagina dedicata');
-          if (document.querySelectorAll('.league-step').length !== 9) throw new Error('insegne delle nove leghe mancanti');
-          for (let i = 0; i < 50 && [...document.querySelectorAll('.league-emblem')].some((image) => !image.complete || !image.naturalWidth); i++) await __W(50);
-          if ([...document.querySelectorAll('.league-emblem')].some((image) => !image.naturalWidth)) throw new Error('insegne delle leghe non caricate');
+          if (S.screen !== 'rankedOverview' || !document.querySelector('.ranked-overview')) throw new Error('resoconto personale mancante');
+          if (document.querySelector('.ranked-selection') || document.querySelector('[data-act="rankedSearch"]')) throw new Error('Classifica apre la ricerca invece del resoconto');
+          if (!document.querySelector('[data-report-queue="solo"]') || !document.querySelector('[data-report-queue="duo"]')) throw new Error('risultati delle due code mancanti');
           if (document.documentElement.scrollWidth > innerWidth) throw new Error('classifica esce dallo schermo');
           __tap('[data-act="leagueBack"]');
           continue;
@@ -193,6 +192,7 @@ const HELPERS = `
     await shot('01-game-menu');
     await cdp.run(`document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true})); if(S.modalKind || document.activeElement.id!=='homeGame') throw Error('chiusura menu e focus'); await __W(250);`);
     step('schermata iniziale e nickname');
+    await require('./ranked-overview-ui-flow')({ cdp, shot, step });
     if (!HOME_ONLY || process.argv.includes('--leagues')) {
       await require('./league-ui-flow')({ cdp, shot, open, URL, step });
       if (process.argv.includes('--leagues')) return;

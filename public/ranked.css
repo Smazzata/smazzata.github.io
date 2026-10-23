@@ -71,3 +71,39 @@
 .home-page .homebtn{min-height:74px;border-radius:14px;font-size:19px;justify-content:flex-start;text-align:left;padding:14px 16px}
 .home-page .homebtn small{font-size:14px;line-height:1.35;margin-top:4px}
 @media(max-width:360px){.home-toolbar{gap:8px}.home-tools{gap:4px}.home-tools .btn{padding:6px;font-size:13px}.home-page .homebtn{font-size:18px}}
+
+/* Resoconto personale: carta chiara, valori leggibili e code sempre distinte. */
+.ranked-overview{max-width:760px;padding-bottom:32px}
+.ranked-overview .league-header{color:#fff8e8}
+.ranked-overview .panel{background:#fff9eb;color:#243e30;border:1px solid #d6bd83;padding:18px;margin-bottom:16px}
+.ranked-overview h2{font:700 25px var(--font-title);margin:0 0 12px}
+.ranked-overview h3{font-size:20px;margin:0 0 12px}
+.ranked-overview p{font-size:15px;line-height:1.5}
+.ranked-report-total>p{margin:8px 0;color:#4c5e50}
+.ranked-record{display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:8px;margin:16px 0;padding:12px 0;border-block:1px solid #d6bd8366}
+.ranked-record>div{text-align:center;display:flex;flex-direction:column-reverse;gap:4px}
+.ranked-record dt{font-size:14px;line-height:1.25}
+.ranked-record dd{margin:0;font-size:28px;font-weight:900;color:#224c36}
+.ranked-record>div:nth-child(2) dd{color:#894338}
+.ranked-queue-report{padding:16px 0}
+.ranked-queue-report+.ranked-queue-report{border-top:2px solid #d6bd8380}
+.ranked-current{display:flex;align-items:center;gap:14px}
+.ranked-report-emblem{width:88px;height:88px;filter:drop-shadow(0 3px 4px #0003)}
+.ranked-current small{display:block;font-size:14px;margin-bottom:3px;color:#526450}
+.ranked-current strong{font:700 25px var(--font-title);display:block}
+.ranked-detail{color:#526450;margin:10px 0}
+.ranked-format-report,.ranked-recent ul{list-style:none;padding:0;margin:12px 0 0}
+.ranked-format-report li{display:grid;grid-template-columns:85px minmax(0,1fr);gap:10px;padding:12px 0;border-top:1px solid #d6bd8366;font-size:16px}
+.ranked-overview small{line-height:1.4}
+.ranked-format-report small,.ranked-recent small{display:block;font-size:14px;color:#526450;margin-top:4px}
+.ranked-game-report>summary,.ranked-season-report summary{cursor:pointer;min-height:48px;padding:8px 0;font-size:22px;font-weight:800}
+.ranked-game-report>summary>small{float:right;font-size:14px;font-weight:600;line-height:30px}
+.ranked-past-result{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid #d6bd8366}
+.ranked-past-result .league-row-emblem{width:56px;height:56px}
+.ranked-past-result p{margin:5px 0}
+.ranked-recent li{padding:12px 0;border-top:1px solid #d6bd8366}
+.ranked-recent li>strong{display:block;margin-bottom:4px}
+.ranked-recent li>span{font-size:15px;line-height:1.5}
+.ranked-report-note{color:#f8f1de;font-size:15px;line-height:1.5}
+.ranked-overview summary:focus-visible{outline:3px solid #886322;outline-offset:4px}
+@media(min-width:620px){.ranked-queue-reports{display:grid;grid-template-columns:1fr 1fr;gap:24px}.ranked-queue-report+.ranked-queue-report{border-top:0}}

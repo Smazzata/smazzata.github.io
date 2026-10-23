@@ -28,6 +28,80 @@ function rankedCard(p) {
     ${promo ? `<div class="ranked-promo"><b>${t('Promozione BO3')} · ${t(PLAYER_RANKS[promo.target].name)}</b><div>${[0, 1, 2].map((i) => `<span class="${promo.results[i] === 1 ? 'win' : promo.results[i] === 0 ? 'loss' : ''}">${promo.results[i] === 1 ? t('Vittoria') : promo.results[i] === 0 ? t('Sconfitta') : '—'}</span>`).join('')}</div><p>${t('Partite rimanenti')}: ${3 - promo.results.length}</p></div>` : ''}
     <p>${t('Vittorie')}: ${p.wins} · ${t('Sconfitte')}: ${p.losses}</p></div>`;
 }
+// Il resoconto personale non modifica code, formato o ricerca di una partita.
+async function openRankedOverview() {
+  const request = S.overviewRequest = (S.overviewRequest || 0) + 1;
+  closeModal(); S.screen = 'rankedOverview'; S.overviewData = null; S.overviewError = false;
+  render(); window.scrollTo(0, 0);
+  const response = await emit('rankedProfile');
+  if (request !== S.overviewRequest || S.screen !== 'rankedOverview') return;
+  if (response.ok) S.overviewData = response; else S.overviewError = true;
+  render();
+}
+function rankedTotals(profiles) {
+  return profiles.reduce((sum, p) => {
+    for (const key of ['games', 'wins', 'losses', 'draws']) sum[key] += p[key] || 0;
+    return sum;
+  }, { games: 0, wins: 0, losses: 0, draws: 0 });
+}
+function rankedRecordHTML(profiles) {
+  const sum = rankedTotals(profiles);
+  return `<dl class="ranked-record"><div><dt>${t('Vittorie')}</dt><dd>${sum.wins}</dd></div><div><dt>${t('Sconfitte')}</dt><dd>${sum.losses}</dd></div><div><dt>${t('Vittorie in percentuale')}</dt><dd>${sum.games ? Math.round(sum.wins / sum.games * 100) + '%' : '—'}</dd></div></dl>${sum.draws ? `<p class="ranked-detail">${t('Pareggi')}: ${sum.draws}</p>` : ''}`;
+}
+function rankedAchievement(value, qualified = true) {
+  if (!qualified) return playerRank({ provisional: true });
+  const tier = value >= 3300 ? 8 : Math.min(7, Math.floor(value / 400));
+  return { ...PLAYER_RANKS[tier], tier, division: tier === 8 ? null : ['IV', 'III', 'II', 'I'][Math.floor(value / 100) % 4] };
+}
+function rankedLabel(rank) { return `${t(rank.name)}${rank.division ? ' ' + rank.division : ''}`; }
+function rankedFormatLabel(key) {
+  const [game, n, queue] = key.split(':');
+  const name = LEAGUE_GAMES.find(([id]) => id === game)?.[1] || game;
+  return `${name} · ${t(queue === 'duo' ? 'Coda Duo' : 'Coda singola')} · ${n} ${t('Giocatori').toLowerCase()}`;
+}
+function rankedQueueOverview(game, queue, entries) {
+  const profiles = entries.map(([, p]) => p);
+  const qualified = profiles.filter((p) => !p.provisional);
+  const value = (p) => p.tier === 8 ? 3300 : p.tier * 400 + ['IV', 'III', 'II', 'I'].indexOf(p.division) * 100 + p.lp;
+  const best = qualified.sort((a, b) => value(b) - value(a))[0];
+  const rank = playerRank(best || { provisional: true });
+  const formats = queue === 'duo' ? [[4]] : rankedFormats(game);
+  return `<section class="ranked-queue-report" data-report-queue="${queue}"><h3>${t(queue === 'duo' ? 'Coda Duo' : 'Coda singola')}</h3>
+    <div class="ranked-current">${leagueEmblem(rank, 'ranked-report-emblem')}<div><small>${t('Miglior lega attuale')}</small><strong>${esc(rankedLabel(rank))}</strong></div></div>
+    ${rankedRecordHTML(profiles)}
+    <p class="ranked-detail">${t('Ogni formato ha una lega separata.')}</p>
+    <ul class="ranked-format-report">${formats.map(([n]) => {
+      const p = entries.find(([key]) => Number(key.split(':')[1]) === n)?.[1];
+      const current = playerRank(p || { provisional: true });
+      return `<li><b>${n} ${t('Giocatori').toLowerCase()}</b><span>${esc(rankedLabel(current))}${p ? `<small>${p.provisional ? `${t('Piazzamenti')}: ${p.placements}/${p.placementTotal || 10}` : p.tier === 8 ? `${t('Rating competitivo')}: ${p.rating}` : `${p.lp}/100 LP`} · ${p.wins} ${t('Vittorie').toLowerCase()} · ${p.losses} ${t('Sconfitte').toLowerCase()}</small>` : `<small>${t('Nessuna partita giocata')}</small>`}</span></li>`;
+    }).join('')}</ul></section>`;
+}
+function rankedOverviewHTML() {
+  const data = S.overviewData;
+  const header = `<header class="league-header"><button class="league-back" data-act="leagueBack" aria-label="${t('Torna alla home')}">←</button><div><small>SMAZZATA</small><h1>${t('Le tue classificate')}</h1></div></header>`;
+  if (!data) return `<main class="page ranked-overview">${header}<p role="status">${t(S.overviewError ? 'Classifica non disponibile' : 'Caricamento classifica…')}</p>${S.overviewError ? `<button class="btn" data-act="rankedProfile">${t('Riprova')}</button>` : ''}</main>`;
+  const entries = Object.entries(data.ranks).filter(([key]) => LEAGUE_GAMES.some(([id]) => id === key.split(':')[0]));
+  const totals = rankedTotals(entries.map(([, p]) => p));
+  const games = LEAGUE_GAMES.filter(([id]) => AvailableGames.enabled(id) || entries.some(([key]) => key.startsWith(id + ':')))
+    .sort(([a], [b]) => Number(b === homeGame()) - Number(a === homeGame()));
+  const previous = entries.flatMap(([key, p]) => (p.seasons || []).map((season) => ({ key, ...season, qualified: season.games >= (p.placementTotal || 10) })));
+  const seasons = [...new Set(previous.map((s) => s.season))].filter((season) => season < data.currentSeason).sort((a, b) => b - a);
+  const recent = entries.flatMap(([key, p]) => (p.history || []).map((h) => ({ key, ...h }))).sort((a, b) => b.at - a.at).slice(0, 5);
+  return `<main class="page ranked-overview">${header}
+    <section class="panel ranked-report-total"><h2>${t('La stagione in corso')}</h2><p>${t('Stagione')} ${data.currentSeason + 1} · ${t('Fine stagione')}: ${new Date(data.ends).toLocaleDateString()}</p>
+      ${rankedRecordHTML(entries.map(([, p]) => p))}<p>${t('Partite')}: <b>${totals.games}</b> · ${t('Tutti i giochi')}</p></section>
+    ${games.map(([game, name], index) => {
+      const own = entries.filter(([key]) => key.startsWith(game + ':'));
+      const content = `<div class="ranked-queue-reports">${rankedQueueOverview(game, 'solo', own.filter(([key]) => key.endsWith(':solo')))}${RANKED_TEAMS.includes(game) ? rankedQueueOverview(game, 'duo', own.filter(([key]) => key.endsWith(':duo'))) : `<p class="ranked-detail">${t('La coda Duo non è disponibile per questo gioco.')}</p>`}</div>`;
+      return index === 0 ? `<section class="panel ranked-game-report"><h2>${esc(name)}</h2>${content}</section>` : `<details class="panel ranked-game-report"><summary>${esc(name)}<small>${t('Partite')}: ${rankedTotals(own.map(([, p]) => p)).games}</small></summary>${content}</details>`;
+    }).join('')}
+    ${data.currentSeason > 0 ? `<section class="panel ranked-season-report"><h2>${t('Stagioni precedenti')}</h2>${seasons.length ? seasons.map((season) => `<details><summary>${t('Stagione')} ${season + 1}</summary>${previous.filter((s) => s.season === season).map((s) => {
+      const rank = rankedAchievement(s.best, s.qualified);
+      return `<div class="ranked-past-result">${leagueEmblem(rank, 'league-row-emblem')}<div><b>${esc(rankedFormatLabel(s.key))}</b><p>${t('Miglior lega raggiunta')}: ${esc(rankedLabel(rank))}</p><p>${s.wins} ${t('Vittorie').toLowerCase()} · ${s.losses} ${t('Sconfitte').toLowerCase()}${s.draws ? ` · ${s.draws} ${t('Pareggi').toLowerCase()}` : ''}</p></div></div>`;
+    }).join('')}</details>`).join('') : `<p>${t('Nessuna partita nelle stagioni precedenti.')}</p>`}</section>` : ''}
+    ${recent.length ? `<section class="panel ranked-recent"><h2>${t('Ultime partite classificate')}</h2><ul>${recent.map((h) => `<li><strong>${t(h.score === 1 ? 'Vittoria' : h.score === 0 ? 'Sconfitta' : 'Pareggio')}</strong><span>${esc(rankedFormatLabel(h.key))}<small>${new Date(h.at).toLocaleDateString()} · ${h.placementMatch ? t('Piazzamenti') : `${h.delta > 0 ? '+' : ''}${h.delta} LP`}</small></span></li>`).join('')}</ul></section>` : ''}
+    <p class="ranked-report-note">${t('Solo e Duo hanno progressi separati. Le partite contro il computer non contano.')}</p></main>`;
+}
 openLeaguePage = async function(el) {
   const d = el?.dataset || {};
   S.rankedSoloFormats ||= {};
@@ -90,13 +164,7 @@ Object.assign(handlers, {
   rankedPartyOpen() { if(S.rankedParty) {S.screen='rankedLobby';render();} },
   async rankedAccept(el) { await emit('rankedAccept', { id: el.dataset.id }); },
   async rankedCancel() { const r = await emit('rankedCancel'); if (r.ok) closeModal(); },
-  async rankedProfile() {
-    const r = await emit('rankedProfile'); if (!r.ok) return;
-    const label = (value) => `${t(PLAYER_RANKS[value >= 3300 ? 8 : Math.min(7, Math.floor(value / 400))].name)} ${value >= 3300 ? '' : ['IV', 'III', 'II', 'I'][Math.min(31, Math.floor(value / 100)) % 4]}`;
-    openModal('rankedProfile', `<div class="result"><h2>${t('Profilo competitivo')}</h2>${Object.entries(r.ranks).filter(([key]) => AvailableGames.enabled(key.split(':')[0]) || ['reale','aberto','fechado'].includes(key.split(':')[0])).map(([key, p]) => `<section class="ranked-profile"><h3>${esc(key.split(':').join(' · '))}</h3>${leagueEmblem(playerRank(p), 'league-row-emblem')}${rankedCard(p)}<p>${t('Miglior grado stagionale')}: ${p.provisional ? t('Non classificato') : label(p.best)}<br>${t('Miglior grado storico')}: ${p.provisional && !p.seasons.some(s => s.games >= (p.placementTotal || 10)) ? t('Non classificato') : label(p.allTimeBest)}</p>
-      <details><summary>${t('Storico competitivo')}</summary>${p.history.map((h) => `<p>${new Date(h.at).toLocaleDateString()} · ${t(h.score === 1 ? 'Vittoria' : h.score === 0 ? 'Sconfitta' : 'Pareggio')} · ${h.placementMatch ? t('Piazzamenti') : `${h.delta > 0 ? '+' : ''}${h.delta} LP`}</p>`).join('')}</details>
-      <details><summary>${t('Stagioni e ricompense')}</summary>${p.seasons.map((s) => `<p>${t('Stagione')} ${s.season + 1} · ${label(s.best)} · ${s.wins}/${s.games} <span class="ranked-reward">${t('Insegna stagionale')} ${s.season + 1}${leagueEmblem(PLAYER_RANKS[s.best >= 3300 ? 8 : Math.min(7, Math.floor(s.best / 400))], 'league-row-emblem')}</span></p>`).join('')}</details></section>`).join('') || `<p>${t('Completa i piazzamenti per ottenere un grado.')}</p>`}</div>`);
-  },
+  rankedProfile: openRankedOverview,
   leaguePlay() { return handlers.rankedSearch(); },
 });
 const originalQuickMenu = handlers.quickMenu;
