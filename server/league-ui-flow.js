@@ -18,7 +18,7 @@ module.exports = async function leagueFlow({ cdp, shot, open, URL, step }) {
     if (resetDeviceProgress() || loadStats().games !== 1) throw new Error('il reset cancella i nuovi progressi');
     store.set('bur_stats', {});
     await openLeaguePage();
-    if (!S.leagueData || !document.querySelector('.league-empty')) throw new Error('stato iniziale classifica mancante');
+    if (!S.leagueData || !document.querySelector('.league-standings .empty-state [data-act="rankedSearch"]')) throw new Error('stato iniziale classifica senza azione utile');
   `);
   await shot('leghe-01-bronzo');
   await cdp.run(`

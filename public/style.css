@@ -959,6 +959,7 @@ body.vmelds .felt > .teamzone.theirs { flex: 1 1 auto; }
 /* nome della squadra: si tocca per vedere i giochi in grande */
 .teamzone .hdr[data-act] { cursor: pointer; }
 .teamzone .hdr .zoomi { font-style: normal; font-size: .8em; opacity: .55; }
+.teamzone .hdr .zoomi .ui-icon { width: 1em; height: 1em; }
 .zoomview h3 { margin: 0 0 2px; }
 .zoomview .melds { --mw: 40px; display: flex; flex-wrap: wrap; gap: 14px 10px; align-items: flex-start; margin-top: 10px; }
 .tight2 .seatchip .avatar { display: none; }

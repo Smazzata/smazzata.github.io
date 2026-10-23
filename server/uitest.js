@@ -165,7 +165,8 @@ const HELPERS = `
         if (button.dataset.act === 'leaders') {
           if (S.screen !== 'rankedOverview' || !document.querySelector('.ranked-overview')) throw new Error('resoconto personale mancante');
           if (document.querySelector('.ranked-selection') || document.querySelector('[data-act="rankedSearch"]')) throw new Error('Classifica apre la ricerca invece del resoconto');
-          if (!document.querySelector('[data-report-queue="solo"]') || !document.querySelector('[data-report-queue="duo"]')) throw new Error('risultati delle due code mancanti');
+          if (!S.overviewData || !document.querySelector('.empty-state [data-act="leaguePlay"]')) throw new Error('primo accesso alle classificate senza azione utile');
+          if (document.querySelector('[data-report-queue]')) throw new Error('risultati mostrati prima di giocare');
           if (document.documentElement.scrollWidth > innerWidth) throw new Error('classifica esce dallo schermo');
           __tap('[data-act="leagueBack"]');
           continue;
@@ -356,9 +357,9 @@ const HELPERS = `
 
       __tap('[data-act="homeGameMenu"]'); __tap('[data-act="homeGameChoose"][data-game="burraco"]'); __tap('[data-act="playBots"]'); await __W(400);
       __tap('[data-act="createBots"]'); await __W(2500);
-      return { hand: document.querySelectorAll('#hand .card').length, title: document.querySelector('.topbar .title').textContent };`);
+      return { hand: document.querySelectorAll('#hand .card').length, offline: !!document.querySelector('.topbar [title="Partita senza internet"] .ui-icon') };`);
     await shot('05-offline');
-    if (o.hand !== 11 || !o.title.includes('📴')) throw new Error('offline: ' + JSON.stringify(o));
+    if (o.hand !== 11 || !o.offline) throw new Error('offline: ' + JSON.stringify(o));
     step('gioco senza internet: partita contro il computer');
 
     // 7. app Android vecchia (versione 1): compare l'avviso di aggiornamento con il link all'APK

@@ -30,3 +30,10 @@ I ritratti sono generati individualmente con lo strumento integrato imagegen. Ri
 - Build Pages eseguita. I 50 WebP pesano complessivamente circa 3,97 MiB. Nessun originale PNG o manifest con percorsi locali viene distribuito.
 
 Le verifiche non sostituiscono una prova Android fisica né attestano l'aggiornamento del server pubblico. La pubblicazione su Git avviene al termine dei controlli; l'installazione online resta subordinata al workflow Prove.
+
+
+## Correzione dopo il controllo GitHub
+
+Il workflow Prove di `5d94385` è fallito nel test completo della UI: i controlli cercavano i vecchi riquadri Solo/Duo anche per un profilo senza partite. Aggiornati al nuovo stato vuoto con azione utile; i controlli su code, risultati, piazzamenti e stagioni con dati restano presenti. Aggiornato anche il controllo offline, che cercava una emoji sostituita dagli SVG.
+
+`npm run ui` è passato integralmente in locale. Il controllo successivo `node server/uitest.js --campaign` ha individuato un overflow reale di 8 px nel tavolo a 320 px: le icone negli header di squadra avevano la misura generale da 24 px. Ora seguono la dimensione del testo, senza alzare la riga. La ripetizione del test Avventura è passata: tre mondi, 30 situazioni, tavoli piccoli, animazioni ridotte e risorse offline. Aggiornate entrambe le cache; screenshot store rigenerati dopo la correzione. L’esito del nuovo workflow remoto resta distinto dalle verifiche locali.

@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-23T18:33:15.391Z",
+  "at": "2026-10-23T18:58:24.355Z",
   "method": "Chrome da file locali; risposte social vuote simulate, motore locale reale",
   "checks": [
     "320/375/768 px",
@@ -66,9 +66,9 @@
     "public/art/avatars/fenice.webp": "061a9636c484081f27b602227b9d2259100b99eaf26ad65aabf3f9078080874e",
     "public/art/avatars/drago-imperatore.webp": "b926e192ac15585171fc4c37cf2dee70da0b05e651d98c53b195d8fd017b0321",
     "public/art/avatars/volpe-nove-code.webp": "1873b7abbc4ad94d3ec3abf74330a7d35fd1fb7978b6d61e5e1ff5c9e40a4289",
-    "public/style.css": "20b94895561a78e3e08b9f5a31d163bbc2e43b71618c203ab6b3b5292a941672",
-    "public/sw.js": "53682fe80997c6e45f58db6cc260911f814b0f26a02eb268ff950b5a9c32ce49",
-    "launcher/sw.js": "fcf4dedc07e3b9edbf00bd737ff0f40032ff920736ffa694dc6f77f7dd4c64ae",
+    "public/style.css": "846bd7b7e2a6460b8720025860c33236752ecd0b9f93698c62a5d10634ee7dd8",
+    "public/sw.js": "b71a43fbb594affca4d20c0e8d5d9696128c151e733af149a3c3653fbe9c858a",
+    "launcher/sw.js": "194c5ac511834ba093ff80316e285d575580a29d0c24c4eeb86a2d01063b35b1",
     "public/js/animazioni.js": "ba8f2444d9503c5cb7ffd5f7b21699ce4343d7148fe64db270f131628ed3b970",
     "public/js/avatars.js": "5ff457259d67be24575287caf460ac2e9c1b2b457f0b71bc0cbe74100fc239c7",
     "public/js/azioni.js": "b26e5fa85f6014dfc7759e8fb1ad29be8fd18fe7f00f0e4b248a8af3412680aa",

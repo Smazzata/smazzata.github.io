@@ -7,8 +7,8 @@ module.exports = async function overviewFlow({ cdp, shot, step }) {
     if (S.screen !== 'rankedOverview' || !S.overviewData) throw Error('resoconto reale assente');
     if (document.querySelector('.ranked-season-report')) throw Error('storico mostrato nella prima stagione');
     if (document.querySelector('[data-act="rankedSearch"]')) throw Error('ricerca nel resoconto');
-    if (document.querySelector('.ranked-queue-report strong').textContent !== 'Non classificato') throw Error('lega assegnata senza piazzamenti');
-    if (!document.querySelector('.ranked-report-total').textContent.includes('0')) throw Error('resoconto vuoto assente');
+    if (!document.querySelector('.empty-state [data-act="leaguePlay"]')) throw Error('primo accesso senza invito a giocare');
+    if (document.querySelector('.ranked-queue-report') || document.querySelector('.ranked-report-total')) throw Error('risultati assegnati prima di giocare');
   `);
   await shot('ranked-resoconto-iniziale');
   await cdp.run(`
@@ -49,7 +49,7 @@ module.exports = async function overviewFlow({ cdp, shot, step }) {
     await handlers.goHome();
     store.set('smazzata_home_game','ramino');
     await handlers.leaders();
-    if(document.querySelector('.ranked-game-report h2').textContent!=='Ramino') throw Error('gioco selezionato perso');
+    if(homeGame()!=='ramino' || !document.querySelector('.empty-state [data-act="leaguePlay"]')) throw Error('primo accesso Ramino errato');
     if(document.querySelector('section.ranked-game-report [data-report-queue="duo"]')) throw Error('Duo per Ramino');
     await handlers.goHome();
     store.set('smazzata_home_game','burraco'); applyHomeGame(); render();
