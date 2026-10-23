@@ -18,6 +18,8 @@
     "suoni": "node scripts/suoni-wav.js",
     "app:www": "node scripts/build-pages.js android-app/www",
     "test:ranked": "node --test server/ranked-test.js",
+    "test:risultati": "node --test server/result-progress-test.js",
+    "ui:rilascio": "node server/release-ui-test.js",
     "sim:ranked": "node server/ranked-simulation.js",
     "e2e:ranked": "node server/ranked-e2e.js"
   },

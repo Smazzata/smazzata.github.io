@@ -45,7 +45,7 @@
     const curT = av.tid || 't_principiante', curF = av.f ? 'f_' + av.f : 'f_nessuna';
     const chip = (p, cur, act) => (free.has(p.id)
       ? `<button class="swatch ${p.id === cur ? 'on' : ''}" data-act="${act}" data-id="${p.id}">${esc(p.name)}</button>`
-      : `<button class="swatch locked" disabled title="Si sblocca con: ${esc(P.howTo(p))}">🔒 ${esc(p.name)} <small>· ${esc(P.howTo(p))}</small></button>`);
+      : `<button class="swatch locked" disabled title="Si sblocca con: ${esc(P.howTo(p))}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-privacy /></svg> ${esc(p.name)} <small>· ${esc(P.howTo(p))}</small></button>`);
     return `<h4>Il tuo stile</h4>
       <p class="muted small">Titolo e cornice si vedono al tavolo. Si sbloccano salendo di livello e vincendo trofei.</p>
       <div class="looks">${P.LIST.filter((p) => p.kind === 'title').map((p) => chip(p, curT, 'pickTitle')).join('')}</div>
@@ -69,7 +69,7 @@
       <div class="avpick"><div class="avpreview">${avatarHTML(r.nick, 0, false, av)}<div><b>${esc(t(selected.name))}</b><span class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</span></div></div>
         <div class="avfilters" role="group" aria-label="${t('Rarità degli avatar')}">${[{id:'all',plural:'Tutti'},...avatars.RARITIES].map(r=>`<button type="button" class="avfilter ${r.id===filter?'on':''}" data-act="avatarFilter" data-rarity="${r.id}" aria-pressed="${r.id===filter}">${t(r.plural)} <small>${r.id==='all'?avatars.LIST.length:avatars.LIST.filter(a=>a.rarity===r.id).length}</small></button>`).join('')}</div>
         <p class="avavailability">Sono selezionabili gli avatar comuni. Gli altri saranno disponibili in seguito.</p>
-        <div id="avatar-grid" class="avgrid" role="group" aria-label="${t('Scegli il tuo avatar')}">${shown.map((a) => `<button type="button" class="avopt ${a.id === selected.id ? 'on' : ''}" data-act="pickAvatar" data-avatar-id="${a.id}" data-rarity="${a.rarity}" data-c="${av.c}" aria-pressed="${a.id === selected.id}" aria-label="${esc(t(a.name))}, ${t(avatars.RARITIES.find(r=>r.id===a.rarity).name)}${avatars.isSelectable(a.id)?'':', '+t('Non ancora disponibile')}" title="${esc(t(a.name))}" ${avatars.isSelectable(a.id)?'':'disabled'}>${avatars.svg(a.id)}<span>${esc(t(a.name))}</span><small class="avatar-rarity" data-rarity="${a.rarity}">${avatars.isSelectable(a.id)?'':'<svg class="avlock" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7V4a4 4 0 0 1 8 0v3"/><rect x="2" y="7" width="12" height="8" rx="2"/><path d="M8 10v2"/></svg>'}${t(avatars.RARITIES.find(r=>r.id===a.rarity).name)}</small></button>`).join('')}</div>
+        <div id="avatar-grid" class="avgrid" role="group" aria-label="${t('Scegli il tuo avatar')}">${shown.map((a) => `<button type="button" class="avopt ${a.id === selected.id ? 'on' : ''}" aria-haspopup="dialog" data-act="previewAvatar" data-avatar-id="${a.id}" data-rarity="${a.rarity}" data-c="${av.c}" aria-pressed="${a.id === selected.id}" aria-label="${esc(t(a.name))}, ${t(avatars.RARITIES.find(r=>r.id===a.rarity).name)}${avatars.isSelectable(a.id)?'':', '+t('Non ancora disponibile')}" title="${esc(t(a.name))}" >${avatars.svg(a.id)}<span>${esc(t(a.name))}</span><small class="avatar-rarity" data-rarity="${a.rarity}">${avatars.isSelectable(a.id)?'':'<svg class="avlock" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7V4a4 4 0 0 1 8 0v3"/><rect x="2" y="7" width="12" height="8" rx="2"/><path d="M8 10v2"/></svg>'}${t(avatars.RARITIES.find(r=>r.id===a.rarity).name)}</small></button>`).join('')}</div>
         <span class="avcolor-label">Colore dello sfondo</span><div class="avcolors">${r.colors.map((c) => `<button type="button" class="avcol ${c === av.c ? 'on' : ''}" style="background:${c}" data-act="pickAvatar" data-avatar-id="${av.id}" data-c="${c}" aria-label="${t('Colore dello sfondo')}: ${c}" aria-pressed="${c === av.c}"></button>`).join('')}</div></div>
       ${lookHTML(av)}
       <h4>Cambia nickname</h4>
@@ -77,7 +77,7 @@
       <div class="nickstatus" id="nickStatusEdit"></div>
       ${r.mail ? `<h4>Email ${r.email ? '(confermata ✓)' : ''}</h4>
       <p class="muted small">Serve per ricevere un codice se dimentichi la password, e un avviso se la password cambia.</p>
-      ${r.emailPending ? verifyEmailHTML(r.emailPending) : !r.email && r.emailLast ? '<p class="muted small">⚠️ Email non ancora confermata: premi «Manda il codice» per riceverne uno nuovo.</p>' : ''}
+      ${r.emailPending ? verifyEmailHTML(r.emailPending) : !r.email && r.emailLast ? '<p class="muted small"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Email non ancora confermata: premi «Manda il codice» per riceverne uno nuovo.</p>' : ''}
       <form id="emailform" class="row"><input id="emailin" type="email" class="grow" maxlength="250" autocomplete="email" value="${esc(r.email || r.emailLast || '')}" placeholder="nome@esempio.it"><button class="btn">${r.email ? 'Cambia' : r.emailLast ? 'Manda il codice' : 'Aggiungi'}</button></form>` : ''}
       <h4>Codice di recupero</h4>
       <p class="muted small">Serve se dimentichi la password, oppure per entrare da un altro telefono: inquadra il QR con la sua fotocamera
@@ -86,7 +86,7 @@
       <div class="code-box"><span id="pcode" class="masked">${esc(r.code)}</span>
         <button class="btn small" data-act="toggleCode">Mostra</button><button class="btn small" data-act="copyCode" data-code="${esc(r.code)}">Copia</button></div>
       <button class="btn small ghost dark" style="margin-top:6px" data-act="regenCode">Genera un nuovo codice (il vecchio smette di funzionare)</button>
-      <h4>Password ${r.hasPassword ? '(impostata ✓)' : '⚠️ (da impostare)'}</h4>
+      <h4>Password ${r.hasPassword ? '(impostata ✓)' : '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> (da impostare)'}</h4>
       <p class="muted small">Con nickname e password entri nel tuo profilo da qualsiasi dispositivo.</p>
       <form id="pwform" class="row"><input id="pwin" type="password" class="grow" minlength="6" autocomplete="new-password" placeholder="${r.hasPassword ? 'Nuova password' : 'Almeno 6 caratteri'}"><button class="btn">${r.hasPassword ? 'Cambia' : 'Imposta'}</button></form>
       <h4>Altro profilo</h4>
@@ -100,18 +100,18 @@
   /** Subito dopo la creazione del profilo: il codice di recupero da conservare */
   /** conferma dell'email: il codice a 6 cifre arrivato nella posta */
   function verifyEmailHTML(email) {
-    return `<div class="mailbox"><p>📧 Ti abbiamo mandato un codice a <b>${esc(email)}</b>: scrivilo qui per confermare l'email.</p>
+    return `<div class="mailbox"><p><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-mail /></svg> Ti abbiamo mandato un codice a <b>${esc(email)}</b>: scrivilo qui per confermare l'email.</p>
       <form id="verifyform" class="row"><input id="vcode" class="grow" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="123456"><button class="btn primary">Conferma</button></form>
       <p class="muted small">Non arriva? Guarda anche nello spam.</p></div>`;
   }
 
   function recoveryCodeModal(nick, code, pendingEmail) {
-    openModal('recoveryCode', `<h2>Benvenuto, ${esc(nick)}! 🎉</h2>
+    openModal('recoveryCode', `<h2>Benvenuto, ${esc(nick)}! <svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg></h2>
       ${pendingEmail ? verifyEmailHTML(pendingEmail) : ''}
       <p>Questo è il tuo <b>codice di recupero</b>. Se dimentichi la password, con questo ne scegli una nuova.</p>
       <div class="code-box"><span id="pcode">${esc(code || '')}</span><button class="btn small" data-act="copyCode" data-code="${esc(code || '')}">Copia</button></div>
       <p class="muted small">Fai uno screenshot o scrivilo da qualche parte. Non darlo a nessuno: chi lo ha può entrare nel tuo profilo.
-        Lo ritrovi sempre in 👤 Profilo.</p>
+        Lo ritrovi sempre in <svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-profile /></svg> Profilo.</p>
       <div class="row" style="margin-top:8px"><button class="btn primary grow" data-act="savedCode">Ho salvato il codice</button></div>`);
   }
 
@@ -123,7 +123,7 @@
         <div class="row" style="margin-top:6px"><input id="mrpw" type="password" class="grow" autocomplete="new-password" placeholder="Nuova password (almeno 6 caratteri)"><button class="btn primary">Salva</button></div></form>`
       : `<form id="forgotmailform" class="row"><input id="fmail" type="email" class="grow" autocomplete="email" placeholder="La tua email"><button class="btn primary">Mandami il codice</button></form>`}
       <h4>Con il codice di recupero</h4>` : ''}
-      <p class="muted small">Scrivi il tuo nickname, il codice di recupero (te l'abbiamo mostrato quando hai creato il profilo; lo trovi anche in 👤 Profilo
+      <p class="muted small">Scrivi il tuo nickname, il codice di recupero (te l'abbiamo mostrato quando hai creato il profilo; lo trovi anche in <svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-profile /></svg> Profilo
         su un dispositivo dove sei ancora dentro) e una password nuova.</p>
       <form id="forgotform"><div class="row"><input id="fnick" class="grow" autocomplete="username" placeholder="Nickname"></div>
         <div class="row" style="margin-top:6px"><input id="fcode" class="grow" autocomplete="off" placeholder="BUR-XXXX-XXXX-XXXX" style="text-transform:uppercase"></div>
@@ -172,15 +172,15 @@
       return `<div class="league ${open ? 'open' : ''}">
         <button class="lghead" data-act="leagueToggle" data-id="${lg.id}"><b>${esc(lg.name)}</b>
           <span class="muted small">${lg.period === 'mese' ? 'mensile' : 'settimanale'} · ${left(lg.ends)}${me ? ` · sei ${me.pos}°` : ''}</span></button>
-        ${open ? `<table>${lg.standings.map((x) => `<tr class="${x.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][x.pos - 1] || x.pos}</td><td style="text-align:left">${esc(x.name)}</td><td><b>${x.pts}</b> pt</td><td class="muted small">${x.wins}/${x.games}</td></tr>`).join('')}</table>
+        ${open ? `<table>${lg.standings.map((x) => `<tr class="${x.me ? 'meRow' : ''}"><td>${x.pos <= 3 ? uiIcon('medal') + x.pos : x.pos}</td><td style="text-align:left">${esc(x.name)}</td><td><b>${x.pts}</b> pt</td><td class="muted small">${x.wins}/${x.games}</td></tr>`).join('')}</table>
           <p class="muted small">3 punti a vittoria, 1 a partecipazione. Contano le partite finite con almeno due membri al tavolo.</p>
-          ${lg.past.length ? `<h4>Albo d'oro</h4>${lg.past.slice(0, 5).map((p) => `<div class="small">🏆 ${esc(p.winners.join(', '))} <span class="muted">(${p.pts} pt · ${new Date(p.to - 1).toLocaleDateString(LOCALE)})</span></div>`).join('')}` : ''}
+          ${lg.past.length ? `<h4>Albo d'oro</h4>${lg.past.slice(0, 5).map((p) => `<div class="small"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> ${esc(p.winners.join(', '))} <span class="muted">(${p.pts} pt · ${new Date(p.to - 1).toLocaleDateString(LOCALE)})</span></div>`).join('')}` : ''}
           ${lg.mineOwner && addable.length ? `<div class="row" style="margin-top:8px">${choiceMenuHTML('lgadd-' + lg.id, addable.map(f => [f.nick, f.nick]), addable[0].nick, 'Amici')}
             <button class="btn small primary" data-act="leagueAdd" data-id="${lg.id}">Aggiungi</button></div>` : ''}
           ${lg.mineOwner ? `<div class="small" style="margin-top:6px">Membri: ${lg.members.map((n) => `${esc(n)}${n !== lg.owner ? ` <a href="#" data-act="leagueKick" data-id="${lg.id}" data-nick="${esc(n)}" title="Togli">✕</a>` : ''}`).join(' · ')}</div>` : ''}
           <div class="row" style="margin-top:8px"><button class="btn small danger" data-act="leagueLeave" data-id="${lg.id}">Esci dal campionato</button></div>` : ''}</div>`;
     };
-    openModal('leagues', `<div class="result"><button class="btn small" data-act="friends">← Amici</button><h2>🏟️ Campionati tra amici</h2>
+    openModal('leagues', `<div class="result"><button class="btn small" data-act="friends">← Amici</button><h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Campionati tra amici</h2>
       ${r.list.length ? r.list.map(card).join('') : '<p class="muted">Non fai ancora parte di un campionato. Creane uno e aggiungi i tuoi amici!</p>'}
       <h3>Nuovo campionato</h3>
       <form id="leagueform" class="tour-create"><label class="tour-label" for="lgname">Nome del campionato</label><input id="lgname" maxlength="30" placeholder="Es. Burraco del giovedì">
@@ -199,10 +199,10 @@
     const t = S.tourOpen && r.list.find((x) => x.id === S.tourOpen);
     if (t) { tournamentDetail(t); return; }
     const card = (x) => `<button class="league tourcard" data-act="tourOpen" data-id="${x.id}"><span class="lghead"><b>${esc(x.name)}</b>
-      <span class="muted small">${TOUR_GAMES[x.game]} · ${x.players.length}/${x.size} · ${x.status === 'iscrizioni' ? '📝 iscrizioni aperte' : x.status === 'in corso' ? '▶ in corso' : '🏁 finito'}${x.joined ? ' · ci sei' : ''}</span></span></button>`;
-    openModal('tournaments', `<div class="result"><h2>🏆 Tornei</h2>
+      <span class="muted small">${TOUR_GAMES[x.game]} · ${x.players.length}/${x.size} · ${x.status === 'iscrizioni' ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-rules /></svg> iscrizioni aperte' : x.status === 'in corso' ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> in corso' : '🏁 finito'}${x.joined ? ' · ci sei' : ''}</span></span></button>`;
+    openModal('tournaments', `<div class="result"><h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Tornei</h2>
       <p class="muted small">A eliminazione diretta, partite uno contro uno in versione breve. Quando tocca a te ti avvisiamo.</p>
-      ${r.list.length ? r.list.map(card).join('') : '<p class="muted">Nessun torneo in corso: creane uno!</p>'}
+      ${r.list.length ? r.list.map(card).join('') : emptyStateHTML('trophy', 'La prossima coppa parte da te', 'Crea un torneo e invita gli amici a iscriversi.', 'focusField', 'Crea il torneo', 'tourname')}
       <form id="tourform" class="tour-create">
         <h3>Nuovo torneo</h3>
         <label class="tour-label" for="tourname">Nome del torneo</label>
@@ -225,23 +225,23 @@
       return `<div class="tmatch ${mine ? 'mine' : ''}">
         <span class="${m.winner === m.a ? 'tw' : m.winner != null ? 'tl' : ''}">${pn(m.a)}</span>
         <span class="${m.winner === m.b ? 'tw' : m.winner != null ? 'tl' : ''}">${pn(m.b)}</span>
-        ${mine && m.room ? `<button class="btn small primary" data-act="tourPlay" data-code="${esc(m.room)}">▶ Vai al tavolo</button>` : ''}
+        ${mine && m.room ? `<button class="btn small primary" data-act="tourPlay" data-code="${esc(m.room)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Vai al tavolo</button>` : ''}
         ${t.mine && m.winner == null && m.room ? `<span class="muted small">a tavolino: <a href="#" data-act="tourForfeit" data-id="${t.id}" data-r="${ri}" data-i="${mi}" data-side="a">${pn(m.a)}</a> · <a href="#" data-act="tourForfeit" data-id="${t.id}" data-r="${ri}" data-i="${mi}" data-side="b">${pn(m.b)}</a></span>` : ''}
       </div>`;
     }).join('')}</div>`).join('');
     openModal('tournaments', `<div class="result"><button class="btn small" data-act="tourOpen" data-id="">← Tornei</button>
-      <h2>🏆 ${esc(t.name)}</h2><p class="muted">${TOUR_GAMES[t.game]} · ${t.size} giocatori · organizza ${esc(t.owner)}</p>
-      ${t.champion != null ? `<div class="winner">🏆 Campione: ${pn(t.champion)}!</div>` : ''}
+      <h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> ${esc(t.name)}</h2><p class="muted">${TOUR_GAMES[t.game]} · ${t.size} giocatori · organizza ${esc(t.owner)}</p>
+      ${t.champion != null ? `<div class="winner"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Campione: ${pn(t.champion)}!</div>` : ''}
       ${t.status === 'iscrizioni' ? `<h3>Iscritti (${t.players.length}/${t.size})</h3><p>${t.players.map((p, i) => pn(i)).join(' · ')}</p>
         <div class="row">${t.joined ? `<button class="btn small" data-act="tourLeave" data-id="${t.id}">${t.mine ? 'Annulla il torneo' : 'Ritirati'}</button>` : `<button class="btn primary" data-act="tourJoin" data-id="${t.id}">Iscriviti</button>`}
-        ${t.mine && t.players.length < t.size ? `<button class="btn small" data-act="tourFill" data-id="${t.id}">🤖 Riempi con il computer</button>` : ''}
-        ${t.mine && t.players.length === t.size ? `<button class="btn primary" data-act="tourStart" data-id="${t.id}">▶ Inizia il torneo</button>` : ''}</div>` : ''}
+        ${t.mine && t.players.length < t.size ? `<button class="btn small" data-act="tourFill" data-id="${t.id}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-bot /></svg> Riempi con il computer</button>` : ''}
+        ${t.mine && t.players.length === t.size ? `<button class="btn primary" data-act="tourStart" data-id="${t.id}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Inizia il torneo</button>` : ''}</div>` : ''}
       ${t.rounds.length ? `<h3>Tabellone</h3><div class="bracket">${bracket}</div>` : ''}</div>`);
   }
 
   /** Avviso del gestore: qualcuno ha segnalato un comportamento contro le regole (o il nickname è stato cambiato) */
   function warnModal(w) {
-    openModal('warn', `<h2>⚠️ Avviso del gestore</h2>
+    openModal('warn', `<h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Avviso del gestore</h2>
       ${w.renamed ? `<p>Il tuo nickname non rispettava le regole ed è stato cambiato in <b>${esc((S.social && S.social.nick) || '')}</b>. Puoi sceglierne uno nuovo dal profilo.</p>`
         : '<p>Il tuo comportamento nel gioco non ha rispettato le regole di comportamento.</p>'}
       <p>Se succede di nuovo, la chat può essere bloccata o il profilo eliminato.</p>
@@ -253,7 +253,7 @@
   function chatBanHTML() {
     const b = S.social && S.social.chatBan;
     if (!b) return '';
-    return `<p class="muted small" style="margin:8px 0">🔇 La chat è bloccata per te ${b === 'sempre' ? '' : `fino al ${esc(new Date(b).toLocaleDateString(LOCALE))} `}perché non hai rispettato le <a href="regole.html">regole di comportamento</a>.</p>`;
+    return `<p class="muted small" style="margin:8px 0"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> La chat è bloccata per te ${b === 'sempre' ? '' : `fino al ${esc(new Date(b).toLocaleDateString(LOCALE))} `}perché non hai rispettato le <a href="regole.html">regole di comportamento</a>.</p>`;
   }
 
   /** Menu di un giocatore (toccando il suo nome al tavolo o in chat): amicizia, blocco, segnalazione */
@@ -264,30 +264,34 @@
     const pending = so.reqOut.includes(nick);
     const blocked = (so.blocked || []).includes(nick);
     openModal('playerMenu', `<h2>${esc(nick)}</h2><div class="leaveopts">
-      ${isFriend ? `<button class="btn" data-act="playerCard" data-nick="${esc(nick)}">👤 Vedi la scheda</button>`
-        : pending ? '<p class="muted">Richiesta di amicizia inviata</p>' : `<button class="btn primary" data-act="addFriendNick" data-nick="${esc(nick)}">👥 Aggiungi agli amici</button>`}
-      ${blocked ? `<button class="btn" data-act="unblock" data-nick="${esc(nick)}">Sblocca</button>` : `<button class="btn" data-act="block" data-nick="${esc(nick)}">🚫 Blocca</button>`}
-      <button class="btn danger" data-act="reportPlayer" data-nick="${esc(nick)}">⚠️ Segnala</button></div>`);
+      ${isFriend ? `<button class="btn" data-act="playerCard" data-nick="${esc(nick)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-profile /></svg> Vedi la scheda</button>`
+        : pending ? '<p class="muted">Richiesta di amicizia inviata</p>' : `<button class="btn primary" data-act="addFriendNick" data-nick="${esc(nick)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg> Aggiungi agli amici</button>`}
+      ${blocked ? `<button class="btn" data-act="unblock" data-nick="${esc(nick)}">Sblocca</button>` : `<button class="btn" data-act="block" data-nick="${esc(nick)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Blocca</button>`}
+      <button class="btn danger" data-act="reportPlayer" data-nick="${esc(nick)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Segnala</button></div>`);
   }
 
   function friendsModal() {
+    const draft = S.modalKind === 'friends' ? $('#friendin')?.value : '';
+    const focused = document.activeElement?.id === 'friendin';
     const so = S.social || { friends: [], reqIn: [], reqOut: [] };
     const inRoom = S.room && S.room.code;
     const friend = (f) => `<div class="friend">${avatarHTML(f.nick, 0, false, f.avatar || { e: f.nick.charAt(0).toUpperCase(), c: '#9e9e9e' })}<span class="dot ${f.online ? '' : 'off'}"></span>
       <span class="grow" data-act="playerCard" data-nick="${esc(f.nick)}" style="cursor:pointer"><b>${esc(f.nick)}</b> <span class="muted small">›</span><br><span class="muted small">${f.online ? (f.room ? (f.room === inRoom ? 'al tuo tavolo' : f.playing ? 'sta giocando' : 'in un tavolo') : 'online') : 'offline'}</span></span>
       ${inRoom && f.online && f.room !== inRoom ? `<button class="btn small primary" data-act="invite" data-nick="${esc(f.nick)}">Invita</button>` : ''}
-      ${f.playing && f.room && f.room !== inRoom ? `<button class="btn small" data-act="watch" data-code="${esc(f.room)}">👁 Guarda</button>` : ''}
+      ${f.playing && f.room && f.room !== inRoom ? `<button class="btn small" data-act="watch" data-code="${esc(f.room)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-eye /></svg> Guarda</button>` : ''}
       <button class="btn small ghost dark" data-act="unfriend" data-nick="${esc(f.nick)}" title="Rimuovi">✕</button></div>`;
-    openModal('friends', `<h2>👥 Amici</h2>
-      <div class="row" style="margin-bottom:8px"><button class="btn small" data-act="leagues">🏟️ Campionati tra amici</button></div>
+    openModal('friends', `<h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg> Amici</h2>
+      <div class="row" style="margin-bottom:8px"><button class="btn small" data-act="leagues"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Campionati tra amici</button></div>
       <form id="friendform" class="row"><input id="friendin" class="grow" maxlength="16" autocomplete="off" placeholder="Nickname dell'amico"><button class="btn primary">Aggiungi</button></form>
       ${so.reqIn.length ? `<h4>Richieste ricevute</h4>${so.reqIn.map((n) => `<div class="friend"><span class="grow"><b>${esc(n)}</b> vuole essere tuo amico</span>
-        <button class="btn small primary" data-act="friendYes" data-nick="${esc(n)}">Accetta</button><button class="btn small" data-act="friendNo" data-nick="${esc(n)}">Rifiuta</button><button class="btn small danger" data-act="block" data-nick="${esc(n)}" title="Blocca">🚫</button></div>`).join('')}` : ''}
+        <button class="btn small primary" data-act="friendYes" data-nick="${esc(n)}">Accetta</button><button class="btn small" data-act="friendNo" data-nick="${esc(n)}">Rifiuta</button><button class="btn small danger" data-act="block" data-nick="${esc(n)}" title="Blocca"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg></button></div>`).join('')}` : ''}
       <h4>I tuoi amici${so.friends.length ? ` (${so.friends.filter((f) => f.online).length} online)` : ''}</h4>
-      ${so.friends.length ? so.friends.map(friend).join('') : '<p class="muted">Nessun amico ancora: aggiungili con il loro nickname.</p>'}
+      ${so.friends.length ? so.friends.map(friend).join('') : emptyStateHTML('friends', 'Un posto per i tuoi amici', 'Cerca il loro nickname per ritrovarvi e giocare allo stesso tavolo.', 'focusField', 'Aggiungi un amico', 'friendin')}
       ${!inRoom && so.friends.some((f) => f.online) ? '<p class="muted small">Crea o entra in un tavolo per invitare gli amici online.</p>' : ''}
       ${so.reqOut.length ? `<h4>Richieste inviate</h4>${so.reqOut.map((n) => `<div class="friend"><span class="grow">${esc(n)} <span class="muted small">in attesa</span></span>
         <button class="btn small" data-act="unfriend" data-nick="${esc(n)}">Annulla</button></div>`).join('')}` : ''}
-      ${(so.blocked || []).length ? `<h4>Bloccati</h4>${so.blocked.map((n) => `<div class="friend"><span class="grow">🚫 ${esc(n)}</span>
+      ${(so.blocked || []).length ? `<h4>Bloccati</h4>${so.blocked.map((n) => `<div class="friend"><span class="grow"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> ${esc(n)}</span>
         <button class="btn small" data-act="unblock" data-nick="${esc(n)}">Sblocca</button></div>`).join('')}` : ''}`);
+    if (draft) $('#friendin').value = draft;
+    if (focused) $('#friendin')?.focus({preventScroll:true});
   }

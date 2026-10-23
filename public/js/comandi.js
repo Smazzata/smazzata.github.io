@@ -264,11 +264,11 @@
       gatemailform: async () => {
         const email = $('#gatemail').value.trim();
         const r = await emit('setEmail', { email });
-        if (r.ok) { S.gatePending = r.pending; toast('📧 Codice inviato'); render(); }
+        if (r.ok) { S.gatePending = r.pending; toast('Codice inviato'); render(); }
       },
       verifyform: async () => {
         const r = await emit('verifyEmail', { code: $('#vcode').value });
-        if (r.ok) { toast('📧 Email confermata'); if (S.modalKind === 'profile') profileModal(); else { const b = $('.mailbox'); if (b) b.innerHTML = `<p>📧 Email confermata ✓</p>`; } }
+        if (r.ok) { toast('Email confermata'); if (S.modalKind === 'profile') profileModal(); else { const b = $('.mailbox'); if (b) b.innerHTML = `<p>📧 Email confermata ✓</p>`; } }
       },
       emailform: async () => { const r = await emit('setEmail', { email: $('#emailin').value }); if (r.ok) profileModal(); },
       forgotmailform: async () => { const email = $('#fmail').value.trim(); const r = await emit('forgotPassword', { email }); if (r.ok) forgotModal(email); },
@@ -285,7 +285,7 @@
       reportPlayerForm: async (form) => {
         const per = document.querySelector('input[name=rpreason]:checked');
         const r = await emit('reportPlayer', { nick: (form || $('#reportPlayerForm')).dataset.nick, reason: per ? per.value : 'altro', text: $('#rptext').value });
-        if (r.ok) { closeModal(); toast('Grazie, segnalazione inviata 🙏'); }
+        if (r.ok) { closeModal(); toast('Grazie, segnalazione inviata '); }
       },
       leagueform: async () => {
         if ($('#lgname').value.trim().length < 3) { fieldError($('#lgname'), 'Dai un nome al campionato (almeno 3 caratteri)'); return; }
@@ -295,7 +295,7 @@
       },
       reportform: async () => {
         const r = await emit('report', { text: $('#reportin').value, screen: S.screen, device: `${navigator.userAgent.slice(0, 120)} · ${innerWidth}x${innerHeight}` });
-        if (r.ok) { closeModal(); toast('Grazie! Segnalazione inviata 🙏'); }
+        if (r.ok) { closeModal(); toast('Grazie! Segnalazione inviata '); }
       },
       friendform: async () => { const n = $('#friendin').value.trim(); if (!n) return; const r = await emit('friendRequest', { nick: n }); if (r.ok) toast(`Richiesta inviata a ${n}`); },
     };
@@ -303,7 +303,7 @@
     if (e.target.id === 'musicform') {
       e.preventDefault();
       const url = $('#musicin').value.trim();
-      if (url) emit('setMusic', { url }).then((r) => { if (r.ok) { toast('🎵 Musica condivisa con il tavolo'); musicModal(); } });
+      if (url) emit('setMusic', { url }).then((r) => { if (r.ok) { toast('Musica condivisa con il tavolo'); musicModal(); } });
       return;
     }
     if (e.target.id === 'chatform') {
@@ -347,6 +347,41 @@
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => { if (S.screen === 'game') { layoutHand(); fitTable(); } }, 120);
+  });
+
+  // La tastiera virtuale riduce il viewport visibile, senza sempre ridimensionare la pagina.
+  function mobileViewport() {
+    const v = window.visualViewport;
+    document.documentElement.style.setProperty('--visible-height', `${v ? v.height : innerHeight}px`);
+    document.documentElement.style.setProperty('--visible-top', `${v ? v.offsetTop : 0}px`);
+    const field = document.activeElement;
+    if (field?.matches('input, textarea') && field.closest('#modal')) field.scrollIntoView({block:'nearest'});
+  }
+  window.visualViewport?.addEventListener('resize', mobileViewport);
+  window.visualViewport?.addEventListener('scroll', mobileViewport);
+  window.addEventListener('pageshow', mobileViewport);
+  mobileViewport();
+
+  function mobileBack() {
+    if (document.activeElement?.matches('input, textarea')) { document.activeElement.blur(); return true; }
+    if (S.modalKind === 'avatarDetail') { handlers.avatarCatalog(); return true; }
+    if (S.modalKind) { closeModal(); return true; }
+    if (S.screen === 'rankedLobby') { handlers.goHome(); return true; }
+    if (S.screen === 'game' || S.screen === 'lobby') { handlers.leave(); return true; }
+    if (S.screen !== 'home') { handlers.leagueBack(); return true; }
+    return false;
+  }
+  // Un solo gradino nella cronologia: Indietro chiude prima il pannello, poi torna alla home.
+  // Alla home il secondo Indietro mantiene il comportamento del browser/Android.
+  try { history.pushState({smazzata:true}, '', location.href); } catch (e) { /* WebView senza cronologia */ }
+  window.addEventListener('popstate', () => {
+    if (mobileBack()) history.pushState({smazzata:true}, '', location.href);
+    else history.back();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'hidden') return;
+    const d = S.drag;
+    if (d?.started) { d.hover = null; endDrag(d); } else S.drag = null;
   });
 
   render();

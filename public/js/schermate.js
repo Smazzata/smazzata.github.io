@@ -9,6 +9,7 @@
     S.pendingRender = false;
     const app = $('#app');
     const changed = S.lastScreen !== S.screen;
+    const draft = !changed && document.activeElement?.closest('#app') && document.activeElement.matches('input:not([type=radio]):not([type=checkbox]), textarea') ? {id:document.activeElement.id,value:document.activeElement.value,start:document.activeElement.selectionStart,end:document.activeElement.selectionEnd} : null;
     S.lastScreen = S.screen;
     if (S.screen === 'home') app.innerHTML = homeHTML();
     else if (S.screen === 'leaders') { app.innerHTML = leadersHTML(); afterLeaguesRender(); }
@@ -24,9 +25,18 @@
       campaignDecorateTable();
     }
     if (changed && app.firstElementChild) app.firstElementChild.classList.add('enter');
+    if (S.screen === 'home' && !store.get('smazzata_intro_seen', false) && !S.modalKind && (OFFLINE ? S.name : S.social?.nick) && !S.pendingJoin && !S.room) {
+      setTimeout(() => {
+        if (S.screen === 'home' && !S.modalKind && !store.get('smazzata_intro_seen', false) && !(S.mailOn && S.social?.hasEmail === false)) firstRunModal();
+      }, 450);
+    }
     campaignStoryMount();
+    if (draft?.id) {
+      const field = document.getElementById(draft.id);
+      if (field) { field.value = draft.value; field.focus({preventScroll:true}); if (draft.start != null) field.setSelectionRange(draft.start,draft.end); }
+    }
     if (!S.connected && !S.localGame && !S.campaignActive && S.screen !== 'campaign') {
-      app.insertAdjacentHTML('afterbegin', `<div class="offline"><span class="spin"></span>${S.lostConnection ? '📡 Connessione persa: mi ricollego…' : 'Connessione al server…'}</div>`);
+      app.insertAdjacentHTML('afterbegin', `<div class="offline"><span class="spin"></span>${S.lostConnection ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Connessione persa: mi ricollego…' : 'Connessione al server…'}</div>`);
       const gm = $('.game');
       if (gm) gm.classList.add('offline-lock');
     }
@@ -62,7 +72,7 @@
     }
     if (!latest || latest <= APP_VERSION) { S.appUpdate = null; return; }
     S.appUpdate = { n: latest, dismissed: store.get('bur_apk_later', 0) === latest };
-    if (!S.appUpdate.dismissed) toast('📲 È disponibile un aggiornamento dell\'app');
+    if (!S.appUpdate.dismissed) toast('È disponibile un aggiornamento dell\'app');
     if (S.screen === 'home') render();
   }
 
@@ -72,7 +82,7 @@
     const pending = S.gatePending || so.emailPending;
     return `<div class="page">
       <div class="logo"><h1 translate="no">Smazzata</h1></div>
-      <div class="panel gate"><h3>📧 Conferma la tua email</h3>
+      <div class="panel gate"><h3><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-mail /></svg> Conferma la tua email</h3>
         <p>Per usare il profilo <b>${esc(so.nick)}</b> conferma la tua email: ti mandiamo un codice di 6 cifre. Serve per recuperare la password.</p>
         <form id="gatemailform" class="row"><input id="gatemail" type="email" class="grow" maxlength="250" autocomplete="email" placeholder="nome@esempio.it" value="${esc(pending || '')}"><button class="btn">${pending ? 'Manda di nuovo' : 'Manda il codice'}</button></form>
         ${pending ? verifyEmailHTML(pending) : ''}
@@ -93,6 +103,15 @@
     </div>`;
   }
 
+  function firstRunModal(step = 0) {
+    store.set('smazzata_intro_seen', true);
+    openModal('firstRun', `<section class="first-run"><p class="muted small">${t('Benvenuto a Smazzata')} · ${step + 1}/2</p>
+      ${step === 0 ? `<h2>${t('Da quale gioco cominciamo?')}</h2><p>${t('Potrai cambiarlo quando vuoi dalla home.')}</p><div class="first-run-games">${GAME_TILES.filter(([id]) => AvailableGames.enabled(id)).map(([id,,name]) => `<button class="btn" data-act="introChoose" data-game="${id}">${gameIcon(id)}${esc(name)}</button>`).join('')}</div>`
+      : `<h2>${gameIcon(homeGame())} ${t('Il tuo posto al tavolo')}</h2><dl class="first-run-modes"><dt>${uiIcon('bot')} ${t('Allenamento')}</dt><dd>${t('Impara con il computer e i suggerimenti, senza punti classifica o progressi.')}</dd><dt>${uiIcon('friends')} ${t('Amichevole online')}</dt><dd>${t('Gioca con gli amici o trova un tavolo, senza cambiare il grado.')}</dd><dt>${uiIcon('medal')} ${t('Classificata')}</dt><dd>${t('Affronta altri giocatori e costruisci il tuo grado, nelle code Solo o Duo.')}</dd></dl><button class="btn primary" data-act="introPractice">${t('Prova l’allenamento')}</button><button class="btn" data-act="closeModal">${t('Vai alla home')}</button><button class="btn small ghost dark" data-act="firstRun">${t('Cambia gioco')}</button>`}
+      <button class="btn small ghost dark" data-act="closeModal">${t('Salta la guida')}</button></section>`);
+    $('#modal [data-act=introChoose], #modal [data-act=introPractice]')?.focus({preventScroll:true});
+  }
+
   function homeHTML() {
     if (!OFFLINE && S.mailOn && S.social && S.social.nick && S.social.hasEmail === false) return emailGateHTML();
     return `<div class="page home-page">
@@ -100,17 +119,17 @@
         <div class="muted">Gioca con gli amici o contro il computer</div></div>
       ${homeToolbarHTML()}
       ${S.appUpdate && !S.appUpdate.dismissed ? `<div class="apkbanner update">
-        <img src="icons/icon-192.png" alt=""><span><b>📲 Nuova versione dell'app</b><br>Scaricala e installala sopra quella che hai: profilo e partite restano.</span>
+        <img src="icons/icon-192.png" alt=""><span><b><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-home /></svg> Nuova versione dell'app</b><br>Scaricala e installala sopra quella che hai: profilo e partite restano.</span>
         <span class="updbtns"><a class="btn primary small" href="${APK_URL}">Scarica</a><button class="btn small" data-act="appUpdateLater">Più tardi</button></span></div>` : ''}
       <div class="panel">
-        ${OFFLINE ? `<div class="offbanner">📴 <b>Senza internet</b><br>Puoi giocare contro il computer e fare l'allenamento.
+        ${OFFLINE ? `<div class="offbanner"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-privacy /></svg> <b>Senza internet</b><br>Puoi giocare contro il computer e fare l'allenamento.
             Amici, classifica e partite online tornano quando sei collegato.
-            <div class="row" style="margin-top:6px"><button class="btn small" data-act="goOnline">🔄 Riprova online</button></div></div>`
+            <div class="row" style="margin-top:6px"><button class="btn small" data-act="goOnline"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-refresh /></svg> Riprova online</button></div></div>`
         : S.social && S.social.nick
-          ? `<div class="hello" data-act="profile" title="Il mio profilo"><span class="row">${avatarHTML(S.social.nick, 0, false, S.social.avatar || { e: S.social.nick.charAt(0).toUpperCase(), c: '#f2c14e' })}<span>Ciao, <b>${esc(S.social.nick)}</b>!${S.progress && S.progress.streak && S.progress.streak.streak >= 2 ? ` <span class="streak" title="Giorni di gioco di fila">🔥 ${S.progress.streak.streak}</span>` : ''}${S.progress ? `<span class="lvlline">${lvlHTML(S.progress.level)} <em class="xpbar" title="${S.progress.into}/${S.progress.need} punti esperienza"><u style="width:${Math.round((S.progress.into / S.progress.need) * 100)}%"></u></em></span>` : ''}</span></span>
+          ? `<div class="hello" data-act="profile" title="Il mio profilo"><span class="row">${avatarHTML(S.social.nick, 0, false, S.social.avatar || { e: S.social.nick.charAt(0).toUpperCase(), c: '#f2c14e' })}<span>Ciao, <b>${esc(S.social.nick)}</b>!${S.progress && S.progress.streak && S.progress.streak.streak >= 2 ? ` <span class="streak" title="Giorni di gioco di fila"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> ${S.progress.streak.streak}</span>` : ''}${S.progress ? `<span class="lvlline">${lvlHTML(S.progress.level)} <em class="xpbar" title="${S.progress.into}/${S.progress.need} punti esperienza"><u style="width:${Math.round((S.progress.into / S.progress.need) * 100)}%"></u></em></span>` : ''}</span></span>
 </div>
-            ${S.social.hasPassword === false ? '<div class="offbanner">⚠️ <b>Il tuo profilo non ha una password.</b> Impostala ora, così puoi sempre rientrare. <button class="btn small" data-act="profile">👤 Imposta</button></div>' : ''}`
-          : S.signup ? `<div class="mailbox"><p>📧 Ti abbiamo mandato un codice a <b>${esc(S.signup.email)}</b>.</p>
+            ${S.social.hasPassword === false ? '<div class="offbanner"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> <b>Il tuo profilo non ha una password.</b> Impostala ora, così puoi sempre rientrare. <button class="btn small" data-act="profile"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-profile /></svg> Imposta</button></div>' : ''}`
+          : S.signup ? `<div class="mailbox"><p><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-mail /></svg> Ti abbiamo mandato un codice a <b>${esc(S.signup.email)}</b>.</p>
               <p>Scrivilo qui per creare il profilo <b>${esc(S.signup.nick)}</b>:</p>
               <form id="signupform" class="row"><input id="sucode" class="grow" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="123456"><button class="btn primary">Crea il profilo</button></form>
               <p class="muted small">Non arriva? Guarda anche nello spam, oppure <a href="#" data-act="resendSignup">mandalo di nuovo</a> · <a href="#" data-act="signupBack">cambia i dati</a></p></div>`
@@ -128,12 +147,12 @@
               <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a></p>`}
         ${homeButtonsHTML()}
       </div>
-      ${!OFFLINE && S.myGames && S.myGames.length ? `<div class="panel"><h2>🐢 Le tue partite con calma</h2>
+      ${!OFFLINE && S.myGames && S.myGames.length ? `<div class="panel"><h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-clock /></svg> Le tue partite con calma</h2>
         ${S.myGames.map((m) => `<button class="slowgame ${m.myTurn ? 'myturn' : ''}" data-act="openSlow" data-code="${esc(m.code)}">
           <span class="who">${m.players.filter((x) => x && !x.me).map((x) => esc(x.name)).join(', ') || 'In attesa di giocatori'}</span>
-          <span class="meta">${m.ranked ? `<span class="rankbadge" title="${RANKED_TIP}">🏅</span> ` : ''}${m.myTurn ? '<b>Tocca a te!</b>' : m.over ? 'Partita finita' : m.started ? `Smazzata ${m.handNo} · ${m.scores.join(' – ')}` : 'In sala d’attesa'}${m.at ? ` · ${agoText(m.at)}` : ''}</span></button>`).join('')}</div>` : ''}
+          <span class="meta">${m.ranked ? `<span class="rankbadge" title="${RANKED_TIP}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-medal /></svg></span> ` : ''}${m.myTurn ? '<b>Tocca a te!</b>' : m.over ? 'Partita finita' : m.started ? `Smazzata ${m.handNo} · ${m.scores.join(' – ')}` : 'In sala d’attesa'}${m.at ? ` · ${agoText(m.at)}` : ''}</span></button>`).join('')}</div>` : ''}
       ${IS_ANDROID && !IN_APP && !OFFLINE ? `<a class="apkbanner" href="${APK_URL}">
-        <img src="icons/icon-192.png" alt=""><span><b>📱 Scarica l'app per Android</b><br>Installala e gioca a schermo intero</span></a>` : ''}
+        <img src="icons/icon-192.png" alt=""><span><b><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-home /></svg> Scarica l'app per Android</b><br>Installala e gioca a schermo intero</span></a>` : ''}
     </div>`;
   }
 
@@ -150,15 +169,15 @@
     const last = !OFFLINE && (store.get('bur_lastroom', '') || (savedLocalGame() ? '🤖' : ''));
     return `<div class="homebtns">
       ${S.rankedParty ? `<button class="btn primary" data-act="rankedPartyOpen">${t('Torna al tavolo Duo')}</button>` : ''}
-      ${S.pendingJoin && !OFFLINE ? `<div class="invitebox">✉️ Sei stato invitato al tavolo <b>${esc(S.pendingJoin)}</b>
+      ${S.pendingJoin && !OFFLINE ? `<div class="invitebox"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-mail /></svg> Sei stato invitato al tavolo <b>${esc(S.pendingJoin)}</b>
         <button class="btn primary big grow" data-act="joinCode" data-code="${esc(S.pendingJoin)}">Entra al tavolo</button></div>` : ''}
-      ${last ? `<button class="btn primary big grow" data-act="rejoin">↩ Torna alla partita</button>` : ''}
-      ${S.tourMatch && !S.room ? `<div class="tourready">🏆 ${esc(S.tourMatch.text)} <button class="btn small primary" data-act="tourPlay" data-code="${esc(S.tourMatch.code)}">▶ Gioca</button></div>` : ''}
+      ${last ? `<button class="btn primary big grow" data-act="rejoin"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-refresh /></svg> Torna alla partita</button>` : ''}
+      ${S.tourMatch && !S.room ? `<div class="tourready"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> ${esc(S.tourMatch.text)} <button class="btn small primary" data-act="tourPlay" data-code="${esc(S.tourMatch.code)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Gioca</button></div>` : ''}
       ${OFFLINE ? '' : `<button class="btn primary big grow homebtn" data-act="playFriends">${uiIcon('friends')}Gioca con gli amici</button>`}
       ${OFFLINE ? '' : `<button class="btn big grow homebtn" data-act="quickMenu" data-mode="casual">${uiIcon('cards')}<div>Amichevole online<small>Trova un tavolo · senza punti classifica</small></div></button>
       <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked">${uiIcon('medal')}<div>Classificata<small>Scala i gradi, da Bronzo a Leggenda</small></div></button>`}
       <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots">${uiIcon('bot')}<div>Gioca contro il computer<small>Allenamento · senza progressi o statistiche</small></div></button>
-      ${CAMPAIGN_VISIBLE ? '<button class="btn grow campaign-entry" data-act="campaign">🌱 Avventura<small>Tre percorsi: Burraco, Scala 40 e Ramino</small></button>' : ''}
+      ${CAMPAIGN_VISIBLE ? '<button class="btn grow campaign-entry" data-act="campaign"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-book /></svg> Avventura<small>Tre percorsi: Burraco, Scala 40 e Ramino</small></button>' : ''}
 
     </div>`;
   }
@@ -169,6 +188,7 @@
     const item = (act, icon, label, extra = '') => `<button class="menuitem" data-act="${act}"><span>${icon}</span>${label}${extra}</button>`;
     openModal('more', `<h2>${uiIcon('menu')} Altro</h2><div class="menulist">
       ${so.nick ? item('profile', uiIcon('profile'), 'Il mio profilo') : ''}
+      ${item('firstRun', uiIcon('help'), 'Guida iniziale')}
       ${item('stats', uiIcon('stats'), 'Le mie statistiche')}
       ${item('gamesRules', uiIcon('book'), 'Regole dei giochi')}
       ${item('howto', uiIcon('help'), 'Come si usa l\'app')}
@@ -181,7 +201,7 @@
   /** elenco dei giochi e delle varianti con la loro descrizione (prima stava nella schermata iniziale) */
   function gamesRulesModal() {
     const list = R.PRESETS.concat([S40R.PRESET, OTHER.ramino.PRESET, CANR.PRESET]);
-    openModal('gamesRules', `<h2>📖 Regole dei giochi</h2><p class="muted small">Tocca un gioco per leggerne le regole.</p>
+    openModal('gamesRules', `<h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-book /></svg> Regole dei giochi</h2><p class="muted small">Tocca un gioco per leggerne le regole.</p>
       <div class="presets">${list.map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>`);
   }
 
@@ -217,9 +237,9 @@
         ${pf ? `<h3>Quanti giocatori?</h3><div class="row">${pf.choices.map(([v, l]) => `<button class="swatch big ${Number(S.rules.players) === Number(v) ? 'on' : ''}" data-act="pickPlayers" data-n="${v}">${esc(l)}</button>`).join('')}</div>` : ''}
         ${friends ? '' : `<h3>Difficoltà del computer</h3><div class="row">${[['auto', 'Automatica'], ['facile', 'Facile'], ['normale', 'Normale'], ['difficile', 'Difficile'], ['esperto', 'Esperto']].map(([v, label]) => `<button class="swatch ${(S.prefs.botLevel || 'auto') === v ? 'on' : ''}" data-act="setupBotLevel" data-val="${v}" aria-pressed="${(S.prefs.botLevel || 'auto') === v}">${label}</button>`).join('')}</div><p class="muted small">Automatica: si adatta ai tuoi risultati.</p>`}
         <div class="row" style="margin-top:12px">${friends
-          ? '<button class="btn primary big grow" data-act="create">👥 Crea il tavolo</button>'
-          : '<button class="btn primary big grow" data-act="createBots">▶ Inizia la partita</button>'}</div>
-        <div class="row" style="margin-top:10px;justify-content:center"><button class="btn ghost small" data-act="previewRules">📜 Come si gioca</button><button class="btn ghost small" data-act="setupAdvanced">${adv ? '▴' : '▾'} Regole e varianti</button></div>
+          ? '<button class="btn primary big grow" data-act="create"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg> Crea il tavolo</button>'
+          : '<button class="btn primary big grow" data-act="createBots"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Inizia la partita</button>'}</div>
+        <div class="row" style="margin-top:10px;justify-content:center"><button class="btn ghost small" data-act="previewRules"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-rules /></svg> Come si gioca</button><button class="btn ghost small" data-act="setupAdvanced">${adv ? '▴' : '▾'} Regole e varianti</button></div>
         ${adv ? `${RX.isOther(S.rules) ? '' : `<h3 style="margin-top:12px">Variante</h3>${presetsHTML(S.rules)}`}
         <details class="custom" ${S.customOpen ? 'open' : ''}>
           <summary>Personalizza le regole ${rulesStatus(S.rules)}</summary>
@@ -259,7 +279,7 @@
       let right = '';
       if (!s) {
         right = `<div class="row">${full && r.you >= 0 ? `<button class="btn small" data-act="sit" data-seat="${i}">Siedi qui</button>` : ''}
-          ${isHost ? `<button class="btn small" data-act="addBot" data-seat="${i}" title="Metti il computer">🤖 Computer</button>` : ''}</div>`;
+          ${isHost ? `<button class="btn small" data-act="addBot" data-seat="${i}" title="Metti il computer"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-bot /></svg> Computer</button>` : ''}</div>`;
       } else if (s.isBot && isHost) right = `<button class="btn small" data-act="removeSeat" data-seat="${i}">Togli</button>`;
       const team = r.n === 4 && !RX.isS40(r.rules) && r.rules.game !== 'rubamazzetto' ? `<span class="teamtag">Coppia ${i % 2 === 0 ? 'A' : 'B'}</span>` : '';
       return `<div class="seat">
@@ -276,36 +296,36 @@
         <h2 class="bigtitle">${esc(RX.gameName(r.rules))}: invita gli amici</h2>
         <div class="muted">Codice del tavolo</div>
         <div class="code">${esc(r.code)}</div>
-        <div class="row" style="justify-content:center"><button class="btn primary big" data-act="share">📤 Manda l'invito</button></div>
-        <div class="row" style="justify-content:center;margin-top:6px"><button class="btn ghost small" data-act="copy">Copia il link</button>${S.social && S.social.nick ? '<button class="btn ghost small" data-act="friends">👥 Dai miei amici</button>' : ''}</div>
+        <div class="row" style="justify-content:center"><button class="btn primary big" data-act="share"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Manda l'invito</button></div>
+        <div class="row" style="justify-content:center;margin-top:6px"><button class="btn ghost small" data-act="copy">Copia il link</button>${S.social && S.social.nick ? '<button class="btn ghost small" data-act="friends"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg> Dai miei amici</button>' : ''}</div>
       </div>
       <div class="panel">
-        <h2>Giocatori (${filled}/${r.n}) ${r.ranked ? `<span class="rankbadge" title="${RANKED_TIP}">🏅 Classificata</span>` : ''}</h2>
+        <h2>Giocatori (${filled}/${r.n}) ${r.ranked ? `<span class="rankbadge" title="${RANKED_TIP}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-medal /></svg> Classificata</span>` : ''}</h2>
         ${r.quick ? `<p class="muted">${r.queueMode === 'casual' ? 'Amichevole online' : 'Classificata'} · ${Games2.idOf(r.rules) === 'burraco' ? 'Burraco Classico' : esc(RX.gameName(r.rules))} · ${r.n} giocatori.<br>In cerca di altri ${r.n - filled} giocatori. La partita parte appena il tavolo è pieno.</p>` : ''}
         ${r.quick && !r.ranked ? '<p class="muted small">Partita amichevole: il tuo grado non cambia.</p>' : ''}
         <div class="seats">${seats}</div>
         ${isHost ? `<div class="row" style="margin-top:12px">
-            <button class="btn primary big grow" data-act="${ready ? 'start' : 'startFill'}">${r.quick && !ready ? 'Gioca amichevole con il computer' : '▶ Inizia la partita'}</button></div>
+            <button class="btn primary big grow" data-act="${ready ? 'start' : 'startFill'}">${r.quick && !ready ? 'Gioca amichevole con il computer' : '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Inizia la partita'}</button></div>
             ${ready ? '' : '<p class="muted small" style="text-align:center">I posti ancora vuoti li prende il computer.</p>'}`
           : `<p class="muted" style="text-align:center">Aspettiamo che ${esc(hostName)} inizi la partita…</p>`}
       </div>
       <details class="panel tableset" ${full ? 'open' : ''}>
-        <summary>⚙️ Impostazioni del tavolo</summary>
+        <summary><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-settings /></svg> Impostazioni del tavolo</summary>
         <p>${rulesStatus(r.rules)} <span class="muted">· ${r.n} giocatori · si vince a ${r.rules.target}</span></p>
-        <div class="row"><button class="btn small" data-act="music">🎵 Musica del tavolo${r.music ? ' (attiva)' : ''}</button></div>
-        <div class="row" style="margin-top:8px"><button class="btn small" data-act="roomRules">📜 Leggi le regole</button>
-        ${isHost && !r.quick ? '<button class="btn small" data-act="editRules">✏️ Modifica regole</button>' : ''}</div>
-        ${isHost && !r.quick ? `<h3 style="margin-top:14px">Torneo</h3>${seriesPickHTML(r.series && r.series.bestOf)}` : r.series ? `<p>🏆 Torneo al meglio di ${r.series.bestOf}</p>` : ''}
+        <div class="row"><button class="btn small" data-act="music"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-music /></svg> Musica del tavolo${r.music ? ' (attiva)' : ''}</button></div>
+        <div class="row" style="margin-top:8px"><button class="btn small" data-act="roomRules"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-rules /></svg> Leggi le regole</button>
+        ${isHost && !r.quick ? '<button class="btn small" data-act="editRules"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-rules /></svg> Modifica regole</button>' : ''}</div>
+        ${isHost && !r.quick ? `<h3 style="margin-top:14px">Torneo</h3>${seriesPickHTML(r.series && r.series.bestOf)}` : r.series ? `<p><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Torneo al meglio di ${r.series.bestOf}</p>` : ''}
         ${isHost && !r.quick && !r.daily && !r.tutorial ? `<h3 style="margin-top:14px">Ritmo della partita</h3>
-          <div class="row"><button class="swatch ${r.slow ? '' : 'on'}" data-act="setSlow" data-val="0">⚡ Normale</button><button class="swatch ${r.slow ? 'on' : ''}" data-act="setSlow" data-val="1">🐢 Con calma</button></div>
+          <div class="row"><button class="swatch ${r.slow ? '' : 'on'}" data-act="setSlow" data-val="0"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Normale</button><button class="swatch ${r.slow ? 'on' : ''}" data-act="setSlow" data-val="1"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-clock /></svg> Con calma</button></div>
           <p class="muted small">Con calma: ognuno gioca il suo turno quando può, anche ore dopo. Puoi uscire quando vuoi: il posto resta tuo, la partita ti aspetta e ti avvisiamo quando tocca a te.</p>`
-          : r.slow ? '<p>🐢 <b>Partita con calma</b>: ognuno gioca quando può, ti avvisiamo quando tocca a te.</p>' : ''}
+          : r.slow ? '<p><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-clock /></svg> <b>Partita con calma</b>: ognuno gioca quando può, ti avvisiamo quando tocca a te.</p>' : ''}
         ${isHost ? `<h3 style="margin-top:14px">Aiuto: dove attaccare le carte</h3>${aidsHTML(r.aids !== false)}` : ''}
         ${isHost ? `<h3 style="margin-top:14px">Tempo per turno</h3>${turnTimeHTML(r.turnTime)}
           <p class="muted small">Allo scadere il gioco pesca e scarta al posto del giocatore.</p>` : ''}
         ${isHost ? `<h3 style="margin-top:14px">Bravura del computer</h3>${botLevelHTML(r.botLevel)}` : ''}
         ${isHost ? `<h3 style="margin-top:14px">Velocità del computer</h3>${botSpeedHTML(r.botSpeed)}` : ''}
-        ${isHost ? '<div class="row" style="margin-top:14px"><button class="btn small" data-act="closeTable">🚪 Chiudi il tavolo</button></div>' : ''}
+        ${isHost ? '<div class="row" style="margin-top:14px"><button class="btn small" data-act="closeTable"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Chiudi il tavolo</button></div>' : ''}
       </details>
     </div>`;
   }

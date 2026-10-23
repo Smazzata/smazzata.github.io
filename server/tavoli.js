@@ -65,6 +65,7 @@ function roomInfo(room) {
     } : null)),
     started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
     progressEligible: room.progressEligible,
+    gameSeq: room.gameSeq,
     hints: !!room.hints && humanCount(room) <= 1, humans: humanCount(room),
     aids: room.aids !== false,
     music: room.music || null,

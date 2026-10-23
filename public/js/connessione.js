@@ -57,6 +57,7 @@
     else if (hiddenAt) freshConnection();
   });
   window.addEventListener('online', () => { if (!socket.connected) socket.connect(); });
+  window.addEventListener('pageshow', (event) => { if (event.persisted) freshConnection(); });
   socket.on('welcome', ({ token, name, nick, mail, progressEpoch }) => {
     if (progressEpoch) resetDeviceProgress(progressEpoch);
     S.mailOn = !!mail;
@@ -76,7 +77,7 @@
   socket.on('tournamentMatch', ({ code, text }) => {
     S.tourMatch = { code, text };
     Sound.play('turn');
-    notify('Smazzata: torneo 🏆', text, 'torneo');
+    notify('Smazzata: torneo ', text, 'torneo');
     if (S.screen === 'home') render();
   });
   socket.on('myGames', (list) => {
@@ -86,8 +87,8 @@
   socket.on('yourTurn', ({ code, text }) => {
     Sound.play('turn');
     if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
-    notify('Smazzata: tocca a te 🐢', text, 'slow-' + code);
-    toast(`🐢 ${text}`);
+    notify('Smazzata: tocca a te ', text, 'slow-' + code);
+    toast(`${text}`);
   });
   // la password è cambiata da un altro dispositivo: questo viene scollegato
   socket.on('loggedOut', ({ reason, deleted }) => {
@@ -122,7 +123,7 @@
     Sound.play('turn');
     if (navigator.vibrate) navigator.vibrate([80, 60, 80]);
     notify('Smazzata: invito', `${from} ti invita al tavolo ${code}`, 'invite');
-    openModal('invite', `<div class="result" style="text-align:center"><h2>🎴 Invito</h2>
+    openModal('invite', `<div class="result" style="text-align:center"><h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-cards /></svg> Invito</h2>
       <p><b>${esc(from)}</b> ti invita al suo tavolo <b>${esc(code)}</b>.</p>
       ${started ? '<p class="muted">La partita è già iniziata: potrai entrare solo se si libera un posto.</p>' : ''}
       <div class="row" style="justify-content:center"><button class="btn primary big" data-act="acceptInvite" data-code="${esc(code)}">Entra</button><button class="btn" data-act="closeModal">No grazie</button></div></div>`);
@@ -172,13 +173,15 @@
   socket.on('elo', ({ game, after, before }) => {
     const rank = playerRank(after), previous = playerRank(before);
     if (rank.id !== previous.id) setTimeout(() => showRankTransition(game, before, after), 1800);
-    else setTimeout(() => toast(`🏅 ${RX.gameName({ game })} · ${t('Grado')}: ${t(rank.name)}`), 1800);
+    else setTimeout(() => toast(`${RX.gameName({ game })} · ${t('Grado')}: ${t(rank.name)}`), 1800);
   });
   socket.on('progress', (p) => {
     // serie di giorni: festa quando sale (la prima smazzata di oggi)
     const before = S.progress && S.progress.streak ? S.progress.streak.streak : null;
-    if (before != null && p.streak && p.streak.today && p.streak.streak > before && p.streak.streak >= 2) { toast(`🔥 ${p.streak.streak} giorni di fila! Continua così`); Sound.play('turn'); }
+    if (before != null && p.streak && p.streak.today && p.streak.streak > before && p.streak.streak >= 2) { toast(`${p.streak.streak} giorni di fila! Continua così`); Sound.play('turn'); }
     S.progress = p;
+    if (p.earned) S.handProgress = p;
+    if (S.modalKind === 'result') showResult();
     if (p.up) {
       const b = document.createElement('div');
       b.className = 'trophytoast level';
@@ -204,7 +207,7 @@
     if (!t) return;
     const b = document.createElement('div');
     b.className = 'trophytoast';
-    b.innerHTML = `<i>${esc(t.e)}</i><div><small>Trofeo sbloccato!</small><b>${esc(t.name)}</b><span>${esc(t.desc)}</span></div>`;
+    b.innerHTML = `<i>${uiIcon('trophy')}</i><div><small>Trofeo sbloccato!</small><b>${esc(t.name)}</b><span>${esc(t.desc)}</span></div>`;
     document.body.appendChild(b);
     Sound.play('turn');
     confetti(50, 1400);
@@ -215,7 +218,7 @@
     S.chat.push(m);
     if (S.chat.length > 100) S.chat.shift();
     if (S.modalKind === 'log') renderLogModal();
-    else if (S.room && m.seat !== S.room.you) { S.unread++; toast(`💬 ${m.name}: ${m.text}`); render(); }
+    else if (S.room && m.seat !== S.room.you) { S.unread++; toast(`${m.name}: ${m.text}`); render(); }
   });
 
   /* ---------- Partite contro il computer sul telefono (anche online) ----------
@@ -263,8 +266,8 @@
     a.res = (a.res || []).concat([(p.game.winners || []).includes(0) ? 1 : 0]).slice(-4);
     const wins = a.res.reduce((x, y) => x + y, 0);
     let i = LEVELS.indexOf(a.level);
-    if (a.res.length >= 4 && wins >= 3 && i < LEVELS.length - 1) { i++; a.res = []; toast(`🤖 Stai vincendo spesso: il computer diventa più bravo (${LEVELS[i]})`); }
-    else if (a.res.length >= 3 && a.res.slice(-3).every((x) => !x) && i > 0) { i--; a.res = []; toast(`🤖 Il computer diventa un po' più facile (${LEVELS[i]})`); }
+    if (a.res.length >= 4 && wins >= 3 && i < LEVELS.length - 1) { i++; a.res = []; toast(`Stai vincendo spesso: il computer diventa più bravo (${LEVELS[i]})`); }
+    else if (a.res.length >= 3 && a.res.slice(-3).every((x) => !x) && i > 0) { i--; a.res = []; toast(`Il computer diventa un po' più facile (${LEVELS[i]})`); }
     a.level = LEVELS[i];
     all[gid] = a;
     store.set(AUTO_KEY, all);
@@ -283,7 +286,7 @@
   function askOtherDevice(mode) {
     return new Promise((res) => {
       const here = mode === 'here';
-      openModal('device', `<div class="result" style="text-align:center"><h2>📱 ${t('Partita su un altro dispositivo')}</h2>
+      openModal('device', `<div class="result" style="text-align:center"><h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-home /></svg> ${t('Partita su un altro dispositivo')}</h2>
         <p>${t(here ? "Hai già una partita in corso su un altro dispositivo. Vuoi continuarla qui? L'altro dispositivo tornerà alla schermata iniziale."
           : 'Hai già una partita in corso su un altro dispositivo: se procedi la abbandonerai (il tuo posto passa al computer). Sei sicuro di voler procedere?')}</p>
         <div class="row" style="justify-content:center"><button class="btn primary" id="devYes">${t(here ? 'Continua qui' : 'Sì, procedi')}</button><button class="btn" id="devNo">${t('Annulla')}</button></div></div>`);
@@ -335,7 +338,7 @@
     speakNewMoves(game);
     const prevMusic = S.room && S.room.music;
     if (room && room.music && (!prevMusic || prevMusic.at !== room.music.at)) {
-      if (prevMusic !== undefined && !room.isHost) { S.musicUnseen = true; toast(`🎵 ${room.music.by} ha avviato la musica: tocca 🎵 per ascoltarla`); }
+      if (prevMusic !== undefined && !room.isHost) { S.musicUnseen = true; toast(`${room.music.by} ha avviato la musica: tocca per ascoltarla`); }
     }
     if (room && !room.music) S.musicUnseen = false;
     S.turnEnd = room && room.turnLeft != null ? Date.now() + room.turnLeft : null;

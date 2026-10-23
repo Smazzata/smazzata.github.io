@@ -8,45 +8,52 @@
     const g = S.game;
     if (!g || !g.handResult) return;
     const hr = g.handResult;
+    const training = S.room.onDevice || S.room.offline || S.room.tutorial || S.room.progressEligible === false;
+    const progress = S.handProgress;
+    const earned = !training && g.you >= 0 && progress?.earned?.roomCode === S.room.code && progress.earned.gameSeq === S.room.gameSeq && progress.earned.handNo === g.handNo ? progress.earned : null;
+    const mode = training ? 'Allenamento' : S.room.daily ? 'Sfida del giorno' : S.room.rankedFormat ? 'Classificata' : 'Amichevole online';
+    const outcome = g.over && g.you >= 0 ? g.winners.length === 0 ? 'Pareggio' : g.winners.includes(g.you) ? 'Vittoria' : 'Sconfitta' : 'Fine smazzata';
+    const progressHTML = training ? `<p class="result-mode-note">${t('Allenamento: nessun punto classifica, esperienza o trofeo.')}</p>`
+      : earned ? `<section class="result-progress"><h3>${uiIcon('stats')} ${t('Progressi confermati')}</h3><p><b>+${earned.xp} ${t('punti esperienza')}</b> · ${t('Livello')} ${progress.level}</p><progress max="${progress.need}" value="${progress.into}" aria-label="${t('Esperienza nel livello')}"></progress><p>${progress.into}/${progress.need}</p>${earned.trophies.map(x=>`<p>${uiIcon('trophy')} ${esc(t(x.name))}</p>`).join('')}</section>` : '';
     const P = g.cfg.pozzettoName;
     const cols = hr.teams.map((t) => `<th>${esc(t.members.map((s) => (s === g.you ? 'Tu' : g.players[s].name)).join(' & '))}</th>`).join('');
     const row = (label, fn) => `<tr><td>${label}</td>${hr.teams.map((t) => `<td>${fn(t)}</td>`).join('')}</tr>`;
     const reason = hr.reason === 'tie' ? 'Smazzata pari: 60 a 60.' : hr.reason === 'end' ? 'Smazzata terminata.' : hr.reason === 'surrender'
-      ? `🏳️ <b>${esc(hr.surrendered.map((x) => (x === g.you ? 'Tu' : g.players[x].name)).join(' e '))}</b> ${hr.surrendered.length > 1 ? 'si sono arresi' : (hr.surrendered[0] === g.you ? 'ti sei arreso' : 'si è arreso')}.`
-      : hr.reason === 'close' ? `<b>${esc(g.players[hr.closer].name)}</b> ha chiuso la smazzata${hr.inHand ? ' <b>in mano</b> 🎩' : ''}.` : 'Il tallone è finito.';
+      ? `<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> <b>${esc(hr.surrendered.map((x) => (x === g.you ? 'Tu' : g.players[x].name)).join(' e '))}</b> ${hr.surrendered.length > 1 ? 'si sono arresi' : (hr.surrendered[0] === g.you ? 'ti sei arreso' : 'si è arreso')}.`
+      : hr.reason === 'close' ? `${hr.closer === g.you ? t('Hai chiuso la smazzata') : `<b>${esc(g.players[hr.closer].name)}</b> ha chiuso la smazzata`}${hr.inHand ? ' <b>in mano</b> <svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-profile /></svg>' : ''}.` : 'Il tallone è finito.';
     const humans = S.room.seats.map((s, i) => (s && !s.isBot ? i : -1)).filter((i) => i >= 0);
     const waiting = humans.filter((i) => !S.room.ready.includes(i)).map((i) => S.room.seats[i].name);
     const imReady = S.room.ready.includes(g.you);
     let footer;
     if (S.room.daily && g.you >= 0) {
       const mineT = hr.teams.find((t) => t.members.includes(g.you));
-      footer = `<div class="winner">📅 Sfida completata: ${signed(mineT.total)} punti</div>
-        <div class="row"><button class="btn primary grow" data-act="dailyFromResult">🏆 Classifica della sfida</button><button class="btn grow" data-act="leave">Torna alla home</button></div>`;
+      footer = `<div class="winner"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-calendar /></svg> Sfida completata: ${signed(mineT.total)} punti</div>
+        <div class="row"><button class="btn primary grow" data-act="dailyFromResult"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Classifica della sfida</button><button class="btn grow" data-act="leave">Torna alla home</button></div>`;
     } else if (g.you < 0) {
-      footer = g.over ? `<div class="winner">🏆 Vince ${esc(g.winners.map((s) => g.players[s].name).join(' & '))}!</div>` : '<p class="muted">Stai guardando: la prossima smazzata parte quando i giocatori sono pronti.</p>';
+      footer = g.over ? `<div class="winner"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Vince ${esc(g.winners.map((s) => g.players[s].name).join(' & '))}!</div>` : '<p class="muted">Stai guardando: la prossima smazzata parte quando i giocatori sono pronti.</p>';
     } else if (g.over && S.room.series) {
       const sr = S.room.series;
       const champ = sr.champion ? sr.champion.map((x) => (x === g.you ? 'Tu' : g.players[x].name)) : null;
-      footer = `<div class="winner">${champ ? `🏆 Campione del torneo: ${esc([...new Set(champ)].join(' & '))}!` : `Partita ${sr.games} di ${sr.bestOf} vinta da ${esc(g.winners.map((x) => (x === g.you ? 'Tu' : g.players[x].name)).join(' & '))}`}</div>
+      footer = `<div class="winner">${champ ? `<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Campione del torneo: ${esc([...new Set(champ)].join(' & '))}!` : `Partita ${sr.games} di ${sr.bestOf} vinta da ${esc(g.winners.map((x) => (x === g.you ? 'Tu' : g.players[x].name)).join(' & '))}`}</div>
         <p style="text-align:center">${seriesHTML(S.room, g)}</p>
-        <button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Hai votato ✓' : champ ? '🔁 Nuovo torneo' : '▶ Prossima partita del torneo'}</button>
+        <button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Hai votato ✓' : champ ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-refresh /></svg> Nuovo torneo' : '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Prossima partita del torneo'}</button>
         ${imReady && waiting.length ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : ''}`;
     } else if (g.over && S.room.tournament) {
-      footer = `<div class="winner">${g.winners.includes(g.you) ? '🎉 Passi al turno successivo!' : 'Fuori dal torneo, alla prossima!'}</div>
-        <div class="row"><button class="btn primary grow" data-act="tourBack" data-id="${esc(S.room.tournament.id)}">🏆 Torna al tabellone</button></div>`;
+      footer = `<div class="winner">${g.winners.includes(g.you) ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Passi al turno successivo!' : 'Fuori dal torneo, alla prossima!'}</div>
+        <div class="row"><button class="btn primary grow" data-act="tourBack" data-id="${esc(S.room.tournament.id)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Torna al tabellone</button></div>`;
     } else if (g.over && S.room.rankedFormat) {
       const result = S.rankedLast?.matchId === S.room.rankedFormat.id ? S.rankedLast : null;
-      footer = `<div class="winner">${t(g.winners.includes(g.you) ? 'Vittoria' : 'Sconfitta')}</div>
+      footer = `
         ${result ? `${rankedCard(result.after)}${result.after.provisional || result.placementMatch ? '' : `<p>${result.delta > 0 ? '+' : ''}${result.delta} LP</p>`}` : ''}
         <div class="endopts"><button class="btn primary" data-act="rankedAgain">${t('Cerca partita')}</button><button class="btn" data-act="rankedProfile">${t('Profilo competitivo')}</button><button class="btn" data-act="leaveNow">${t('Esci dal tavolo')}</button></div>`;
     } else if (g.over) {
       // fine partita: tre strade chiare (rivincita, di nuovo al tavolo, uscire)
       const solo = S.room.onDevice || S.room.offline || humans.length <= 1;
-      footer = `<div class="winner">🏆 Vince ${esc(g.winners.map((s) => (s === g.you ? 'Tu' : g.players[s].name)).join(' & '))}!</div>
+      footer = `
         <div class="endopts">
-          <button class="btn primary big" data-act="ready" ${imReady ? 'disabled' : ''}>${imReady ? 'Rivincita: hai votato ✓' : '🔁 Rivincita'}</button>
-          ${solo ? '<button class="btn big" data-act="newFromResult">🃏 Nuova partita</button>' : '<button class="btn big" data-act="backToLobby">🪑 Torna al tavolo</button>'}
-          <button class="btn big" data-act="leaveNow">🚪 Esci dal tavolo</button>
+          <button class="btn primary big" data-act="ready" ${imReady ? 'disabled' : ''}>${imReady ? 'Rivincita: hai votato ✓' : solo ? t('Gioca ancora') : t('Rivincita')}</button>
+          ${solo ? '<button class="btn big" data-act="newFromResult"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-cards /></svg> Nuova partita</button>' : '<button class="btn big" data-act="backToLobby"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg> Torna al tavolo</button>'}
+          <button class="btn big" data-act="leaveNow"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Esci dal tavolo</button>
         </div>
         ${imReady && waiting.length ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : solo ? '' : '<p class="muted small">Rivincita: stessi posti e stesse regole, si riparte quando tutti la premono. Torna al tavolo: per cambiare regole o giocatori.</p>'}`;
     } else {
@@ -75,12 +82,15 @@
       ? `<tr><td>${label}</td>${hr.teams.map((t) => `<td class="${t[key] < 0 ? 'neg' : t[key] > 0 ? 'pos' : ''}">${signed(t[key])}${extra ? extra(t) : ''}</td>`).join('')}</tr>` : '');
     const kindCls = (b) => ({ clean: 'clean', semi: 'semi', dirty: 'dirty' }[b.kind] || 'real');
     // l'animazione si vede solo la prima volta (la finestra si ridisegna a ogni voto "pronto")
-    const key = `${g.handNo}:${hr.teams.map((t) => t.total).join(',')}`;
+    const key = `${S.room.code}:${S.room.gameSeq || ''}:${g.handNo}:${hr.teams.map((t) => t.total).join(',')}`;
     const firstShow = S.resultShown !== key;
     S.resultShown = key;
     openModal('result', `<div class="result ${firstShow ? 'anim' : ''}">
-      <h2>Fine smazzata ${g.handNo}</h2><p>${reason}</p>
+      <header class="result-heading"><p>${t(mode)} · ${t('Smazzata')} ${g.handNo}</p>${uiIcon(outcome === 'Vittoria' ? 'trophy' : 'cards')}<h2>${t(outcome)}</h2></header><p>${reason}</p>
       <div class="rsum">${summary}</div>
+      ${progressHTML}
+      <div class="result-actions">${footer}</div>
+      <details class="result-details"><summary>${t('Dettaglio del punteggio')}</summary>
       <table><tr><th></th>${cols}</tr>
       ${hr.rows ? hr.rows.map((rw) => `<tr><td>${esc(rw.label)}</td>${rw.values.map((v, i) => `<td class="${rw.plain ? '' : v > 0 ? 'pos' : ''}">${rw.plain ? v : signed(v)}${rw.notes && rw.notes[i] ? `<br><span class="muted small">${esc(rw.notes[i])}</span>` : ''}</td>`).join('')}</tr>`).join('') : ''}
       ${hr.rows ? '' : detail('Carte calate', 'meldPts')}
@@ -92,8 +102,8 @@
       <tr class="grand"><td>${isS40Game() ? 'Penalità totale' : 'Totale partita'}</td>${hr.teams.map((t) => `<td>${isS40Game() ? -hr.scores[t.members[0]] : hr.scores[t.members[0]]}</td>`).join('')}</tr>
       </table>
       ${leftoverHTML(g, hr)}
-      ${g.hasReplay && !S.room.daily ? '<div class="row" style="justify-content:center;margin:8px 0"><button class="btn small" data-act="replay">🎬 Rivedi la smazzata</button></div>' : ''}
-      ${footer}</div>`);
+      ${g.hasReplay && !S.room.daily ? '<div class="row" style="justify-content:center;margin:8px 0"><button class="btn small" data-act="replay"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-eye /></svg> Rivedi la smazzata</button></div>' : ''}
+      </details></div>`);
     if (firstShow) countUp($$('#modal [data-count]'));
   }
 
@@ -127,7 +137,7 @@
     openModal('scores', `<div class="result"><h2>Punteggi</h2>
       <table>${g.players.map((p) => `<tr><td>${esc(p.name)}</td><td><b>${g.scores[p.seat]}</b></td></tr>`).join('')}</table>
       <h3>Smazzate</h3>${rows ? `<table>${rows}</table>` : '<p class="muted">Nessuna smazzata conclusa.</p>'}
-      ${g.hasReplay && !S.room.daily ? '<div class="row" style="margin-top:10px"><button class="btn small" data-act="replay">🎬 Rivedi l\'ultima smazzata</button></div>' : ''}</div>`);
+      ${g.hasReplay && !S.room.daily ? '<div class="row" style="margin-top:10px"><button class="btn small" data-act="replay"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-eye /></svg> Rivedi l\'ultima smazzata</button></div>' : ''}</div>`);
   }
 
   function renderLogModal() {
@@ -149,14 +159,14 @@
       ${presetsHTML(r)}
       <p>${rulesStatus(r)}</p>
       ${rulesFormHTML(r)}
-      <div class="row" style="margin-top:12px"><button class="btn ghost dark" data-act="previewEdit">📜 Anteprima regole</button>
+      <div class="row" style="margin-top:12px"><button class="btn ghost dark" data-act="previewEdit"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-rules /></svg> Anteprima regole</button>
       <button class="btn primary grow" data-act="applyRules">Applica</button></div>`);
   }
 
   /** menu ☰ del tavolo: le funzioni meno usate, con nomi scritti per intero */
   function tableMenuModal() {
     const r = S.room || {}, g = S.game;
-    const item = (act, icon, label) => `<button class="menuitem" data-act="${act}"><span>${icon}</span>${label}</button>`;
+    const item = (act, icon, label) => `<button class="menuitem" data-act="${act}"><span>${uiLabel(icon)}</span>${label}</button>`;
     if (r.campaign) {
       openModal('tableMenu', `<h2>Il tuo viaggio</h2><div class="menulist">${item('campaignContinue','▶','Riprendi')}${item('campaignObjectives','🎯','Obiettivi del livello')}${item('campaignShop','🎒','Bottega degli aiuti')}${item('gameRules','📜','Regole del gioco')}${item('settings','⚙️','Aspetto e suoni')}${item('campaignMute','🔇','Disattiva la voce')}${item('campaignMap','🗺️','Metti in pausa e torna alla mappa')}</div>`);
       return;
@@ -188,6 +198,6 @@
   /** 🕘 storico dei turni: la cronaca della smazzata, dalla mossa più recente */
   function turnLogModal() {
     const g = S.game;
-    openModal('turnLog', `<h2>🕘 Storico dei turni</h2><div class="log turnlog">${g && g.log.length ? g.log.slice().reverse().map((l) => `<div>${esc(l)}</div>`).join('') : '<div class="muted">Ancora nessuna mossa</div>'}</div>`);
+    openModal('turnLog', `<h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-clock /></svg> Storico dei turni</h2><div class="log turnlog">${g && g.log.length ? g.log.slice().reverse().map((l) => `<div>${esc(l)}</div>`).join('') : '<div class="muted">Ancora nessuna mossa</div>'}</div>`);
   }
 

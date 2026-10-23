@@ -336,7 +336,7 @@
       ? (r.mine.score != null
         ? `<div class="winner">Hai fatto ${signed(r.mine.score)} punti${r.myPos ? ` · ${r.myPos}° posto` : ''}</div><p class="muted" style="text-align:center">Torna domani per una nuova sfida!</p>`
         : '<p class="muted" style="text-align:center">Hai già usato il tentativo di oggi. Torna domani!</p>')
-      : '<div class="row"><button class="btn primary grow big" data-act="startDaily">▶ Gioca la sfida</button></div>';
+      : '<div class="row"><button class="btn primary grow big" data-act="startDaily"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Gioca la sfida</button></div>';
     const rows = r.top.map((x) => `<tr class="${x.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][x.pos - 1] || x.pos}</td><td style="text-align:left">${esc(x.name)}${x.me ? ' (tu)' : ''}</td><td><b>${signed(x.score)}</b></td></tr>`).join('');
     openModal('daily', `<div class="result"><h2>📅 Sfida del giorno</h2><p class="muted">${esc(day)}</p>
       <div class="dailycard"><b class="dtitle">${esc(r.title)}</b>
@@ -350,8 +350,8 @@
   /** Bacheca dei trofei: sbloccati a colori, gli altri in grigio con l'avanzamento */
   function trophiesHTML(list) {
     const got = list.filter((t) => t.at).length;
-    return `<h3>🏆 Trofei <span class="muted small">${got} su ${list.length}</span></h3><div class="trophies">${list.map((t) => `
-      <div class="trophy ${t.at ? 'got' : ''}" title="${esc(t.desc)}"><i>${esc(t.e)}</i><b>${esc(t.name)}</b><span>${esc(t.desc)}</span>
+    return `<h3><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Trofei <span class="muted small">${got} su ${list.length}</span></h3><div class="trophies">${list.map((t) => `
+      <div class="trophy ${t.at ? 'got' : ''}" title="${esc(t.desc)}"><i>${uiIcon('trophy')}</i><b>${esc(t.name)}</b><span>${esc(t.desc)}</span>
         ${t.progress ? `<em class="tprog"><u style="width:${Math.round((t.progress.now / t.progress.goal) * 100)}%"></u></em><span class="tnum">${t.progress.now}/${t.progress.goal}</span>` : ''}
         ${t.at ? `<span class="tdate">${new Date(t.at).toLocaleDateString(LOCALE)}</span>` : ''}</div>`).join('')}</div>`;
   }
@@ -384,7 +384,7 @@
     list = list.filter((h) => AvailableGames.enabled(h.game || 'burraco'));
     if (!list.length) return '<p class="muted">Nessuna partita completata.</p>';
     return list.map((h) => `<div class="hist ${h.won ? 'won' : 'lost'}">
-      <span class="hres">${h.won ? '🏆' : '—'}</span>
+      <span class="hres">${h.won ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg>' : '—'}</span>
       <span class="grow"><b>${h.won ? 'Vinta' : 'Persa'}</b> · ${fmtDate(h.at)} · ${({ scala40: 'Scala 40', ramino: 'Ramino', canasta: 'Canasta', scopa: 'Scopa', briscola: 'Briscola', tressette: 'Tressette', rubamazzetto: 'Rubamazzetto', briscola5: 'Briscola in 5' })[h.game] || PRESET_NAMES[h.preset] || h.preset}${h.hands ? ` · ${h.hands} smazzate` : ''}<br>
       <span class="muted small">${h.teams.map((t) => `${t.mine ? '<b>' : ''}${t.names.map(esc).join(' & ')} ${t.score}${t.mine ? '</b>' : ''}`).join(' · ')}</span></span></div>`).join('');
   }

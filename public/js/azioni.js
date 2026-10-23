@@ -99,6 +99,9 @@
     playFriends() { if (!requireName()) return; applyHomeGame(); S.playMode = 'friends'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
     more() { moreModal(); },
     homeGameMenu,
+    firstRun() { firstRunModal(); },
+    introChoose(el) { handlers.homeGameChoose(el); firstRunModal(1); },
+    introPractice() { handlers.practice({dataset:{game:homeGame()}}); },
     homeGameChoose(el) {
       if(!GAME_TILES.some(([id])=>id===el.dataset.game)) return;
       store.set('smazzata_home_game',el.dataset.game); applyHomeGame(); closeModal(); render(); $('#homeGame')?.focus();
@@ -112,6 +115,7 @@
     async startFill() { const r = await emit('addBot', {}); if (r.ok) emit('start'); },
     // tavolo: menu ☰ con le funzioni meno usate
     tableMenu() { tableMenuModal(); },
+    focusField(el) { const field = document.getElementById(el.dataset.target); field?.scrollIntoView({block:'center',behavior:reducedMotion?'instant':'smooth'}); field?.focus({preventScroll:true}); },
     goHome() { S.screen = 'home'; render(); },
     join() {
       if (!requireName()) return;
@@ -170,10 +174,10 @@
         const slow = S.room.slow;
         openModal('leave', `<h2>Uscire dal tavolo?</h2>
           <div class="leaveopts">
-            <button class="btn primary" data-act="leaveNow">${slow ? '🐢 Torna alla schermata iniziale<br><small>la partita ti aspetta</small>' : '⏏ Esci<br><small>il computer gioca al tuo posto, puoi tornare quando vuoi</small>'}</button>
-            <button class="btn danger" data-act="surrender">🏳️ ${partnerIsHuman() ? 'Proponi la resa al compagno' : 'Arrenditi'}<br><small>vincono gli avversari</small></button>
-            ${S.room.isHost && !S.room.daily ? '<button class="btn" data-act="endGame">⛔ Termina la partita<br><small>nessun vincitore, tutti in sala d’attesa</small></button>' : ''}
-            ${S.room.isHost ? '<button class="btn" data-act="closeTable">🚪 Chiudi il tavolo<br><small>tutti alla schermata iniziale</small></button>' : ''}
+            <button class="btn primary" data-act="leaveNow">${slow ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-clock /></svg> Torna alla schermata iniziale<br><small>la partita ti aspetta</small>' : '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Esci<br><small>il computer gioca al tuo posto, puoi tornare quando vuoi</small>'}</button>
+            <button class="btn danger" data-act="surrender"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> ${partnerIsHuman() ? 'Proponi la resa al compagno' : 'Arrenditi'}<br><small>vincono gli avversari</small></button>
+            ${S.room.isHost && !S.room.daily ? '<button class="btn" data-act="endGame"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Termina la partita<br><small>nessun vincitore, tutti in sala d’attesa</small></button>' : ''}
+            ${S.room.isHost ? '<button class="btn" data-act="closeTable"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Chiudi il tavolo<br><small>tutti alla schermata iniziale</small></button>' : ''}
           </div>`);
         return;
       }
@@ -189,7 +193,7 @@
         return;
       }
       if (S.room && S.room.slow && S.game && !S.game.over && S.game.you >= 0) {
-        toast('🐢 La partita ti aspetta: la trovi nella schermata iniziale');
+        toast('La partita ti aspetta: la trovi nella schermata iniziale');
       } else if (S.game && !S.game.over && S.game.you >= 0) {
         store.set('bur_lastroom', S.room.code);
       }
@@ -230,10 +234,10 @@
     scopaTake(el) { closeModal(); act('play', { cardId: Number(el.dataset.card), take: el.dataset.take.split(',').map(Number) }); },
     appUpdateLater() { store.set('bur_apk_later', S.appUpdate.n); S.appUpdate.dismissed = true; render(); },
     playerMenu(el) { playerMenu(el.dataset.nick); },
-    savedCode() { closeModal(); syncLauncher(); },
+    savedCode() { closeModal(); if (!syncLauncher() && !S.room && S.screen === 'home' && !S.pendingJoin) firstRunModal(); },
     async resendSignup() {
       const r = await emit('startSignup', { nick: S.signup.nick, password: S.pwDraft || '', email: S.signup.email, adult: true });
-      if (r.ok) toast('📧 Codice inviato di nuovo');
+      if (r.ok) toast('Codice inviato di nuovo');
     },
     signupBack() { S.signup = null; render(); },
     forgot(el, e) { if (e) e.preventDefault(); forgotModal(); },
@@ -242,7 +246,7 @@
       if (r.ok) { toast(`Richiesta inviata a ${el.dataset.nick}`); closeModal(); }
     },
     reportPlayer(el) {
-      openModal('reportPlayer', `<h2>⚠️ Segnala ${esc(el.dataset.nick)}</h2>
+      openModal('reportPlayer', `<h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Segnala ${esc(el.dataset.nick)}</h2>
         <p class="muted small">La segnalazione arriva al gestore insieme agli ultimi messaggi della chat di questo tavolo. Chi segnali non lo saprà.</p>
         <form id="reportPlayerForm" data-nick="${esc(el.dataset.nick)}">
           ${[['offese', 'Offese o linguaggio inappropriato'], ['scorretto', 'Comportamento scorretto'], ['nick', 'Nickname inappropriato'], ['altro', 'Altro']]
@@ -383,7 +387,7 @@
         case 'discard': S.selected = new Set([h.cardId]); text = `Scarta ${names([h.cardId])}`; break;
         default: text = 'Annulla le calate di questo turno e scarta';
       }
-      toast(`💡 ${text}`);
+      toast(`${text}`);
       render();
     },
     music() { musicModal(); render(); },
@@ -412,7 +416,7 @@
     profile: profileModal,
     tutorial() { tutorialModal(0, S.screen === 'home' ? homeGame() : undefined); },
     report() {
-      openModal('report', `<h2>🐞 Segnala un problema</h2>
+      openModal('report', `<h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Segnala un problema</h2>
         <p class="muted small">Descrivi cosa è successo e cosa ti aspettavi. Insieme al messaggio inviamo la situazione del tavolo
           (smazzata, turno, ultime mosse e quante carte hai), senza le carte degli altri giocatori. <a href="privacy.html">Privacy</a></p>
         <form id="reportform"><textarea id="reportin" rows="5" maxlength="1000" placeholder="Es. ho trascinato una carta sugli scarti ma non è stata scartata…"></textarea>
@@ -447,7 +451,7 @@
       const rules = RX.normalize(base);
       const formats = (RX.schema(rules).find((f) => f.key === 'players')?.choices || [[rules.players, String(rules.players)]])
         .filter(([n]) => RX.normalize({ ...base, players: n }).players === n);
-      openModal('quick', `<div class="result" style="text-align:center"><h2>${mode === 'ranked' ? '🏅 Classificata' : '🃏 Amichevole online'}</h2>
+      openModal('quick', `<div class="result" style="text-align:center"><h2>${mode === 'ranked' ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-medal /></svg> Classificata' : '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-cards /></svg> Amichevole online'}</h2>
         <h3>${game === 'burraco' ? 'Burraco Classico' : esc(RX.gameName(rules))}</h3>
         <p>${mode === 'ranked' ? 'Il risultato contribuisce al tuo grado.' : 'Il risultato non cambia il tuo grado.'} Si parte quando il tavolo è pieno.</p>
         ${formats.map(([players]) => `<details><summary>Regole in ${players} giocatori</summary><div class="rules-text">${RX.describe(RX.normalize({ ...base, players }))}</div></details>`).join('')}
@@ -467,8 +471,8 @@
         ${t.games ? `<p>${t.games} partite insieme: ${t.asPartners} in coppia (${t.winsTogether} vinte), ${t.games - t.asPartners} da avversari (tu ne hai vinte ${t.winsAgainst}).</p>${historyHTML(t.recent.map((h) => ({ ...h, preset: '', hands: 0 })))}` : '<p class="muted">Non avete ancora finito una partita insieme.</p>'}
         <h3>Statistiche</h3>${r.stats ? byGameHTML(r.byGame, r.stats) : '<p class="muted">Nessuna partita completata.</p>'}
         ${r.ranked ? rankedSummaryHTML(r.ranked) : ''}
-        ${r.trophies && r.trophies.length ? `<h3>🏆 Trofei (${r.trophies.length})</h3><div class="trophyrow">${r.trophies.map((t) => `<span title="${esc(t.name)}">${esc(t.e)}</span>`).join('')}</div>` : ''}
-        ${r.nick !== (S.social && S.social.nick) ? `<div class="row" style="margin-top:12px"><button class="btn small danger" data-act="block" data-nick="${esc(r.nick)}">🚫 Rimuovi e blocca</button><button class="btn small" data-act="reportPlayer" data-nick="${esc(r.nick)}">⚠️ Segnala</button></div>` : ''}</div>`);
+        ${r.trophies && r.trophies.length ? `<h3><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Trofei (${r.trophies.length})</h3><div class="trophyrow">${r.trophies.map((t) => `<span title="${esc(t.name)}">${uiIcon('trophy')}</span>`).join('')}</div>` : ''}
+        ${r.nick !== (S.social && S.social.nick) ? `<div class="row" style="margin-top:12px"><button class="btn small danger" data-act="block" data-nick="${esc(r.nick)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Rimuovi e blocca</button><button class="btn small" data-act="reportPlayer" data-nick="${esc(r.nick)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Segnala</button></div>` : ''}</div>`);
     },
     async pickTitle(el) { const r = await emit('setLook', { title: el.dataset.id }); if (r.ok) profileModal(); },
     async pickFrame(el) { const r = await emit('setLook', { frame: el.dataset.id }); if (r.ok) profileModal(); },
@@ -477,9 +481,30 @@
       await profileModal();
       [...document.querySelectorAll('.avfilter')].find(b=>b.dataset.rarity===S.avatarFilter)?.focus({preventScroll:true});
     },
+    async previewAvatar(el) {
+      const catalog = window.SmazzataAvatars;
+      const entry = catalog.LIST.find(a => a.id === el.dataset.avatarId);
+      if (!entry) return;
+      const request = S.avatarPreviewRequest = (S.avatarPreviewRequest || 0) + 1;
+      S.avatarCatalogScroll = $('#avatar-grid')?.scrollTop || 0;
+      S.avatarPreviewId = entry.id;
+      const profile = await emit('profile');
+      if (!profile.ok || S.modalKind !== 'profile' || request !== S.avatarPreviewRequest) return;
+      const rarity = catalog.RARITIES.find(r => r.id === entry.rarity);
+      const current = catalog.resolve(profile.avatar?.id || profile.avatar?.e, profile.nick);
+      const selectable = catalog.isSelectable(entry.id);
+      const av = {...profile.avatar, id:entry.id, e:entry.e};
+      openModal('avatarDetail', `<section class="avatar-detail"><button class="btn small" data-act="avatarCatalog">${t('Torna alla collezione')}</button><div class="avatar-detail-art">${avatarHTML(profile.nick,0,false,av)}</div><h2>${esc(t(entry.name))}</h2><p class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</p><p>${t(current.id === entry.id ? 'Il tuo avatar attuale' : selectable ? 'Disponibile per il tuo profilo' : 'Non ancora disponibile')}</p>${selectable && current.id !== entry.id ? `<button class="btn primary" data-act="pickAvatar" data-avatar-id="${entry.id}" data-c="${esc(profile.avatar?.c || profile.colors[0])}">${t('Usa questo avatar')}</button>` : ''}${!selectable && current.id !== entry.id ? `<p class="muted small">${t('Puoi ammirarlo in anteprima. Non è ancora selezionabile.')}</p>` : ''}</section>`);
+      $('#modal [data-act=avatarCatalog]')?.focus({preventScroll:true});
+    },
+    async avatarCatalog() {
+      await profileModal();
+      const grid = $('#avatar-grid');
+      if (grid) { grid.scrollTop = S.avatarCatalogScroll || 0; grid.querySelector(`[data-avatar-id="${S.avatarPreviewId}"]`)?.focus({preventScroll:true}); }
+    },
     async pickAvatar(el) {
       const grid = $('#avatar-grid');
-      const scrollTop = grid ? grid.scrollTop : 0;
+      const scrollTop = grid ? grid.scrollTop : S.avatarCatalogScroll || 0;
       const r = await emit('setAvatar', { id: el.dataset.avatarId, c: el.dataset.c });
       if (r.ok) {
         await profileModal();

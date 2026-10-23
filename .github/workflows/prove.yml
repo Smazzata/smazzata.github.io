@@ -30,6 +30,8 @@ jobs:
           timeout 720 npm test || { echo "::warning::Test del motore bloccato o fallito, lo ripeto una volta"; timeout 720 npm test; }
       - name: Prova multigiocatore end-to-end
         run: npm run e2e
+      - name: Progressi reali nel riepilogo di fine partita
+        run: npm run test:risultati
       - name: Ranked (Glicko-2, BO3, Solo/Duo, persistenza e simulazioni)
         run: npm run test:ranked && npm run e2e:ranked && npm run sim:ranked
       - name: Campagna (150 livelli, obiettivi, vite e ricompense)

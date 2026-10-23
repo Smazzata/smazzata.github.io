@@ -116,7 +116,7 @@
       const fresh = new Set(g.lastTake ? g.lastTake.cardIds : []);
       return `<div class="presa">
         <div class="ptable">${g.table.length ? g.table.map((c) => cardHTML(c, fresh.has(c.id) ? 'fresh' : '')).join('') : '<span class="empty">Tavolo vuoto</span>'}</div>
-        <div class="pinfo">${g.cfg.rules.deal && g.cfg.rules.deal !== 3 ? '' : `<span>Mazzo <b>${g.stockCount}</b></span>`}${g.teams.map((t) => `<span>${teamLbl(t)}: <b>${t.taken}</b> carte${t.scope ? ` · <b>${t.scope}</b> ${t.scope === 1 ? 'scopa' : 'scope'} 🧹` : ''}</span>`).join('')}</div>
+        <div class="pinfo">${g.cfg.rules.deal && g.cfg.rules.deal !== 3 ? '' : `<span>Mazzo <b>${g.stockCount}</b></span>`}${g.teams.map((t) => `<span>${teamLbl(t)}: <b>${t.taken}</b> carte${t.scope ? ` · <b>${t.scope}</b> ${t.scope === 1 ? 'scopa' : 'scope'} <svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-refresh /></svg>` : ''}</span>`).join('')}</div>
       </div>`;
     }
     if (g.game === 'briscola5') {
@@ -145,7 +145,7 @@
       return `<div class="presa">
         <div class="ptrump">Briscola ${SUITN[b.trump] || ''} · chiamato ${b.called ? cardHTML({ id: -510, ...b.called }, 'mini') : ''} · ${b.partner != null ? (b.partner === b.caller ? `${esc(name(b.caller))} gioca da solo` : `socio: <b>${esc(name(b.partner))}</b>`) : 'socio segreto'}${b.iAmPartner && !b.partnerKnown ? ' (sei tu, in segreto!)' : ''}</div>
         <div class="ptrick">${trick5.length ? trick5.map((x) => `<span class="tc ${x.seat === win5 ? 'win' : ''}">${cardHTML(x.card)}<span>${esc(name(x.seat))}</span></span>`).join('') : '<span class="empty">Tocca a chi apre il giro</span>'}</div>
-        <div class="pinfo"><span>📣 ${esc(name(b.caller))} deve fare <b>${b.target}</b></span></div>
+        <div class="pinfo"><span><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-chat /></svg> ${esc(name(b.caller))} deve fare <b>${b.target}</b></span></div>
       </div>`;
     }
     if (g.game === 'rubamazzetto') {
@@ -243,13 +243,13 @@
     if (g.game === 'scopa' && g.cfg.rules.deal && g.cfg.rules.deal !== 3) return null; // Scopone: niente mazzo da cui pescare
     if (g.game === 'tressette' && !g.stockCount) return null; // Tressette in quattro: niente mazzo
     if (g.game === 'briscola5') return null; // in cinque non c'è mazzo
-    if (g.lastTurn) return { level: 3, text: '🔔 Ultimo turno della smazzata!' };
+    if (g.lastTurn) return { level: 3, text: 'Ultimo turno della smazzata!' };
     const r = g.cfg.rules;
     if (r.stockEnd === 'mortoToStock' && g.pozzetti.length) return null; // un pozzetto ricaricherà il tallone
     const draws = r.stockEnd === 'twoLeft' ? g.stockCount - 2 : g.stockCount;
     const rounds = Math.ceil(draws / g.n);
-    if (rounds <= 1) return { level: 2, text: `⚠️ Ultimo giro: ${draws === 1 ? 'resta 1 pescata' : `restano ${draws} pescate`}` };
-    if (rounds <= 2) return { level: 1, text: `⚠️ Tallone quasi finito: ~${rounds} giri` };
+    if (rounds <= 1) return { level: 2, text: `Ultimo giro: ${draws === 1 ? 'resta 1 pescata' : `restano ${draws} pescate`}` };
+    if (rounds <= 2) return { level: 1, text: `Tallone quasi finito: ~${rounds} giri` };
     return null;
   }
 
@@ -291,7 +291,7 @@
       ${S.room?.campaign && p.isBot ? campaignPortrait(campaignPath().levels[S.campaignLevel].opponent, true) : avatarHTML(p.name, seat, p.isBot, rs && rs.avatar)}
       <div class="sinfo"><b ${rs && !rs.isBot && !p.isBot ? `data-act="playerMenu" data-nick="${esc(p.name)}"` : ''}>${esc(p.name)} ${lvlHTML(rs && rs.level)}</b>
         ${rs && rs.avatar && rs.avatar.t ? `<span class="stitle">${esc(rs.avatar.t)}</span>` : ''}
-        <span class="smeta">${p.out ? '❌ eliminato · ' : ''}${off ? '📴 ' : ''}${partner ? '<span title="compagno">🤝</span> ' : ''}${p.handCount} carte</span></div>
+        <span class="smeta">${p.out ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> eliminato · ' : ''}${off ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-privacy /></svg> ' : ''}${partner ? '<span title="compagno"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg></span> ' : ''}${p.handCount} carte</span></div>
       <div class="minifan">${fan}</div>
       ${turn ? (S.turnEnd ? '<span class="thinking cdchip" data-cd></span>' : '<span class="thinking"><i></i><i></i><i></i></span>') : ''}
     </div>`;
@@ -312,7 +312,7 @@
 
     // punteggi
     let scores;
-    if (isS40Game()) scores = g.players.map((p) => `<span class="sc ${p.seat === me ? 'me' : ''} ${p.out ? 'out' : ''}" title="Penalità (eliminato a ${g.cfg.target})">${p.out ? '❌ ' : ''}${esc(p.seat === me ? 'Tu' : p.name)} <b>${-g.scores[p.seat]}</b></span>`).join('');
+    if (isS40Game()) scores = g.players.map((p) => `<span class="sc ${p.seat === me ? 'me' : ''} ${p.out ? 'out' : ''}" title="Penalità (eliminato a ${g.cfg.target})">${p.out ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> ' : ''}${esc(p.seat === me ? 'Tu' : p.name)} <b>${-g.scores[p.seat]}</b></span>`).join('');
     else if (g.n === 3) scores = g.players.map((p) => `<span class="sc ${p.seat === me ? 'me' : ''}">${esc(p.seat === me ? 'Tu' : p.name)} <b>${g.scores[p.seat]}</b>${liveHTML(g, g.teams.find((t) => t.members.includes(p.seat)))}</span>`).join('');
     else scores = g.teams.map((t) => `<span class="sc ${t === myTeam ? 'me' : ''}">${esc(teamName(g, t))} <b>${g.scores[t.members[0]]}</b>${liveHTML(g, t)}</span>`).join('');
 
@@ -331,11 +331,11 @@
     const center = `<div class="center">
       <div class="stock ${canDraw && (g.stockCount || g.pozzetti.length) ? 'active' : ''} ${S.hint && S.hint.type === 'draw' ? 'hinted' : ''}" ${canDraw ? 'data-act="draw" data-drag="stock"' : ''}>
         <div class="deck">${g.stockCount ? Array.from({ length: stockLayers }, (_, i) => backHTML('', `style="--l:${i}"`)).join('') : '<div class="card slot"></div>'}</div>
-        <span class="lbl ${stockWarning(g) ? 'lowstock' : ''}">${canDraw && g.stockCount ? '<b class="here">👆 Pesca qui</b>' : `Tallone · ${g.stockCount}`}</span>
+        <span class="lbl ${stockWarning(g) ? 'lowstock' : ''}">${canDraw && g.stockCount ? '<b class="here"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-help /></svg> Pesca qui</b>' : `Tallone · ${g.stockCount}`}</span>
       </div>
       <div class="pile ${(canDraw && g.discardCount && !g.mustDraw) || (playing && S.selected.size === 1) ? 'active' : ''} ${g.cfg.pile} ${S.hint && (S.hint.type === 'takePile' || S.hint.type === 'discard') ? 'hinted' : ''}" data-drop="discard" ${canDraw && !g.mustDraw ? 'data-act="takePile"' : playing ? 'data-act="discardSel"' : ''}>
         <div class="pcards">${pileCards || '<div class="card slot"></div>'}</div>
-        <span class="lbl">${playing && S.selected.size === 1 ? '<b class="here">👆 Scarta qui</b>' : isCanastaGame() ? `Monte${g.discardCount ? ' · ' + g.discardCount : ''}${g.pileBlocked ? ' 🔒' : g.pileFrozen ? ' ❄️' : ''}` : `Scarti${g.discardCount ? ' · ' + g.discardCount : ''}${g.cfg.pile === 'closed' ? ' (chiusi)' : ''}`}</span>
+        <span class="lbl">${playing && S.selected.size === 1 ? '<b class="here"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-help /></svg> Scarta qui</b>' : isCanastaGame() ? `Monte${g.discardCount ? ' · ' + g.discardCount : ''}${g.pileBlocked ? ' <svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-privacy /></svg>' : g.pileFrozen ? ' ❄️' : ''}` : `Scarti${g.discardCount ? ' · ' + g.discardCount : ''}${g.cfg.pile === 'closed' ? ' (chiusi)' : ''}`}</span>
       </div>
     </div>`;
 
@@ -358,7 +358,7 @@
       const newSlot = mine && (playing || (canDraw && g.cfg.pile === 'closed'))
         ? `<div class="meld newmeld ${nm ? (nm.ok ? 'ok' : 'bad') : ''} ${S.hint && S.hint.type === 'meld' ? 'hinted' : ''}" data-drop="newmeld" ${playing ? 'data-act="meld"' : ''}><span>${newSlotText}</span></div>` : '';
       return `<div class="teamzone ${mine ? 'mine' : 'theirs'}">
-        <div class="hdr" data-act="zoomTeam" data-team="${g.teams.indexOf(t)}" title="Tocca per vedere i giochi in grande"><b>${label} <i class="zoomi">🔍</i></b><span>${flags.join(' · ')}</span></div>
+        <div class="hdr" data-act="zoomTeam" data-team="${g.teams.indexOf(t)}" title="Tocca per vedere i giochi in grande"><b>${label} <i class="zoomi"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-eye /></svg></i></b><span>${flags.join(' · ')}</span></div>
         <div class="melds ${targetable ? 'targetable' : ''}">${t.melds.map((m) => meldHTML(m, mine || s40open, mine || s40open ? preview : null)).join('')}${newSlot}${!t.melds.length && !newSlot ? '<span class="empty">Nessuna combinazione</span>' : ''}</div>
       </div>`;
     };
@@ -369,36 +369,36 @@
     // ❓ dice cosa fare (si apre al tocco e sparisce da sola); 🕘 in alto apre lo storico dei turni
     const sel = S.selected.size;
     let actions = '';
-    if (myTurn && r.hints && !r.campaign) actions += '<button class="ico" data-act="hint" title="Suggerimento" aria-label="Suggerimento">💡</button>';
-    if (g.you >= 0 && !r.campaign) actions = '<button class="ico" data-act="reactPicker" title="Reazioni">😊</button>' + actions;
+    if (myTurn && r.hints && !r.campaign) actions += '<button class="ico" data-act="hint" title="Suggerimento" aria-label="Suggerimento"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-help /></svg></button>';
+    if (g.you >= 0 && !r.campaign) actions = '<button class="ico" data-act="reactPicker" title="Reazioni"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-profile /></svg></button>' + actions;
     if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';
     const sortLbl = { rank: '⇅ Valore', suit: '⇅ Seme', smart: '⇅ Giochi' }[S.sortMode] || '⇅ Ordina';
     if (g.you >= 0) actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;
     const left = g.phase === 'handEnd'
-      ? '<button class="btn primary small" data-act="result">🏆 Risultati</button>'
-      : `<button class="ico helpico ${myTurn ? 'pulse' : ''}" data-act="turnHelp" title="Cosa devo fare?">❓</button>${S.turnEnd && myTurn ? '<b class="cd chip" data-cd></b>' : ''}`;
+      ? '<button class="btn primary small" data-act="result"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Risultati</button>'
+      : `<button class="ico helpico ${myTurn ? 'pulse' : ''}" data-act="turnHelp" title="Cosa devo fare?"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-help /></svg></button>${S.turnEnd && myTurn ? '<b class="cd chip" data-cd></b>' : ''}`;
 
     return `<div class="game ${myTurn ? 'myturn' : ''} ${r.campaign ? 'cad-game cad-world-' + campaignPath().id : ''}">
       <div class="topbar">
-        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}">👁 ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet">📴</span>' : r.daily ? '<b>📅 Sfida</b>' : r.tournament ? '<b>🏆 Torneo</b>' : `${r.ranked ? `<span class="rankbadge" title="${RANKED_TIP}">🏅</span> ` : ''}<b>${r.slow ? '🐢 ' : ''}${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, ${isS40Game() ? `eliminato a ${g.cfg.target}` : `si vince a ${g.cfg.target}`}">${g.game && g.game !== 'burraco' ? `${RX.gameName(g.cfg.rules)} · ` : ''}smazzata ${g.handNo}</span></span>
-        ${FULL() ? `<button class="iconbtn" data-act="gameRules" title="Regole">📜</button>
-        ${OFFLINE || r.campaign ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo">🎵${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}` : ''}
-        ${r.campaign ? '<button class="iconbtn" data-act="campaignPause" title="Pausa" aria-label="Pausa">⏸</button>' : '<button class="iconbtn" data-act="turnLog" title="Storico dei turni">🕘</button>'}
-        ${r.campaign ? '' : `<button class="iconbtn" data-act="log" title="Chat">💬${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>`}
-        ${FULL() ? `<button class="iconbtn" data-act="scores" title="Punteggi">🏆</button>
-        <button class="iconbtn" data-act="settings" title="Aspetto e suoni">⚙️</button>
-        <button class="iconbtn" data-act="leave" title="Esci">⏏</button>`
+        <span class="title">${(r.spectators || []).length ? `<span title="${esc(r.spectators.join(', '))}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-eye /></svg> ${r.spectators.length}</span> · ` : ''}${r.offline ? '<span title="Partita senza internet"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-privacy /></svg></span>' : r.onDevice ? `<span title="${t('Allenamento')}">${uiIcon('bot')}</span>` : r.daily ? '<b><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-calendar /></svg> Sfida</b>' : r.tournament ? '<b><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Torneo</b>' : `${r.ranked ? `<span class="rankbadge" title="${RANKED_TIP}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-medal /></svg></span> ` : ''}<b>${r.slow ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-clock /></svg> ' : ''}${esc(r.code)}</b>`} · <span title="Smazzata ${g.handNo}, ${isS40Game() ? `eliminato a ${g.cfg.target}` : `si vince a ${g.cfg.target}`}">${g.game && g.game !== 'burraco' ? `${RX.gameName(g.cfg.rules)} · ` : ''}smazzata ${g.handNo}</span></span>
+        ${FULL() ? `<button class="iconbtn" data-act="gameRules" title="Regole"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-rules /></svg></button>
+        ${OFFLINE || r.campaign ? '' : `<button class="iconbtn ${r.music ? 'musicon' : ''}" data-act="music" title="Musica del tavolo"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-music /></svg>${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}` : ''}
+        ${r.campaign ? '<button class="iconbtn" data-act="campaignPause" title="Pausa" aria-label="Pausa"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-clock /></svg></button>' : '<button class="iconbtn" data-act="turnLog" title="Storico dei turni"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-clock /></svg></button>'}
+        ${r.campaign ? '' : `<button class="iconbtn" data-act="log" title="Chat"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-chat /></svg>${S.unread ? `<sup>${S.unread}</sup>` : ''}</button>`}
+        ${FULL() ? `<button class="iconbtn" data-act="scores" title="Punteggi"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg></button>
+        <button class="iconbtn" data-act="settings" title="Aspetto e suoni"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-settings /></svg></button>
+        <button class="iconbtn" data-act="leave" title="Esci"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg></button>`
         : `<button class="iconbtn menuico" data-act="tableMenu" title="Menu">☰${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}
       </div>
       <div class="scorebar">${r.series ? `<span class="sc series">${seriesHTML(r, g)}</span>` : ''}${scores}${pozz}</div>
       <div class="seats-row n${g.n} ${g.you < 0 ? 'spect' : ''}">${seats}</div>
       ${surrenderBarHTML(g, r)}
       <div class="felt" id="felt">${g.presa ? presaCenterHTML(g) : others + center + mineZone}</div>
-      ${r.campaign ? campaignCoachHTML() : r.tutorial && !S.coachOff ? `<div class="coach">🎓 ${coachTip(g)} <button class="ico" data-act="coachOff" title="Nascondi">✕</button></div>` : ''}
+      ${r.campaign ? campaignCoachHTML() : r.tutorial && !S.coachOff ? `<div class="coach"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-book /></svg> ${uiLabel(coachTip(g))} <button class="ico" data-act="coachOff" title="Nascondi">✕</button></div>` : ''}
       <div class="sr-only" id="turnmsg" aria-live="polite">${statusText(g).replace(/<[^>]+>/g, '')}</div>
       <div class="floatbar"><span class="fl">${left}</span><span class="fr">${actions}</span></div>
       ${S.reactOpen ? `<div class="reactbar">${['👏', '😂', '😱', '🔥', '👍', '😡', '🙏', '😍'].map((e) => `<button data-act="react" data-e="${e}">${e}</button>`).join('')}</div>` : ''}
-      ${g.you < 0 ? `<div class="watching">👁 Stai guardando la partita · le carte in mano non sono visibili <button class="btn small" data-act="leave">Esci</button></div>`
+      ${g.you < 0 ? `<div class="watching"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-eye /></svg> Stai guardando la partita · le carte in mano non sono visibili <button class="btn small" data-act="leave">Esci</button></div>`
         : `<div class="handwrap" data-drop="hand"><div class="hand" id="hand">${handHTML(g)}</div></div>`}
     </div>`;
   }
@@ -552,8 +552,8 @@
     const team = g.teams.find((t) => t.members.includes(g.you));
     const mine = votes.filter((x) => team && team.members.includes(x));
     if (!mine.length) return '';
-    if (mine.includes(g.you)) return '<div class="surrbar">🏳️ Hai proposto la resa: aspetta che il compagno accetti. <button class="btn small" data-act="surrenderCancel">Annulla</button></div>';
-    return `<div class="surrbar">🏳️ <b>${esc(g.players[mine[0]].name)}</b> propone di arrendersi.
+    if (mine.includes(g.you)) return '<div class="surrbar"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Hai proposto la resa: aspetta che il compagno accetti. <button class="btn small" data-act="surrenderCancel">Annulla</button></div>';
+    return `<div class="surrbar"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> <b>${esc(g.players[mine[0]].name)}</b> propone di arrendersi.
       <button class="btn small danger" data-act="surrender" data-ok="1">Accetta</button><button class="btn small" data-act="surrenderCancel">No, giochiamo</button></div>`;
   }
 

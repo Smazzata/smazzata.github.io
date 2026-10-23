@@ -22,7 +22,7 @@
        <p>Se a fine smazzata non l'hai preso: <b>−100 punti</b>.</p>` },
     { t: 'Chiudere e vincere', h: `<p>Per <b>chiudere</b> devi aver preso il pozzetto, avere almeno un burraco e scartare l'ultima carta (non una matta): <b>+100</b>.</p>
        <p>Contano le carte calate e i bonus; le carte rimaste in mano si sottraggono. Vince chi arriva per primo al punteggio stabilito.</p>
-       <p>Ora prova una partita di allenamento: il computer gioca piano e il pulsante 💡 ti suggerisce la mossa.</p>` },
+       <p>Ora prova una partita di allenamento: il computer gioca piano e il pulsante <svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-help /></svg> ti suggerisce la mossa.</p>` },
   ];
 
   const it = (r, s) => italianCardHTML({ id: -300 - r * 4 - 'dcsb'.indexOf(s), r, s }, 'tut', '');
@@ -100,13 +100,13 @@
     const sl = slides[i];
     const last = i === slides.length - 1;
     openModal('tutorial', `<div class="tutorial">
-      <div class="row tutgames">${Object.entries(LESSONS).filter(([id]) => AvailableGames.enabled(id)).map(([id, l]) => `<button class="swatch ${id === gid ? 'on' : ''}" data-act="tutStep" data-i="0" data-game="${id}">${l.name}</button>`).join('')}</div>
+      <div class="row tutgames">${Object.entries(LESSONS).filter(([id]) => AvailableGames.enabled(id)).map(([id, l]) => `<button class="swatch ${id === gid ? 'on' : ''}" data-act="tutStep" data-i="0" data-game="${id}">${gameIcon(id)} ${esc(l.name.slice(l.name.indexOf(' ')+1))}</button>`).join('')}</div>
       <div class="tutdots">${slides.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</div>
-      <h2>${i + 1}. ${sl.t}</h2>${sl.h}
+      <h2>${i + 1}. ${uiLabel(sl.t)}</h2>${uiLabel(sl.h)}
       <div class="row" style="margin-top:14px">
         ${i ? `<button class="btn" data-act="tutStep" data-i="${i - 1}">← Indietro</button>` : ''}
         ${!last ? `<button class="btn primary grow" data-act="tutStep" data-i="${i + 1}">Avanti →</button>`
-          : `<button class="btn primary grow big" data-act="practice" data-game="${gid}">🎓 Allenamento a ${LESSONS[gid].name.slice(LESSONS[gid].name.indexOf(' ') + 1)}</button>`}
+          : `<button class="btn primary grow big" data-act="practice" data-game="${gid}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-book /></svg> Allenamento a ${LESSONS[gid].name.slice(LESSONS[gid].name.indexOf(' ') + 1)}</button>`}
       </div></div>`);
   }
 
@@ -123,7 +123,7 @@
     if (myTeam && myTeam.canClose) return 'Puoi chiudere! Cala tutto quello che puoi e scarta l\'ultima carta.';
     if (sel >= 3) return 'Se la casella ＋ dice "✓ Cala", toccala per calare queste carte.';
     if (sel === 1) return 'Tocca gli scarti per scartare questa carta, oppure un tuo gioco per attaccarla.';
-    return 'Cerca 3 carte in scala dello stesso seme o 3 uguali e selezionale. Non sai cosa fare? Tocca 💡.';
+    return 'Cerca 3 carte in scala dello stesso seme o 3 uguali e selezionale. Non sai cosa fare? Tocca Suggerimento.';
   }
 
   /** Allenatore di Scopa e Briscola */
@@ -178,7 +178,7 @@
     if (!sr) return '';
     const label = (i) => (g && g.players[i] ? (i === g.you ? 'Tu' : g.players[i].name) : r.seats[i] ? r.seats[i].name : '?');
     const groups = r.n === 4 ? [[0, 2], [1, 3]] : Array.from({ length: r.n }, (_, i) => [i]);
-    return `🏆 ${groups.map((gr) => `${gr.map(label).map(esc).join(' & ')} <b>${sr.wins[gr[0]]}</b>`).join(' · ')} <span class="muted small">(al meglio di ${sr.bestOf})</span>`;
+    return `<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> ${groups.map((gr) => `${gr.map(label).map(esc).join(' & ')} <b>${sr.wins[gr[0]]}</b>`).join(' · ')} <span class="muted small">(al meglio di ${sr.bestOf})</span>`;
   }
 
   function seriesPickHTML(cur) {

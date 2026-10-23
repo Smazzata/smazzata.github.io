@@ -23,7 +23,9 @@ module.exports = async ({ cdp, shot, step }) => {
     await emit('setAvatar', {e:'🐶',c:'#81c784'});
     await profileModal();
     if (!document.querySelector('.avopt.on').title.includes('Orso')) throw Error('avatar precedente non convertito');
-    document.querySelector('.avopt[data-avatar-id="volpe"]').click(); await __W(400);
+    document.querySelector('.avopt[data-avatar-id="volpe"]').click(); await __W(300);
+    if (!document.querySelector('.avatar-detail-art')) throw Error('anteprima comune assente');
+    document.querySelector('[data-act=pickAvatar]').click(); await __W(400);
     if (document.querySelector('.avpreview .avatar').getAttribute('aria-label') !== 'Volpe del fante') throw Error('anteprima non aggiornata');
     document.querySelector('.avcol[data-c="#64b5f6"]').click(); await __W(400);
     const saved = await emit('profile');
@@ -34,15 +36,17 @@ module.exports = async ({ cdp, shot, step }) => {
     for(const rarity of catalog.RARITIES) {
       await handlers.avatarFilter({dataset:{rarity:rarity.id}});
       if(document.querySelectorAll('.avopt').length!==counts[rarity.id] || [...document.querySelectorAll('.avopt')].some(b=>b.dataset.rarity!==rarity.id)) throw Error('filtro rarità errato');
-      if(rarity.id!=='common' && document.querySelector('.avopt:not(:disabled)')) throw Error('avatar superiore selezionabile');
+      if(rarity.id!=='common' && document.querySelectorAll('.avlock').length!==counts[rarity.id]) throw Error('blocco avatar superiore non indicato');
     }
     const legendary = document.querySelector('.avopt[data-avatar-id="drago-imperatore"]');
     legendary.click();await __W(400);
+    if(!document.querySelector('.avatar-detail-art') || document.querySelector('[data-act=pickAvatar]')) throw Error('anteprima bloccata errata');
     const picked = await emit('profile');
     if(picked.avatar.id!=='volpe') throw Error('avatar bloccato selezionato dal catalogo');
+    await handlers.avatarCatalog();
     await emit('setAvatar',{id:'volpe',c:'#64b5f6'});
     await handlers.avatarFilter({dataset:{rarity:'all'}});
-    if(document.querySelectorAll('.avopt:disabled').length!==60 || document.querySelectorAll('.avopt:not(:disabled)').length!==40) throw Error('disponibilità del catalogo errata');
+    if(document.querySelectorAll('.avlock').length!==60 || document.querySelectorAll('.avopt').length!==100) throw Error('disponibilità del catalogo errata');
     const gradientIds=[...document.querySelectorAll('#modal svg defs [id]')].map(el=>el.id);
     if(new Set(gradientIds).size!==gradientIds.length) throw Error('gradienti avatar con ID duplicati');
     for(const svg of document.querySelectorAll('#modal .avatar-art')) {

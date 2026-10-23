@@ -1,0 +1,234 @@
+# Rifiniture prima del rilascio e testi senza pittogrammi emoji
+La prossima coppa parte da te ‖ The next cup starts with you ‖ La próxima copa empieza contigo ‖ A próxima taça começa com você
+Crea un torneo e invita gli amici a iscriversi. ‖ Create a tournament and invite friends to join. ‖ Crea un torneo e invita a tus amigos a inscribirse. ‖ Crie um torneio e convide amigos para participar.
+Un posto per i tuoi amici ‖ A seat for your friends ‖ Un sitio para tus amigos ‖ Um lugar para os seus amigos
+Cerca il loro nickname per ritrovarvi e giocare allo stesso tavolo. ‖ Find their nickname to meet and play at the same table. ‖ Busca su apodo para reuniros y jugar en la misma mesa. ‖ Procure o apelido deles para jogar na mesma mesa.
+Aggiungi un amico ‖ Add a friend ‖ Añadir un amigo ‖ Adicionar um amigo
+Invita gli amici e iniziate il vostro percorso nelle classificate. ‖ Invite friends and start your ranked journey together. ‖ Invita a tus amigos y empezad vuestro camino en las clasificatorias. ‖ Convide amigos e comecem a jornada nas classificadas.
+Gioca una classificata per iniziare i piazzamenti. ‖ Play a ranked match to start your placements. ‖ Juega una clasificatoria para empezar tus partidas de posicionamiento. ‖ Jogue uma classificada para começar as partidas de colocação.
+Il tuo percorso inizia qui ‖ Your journey starts here ‖ Tu camino empieza aquí ‖ Sua jornada começa aqui
+Benvenuto a Smazzata ‖ Welcome to Smazzata ‖ Bienvenido a Smazzata ‖ Bem-vindo ao Smazzata
+Da quale gioco cominciamo? ‖ Which game shall we start with? ‖ ¿Con qué juego empezamos? ‖ Por qual jogo começamos?
+Potrai cambiarlo quando vuoi dalla home. ‖ You can change it anytime from the home screen. ‖ Puedes cambiarlo cuando quieras desde el inicio. ‖ Você pode mudar a qualquer momento na tela inicial.
+Il tuo posto al tavolo ‖ Your seat at the table ‖ Tu sitio en la mesa ‖ Seu lugar à mesa
+Impara con il computer e i suggerimenti, senza punti classifica o progressi. ‖ Learn with the computer and hints, without ranking points or progression. ‖ Aprende con el ordenador y las pistas, sin puntos de clasificación ni progresos. ‖ Aprenda com o computador e as dicas, sem pontos de classificação ou progresso.
+Gioca con gli amici o trova un tavolo, senza cambiare il grado. ‖ Play with friends or find a table, without changing your rank. ‖ Juega con amigos o encuentra una mesa, sin cambiar tu rango. ‖ Jogue com amigos ou encontre uma mesa, sem alterar sua posição.
+Affronta altri giocatori e costruisci il tuo grado, nelle code Solo o Duo. ‖ Face other players and build your rank in the Solo or Duo queues. ‖ Enfréntate a otros jugadores y mejora tu rango en las colas Solo o Dúo. ‖ Enfrente outros jogadores e avance nas filas Solo ou Duo.
+Prova l’allenamento ‖ Try training ‖ Prueba el entrenamiento ‖ Experimente o treino
+Vai alla home ‖ Go to home ‖ Ir al inicio ‖ Ir para o início
+Cambia gioco ‖ Change game ‖ Cambiar juego ‖ Mudar de jogo
+Salta la guida ‖ Skip the guide ‖ Omitir la guía ‖ Pular o guia
+Guida iniziale ‖ Getting started ‖ Guía inicial ‖ Guia inicial
+Torna alla collezione ‖ Back to collection ‖ Volver a la colección ‖ Voltar à coleção
+Il tuo avatar attuale ‖ Your current avatar ‖ Tu avatar actual ‖ Seu avatar atual
+Disponibile per il tuo profilo ‖ Available for your profile ‖ Disponible para tu perfil ‖ Disponível para seu perfil
+Puoi ammirarlo in anteprima. Non è ancora selezionabile. ‖ You can preview it. It cannot be selected yet. ‖ Puedes verlo en detalle. Todavía no se puede seleccionar. ‖ Você pode ver a prévia. Ainda não pode ser selecionado.
+Usa questo avatar ‖ Use this avatar ‖ Usar este avatar ‖ Usar este avatar
+Allenamento: nessun punto classifica, esperienza o trofeo. ‖ Training: no ranking points, experience or trophies. ‖ Entrenamiento: sin puntos de clasificación, experiencia ni trofeos. ‖ Treino: sem pontos de classificação, experiência ou troféus.
+Progressi confermati ‖ Confirmed progress ‖ Progresos confirmados ‖ Progresso confirmado
+punti esperienza ‖ experience points ‖ puntos de experiencia ‖ pontos de experiência
+Esperienza nel livello ‖ Experience in this level ‖ Experiencia en este nivel ‖ Experiência neste nível
+Dettaglio del punteggio ‖ Score breakdown ‖ Detalle de la puntuación ‖ Detalhes da pontuação
+Fine smazzata ‖ End of hand ‖ Fin de la mano ‖ Fim da rodada
+Gioca ancora ‖ Play again ‖ Jugar de nuevo ‖ Jogar novamente
+Grazie, segnalazione inviata ‖ Thanks, report sent ‖ Gracias, informe enviado ‖ Obrigado, relato enviado
+Grazie! Segnalazione inviata ‖ Thanks! Report sent ‖ ¡Gracias! Informe enviado ‖ Obrigado! Relato enviado
+Musica condivisa con il tavolo ‖ Music shared with the table ‖ Música compartida con la mesa ‖ Música compartilhada com a mesa
+Smazzata: torneo ‖ Smazzata: tournament ‖ Smazzata: torneo ‖ Smazzata: torneio
+Smazzata: tocca a te ‖ Smazzata: your turn ‖ Smazzata: te toca ‖ Smazzata: sua vez
+Invito ‖ Invitation ‖ Invitación ‖ Convite
+{0} ha avviato la musica: tocca per ascoltarla ‖ {0} started the music: tap to listen ‖ {0} puso música: toca para escucharla ‖ {0} iniciou a música: toque para ouvir
+{0} ha avviato la musica: tocca ‖ {0} started the music: tap ‖ {0} puso música: toca ‖ {0} iniciou a música: toque
+per ascoltarla ‖ to listen ‖ para escucharla ‖ para ouvir
+Connessione persa: mi ricollego… ‖ Connection lost: reconnecting… ‖ Conexión perdida: reconectando… ‖ Conexão perdida: reconectando…
+È disponibile un aggiornamento dell'app ‖ An app update is available ‖ Hay una actualización de la app ‖ Há uma atualização do app
+Nuova versione dell'app ‖ New app version ‖ Nueva versión de la app ‖ Nova versão do app
+Riprova online ‖ Try online again ‖ Reintentar online ‖ Tentar online de novo
+Profilo ‖ Profile ‖ Perfil ‖ Perfil
+Amici{0} ‖ Friends{0} ‖ Amigos{0} ‖ Amigos{0}
+Amici ‖ Friends ‖ Amigos ‖ Amigos
+Torna al tavolo {0} ‖ Back to table {0} ‖ Volver a la mesa {0} ‖ Voltar à mesa {0}
+Impara a giocare ‖ Learn to play ‖ Aprende a jugar ‖ Aprenda a jogar
+Le tue partite con calma ‖ Your slow games ‖ Tus partidas con calma ‖ Suas partidas sem pressa
+Scarica l'app per Android ‖ Get the Android app ‖ Descarga la app para Android ‖ Baixe o app para Android
+Tema chiaro ‖ Light theme ‖ Tema claro ‖ Tema claro
+Tema scuro ‖ Dark theme ‖ Tema oscuro ‖ Tema escuro
+Statistiche ‖ Statistics ‖ Estadísticas ‖ Estatísticas
+Privacy: quali dati usiamo e come cancellarli ‖ Privacy: what data we use and how to delete it ‖ Privacidad: qué datos usamos y cómo borrarlos ‖ Privacidade: quais dados usamos e como apagá-los
+Leggi le regole di questa partita ‖ Read the rules of this game ‖ Lee las reglas de esta partida ‖ Leia as regras desta partida
+Tavolo veloce: la partita parte da sola appena il tavolo è pieno. Se non arriva nessuno, l'host può riempirlo con il computer. ‖ Quick table: the game starts by itself as soon as the table is full. If nobody comes, the host can fill it with the computer. ‖ Mesa rápida: la partida empieza sola en cuanto la mesa está llena. Si no llega nadie, el anfitrión puede llenarla con la computadora. ‖ Mesa rápida: a partida começa sozinha quando a mesa estiver cheia. Se ninguém chegar, o anfitrião pode completá-la com o computador.
+Torneo al meglio di {0} ‖ Best of {0} ‖ Al mejor de {0} ‖ Melhor de {0}
+Con calma ‖ Slow ‖ Con calma ‖ Sem pressa
+Invita amici ‖ Invite friends ‖ Invitar amigos ‖ Convidar amigos
+Musica del tavolo{9} ‖ Table music{9} ‖ Música de la mesa{9} ‖ Música da mesa{9}
+Leggi le regole ‖ Read the rules ‖ Lee las reglas ‖ Leia as regras
+Da puoi cambiare colore del tavolo, dorso delle carte, dimensione e suoni. Giocando da solo contro il computer puoi attivare i ‖ In you can change table colour, card back, size and sounds. Playing alone against the computer you can turn on ‖ En puedes cambiar el color de la mesa, el dorso de las cartas, el tamaño y los sonidos. Jugando solo contra la computadora puedes activar las ‖ Em você pode mudar a cor da mesa, o verso das cartas, o tamanho e os sons. Jogando sozinho contra o computador você pode ativar as
+Da ‖ In ‖ En ‖ Em
+puoi cambiare colore del tavolo, dorso delle carte, dimensione e suoni. Giocando da solo contro il computer puoi attivare i ‖ you can change table colour, card back, size and sounds. Playing alone against the computer you can turn on ‖ puedes cambiar el color de la mesa, el dorso de las cartas, el tamaño y los sonidos. Jugando solo contra la computadora puedes activar las ‖ você pode mudar a cor da mesa, o verso das cartas, o tamanho e os sons. Jogando sozinho contra o computador você pode ativar as
+suggerimenti ‖ hints ‖ sugerencias ‖ dicas
+Chiaro ‖ Light ‖ Claro ‖ Claro
+Scuro ‖ Dark ‖ Oscuro ‖ Escuro
+In colonna ‖ In columns ‖ En columna ‖ Em coluna
+In fila ‖ In rows ‖ En fila ‖ Em fila
+Attive ‖ On ‖ Activadas ‖ Ativadas
+Disattivate ‖ Off ‖ Desactivadas ‖ Desativadas
+Abbandona la partita ‖ Leave the game ‖ Abandonar la partida ‖ Abandonar a partida
+Automatica ‖ Automatic ‖ Automático ‖ Automático
+Lenta ‖ Slow ‖ Lenta ‖ Lenta
+Veloce ‖ Fast ‖ Rápida ‖ Rápida
+Unisciti alla Jam su Spotify ‖ Join the Jam on Spotify ‖ Únete a la Jam en Spotify ‖ Entre na Jam no Spotify
+Apri in Spotify ‖ Open in Spotify ‖ Abrir en Spotify ‖ Abrir no Spotify
+Anteprima regole ‖ Rules preview ‖ Vista previa de las reglas ‖ Prévia das regras
+Animazioni ‖ Animations ‖ Animaciones ‖ Animações
+Mosse in silenzio ‖ Moves in silence ‖ Jugadas en silencio ‖ Jogadas em silêncio
+Leggi le mosse ad alta voce ‖ Read moves aloud ‖ Leer las jugadas en voz alta ‖ Ler as jogadas em voz alta
+Classificata ‖ Ranked ‖ Clasificatoria ‖ Ranqueada
+L'Elo cambia solo con le partite classificate ( Gioca subito tra persone). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei. ‖ Elo changes only in ranked games ( Play now between people). Friendly games (with friends or the computer) count for stats, level and trophies. ‖ El Elo cambia solo con las partidas clasificatorias ( Jugar ya entre personas). Las amistosas (con amigos o con la computadora) cuentan para estadísticas, nivel y trofeos. ‖ O Elo muda só com as partidas ranqueadas ( Jogar agora entre pessoas). As amistosas (com amigos ou com o computador) contam para estatísticas, nível e troféus.
+L'Elo cambia solo con le partite classificate ( ‖ Elo changes only in ranked games ( ‖ El Elo cambia solo con las partidas clasificatorias ( ‖ O Elo muda só com as partidas ranqueadas (
+Gioca subito tra persone). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei. ‖ Play now between people). Friendly games (with friends or the computer) count for stats, level and trophies. ‖ Jugar ya entre personas). Las amistosas (con amigos o con la computadora) cuentan para estadísticas, nivel y trofeos. ‖ Jogar agora entre pessoas). As amistosas (com amigos ou com o computador) contam para estatísticas, nível e troféus.
+{0} deve fare ‖ {0} must make ‖ {0} debe hacer ‖ {0} precisa fazer
+{0} è il socio di {1}! ‖ {0} is {1}'s partner! ‖ ¡{0} es el socio de {1}! ‖ {0} é o parceiro de {1}!
+Allenamento a Briscola in 5 ‖ Five-player Briscola practice ‖ Práctica de Brisca de 5 ‖ Treino de Bisca a 5
+Benvenuto, {0}! ‖ Welcome, {0}! ‖ ¡Bienvenido, {0}! ‖ Bem-vindo, {0}!
+Fai uno screenshot o scrivilo da qualche parte. Non darlo a nessuno: chi lo ha può entrare nel tuo profilo. Lo ritrovi sempre in Profilo. ‖ Take a screenshot or write it down. Do not give it to anyone: whoever has it can enter your profile. You can always find it in Profile. ‖ Haz una captura o anótalo. No se lo des a nadie: quien lo tenga puede entrar en tu perfil. Siempre lo encuentras en Perfil. ‖ Tire um print ou anote. Não passe para ninguém: quem o tiver pode entrar no seu perfil. Você sempre o encontra em Perfil.
+Fai uno screenshot o scrivilo da qualche parte. Non darlo a nessuno: chi lo ha può entrare nel tuo profilo. Lo ritrovi sempre in ‖ Take a screenshot or write it down. Do not give it to anyone: whoever has it can enter your profile. You can always find it in ‖ Haz una captura o anótalo. No se lo des a nadie: quien lo tenga puede entrar en tu perfil. Siempre lo encuentras en ‖ Tire um print ou anote. Não passe para ninguém: quem o tiver pode entrar no seu perfil. Você sempre o encontra em
+Profilo. ‖ Profile. ‖ Perfil. ‖ Perfil.
+Scrivi il tuo nickname, il codice di recupero (te l'abbiamo mostrato quando hai creato il profilo; lo trovi anche in Profilo su un dispositivo dove sei ancora dentro) e una password nuova. ‖ Enter your nickname, your recovery code (shown when you created the profile; also in Profile on a device where you are still signed in) and a new password. ‖ Escribe tu nickname, el código de recuperación (te lo mostramos al crear el perfil; también está en Perfil en un dispositivo donde sigues dentro) y una contraseña nueva. ‖ Digite seu nickname, o código de recuperação (mostrado quando você criou o perfil; também em Perfil num dispositivo onde ainda está conectado) e uma senha nova.
+Scrivi il tuo nickname, il codice di recupero (te l'abbiamo mostrato quando hai creato il profilo; lo trovi anche in ‖ Enter your nickname, your recovery code (shown when you created the profile; also in ‖ Escribe tu nickname, el código de recuperación (te lo mostramos al crear el perfil; también está en ‖ Digite seu nickname, o código de recuperação (mostrado quando você criou o perfil; também em
+Profilo su un dispositivo dove sei ancora dentro) e una password nuova. ‖ Profile on a device where you are still signed in) and a new password. ‖ Perfil en un dispositivo donde sigues dentro) y una contraseña nueva. ‖ Perfil num dispositivo onde ainda está conectado) e uma senha nova.
+Password (da impostare) ‖ Password (not set) ‖ Contraseña (sin configurar) ‖ Senha (não definida)
+Password ‖ Password ‖ Contraseña ‖ Senha
+(da impostare) ‖ (not set) ‖ (sin configurar) ‖ (não definida)
+Ti abbiamo mandato un codice a ‖ We sent a code to ‖ Te hemos enviado un código a ‖ Enviamos um código para
+Email confermata ‖ Email confirmed ‖ Email confirmado ‖ Email confirmado
+Email confermata ✓ ‖ Email confirmed ✓ ‖ Email confirmado ✓ ‖ Email confirmado ✓
+Non arriva? Guarda anche nello spam. Puoi confermarla anche più tardi da Profilo. ‖ Not arriving? Check spam too. You can also confirm it later from Profile. ‖ ¿No llega? Mira también en spam. También puedes confirmarlo más tarde desde Perfil. ‖ Não chegou? Veja também no spam. Você pode confirmar depois em Perfil.
+Non arriva? Guarda anche nello spam. Puoi confermarla anche più tardi da ‖ Not arriving? Check spam too. You can also confirm it later from ‖ ¿No llega? Mira también en spam. También puedes confirmarlo más tarde desde ‖ Não chegou? Veja também no spam. Você pode confirmar depois em
+Email non ancora confermata: premi «Manda il codice» per riceverne uno nuovo. ‖ Email not confirmed yet: press «Send the code» to get a new one. ‖ Email aún no confirmado: pulsa «Enviar el código» para recibir uno nuevo. ‖ Email ainda não confirmado: toque em «Enviar o código» para receber um novo.
+Ti abbiamo mandato un codice a {0}. ‖ We sent a code to {0}. ‖ Te hemos enviado un código a {0}. ‖ Enviamos um código para {0}.
+Codice inviato di nuovo ‖ Code sent again ‖ Código enviado de nuevo ‖ Código enviado de novo
+Codice inviato ‖ Code sent ‖ Código enviado ‖ Código enviado
+Torna alla partita ‖ Back to the game ‖ Volver a la partida ‖ Voltar à partida
+Sei stato invitato al tavolo {0} ‖ You have been invited to table {0} ‖ Te han invitado a la mesa {0} ‖ Você foi convidado para a mesa {0}
+Inizia la partita ‖ Start the game ‖ Empezar la partida ‖ Começar a partida
+Come si gioca ‖ How to play ‖ Cómo se juega ‖ Como jogar
+Manda l'invito ‖ Send the invitation ‖ Enviar la invitación ‖ Enviar o convite
+Dai miei amici ‖ From my friends ‖ De mis amigos ‖ Dos meus amigos
+Computer ‖ Computer ‖ Ordenador ‖ Computador
+Impostazioni del tavolo ‖ Table settings ‖ Ajustes de la mesa ‖ Configurações da mesa
+Semplici ‖ Simple ‖ Sencillas ‖ Simples
+Complete (tutte le opzioni) ‖ Complete (all options) ‖ Completas (todas las opciones) ‖ Completas (todas as opções)
+Pesca qui ‖ Draw here ‖ Roba aquí ‖ Compre aqui
+Scarta qui ‖ Discard here ‖ Descarta aquí ‖ Descarte aqui
+Torna al tavolo ‖ Back to the table ‖ Volver a la mesa ‖ Voltar à mesa
+Esci dal tavolo ‖ Leave the table ‖ Salir de la mesa ‖ Sair da mesa
+Allenamento a Ramino ‖ Rummy practice ‖ Práctica de Rummy ‖ Treino de Rummy
+Stai vincendo spesso: il computer diventa più bravo ({0}) ‖ You are winning often: the computer gets stronger ({0}) ‖ Ganas a menudo: el ordenador se vuelve más fuerte ({0}) ‖ Você está ganhando muito: o computador fica mais forte ({0})
+Il computer diventa un po' più facile ({0}) ‖ The computer gets a little easier ({0}) ‖ El ordenador se vuelve un poco más fácil ({0}) ‖ O computador fica um pouco mais fácil ({0})
+Sì, ricordamelo ‖ Yes, remind me ‖ Sí, recuérdamelo ‖ Sim, me lembre
+No ‖ No ‖ No ‖ Não
+{0} giorni di fila! Continua così ‖ {0} days in a row! Keep it up ‖ ¡{0} días seguidos! Sigue así ‖ {0} dias seguidos! Continue assim
+Condividi il risultato ‖ Share the result ‖ Compartir el resultado ‖ Compartilhar o resultado
+Scarica l'immagine ‖ Download the image ‖ Descargar la imagen ‖ Baixar a imagem
+WhatsApp ‖ WhatsApp ‖ WhatsApp ‖ WhatsApp
+Sì ‖ Yes ‖ Sí ‖ Sim
+La chat è bloccata per te fino al {0} perché non hai rispettato le ‖ Chat is blocked for you until {0} because you did not follow the ‖ El chat está bloqueado para ti hasta el {0} porque no respetaste las ‖ O chat está bloqueado para você até {0} porque não respeitou as
+La chat è bloccata per te perché non hai rispettato le ‖ Chat is blocked for you because you did not follow the ‖ El chat está bloqueado para ti porque no respetaste las ‖ O chat está bloqueado para você porque não respeitou as
+Avviso del gestore ‖ Warning from the administrator ‖ Aviso del administrador ‖ Aviso do administrador
+Avventura ‖ Adventure ‖ Aventura ‖ Aventura
+Regole e tutorial ‖ Rules and tutorial ‖ Reglas y tutorial ‖ Regras e tutorial
+Preferisci leggere le regole? ‖ Would you rather read the rules? ‖ ¿Prefieres leer las reglas? ‖ Prefere ler as regras?
+Completa il primo mondo ‖ Complete the first world ‖ Completa el primer mundo ‖ Conclua o primeiro mundo
+Mondo 2 · presto ‖ World 2 · coming soon ‖ Mundo 2 · pronto ‖ Mundo 2 · em breve
+Il grado cambia solo con le partite classificate ( Classificata). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei. ‖ Your rank changes only in ranked games ( Ranked). Friendly games (with friends or the computer) count for stats, level and trophies. ‖ El rango cambia solo con las partidas clasificatorias ( Clasificatoria). Las amistosas (con amigos o con la computadora) cuentan para estadísticas, nivel y trofeos. ‖ A patente muda só com as partidas ranqueadas ( Ranqueada). As amistosas (com amigos ou com o computador) contam para estatísticas, nível e troféus.
+Il grado cambia solo con le partite classificate ( ‖ Your rank changes only in ranked games ( ‖ El rango cambia solo con las partidas clasificatorias ( ‖ A patente muda só com as partidas ranqueadas (
+Classificata). Le amichevoli (con gli amici o con il computer) contano per statistiche, livello e trofei. ‖ Ranked). Friendly games (with friends or the computer) count for stats, level and trophies. ‖ Clasificatoria). Las amistosas (con amigos o con la computadora) cuentan para estadísticas, nivel y trofeos. ‖ Ranqueada). As amistosas (com amigos ou com o computador) contam para estatísticas, nível e troféus.
+Il grado cambia solo con le partite classificate ( Classificata). Le partite tra persone contano per statistiche, livello e trofei. ‖ Your rank changes only in ranked games ( Ranked). Games between people count for stats, level and trophies. ‖ El rango cambia solo con las partidas clasificatorias ( Clasificatoria). Las partidas entre personas cuentan para estadísticas, nivel y trofeos. ‖ A patente muda só com as partidas ranqueadas ( Ranqueada). As partidas entre pessoas contam para estatísticas, nível e troféus.
+Classificata). Le partite tra persone contano per statistiche, livello e trofei. ‖ Ranked). Games between people count for stats, level and trophies. ‖ Clasificatoria). Las partidas entre personas cuentan para estadísticas, nivel y trofeos. ‖ Ranqueada). As partidas entre pessoas contam para estatísticas, nível e troféus.
+Gioca subito ‖ Play now ‖ Jugar ya ‖ Jogar agora
+Sfida del giorno ‖ Daily challenge ‖ Desafío del día ‖ Desafio do dia
+Tornei ‖ Tournaments ‖ Torneos ‖ Torneios
+Segnala un problema ‖ Report a problem ‖ Informar de un problema ‖ Relatar um problema
+Rivedi la smazzata ‖ Replay the hand ‖ Ver de nuevo la mano ‖ Rever a mão
+Rivedi l'ultima smazzata ‖ Replay the last hand ‖ Ver de nuevo la última mano ‖ Rever a última mão
+Tocca a te ‖ Your turn ‖ Te toca ‖ Sua vez
+Ben giocato ‖ Well played ‖ Bien jugado ‖ Bem jogado
+Arrenditi ‖ Surrender ‖ Rendirse ‖ Desistir
+Termina la partita ‖ End the game ‖ Terminar la partida ‖ Encerrar a partida
+Suggerimenti (solo contro il computer) ‖ Hints (only against the computer) ‖ Sugerencias (solo contra la computadora) ‖ Dicas (só contra o computador)
+Suggerimenti ‖ Hints ‖ Sugerencias ‖ Dicas
+(solo contro il computer) ‖ (only against the computer) ‖ (solo contra la computadora) ‖ (só contra o computador)
+{0} scope ‖ {0} sweeps ‖ {0} escobas ‖ {0} escopas
+Ultimo giro: restano {0} pescate ‖ Last round: {0} draws left ‖ Última vuelta: quedan {0} robos ‖ Última rodada: restam {0} compras
+Tallone quasi finito: ~{0} giri ‖ Stock almost over: ~{0} rounds ‖ Mazo casi agotado: ~{0} vueltas ‖ Monte quase no fim: ~{0} rodadas
+{0} è offline: il computer gioca al suo posto ‖ {0} is offline: the computer plays for them ‖ {0} está desconectado: la computadora juega por él ‖ {0} está offline: o computador joga no lugar
+Tempo scaduto per {0}: pesca e scarta in automatico ‖ Time is up for {0}: automatic draw and discard ‖ Se acabó el tiempo de {0}: roba y descarta automáticamente ‖ Tempo esgotado para {0}: compra e descarte automáticos
+Le tue statistiche ‖ Your statistics ‖ Tus estadísticas ‖ Suas estatísticas
+Contro chi ‖ Opponents ‖ Contra quién ‖ Contra quem
+Andamento ‖ Trend ‖ Evolución ‖ Evolução
+Per gioco ‖ By game ‖ Por juego ‖ Por jogo
+Trofei ‖ Trophies ‖ Trofeos ‖ Troféus
+Campionati tra amici ‖ Leagues with friends ‖ Ligas entre amigos ‖ Ligas entre amigos
+Vedi la scheda ‖ View profile ‖ Ver ficha ‖ Ver ficha
+Aggiungi agli amici ‖ Add as friend ‖ Añadir a amigos ‖ Adicionar aos amigos
+Blocca ‖ Block ‖ Bloquear ‖ Bloquear
+Segnala ‖ Report ‖ Denunciar ‖ Denunciar
+Guarda ‖ Watch ‖ Mirar ‖ Assistir
+Regole della sfida ‖ Challenge rules ‖ Reglas del desafío ‖ Regras do desafio
+Gioca la sfida ‖ Play the challenge ‖ Jugar el desafío ‖ Jogar o desafio
+Sfida completata: {0} punti ‖ Challenge completed: {0} points ‖ Desafío completado: {0} puntos ‖ Desafio concluído: {0} pontos
+Classifica della sfida ‖ Challenge ranking ‖ Clasificación del desafío ‖ Ranking do desafio
+Vince {0}! ‖ {0} wins! ‖ ¡Gana {0}! ‖ {0} vence!
+Campione del torneo: {0}! ‖ Tournament champion: {0}! ‖ Campeón del torneo: ¡{0}! ‖ Campeão do torneio: {0}!
+Prossima partita del torneo ‖ Next game of the series ‖ Siguiente partida de la serie ‖ Próxima partida da série
+Passi al turno successivo! ‖ You go through to the next round! ‖ ¡Pasas a la siguiente ronda! ‖ Você passa para a próxima rodada!
+Torna al tabellone ‖ Back to the bracket ‖ Volver al cuadro ‖ Voltar à chave
+Rivincita ‖ Rematch ‖ Revancha ‖ Revanche
+Moviola · smazzata {0} ‖ Replay · hand {0} ‖ Repetición · mano {0} ‖ Replay · mão {0}
+iscrizioni aperte ‖ registration open ‖ inscripciones abiertas ‖ inscrições abertas
+in corso ‖ in progress ‖ en curso ‖ em andamento
+finito ‖ finished ‖ terminado ‖ encerrado
+Vai al tavolo ‖ Go to the table ‖ Ir a la mesa ‖ Ir para a mesa
+Inizia il torneo ‖ Start the tournament ‖ Empezar el torneo ‖ Começar o torneio
+Campione: {0}! ‖ Champion: {0}! ‖ Campeón: ¡{0}! ‖ Campeão: {0}!
+Gioca ‖ Play ‖ Jugar ‖ Jogar
+Sfida ‖ Challenge ‖ Desafío ‖ Desafio
+Ora prova una partita di allenamento: il computer gioca piano e il pulsante ti suggerisce la mossa. ‖ Now try a practice game: the computer plays slowly and the button suggests your move. ‖ Ahora prueba una partida de práctica: la computadora juega despacio y el botón te sugiere la jugada. ‖ Agora tente uma partida de treino: o computador joga devagar e o botão sugere a jogada.
+Ora prova una partita di allenamento: il computer gioca piano e il pulsante ‖ Now try a practice game: the computer plays slowly and the ‖ Ahora prueba una partida de práctica: la computadora juega despacio y el botón ‖ Agora tente uma partida de treino: o computador joga devagar e o botão
+ti suggerisce la mossa. ‖ button suggests your move. ‖ te sugiere la jugada. ‖ sugere a jogada.
+Allenamento a Burraco ‖ Burraco practice ‖ Práctica de Burraco ‖ Treino de Burraco
+Allenamento a Scala 40 ‖ Scala 40 practice ‖ Práctica de Scala 40 ‖ Treino de Scala 40
+Allenamento a Canasta ‖ Canasta practice ‖ Práctica de Canasta ‖ Treino de Canastra
+Allenamento a Scopa ‖ Scopa practice ‖ Práctica de Escoba ‖ Treino de Escopa
+Allenamento a Briscola ‖ Briscola practice ‖ Práctica de Brisca ‖ Treino de Bisca
+Cerca 3 carte in scala dello stesso seme o 3 uguali e selezionale. Non sai cosa fare? Tocca . ‖ Look for 3 cards in a run of the same suit or 3 of a kind and select them. Not sure what to do? Tap . ‖ Busca 3 cartas en escalera del mismo palo o 3 iguales y selecciónalas. ¿No sabes qué hacer? Toca . ‖ Procure 3 cartas em sequência do mesmo naipe ou 3 iguais e selecione-as. Não sabe o que fazer? Toque em .
+Cerca 3 carte in scala dello stesso seme o 3 uguali e selezionale. Non sai cosa fare? Tocca ‖ Look for 3 cards in a run of the same suit or 3 of a kind and select them. Not sure what to do? Tap ‖ Busca 3 cartas en escalera del mismo palo o 3 iguales y selecciónalas. ¿No sabes qué hacer? Toca ‖ Procure 3 cartas em sequência do mesmo naipe ou 3 iguais e selecione-as. Não sabe o que fazer? Toque em
+. ‖ . ‖ . ‖ .
+Cerca 3 carte uguali (anche con una matta) e selezionale. Non sai cosa fare? Tocca . ‖ Look for 3 cards of the same rank (a wild card is fine too) and select them. Not sure what to do? Tap . ‖ Busca 3 cartas iguales (también con un comodín) y selecciónalas. ¿No sabes qué hacer? Toca . ‖ Procure 3 cartas iguais (também com um curinga) e selecione-as. Não sabe o que fazer? Toque em .
+Cerca 3 carte uguali (anche con una matta) e selezionale. Non sai cosa fare? Tocca ‖ Look for 3 cards of the same rank (a wild card is fine too) and select them. Not sure what to do? Tap ‖ Busca 3 cartas iguales (también con un comodín) y selecciónalas. ¿No sabes qué hacer? Toca ‖ Procure 3 cartas iguais (também com um curinga) e selecione-as. Não sabe o que fazer? Toque em
+Per aprire servono {0} punti: cerca scale dello stesso seme e tris di semi diversi (Asso 11, figure 10). Non sai cosa fare? Tocca . ‖ To open you need {0} points: look for runs of the same suit and sets of different suits (Ace 11, face cards 10). Not sure what to do? Tap . ‖ Para abrir hacen falta {0} puntos: busca escaleras del mismo palo y tríos de palos distintos (As 11, figuras 10). ¿No sabes qué hacer? Toca . ‖ Para abrir são precisos {0} pontos: procure sequências do mesmo naipe e trincas de naipes diferentes (Ás 11, figuras 10). Não sabe o que fazer? Toque em .
+Per aprire servono {0} punti: cerca scale dello stesso seme e tris di semi diversi (Asso 11, figure 10). Non sai cosa fare? Tocca ‖ To open you need {0} points: look for runs of the same suit and sets of different suits (Ace 11, face cards 10). Not sure what to do? Tap ‖ Para abrir hacen falta {0} puntos: busca escaleras del mismo palo y tríos de palos distintos (As 11, figuras 10). ¿No sabes qué hacer? Toca ‖ Para abrir são precisos {0} pontos: procure sequências do mesmo naipe e trincas de naipes diferentes (Ás 11, figuras 10). Não sabe o que fazer? Toque em
+La partita del torneo è finita: guarda il tabellone in Tornei ‖ The tournament game is over: check the bracket in Tournaments ‖ La partida del torneo terminó: mira el cuadro en Torneos ‖ A partida do torneio terminou: veja a chave em Torneios
+La partita del torneo è finita: guarda il tabellone in ‖ The tournament game is over: check the bracket in ‖ La partida del torneo terminó: mira el cuadro en ‖ A partida do torneio terminou: veja a chave em
+Piano con le reazioni ‖ Easy with the reactions ‖ Despacio con las reacciones ‖ Calma com as reações
+{0} ti ha aggiunto al campionato «{1}» ‖ {0} added you to the league «{1}» ‖ {0} te añadió a la liga «{1}» ‖ {0} adicionou você à liga «{1}»
+Torneo «{0}»: la tua partita contro {1} è pronta ‖ Tournament «{0}»: your game against {1} is ready ‖ Torneo «{0}»: tu partida contra {1} está lista ‖ Torneio «{0}»: sua partida contra {1} está pronta
+Il torneo «{0}» è finito: vince {1}! ‖ The tournament «{0}» is over: {1} wins! ‖ El torneo «{0}» terminó: ¡gana {1}! ‖ O torneio «{0}» terminou: {1} vence!
+Allenamento a Tressette ‖ Tressette practice ‖ Práctica de Tressette ‖ Treino de Tressette
+sta bene ‖ stands ‖ se planta ‖ parou
+per una carta, per stare ‖ for a card, to stand ‖ para una carta, para plantarte ‖ para uma carta, para parar
+per una carta, ‖ for a card, ‖ para una carta, ‖ para uma carta,
+per stare ‖ to stand ‖ para plantarte ‖ para parar
+Allenamento a Rubamazzetto ‖ Rubamazzetto practice ‖ Práctica de Rubamazzetto ‖ Treino de Rouba-monte
+Allenamento a Sette e mezzo ‖ Sette e mezzo practice ‖ Práctica de Siete y medio ‖ Treino de Sete e meio
+per chiederne un'altra, oppure per fermarti. Se superi 7 e mezzo ‖ to ask for another, or to stop. If you go over 7½ you ‖ para pedir otra, o para plantarte. Si pasas de 7 y medio ‖ para pedir outra, ou para parar. Se passar de 7 e meio você
+per chiederne un'altra, oppure ‖ to ask for another, or ‖ para pedir otra, o ‖ para pedir outra, ou
+per fermarti. Se superi 7 e mezzo ‖ to stop. If you go over 7½ you ‖ para plantarte. Si pasas de 7 y medio ‖ para parar. Se passar de 7 e meio você
+Sotto i 5 conviene chiedere carta (tocca il mazzo); da 5 in su di solito è meglio fermarsi con . ‖ Under 5 it pays to ask for a card (tap the deck); from 5 up it is usually better to stop with . ‖ Por debajo de 5 conviene pedir carta (toca el mazo); de 5 para arriba suele ser mejor plantarse con . ‖ Abaixo de 5 vale a pena pedir carta (toque no baralho); de 5 para cima geralmente é melhor parar com .
+Sotto i 5 conviene chiedere carta (tocca il mazzo); da 5 in su di solito è meglio fermarsi con ‖ Under 5 it pays to ask for a card (tap the deck); from 5 up it is usually better to stop with ‖ Por debajo de 5 conviene pedir carta (toca el mazo); de 5 para arriba suele ser mejor plantarse con ‖ Abaixo de 5 vale a pena pedir carta (toque no baralho); de 5 para cima geralmente é melhor parar com
+{0} ‖ {0} ‖ {0} ‖ {0}
+Cerca 3 carte in scala dello stesso seme o 3 uguali e selezionale. Non sai cosa fare? Tocca Suggerimento. ‖ Look for 3 cards in a run of the same suit or 3 of a kind and select them. Not sure what to do? Tap Hint. ‖ Busca 3 cartas en escalera del mismo palo o 3 iguales y selecciónalas. ¿No sabes qué hacer? Toca Sugerencia. ‖ Procure 3 cartas em sequência do mesmo naipe ou 3 iguais e selecione-as. Não sabe o que fazer? Toque em Sugestão.
+Cerca 3 carte uguali (anche con una matta) e selezionale. Non sai cosa fare? Tocca Suggerimento. ‖ Look for 3 cards of the same rank (a wild card is fine too) and select them. Not sure what to do? Tap Hint. ‖ Busca 3 cartas iguales (también con un comodín) y selecciónalas. ¿No sabes qué hacer? Toca Sugerencia. ‖ Procure 3 cartas iguais (também com um curinga) e selecione-as. Não sabe o que fazer? Toque em Sugestão.
+Per aprire servono {0} punti: cerca scale dello stesso seme e tris di semi diversi (Asso 11, figure 10). Non sai cosa fare? Tocca Suggerimento. ‖ To open you need {0} points: look for runs of the same suit and sets of different suits (Ace 11, face cards 10). Not sure what to do? Tap Hint. ‖ Para abrir hacen falta {0} puntos: busca escaleras del mismo palo y tríos de palos distintos (As 11, figuras 10). ¿No sabes qué hacer? Toca Sugerencia. ‖ Para abrir são precisos {0} pontos: procure sequências do mesmo naipe e trincas de naipes diferentes (Ás 11, figuras 10). Não sabe o que fazer? Toque em Sugestão.
+
+Hai chiuso la smazzata ‖ You finished the hand ‖ Has cerrado la mano ‖ Você fechou a rodada

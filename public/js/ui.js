@@ -7,6 +7,19 @@
   // Piccole illustrazioni originali: panno verde, carta avorio e dettagli d'oro.
   function uiIcon(name) {
     const paths = {
+      sun: '<circle cx="20" cy="20" r="8" fill="#edbd4e"/><path d="M20 2v5m0 26v5M2 20h5m26 0h5M7 7l4 4m18 18 4 4M7 33l4-4m18-18 4-4" stroke="#b18b44" stroke-width="3"/>',
+      moon: '<path d="M30 31A16 16 0 0 1 12 5c-2 14 7 22 18 26Z" fill="#edbd4e"/><path d="m29 7 2 4 4 1-4 2-2 4-1-4-4-2 4-1Z" fill="#6cabc0"/>',
+      mail: '<rect x="4" y="8" width="32" height="24" rx="4" fill="#fff1cd"/><path d="m5 10 15 12 15-12" stroke="#398566"/>',
+      refresh: '<path d="M32 16A13 13 0 1 0 32 27M32 6v10H22" stroke="#398566" stroke-width="3"/>',
+      home: '<path d="m4 19 16-14 16 14M9 16v19h22V16" fill="#fff1cd"/><path d="M16 35V23h8v12" fill="#398566"/>',
+      exit: '<path d="M19 5H6v30h13M17 20h19m-7-7 7 7-7 7" stroke="#398566" stroke-width="3"/>',
+      eye: '<path d="M3 20S10 8 20 8s17 12 17 12-7 12-17 12S3 20 3 20Z" fill="#fff1cd"/><circle cx="20" cy="20" r="6" fill="#398566"/>',
+      check: '<circle cx="20" cy="20" r="16" fill="#398566"/><path d="m11 20 6 6 12-13" stroke="#fff1cd" stroke-width="3"/>',
+      music: '<path d="M15 28V9l18-4v19M15 15l18-4" stroke="#398566" stroke-width="3"/><ellipse cx="10" cy="30" rx="6" ry="4" fill="#edbd4e"/><ellipse cx="28" cy="26" rx="6" ry="4" fill="#edbd4e"/>',
+      chat: '<path d="M4 6h32v23H18L8 36v-7H4Z" fill="#fff1cd"/><path d="M11 14h18M11 21h12" stroke="#398566"/>',
+      bell: '<path d="M7 29h26l-4-7v-8a9 9 0 0 0-18 0v8ZM16 34h8" fill="#edbd4e"/>',
+      play: '<circle cx="20" cy="20" r="16" fill="#398566"/><path d="m16 11 13 9-13 9Z" fill="#fff1cd"/>',
+      clock: '<circle cx="20" cy="21" r="15" fill="#fff1cd"/><path d="M20 11v10l8 4M15 2h10" stroke="#398566" stroke-width="3"/>',
       friends: '<path d="M23 24c7-2 13 3 13 10H20" fill="#68a6bd"/><circle cx="27" cy="15" r="6" fill="#f6cb91"/><path d="M4 35v-3c0-6 5-10 11-10s11 4 11 10v3Z" fill="#3f9470"/><circle cx="15" cy="13" r="7" fill="#f6d6a6"/><path d="M9 10c1-6 11-7 13 0-5 1-8-1-9-3" fill="#775440"/><path d="m30 4 1 3 3 1-3 1-1 3-1-3-3-1 3-1Z" fill="#f0bc45" stroke="none"/><path d="m11 27 4 4 4-4" stroke="#c7ead0"/>',
       trophy: '<path d="M11 9H5v5c0 5 4 8 9 8m15-13h6v5c0 5-4 8-9 8" fill="#efb642" stroke="#8a601c"/><path d="M10 5h20v9c0 7-4 11-10 11s-10-4-10-11Z" fill="#f5c454" stroke="#8a601c"/><path d="M13 8v6c0 3 1 5 3 6" stroke="#ffedb9" stroke-width="3"/><path d="M20 25v7m-7 0h14v4H13Z" fill="#d29a36" stroke="#8a601c"/><path d="m20 10 4 6-4 6-4-6Z" fill="#287a55" stroke="none"/>',
       medal: '<path d="m12 20-4 16 9-4 4 5 3-16" fill="#d96d54"/><path d="m24 20 7 16-8-4-5 4-1-15" fill="#72a7ba"/><circle cx="20" cy="15" r="12" fill="#f1bd46" stroke="#986b24"/><circle cx="20" cy="15" r="8" fill="#fff2c7" stroke="#c99737"/><path d="M20 9c-2 3-6 5-6 8 0 3 4 4 6 1 2 3 6 2 6-1 0-3-4-5-6-8Zm0 9-2 5h4Z" fill="#287a55" stroke="none"/>',
@@ -29,8 +42,26 @@
     return `<svg class="ui-icon" viewBox="0 0 40 40" fill="none" stroke="#294c3d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths[name] || paths.cards}</svg>`;
   }
 
+  // Simboli condivisi: solo pittogrammi scritti dall’app, mai i messaggi dei giocatori.
+  const uiSymbols = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  uiSymbols.setAttribute('aria-hidden', 'true');
+  uiSymbols.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+  uiSymbols.innerHTML = '<defs>' + ["friends","trophy","medal","calendar","book","bot","settings","profile","stats","help","report","rules","privacy","mail","music","refresh","home","exit","eye","check","cards","chat","bell","play","clock"].map(name => '<symbol id="ui-' + name + '" viewBox="0 0 40 40">' + uiIcon(name).replace(/^.*?>|<\/svg>$/g, '') + '</symbol>').join('') + '</defs>';
+  document.body.prepend(uiSymbols);
+
   function gameIcon(game) {
     return uiIcon(({ burraco: 'cards', scala40: 'run', ramino: 'fan', canasta: 'basket' })[game] || 'cards');
+  }
+
+  // Da usare soltanto per etichette statiche dell'app, mai per nickname, chat o nomi dei tornei.
+  function uiLabel(label) {
+    const symbols = {'🤖':'bot','⚙️':'settings','🏆':'trophy','🏟️':'trophy','👥':'friends','👤':'profile','📊':'stats','📖':'book','📜':'rules','💡':'help','⚠️':'report','🔒':'privacy','🔔':'bell','🔕':'bell','🔊':'music','🔇':'music','🎵':'music','▶':'play','▶️':'play','↩':'refresh','🔄':'refresh','⏱️':'clock','🐢':'clock','👁':'eye','👁️':'eye'};
+    Object.assign(symbols, {'🙂':'profile','🧩':'menu','✨':'check','🔈':'music','🗣️':'chat','📳':'bell','🧠':'help','🎓':'book','🌐':'help','☀️':'sun','🌙':'moon','⬇️':'run','➡️':'run','⚡':'play','🚪':'exit','🎒':'basket','🎯':'cards'});
+    return String(label).replace(/(?:\p{Extended_Pictographic}\uFE0F?(?:\u200D\p{Extended_Pictographic}\uFE0F?)?|[\u{1F1E6}-\u{1F1FF}]{2})/gu, e => uiIcon(symbols[e] || 'cards'));
+  }
+
+  function emptyStateHTML(icon, title, description, action, label, target = '') {
+    return `<section class="empty-state"><div class="empty-art" aria-hidden="true"><svg viewBox="0 0 240 120" focusable="false"><ellipse cx="120" cy="101" rx="94" ry="10" fill="#398566" opacity=".15"/><rect x="52" y="24" width="54" height="72" rx="7" fill="#398566" transform="rotate(-16 79 60)"/><path d="m68 49 14-9 12 17-14 9Z" fill="#f4cb67"/><rect x="139" y="25" width="48" height="68" rx="7" fill="#fff1cd" stroke="#b18b44" transform="rotate(14 163 59)"/><path d="m159 42 7 10-7 10-7-10Z" fill="#cf6d56"/><path d="m32 34 4 7 8 2-8 3-4 7-3-7-8-3 8-2ZM204 66l3 5 6 2-6 2-3 6-2-6-6-2 6-2Z" fill="#edbd4e"/></svg>${uiIcon(icon)}</div><h3>${esc(t(title))}</h3><p>${esc(t(description))}</p><button class="btn small" data-act="${action}" ${target ? `data-target="${target}"` : ''}>${esc(t(label))}</button></section>`;
   }
 
   function choiceMenuHTML(id, choices, value, label, rule = '', disabled = false) {
@@ -137,7 +168,7 @@
       ${backToEdit ? '<button class="btn small" data-act="backEdit">← Torna alla modifica</button>' : ''}
       <h2>${esc(title || (p ? p.name : 'Regole personalizzate'))}</h2>
       ${p ? p.intro : '<p>Regole personalizzate per questa partita. Ecco il riepilogo completo:</p>'}
-      ${RX.describe(rules)}
+      ${uiLabel(RX.describe(rules))}
       ${HOW_TO}
       ${RX.isOther(rules) ? '' : R.OTHER_VARIANTS}
     </div>`);
@@ -153,21 +184,21 @@
 <li><b>Scartare</b>: seleziona una carta e tocca il monte degli scarti, oppure trascinala sul monte.</li>
 <li><b>Riordinare la mano</b>: trascina una carta in un altro punto della mano. Il pulsante ⇅ riordina per seme o per valore.</li>
 <li>Puoi calare <b>più combinazioni insieme</b>: selezionale tutte e tocca ＋. Le giocate fatte non si possono annullare.</li>
-<li>Da ⚙️ puoi cambiare colore del tavolo, dorso delle carte, dimensione e suoni. Giocando da solo contro il computer puoi attivare i <b>suggerimenti 💡</b>.</li>
+<li>Da <svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-settings /></svg> puoi cambiare colore del tavolo, dorso delle carte, dimensione e suoni. Giocando da solo contro il computer puoi attivare i <b>suggerimenti <svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-help /></svg></b>.</li>
 </ul>`;
 
   function rulesFormHTML(rules) {
     let html = '<div class="rules-form">';
     let group = null;
     for (const f of RX.schema(rules)) {
-      if (f.group !== group) { group = f.group; html += `<h4>${esc(group)}</h4>`; }
+      if (f.group !== group) { group = f.group; html += `<h4>${uiLabel(esc(group))}</h4>`; }
       const disabled = f.requires && !rules[f.requires];
       let input;
       if (f.type === 'bool') input = `<input type="checkbox" data-rule="${f.key}" ${rules[f.key] ? 'checked' : ''} ${disabled ? 'disabled' : ''}>`;
       else if (f.type === 'number') input = `<input type="number" data-rule="${f.key}" value="${rules[f.key]}" min="${f.min}" max="${f.max}" step="${f.step}">`;
       else input = choiceMenuHTML('rule-' + f.key, f.choices, rules[f.key], f.label, f.key, disabled);
       const tag = f.type === 'bool' || f.type === 'number' ? 'label' : 'div';
-      html += `<${tag} class="opt ${disabled ? 'disabled' : ''}"><span>${esc(f.label)}${f.hint ? `<br><span class="hint">${esc(f.hint)}</span>` : ''}</span>${input}</${tag}>`;
+      html += `<${tag} class="opt ${disabled ? 'disabled' : ''}"><span>${uiLabel(esc(f.label))}${f.hint ? `<br><span class="hint">${esc(f.hint)}</span>` : ''}</span>${input}</${tag}>`;
     }
     return html + '</div>';
   }
@@ -196,7 +227,7 @@
   }
 
   function settingsModal() {
-    const opt = (key, val, label, extra = '') => `<button class="swatch ${S.prefs[key] === val ? 'on' : ''}" data-act="pref" data-key="${key}" data-val="${val}" ${extra}>${label}</button>`;
+    const opt = (key, val, label, extra = '') => `<button class="swatch ${S.prefs[key] === val ? 'on' : ''}" data-act="pref" data-key="${key}" data-val="${val}" ${extra}>${uiLabel(label)}</button>`;
     openModal('settings', `<h2>Impostazioni</h2>
       <h4>Schermate</h4>
       <div class="row">${opt('ui', 'semplice', '🙂 Semplici')}${opt('ui', 'completa', '🧩 Complete (tutte le opzioni)')}</div>
@@ -223,7 +254,7 @@
       <div class="row">${opt('back', 'rosso', '<i class="sw back-rosso"></i>Rosso')}${opt('back', 'blu', '<i class="sw back-blu"></i>Blu')}${opt('back', 'verde', '<i class="sw back-verde"></i>Verde')}${opt('back', 'nero', '<i class="sw back-nero"></i>Nero')}${[['oro', 'b_oro', 'Oro'], ['notte', 'b_notte', 'Notte stellata'], ['smeraldo', 'b_smeraldo', 'Smeraldo']].map(([id, pid, label]) => {
         const free = ((S.progress && S.progress.unlocks) || []).includes(pid);
         return free ? opt('back', id, `<i class="sw back-${id}"></i>${label}`)
-          : `<button class="swatch locked" disabled title="${esc(window.BurracoPremi.howTo(window.BurracoPremi.BY_ID[pid]))}"><i class="sw back-${id}"></i>🔒 ${label}</button>`;
+          : `<button class="swatch locked" disabled title="${esc(window.BurracoPremi.howTo(window.BurracoPremi.BY_ID[pid]))}"><i class="sw back-${id}"></i><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-privacy /></svg> ${label}</button>`;
       }).join('')}</div>
       <h4>Stile delle carte</h4>
       <div class="row">${DECKS.map(([id, label]) => opt('deck', id, `<span class="deckprev" data-deck="${id}">${cardHTML({ r: 13, s: 'H', id: -80 }, 'withpips')}${cardHTML({ r: ['americane', 'francesi', 'italiane'].includes(id) ? 3 : 7, s: 'D', id: -81 }, 'withpips')}${cardHTML({ r: 1, s: 'C', id: -82 }, 'withpips')}</span>${label}`)).join('')}</div>
@@ -238,21 +269,21 @@
         : '<p class="muted small">Su questo dispositivo o browser le notifiche non sono disponibili.</p>'}
       <h4>Suoni</h4>
       <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
-      ${S.room && S.room.slow && S.game && !S.game.over && S.game.you >= 0 ? '<h4>Partita con calma</h4><button class="btn small danger" data-act="abandon">🏳️ Abbandona la partita</button>' : ''}
+      ${S.room && S.room.slow && S.game && !S.game.over && S.game.you >= 0 ? '<h4>Partita con calma</h4><button class="btn small danger" data-act="abandon"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Abbandona la partita</button>' : ''}
       ${S.game && !S.game.over && S.game.you >= 0 ? `<h4>Fine della partita</h4><div class="row">
-        <button class="btn small danger" data-act="surrender">🏳️ ${partnerIsHuman() ? 'Proponi la resa al compagno' : 'Arrenditi'}</button>
-        ${S.room.isHost && !S.room.daily ? '<button class="btn small" data-act="endGame">⛔ Termina la partita</button>' : ''}
-        ${S.room.isHost ? '<button class="btn small" data-act="closeTable">🚪 Chiudi il tavolo</button>' : ''}</div>
+        <button class="btn small danger" data-act="surrender"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> ${partnerIsHuman() ? 'Proponi la resa al compagno' : 'Arrenditi'}</button>
+        ${S.room.isHost && !S.room.daily ? '<button class="btn small" data-act="endGame"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Termina la partita</button>' : ''}
+        ${S.room.isHost ? '<button class="btn small" data-act="closeTable"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Chiudi il tavolo</button>' : ''}</div>
         <p class="muted small">Arrendersi fa vincere gli avversari. «Termina» chiude la partita senza vincitori e riporta tutti in sala d'attesa; «Chiudi il tavolo» manda tutti alla schermata iniziale.</p>` : ''}
       ${IN_APP ? `<h4>App</h4><p class="muted small">Versione ${APP_VERSION || 'vecchia'}${S.appUpdate ? ` · <b>disponibile la ${S.appUpdate.n}</b>` : ' · aggiornata'}</p>
-        ${S.appUpdate ? `<a class="btn small primary" href="${APK_URL}">📲 Scarica l'aggiornamento</a>` : ''}` : ''}
-      <h4>Qualcosa non va?</h4><button class="btn small" data-act="report">🐞 Segnala un problema</button>
+        ${S.appUpdate ? `<a class="btn small primary" href="${APK_URL}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-home /></svg> Scarica l'aggiornamento</a>` : ''}` : ''}
+      <h4>Qualcosa non va?</h4><button class="btn small" data-act="report"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Segnala un problema</button>
       ${S.room && S.room.isHost && (!S.game || S.game.over) ? `<h4>Torneo (si imposta tra una partita e l'altra)</h4>${seriesPickHTML(S.room.series && S.room.series.bestOf)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Aiuto: dove attaccare le carte</h4>${aidsHTML(S.room.aids !== false)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Tempo per turno</h4>${turnTimeHTML(S.room.turnTime)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Bravura del computer</h4>${botLevelHTML(S.room.botLevel)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Velocità del computer</h4>${botSpeedHTML(S.room.botSpeed)}` : ''}
-      ${S.room && S.room.isHost && S.room.humans <= 1 ? `<h4>Suggerimenti 💡 (solo contro il computer)</h4>
+      ${S.room && S.room.isHost && S.room.humans <= 1 ? `<h4>Suggerimenti <svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-help /></svg> (solo contro il computer)</h4>
         <div class="row"><button class="swatch ${S.room.hints ? 'on' : ''}" data-act="setHints" data-val="1">Attivi</button><button class="swatch ${S.room.hints ? '' : 'on'}" data-act="setHints" data-val="0">Disattivati</button></div>` : ''}`);
   }
 
@@ -263,7 +294,7 @@
 
   function turnTimeHTML(cur) {
     return `<div class="row">${[[0, 'Nessun limite'], [30, '30 s'], [60, '60 s'], [90, '90 s']]
-      .map(([v, l]) => `<button class="swatch ${Number(cur || 0) === v ? 'on' : ''}" data-act="turnTime" data-val="${v}">${l}</button>`).join('')}</div>`;
+      .map(([v, l]) => `<button class="swatch ${Number(cur || 0) === v ? 'on' : ''}" data-act="turnTime" data-val="${v}">${uiLabel(l)}</button>`).join('')}</div>`;
   }
 
   function botLevelHTML(cur) {
@@ -288,9 +319,9 @@
     S.musicUnseen = false;
     const embed = mu && spotifyEmbed(mu.url);
     const isJam = mu && !embed;
-    openModal('music', `<h2>🎵 Musica del tavolo</h2>
+    openModal('music', `<h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-music /></svg> Musica del tavolo</h2>
       ${mu ? `<p>${esc(mu.by)} ha condiviso ${isJam ? 'una <b>Jam</b> di Spotify: entrando ascoltate tutti la stessa musica, sincronizzata.' : 'questa musica:'}</p>
-        <a class="btn primary big" style="display:block;text-align:center;text-decoration:none;margin-top:10px" href="${esc(mu.url)}" target="_blank" rel="noopener noreferrer">${isJam ? '▶ Unisciti alla Jam su Spotify' : '▶ Apri in Spotify'}</a>`
+        <a class="btn primary big" style="display:block;text-align:center;text-decoration:none;margin-top:10px" href="${esc(mu.url)}" target="_blank" rel="noopener noreferrer">${isJam ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Unisciti alla Jam su Spotify' : '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Apri in Spotify'}</a>`
         : '<p class="muted">Nessuna musica condivisa per ora.</p>'}
       ${r.isHost ? `<h4>${mu ? 'Cambia musica' : 'Condividi la musica con il tavolo'}</h4>
         <p class="muted small">Su Spotify avvia una <b>Jam</b> (dal brano in riproduzione: icona dei dispositivi → <i>Avvia una Jam</i>) e copia il link d'invito, oppure copia il link di una playlist. Poi incollalo qui.</p>

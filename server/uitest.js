@@ -116,6 +116,7 @@ const HELPERS = `
       __tap('[data-act="claimNick"]'); await __W(800);
       if (!document.querySelector('[data-act="savedCode"]')) throw new Error('codice di recupero non mostrato');
       __tap('[data-act="savedCode"]'); await __W(300);
+      if (S.modalKind === 'firstRun') { __tap('[data-act="closeModal"]'); await __W(250); }
       return document.querySelector('.hello') ? document.querySelector('.hello').innerText : null;`);
     if (!nick || !nick.includes('Robot_UI')) throw new Error('nickname non confermato');
     if (process.argv.includes('--polish')) {

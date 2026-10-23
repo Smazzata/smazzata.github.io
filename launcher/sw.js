@@ -1,7 +1,7 @@
 // Service worker della pagina d'ingresso: salva la pagina e la copia del gioco (cartella gioca/)
 // così, senza internet, l'app si apre lo stesso e si può giocare contro il computer.
 // "Prima la rete": da collegati si usa sempre la versione più recente.
-const CACHE = 'burraco-ingresso-v46';
+const CACHE = 'burraco-ingresso-v47';
 const SHELL = [
   'gioca/js/avatars.js',
   'gioca/shared/avatars.js',

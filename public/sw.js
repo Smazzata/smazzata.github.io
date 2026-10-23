@@ -1,7 +1,7 @@
 // Service worker: notifiche e copia del gioco per giocare anche senza internet.
 // "Prima la rete": da collegati si usa sempre la versione più recente (e se ne salva una copia);
 // senza rete si usa l'ultima copia salvata. La connessione di gioco (socket.io) non passa mai dalla copia.
-const CACHE = 'burraco-gioco-v61';
+const CACHE = 'burraco-gioco-v62';
 const SHELL = [
   'js/avatars.js',
   'shared/avatars.js',
