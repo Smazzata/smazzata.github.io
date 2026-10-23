@@ -244,9 +244,10 @@
 
   const SEAT_COLORS = ['#f2c14e', '#64b5f6', '#ef7d7d', '#81c784'];
   function avatarHTML(name, seat, isBot, av) {
-    if (av && !isBot) return `<span class="avatar emo ${av.f ? 'fr-' + esc(av.f) : ''}" style="--c:${esc(av.c)}">${esc(av.e)}</span>`;
-    const initial = esc((name || '?').trim().charAt(0).toUpperCase());
-    return `<span class="avatar" style="--c:${SEAT_COLORS[seat % 4]}">${isBot ? '🤖' : initial}</span>`;
+    const art = window.SmazzataAvatars;
+    const entry = art.resolve(isBot ? 'mazziere' : av && av.e, name);
+    const color = av && !isBot && av.c || SEAT_COLORS[seat % SEAT_COLORS.length];
+    return `<span class="avatar illustrated ${av && !isBot && av.f ? 'fr-' + esc(av.f) : ''}" style="--c:${esc(color)}" role="img" aria-label="${esc(t(entry.name))}">${art.svg(entry.id)}</span>`;
   }
 
   function lobbyHTML() {

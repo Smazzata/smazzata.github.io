@@ -489,14 +489,21 @@ body[data-theme="notte"] .modal-box .nickstatus .ok { color: #7ddc6f; }
 body[data-theme="notte"] .modal-box .nickstatus .ko { color: #ff8a80; }
 
 /* ---------- Avatar personalizzato e reazioni ---------- */
-.avatar.emo { font-size: 20px; color: initial; }
+.avatar-art { width: 100%; height: 100%; display: block; border-radius: inherit; }
+.avatar.illustrated { padding: 1px; }
 .avpick { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.avpick > .avatar { width: 56px; height: 56px; font-size: 30px; }
-.avgrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-.avopt { font-size: 22px; background: transparent; border: 2px solid transparent; border-radius: 10px; padding: 3px; }
-.avopt.on { border-color: var(--gold-2); background: #fff6dc; }
+.avpreview { display: flex; align-items: center; gap: 14px; width: 100%; padding: 12px 14px; background: var(--paper-2); border-radius: 16px; margin-bottom: 4px; }
+.avpreview .avatar { width: 76px; height: 76px; }
+.avpreview b { font-size: 16px; }
+.avgrid { display: grid; width: 100%; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
+.avopt { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; min-width: 0; min-height: 88px; background: var(--paper-2); color: var(--ink); border: 2px solid transparent; border-radius: 12px; padding: 5px 2px; }
+.avopt .avatar-art { width: 48px; height: 48px; flex-shrink: 0; }
+.avopt span { font-size: 11px; line-height: 1.15; overflow-wrap: anywhere; }
+.avopt.on { border-color: #96702c; background: #fff0c7; box-shadow: inset 0 0 0 1px #fffaf0; }
+.avopt:focus-visible, .avcol:focus-visible { outline: 3px solid #9e7426; outline-offset: 2px; }
+.avcolor-label { align-self: flex-start; font-size: 13px; font-weight: 800; margin-top: 8px; }
 .avcolors { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
-.avcol { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #aaa; }
+.avcol { width: 36px; height: 36px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1px #aaa; }
 .avcol.on { box-shadow: 0 0 0 3px var(--gold-2); }
 .friend .avatar { width: 30px; height: 30px; font-size: 16px; }
 .hello .avatar { width: 34px; height: 34px; }
@@ -504,7 +511,9 @@ body[data-theme="notte"] .modal-box .nickstatus .ko { color: #ff8a80; }
 .reactbar button { font-size: 24px; background: rgba(255,255,255,.12); border: 0; border-radius: 12px; padding: 4px 8px; }
 .reaction { position: fixed; z-index: 92; font-size: 38px; transform: translate(-50%, -50%); pointer-events: none; animation: reactUp 2.4s ease-out forwards; filter: drop-shadow(0 4px 8px rgba(0,0,0,.4)); }
 @keyframes reactUp { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.4); } 12% { opacity: 1; transform: translate(-50%, -60%) scale(1.2); } 25% { transform: translate(-50%, -70%) scale(1); } 85% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -190%) scale(1); } }
-body[data-theme="notte"] .avopt.on { background: #4a3f1e; }
+body[data-theme="notte"] .avpreview, body[data-theme="notte"] .avopt { background: #303d35; color: #f5eddc; }
+body[data-theme="notte"] .avopt.on { background: #52452a; border-color: #e4c16a; box-shadow: none; }
+@media (max-width: 360px) { .avgrid { gap: 5px; } .avopt .avatar-art { width: 42px; height: 42px; } .avopt span { font-size: 10px; } .avopt { min-height: 80px; } .avcolors { display: grid; grid-template-columns: repeat(4, 36px); gap: 8px 14px; } }
 
 /* ---------- Storico, scheda amico, classifica amici ---------- */
 .hist { display: flex; gap: 8px; align-items: flex-start; padding: 7px 0; border-bottom: 1px solid #e3ddcc; font-size: 14px; }

@@ -1,0 +1,22 @@
+Scegli il tuo avatar ‖ Choose your avatar ‖ Elige tu avatar ‖ Escolha seu avatar
+Colore dello sfondo ‖ Background color ‖ Color de fondo ‖ Cor de fundo
+Re di cuori ‖ King of hearts ‖ Rey de corazones ‖ Rei de copas
+Regina di picche ‖ Queen of spades ‖ Reina de picas ‖ Rainha de espadas
+Fante di quadri ‖ Jack of diamonds ‖ Sota de diamantes ‖ Valete de ouros
+Dama di fiori ‖ Lady of clubs ‖ Dama de tréboles ‖ Dama de paus
+Jolly corallo ‖ Coral joker ‖ Comodín coral ‖ Coringa coral
+Jolly zaffiro ‖ Sapphire joker ‖ Comodín zafiro ‖ Coringa safira
+Il mazziere ‖ The dealer ‖ El repartidor ‖ O carteador
+Volpe del fante ‖ Jack's fox ‖ Zorro de la sota ‖ Raposa do valete
+Gatto di cuori ‖ Cat of hearts ‖ Gato de corazones ‖ Gato de copas
+Gufo stratega ‖ Strategic owl ‖ Búho estratega ‖ Coruja estrategista
+Orso fortunato ‖ Lucky bear ‖ Oso afortunado ‖ Urso sortudo
+Tartaruga zen ‖ Zen turtle ‖ Tortuga zen ‖ Tartaruga zen
+Leone reale ‖ Royal lion ‖ León real ‖ Leão real
+Panda di fiori ‖ Panda of clubs ‖ Panda de tréboles ‖ Panda de paus
+Drago smeraldo ‖ Emerald dragon ‖ Dragón esmeralda ‖ Dragão esmeralda
+Fenice dorata ‖ Golden phoenix ‖ Fénix dorado ‖ Fênix dourada
+Asso di cuori ‖ Ace of hearts ‖ As de corazones ‖ Ás de copas
+Asso di picche ‖ Ace of spades ‖ As de picas ‖ Ás de espadas
+Asso di quadri ‖ Ace of diamonds ‖ As de diamantes ‖ Ás de ouros
+Asso di fiori ‖ Ace of clubs ‖ As de tréboles ‖ Ás de paus

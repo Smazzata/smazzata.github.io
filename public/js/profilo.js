@@ -58,12 +58,14 @@
     if (!r.nick) { closeModal(); toast('Scegli prima il tuo nickname'); return; }
     const link = transferLink(r.code);
     const qr = qrDataUrl(link);
-    const av = r.avatar || { e: r.emoji[0], c: r.colors[0] };
-    openModal('profile', `<h2>👤 ${esc(r.nick)}</h2>
+    const avatars = window.SmazzataAvatars;
+    const selected = avatars.resolve(r.avatar && r.avatar.e, r.nick);
+    const av = { ...(r.avatar || {}), e: selected.e, c: r.avatar && r.avatar.c || r.colors[0] };
+    openModal('profile', `<h2>${uiIcon('profile')} ${esc(r.nick)}</h2>
       <h4>Avatar</h4>
-      <div class="avpick">${avatarHTML(r.nick, 0, false, av)}
-        <div class="avgrid">${r.emoji.map((e) => `<button class="avopt ${e === av.e ? 'on' : ''}" data-act="pickAvatar" data-e="${e}" data-c="${av.c}">${e}</button>`).join('')}</div>
-        <div class="avcolors">${r.colors.map((c) => `<button class="avcol ${c === av.c ? 'on' : ''}" style="background:${c}" data-act="pickAvatar" data-e="${av.e}" data-c="${c}" aria-label="colore"></button>`).join('')}</div></div>
+      <div class="avpick"><div class="avpreview">${avatarHTML(r.nick, 0, false, av)}<b>${esc(t(selected.name))}</b></div>
+        <div class="avgrid" role="group" aria-label="${t('Scegli il tuo avatar')}">${avatars.LIST.map((a) => `<button type="button" class="avopt ${a.id === selected.id ? 'on' : ''}" data-act="pickAvatar" data-e="${esc(a.e)}" data-c="${av.c}" aria-pressed="${a.id === selected.id}" title="${esc(t(a.name))}">${avatars.svg(a.id)}<span>${esc(t(a.name))}</span></button>`).join('')}</div>
+        <span class="avcolor-label">Colore dello sfondo</span><div class="avcolors">${r.colors.map((c) => `<button type="button" class="avcol ${c === av.c ? 'on' : ''}" style="background:${c}" data-act="pickAvatar" data-e="${av.e}" data-c="${c}" aria-label="${t('Colore dello sfondo')}: ${c}" aria-pressed="${c === av.c}"></button>`).join('')}</div></div>
       ${lookHTML(av)}
       <h4>Cambia nickname</h4>
       <form id="nickform" class="row"><input id="nickEdit" class="grow" maxlength="16" autocomplete="off" value="${esc(r.nick)}"><button class="btn primary">Salva</button></form>

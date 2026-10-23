@@ -77,6 +77,7 @@ module.exports = async ({ cdp, shot, errors, step }) => {
     document.querySelector('#leagueform button').click(); await __W(600);
     if (!document.querySelector('#modal').textContent.includes('Lega del test') || !document.querySelector('#modal').textContent.includes('mensile')) throw Error('creazione campionato errata');
   `);
+  await require('./avatar-ui-flow')({cdp,shot,step});
   const real = errors.filter(e => !/vibrate|Failed to load resource|favicon/.test(e));
   if (real.length) throw Error(real.join('\n'));
   step('home, regole, campionati, tornei, errori inline, tastiera e tema scuro: OK');
