@@ -506,8 +506,7 @@ body[data-theme="notte"] .modal-box .nickstatus .ko { color: #ff8a80; }
 .avatar-rarity[data-rarity="legendary"] { background: #f8e9bc; color: #89621d; }
 .avopt .avatar-rarity { display: block; margin-top: auto; font-size: 9px; max-width: 100%; padding: 2px 3px; overflow-wrap: anywhere; }
 .avavailability { width: 100%; margin: 0; color: #66735f; font-size: 12px; line-height: 1.4; }
-.avopt:disabled { cursor: default; opacity: .7; }
-.avopt:disabled .avatar-art { filter: saturate(.65); }
+.avopt:disabled { cursor: default; opacity: 1; }
 .avlock { width: 9px; height: 10px; margin-right: 2px; vertical-align: -1px; }
 body[data-theme="notte"] .avavailability { color: #c2cdbd; }
 .avopt[data-rarity="rare"] { background: #edf3f2; }

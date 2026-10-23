@@ -43,6 +43,16 @@ module.exports = async ({ cdp, shot, step }) => {
     await emit('setAvatar',{id:'volpe',c:'#64b5f6'});
     await handlers.avatarFilter({dataset:{rarity:'all'}});
     if(document.querySelectorAll('.avopt:disabled').length!==60 || document.querySelectorAll('.avopt:not(:disabled)').length!==40) throw Error('disponibilità del catalogo errata');
+    const gradientIds=[...document.querySelectorAll('#modal svg defs [id]')].map(el=>el.id);
+    if(new Set(gradientIds).size!==gradientIds.length) throw Error('gradienti avatar con ID duplicati');
+    for(const svg of document.querySelectorAll('#modal .avatar-art')) {
+      for(const el of svg.querySelectorAll('[fill],[stroke]')) {
+        for(const attr of ['fill','stroke']) {
+          const match=(el.getAttribute(attr)||'').match(/^url\\(#(.+)\\)$/);
+          if(match&&!svg.querySelector('[id="'+match[1]+'"]')) throw Error('gradiente avatar mancante: '+match[1]);
+        }
+      }
+    }
     document.querySelector('#toast').classList.add('hidden');
     if (!avatarHTML('Anna',0,false,{e:'🦊',c:'#64b5f6',f:'oro'}).includes('fr-oro')) throw Error('cornice persa');
     if (avatarHTML('Computer',0,true).includes('🤖')) throw Error('emoji al posto del mazziere');

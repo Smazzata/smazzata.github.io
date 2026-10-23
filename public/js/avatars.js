@@ -2,6 +2,7 @@
 'use strict';
 (function (root) {
   const catalog = typeof module === 'object' && module.exports ? require('../../shared/avatars') : root.SmazzataAvatarCatalog;
+  const premium = typeof module === 'object' && module.exports ? require('./avatar-premium') : root.SmazzataAvatarPremium;
   const ink = '#294b3c';
   const suit = (kind, x, y, size, color) => {
     const shapes = {
@@ -170,19 +171,14 @@
     return backdrop(a)+body+accessory(a);
   }
   const originalById = new Map(ORIGINAL_ART.map(a=>[a.id,a.art]));
-  const LIST = catalog.LIST.map(a=>({...a,art:originalById.get(a.id)||extendedArt(a)}));
+  const LIST = catalog.LIST.map(a=>({...a,art:premium.art(a,originalById.get(a.id)||extendedArt(a))}));
   const byId = new Map(LIST.map(a=>[a.id,a]));
   function resolve(value,name='') { return byId.get(catalog.resolve(value,name).id); }
-  function ornament(a) {
-    if(a.rarity==='common')return '';
-    const color=catalog.RARITIES.find(r=>r.id===a.rarity).color;
-    if(a.rarity==='rare')return sparkle(7,17,2.5,'#a9ccdd')+sparkle(55,46,2.5,'#a9ccdd');
-    if(a.rarity==='epic')return `<path d="M9 47C-1 27 8 9 23 5m32 42C65 27 56 9 41 5" stroke="${color}" opacity=".35" stroke-width="2.5"/>${sparkle(7,16,3,'#d5bee5')}${sparkle(57,20,3,'#d5bee5')}`;
-    return `<circle cx="32" cy="32" r="29" stroke="#e2c16d" stroke-width="2" opacity=".8"/><path d="m6 21 6 3m40 16 6 3M14 8l3 5m30 38 3 5M8 48l5-3m38-28 5-3" stroke="#eed396" stroke-width="1.5"/>${sparkle(8,15,3)}${sparkle(55,12,4)}${sparkle(55,48,3)}`;
-  }
+  let serial=0;
   function svg(value, name) {
     const entry = resolve(value, name);
-    return `<svg class="avatar-art" viewBox="0 0 64 64" fill="none" stroke="${ink}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ornament(entry)}${entry.art}</svg>`;
+    const art=entry.art.replaceAll('__AV__','av-'+(++serial));
+    return `<svg class="avatar-art" viewBox="0 0 64 64" fill="none" stroke="${ink}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${art}</svg>`;
   }
   const api = { LIST, RARITIES:catalog.RARITIES, resolve, svg, isSelectable:catalog.isSelectable };
   if (typeof module === 'object' && module.exports) module.exports = api;
