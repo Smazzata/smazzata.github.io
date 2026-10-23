@@ -59,13 +59,13 @@ async function until(fn) {for(let i=0;i<100;i++){if(fn())return;await wait(50);}
     assert.equal((await clients[0].call('rankedProfile')).ranks[key].games,21);
     // Vecchi client possono ancora usare quickPlay, ma entrano sempre nella Solo.
     await clients[0].call('leaveRoom'); await clients[1].call('leaveRoom');
-    assert.ok((await clients[0].call('quickPlay',{game:'scopa',n:2,mode:'ranked'})).ok);
-    assert.ok((await clients[1].call('quickPlay',{game:'scopa',n:2,mode:'ranked'})).ok);
-    await until(()=>clients[0].state.room?.rankedFormat?.key==='scopa:2:solo');
+    assert.ok((await clients[0].call('quickPlay',{game:'ramino',n:2,mode:'ranked'})).ok);
+    assert.ok((await clients[1].call('quickPlay',{game:'ramino',n:2,mode:'ranked'})).ok);
+    await until(()=>clients[0].state.room?.rankedFormat?.key==='ramino:2:solo');
     assert.ok((await clients[0].call('leaveRoom',{abandon:true})).ok);
     await until(()=>clients[1].state.game?.over);
-    assert.equal((await clients[0].call('rankedProfile')).ranks['scopa:2:solo'].losses,1);
-    assert.equal((await clients[0].call('rankedJoin',{game:'briscola',n:2})).ok,false);
+    assert.equal((await clients[0].call('rankedProfile')).ranks['ramino:2:solo'].losses,1);
+    assert.equal((await clients[0].call('rankedJoin',{game:'scala40',n:2})).ok,false);
     console.log('Ranked E2E OK: Duo 2v2, doppio consenso, accessi negati, promo reale, crash/riavvio, replay, localResult e abbandono');
   } finally {clients.forEach(p=>p.socket.disconnect());if(server&&server.exitCode===null)await stop();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

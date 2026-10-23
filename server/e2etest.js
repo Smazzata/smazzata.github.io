@@ -553,7 +553,7 @@ async function signup(p, nick, email = mailOf()) {
     const t4 = await T4.until((st) => st.game, 'allenamento di Scala 40');
     assert(t4.room.tutorial && t4.room.game === 'scala40' && t4.room.n === 2 && t4.room.hints, 'allenamento di Scala 40');
     T4.sock.close();
-    for (const gm of ['canasta', 'scopa', 'briscola']) {
+    for (const gm of ['canasta', 'ramino']) {
       const Tx = player('Allievo ' + gm); await Tx.hello(); assert((await signup(Tx, 'Allievo_' + gm)).ok);
       assert((await Tx.call('createRoom', { tutorial: true, rules: { game: gm } })).ok);
       const tx = await Tx.until((st) => st.game, 'allenamento di ' + gm);
@@ -571,15 +571,15 @@ async function signup(p, nick, email = mailOf()) {
     const ds = await Dd.until((st) => st.game, 'partita della sfida');
     assert(ds.room.daily && ds.room.botLevel === 'difficile', 'sfida contro il computer difficile');
     const firstHand = ds.game.hand.map((c) => `${c.r}${c.s}`).sort().join();
+    assert((await Dd.call('setHints', { on: true })).ok);
     const endD = Date.now() + 60000;
     while (!(Dd.state.game && Dd.state.game.over)) {
       if (Date.now() > endD) throw new Error('la sfida non finisce');
       const g = Dd.state.game;
-      // la variante cambia ogni giorno: nei giochi di presa si gioca una carta, negli altri si pesca e si scarta
-      if (g.turn === g.you && g.presa) await Dd.call('action', { type: 'play', cardId: (g.playable ? g.hand.find((c) => g.playable.includes(c.id)) : g.hand[0]).id });
-      else if (g.turn === g.you && g.phase === 'draw') await Dd.call('action', { type: 'draw' });
-      else if (g.turn === g.you && g.phase === 'play') {
-        for (const c of g.hand.slice().reverse()) if ((await Dd.call('action', { type: 'discard', cardId: c.id })).ok) break;
+      if (g.turn === g.you && g.phase !== 'handEnd') {
+        const suggestion = await Dd.call('hint');
+        assert(suggestion.ok && suggestion.hint, 'suggerimento sfida');
+        assert((await Dd.call('action', suggestion.hint)).ok, 'azione sfida');
       }
       await wait(20);
     }
@@ -603,11 +603,11 @@ async function signup(p, nick, email = mailOf()) {
     assert((await signup(Q1, 'Quinto')).ok); assert((await signup(Q2, 'Sesto')).ok);
     assert(!(await Q1.call('quickPlay', { game: 'inesistente', n: 2 })).ok, 'gioco pubblico sconosciuto rifiutato');
     assert(!(await Q1.call('quickPlay', { game: 'briscola5', n: 2 })).ok, 'formato non valido rifiutato');
-    for (const game of ['burraco', 'scala40', 'ramino', 'canasta', 'scopa', 'scopone', 'briscola', 'tressette', 'rubamazzetto', 'briscola5']) {
+    for (const game of ['burraco', 'scala40', 'ramino', 'canasta']) {
       const n = game === 'briscola5' ? 5 : 4;
       const first = await Q1.call('quickPlay', { game, n, mode: 'casual' });
       assert(first.ok, game + ': creazione tavolo pubblico');
-      const other = await Q2.call('quickPlay', { game: game === 'scopa' ? 'scopone' : 'scopa', n: 4, mode: 'casual' });
+      const other = await Q2.call('quickPlay', { game: game === 'ramino' ? 'scala40' : 'ramino', n: 4, mode: 'casual' });
       assert(other.ok && other.code !== first.code, 'giochi e varianti diversi non abbinati');
       await Q2.call('leaveRoom');
       const same = await Q2.call('quickPlay', { game, n, mode: 'casual' });
@@ -618,17 +618,17 @@ async function signup(p, nick, email = mailOf()) {
       if (game === 'scopone') assert.strictEqual(state.room.rules.deal, 10);
       await Q1.call('leaveRoom'); await Q2.call('leaveRoom');
     }
-    const br1 = await Q1.call('quickPlay', { game: 'briscola', n: 2, mode: 'ranked' });
-    const br2 = await Q2.call('quickPlay', { game: 'briscola', n: 2, mode: 'ranked' });
-    assert(br1.ok && br2.ok && br1.searching, 'ricerca Briscola classificata');
-    await Q1.until((st) => st.game && st.game.game === 'briscola', 'avvio del gioco scelto');
+    const br1 = await Q1.call('quickPlay', { game: 'scala40', n: 2, mode: 'ranked' });
+    const br2 = await Q2.call('quickPlay', { game: 'scala40', n: 2, mode: 'ranked' });
+    assert(br1.ok && br2.ok && br1.searching, 'ricerca Scala 40 classificata');
+    await Q1.until((st) => st.game && st.game.game === 'scala40', 'avvio del gioco scelto');
     assert((await Q1.call('surrender')).done);
-    await Q2.until((st) => st.game && st.game.over, 'Briscola classificata finita');
+    await Q2.until((st) => st.game && st.game.over, 'Scala 40 classificata finita');
     const brStats = (await Q1.call('rankedProfile')).ranks;
-    assert.strictEqual(brStats['briscola:2:solo'].games, 1, 'Glicko del gioco scelto');
-    assert(!brStats['burraco:2:solo'], 'Burraco non modificato dalla Briscola');
+    assert.strictEqual(brStats['scala40:2:solo'].games, 1, 'Glicko del gioco scelto');
+    assert(!brStats['burraco:2:solo'], 'Burraco non modificato dalla Scala 40');
     await Q1.call('leaveRoom'); await Q2.call('leaveRoom');
-    step('partita rapida: selezione di tutti i giochi, code separate, avvio Briscola ed Elo indipendente');
+    step('partita rapida: selezione di tutti i giochi, code separate, avvio Scala 40 ed Elo indipendente');
     const casual = await Q1.call('quickPlay', { n: 2, mode: 'casual' });
     const ranked = await Q2.call('quickPlay', { n: 2, mode: 'ranked' });
     assert(casual.ok && ranked.ok && casual.code !== ranked.code, 'code amichevole e classificata separate');
@@ -661,12 +661,12 @@ async function signup(p, nick, email = mailOf()) {
     await Q1.call('ready'); assert(!(await Q2.call('ready')).ok,'riavvio stesso match vietato');
     assert.equal((await rankedQ(Q1)).games,1,'nessuna doppia registrazione');
     await Q1.call('leaveRoom');await Q2.call('leaveRoom');
-    assert((await Q1.call('rankedJoin',{game:'scopa',n:2})).ok);
-    assert((await Q2.call('rankedJoin',{game:'scopa',n:2})).ok);
-    await Q2.until(s=>s.game&&!s.game.over&&s.room.rules.game==='scopa','nuovo gioco Ranked');
+    assert((await Q1.call('rankedJoin',{game:'ramino',n:2})).ok);
+    assert((await Q2.call('rankedJoin',{game:'ramino',n:2})).ok);
+    await Q2.until(s=>s.game&&!s.game.over&&s.room.rules.game==='ramino','nuovo gioco Ranked');
     assert((await Q1.call('leaveRoom',{abandon:true})).ok);
     await Q2.until(s=>s.game&&s.game.over,'abbandono decide la partita');
-    assert.equal((await Q1.call('rankedProfile')).ranks['scopa:2:solo'].losses,1);
+    assert.equal((await Q1.call('rankedProfile')).ranks['ramino:2:solo'].losses,1);
     assert(!(await Q1.call('rankedJoin',{game:'scala40',n:2})).ok,'cooldown abbandono');
     Q1.sock.close(); Q2.sock.close();
     step('Ranked: risultati autorevoli, code separate, nessuna rivincita, abbandoni e cooldown');
@@ -880,41 +880,25 @@ async function signup(p, nick, email = mailOf()) {
     K.sock.close();
     step('Canasta: smazzata a coppie giocata contro il computer');
 
-    // Scopa e Briscola: una smazzata ciascuna contro il computer (si gioca la prima presa possibile)
-    const SCm = require('../shared/scopa');
-    for (const gid of ['scopa', 'briscola', 'tressette', 'rubamazzetto', 'briscola5']) {
-      const P = player('Presa' + gid); await P.hello(); { const rp = await signup(P, 'Presa_' + gid.slice(0, 9)); assert(rp.ok, 'nickname: ' + rp.error); }
-      assert((await P.call('createRoom', { rules: { game: gid, players: 2 }, vsBots: true })).ok);
-      const ps = await P.until((st) => st.game, 'partita di ' + gid);
-      assert(ps.room.game === gid && ps.game.presa && ps.game.hand.length === ({ tressette: 10, briscola5: 8 }[gid] || 3), gid + ': carte in mano');
-      const endP = Date.now() + 60000;
-      while (!(P.state.game && P.state.game.phase === 'handEnd')) {
-        if (Date.now() > endP) throw new Error('la smazzata di ' + gid + ' non finisce');
-        const g = P.state.game;
-        if (g.turn === g.you && gid === 'briscola5' && g.phase !== 'play') {
-          const r = await P.call('action', g.phase === 'bid' ? { type: 'pass' } : { type: 'call', suit: 'd' });
-          assert(r.ok, gid + ': asta rifiutata ' + r.error);
-        } else if (g.turn === g.you && g.phase === 'play') {
-          const card = g.playable ? g.hand.find((c) => g.playable.includes(c.id)) : g.hand[0];
-          const opts = gid === 'scopa' ? SCm.captures(card, g.table, g.cfg.rules) : [];
-          const r = await P.call('action', { type: 'play', cardId: card.id, ...(opts.length > 1 ? { take: opts[0].map((c) => c.id) } : {}) });
-          assert(r.ok, gid + ': giocata rifiutata ' + r.error);
-        }
-        await wait(20);
-      }
-      const hrP = P.state.game.handResult;
-      assert(hrP.rows && hrP.rows.length >= 2, gid + ': resoconto con le sue righe');
-      assert((await P.call('replay')).ok, 'moviola ' + gid);
-      P.sock.close();
+    // Tutti gli accessi pubblici rifiutano i giochi con carte italiane.
+    const disabled = player('Blocco'); await disabled.hello(); assert((await signup(disabled, 'Blocco')).ok);
+    for (const game of ['scopa', 'scopone', 'briscola', 'briscola5', 'tressette', 'rubamazzetto']) {
+      for (const tutorial of [false, true]) assert(!(await disabled.call('createRoom', { rules: { game, players: 2 }, tutorial })).ok, game + ': creazione bloccata');
+      for (const mode of ['casual', 'ranked']) assert(!(await disabled.call('quickPlay', { game, n: 4, mode })).ok, game + ': coda bloccata');
+      assert(!(await disabled.call('rankedBoard', { game, n: 4 })).ok);
+      assert(!(await disabled.call('tournamentCreate', { name: 'Coppa bloccata', game, size: 4 })).ok);
     }
-    step('Scopa, Briscola, Briscola in 5, Tressette e Rubamazzetto: una smazzata ciascuna contro il computer');
+    assert((await disabled.call('createRoom', { rules: { players: 2 } })).ok);
+    assert(!(await disabled.call('configure', { rules: { game: 'scopa', players: 2 } })).ok);
+    await disabled.call('leaveRoom'); disabled.sock.close();
+    step('Giochi italiani bloccati: tavoli, tutorial, casual, ranked, tornei e cambio regole');
 
     // torneo da 4: iscrizione, riempimento con il computer, avviso della partita, resa, avanzamento fino al campione
     const TT = player('Tornista'); await TT.hello(); { const rt = await signup(TT, 'Tornista'); assert(rt.ok, 'nickname: ' + rt.error); }
     TT.match = null;
     TT.sock.on('tournamentMatch', (x) => { TT.match = x; });
-    assert(!(await TT.call('tournamentCreate', { name: 'Coppa Stronzi', game: 'briscola', size: 4 })).ok, 'nome volgare del torneo rifiutato');
-    const tc = await TT.call('tournamentCreate', { name: 'Coppa di prova', game: 'briscola', size: 4 });
+    assert(!(await TT.call('tournamentCreate', { name: 'Coppa Stronzi', game: 'ramino', size: 4 })).ok, 'nome volgare del torneo rifiutato');
+    const tc = await TT.call('tournamentCreate', { name: 'Coppa di prova', game: 'ramino', size: 4 });
     assert(tc.ok && tc.id, 'torneo creato');
     assert(!(await TT.call('tournamentStart', { id: tc.id })).ok, 'servono 4 iscritti');
     assert((await TT.call('tournamentFill', { id: tc.id })).ok);

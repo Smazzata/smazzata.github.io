@@ -23,9 +23,10 @@ const League = createLeagues({ leagues, nickOf: (t) => (sessions.get(t) || {}).n
 /* ---------- Tornei a eliminazione ---------- */
 /** regole "brevi" per le partite dei tornei (uno contro uno) */
 function tournamentRules(game) {
+  Games.assertEnabled(game);
   const short = {
     burraco: { ...Rules.PRESETS[0].rules, players: 2, target: 1005 },
-    scala40: { game: 'scala40', players: 2 }, canasta: { game: 'canasta', players: 2, target: 2000 },
+    ramino: { game: 'ramino', players: 2 }, scala40: { game: 'scala40', players: 2 }, canasta: { game: 'canasta', players: 2, target: 2000 },
     scopa: { game: 'scopa', players: 2, target: 11 }, briscola: { game: 'briscola', players: 2, target: 2 },
     tressette: { game: 'tressette', players: 2, target: 21 },
     rubamazzetto: { game: 'rubamazzetto', players: 2, target: 2 },

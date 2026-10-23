@@ -29,6 +29,7 @@ function turnTimerKey(room) {
 const ABSENT_MS = Number(process.env.ABSENT_MS || 45000) * TIMER_SCALE;
 
 function scheduleAbsent(room) {
+  if (!Games.enabled(room)) return;
   if (room.slow) { clearTimeout(room.absentHandle); room.absentKey = null; return; } // con calma: la partita aspetta
   const g = room.game;
   const s = g && g.phase !== 'handEnd' && !g.over ? room.seats[g.turn] : null;
@@ -71,6 +72,7 @@ function playForAbsent(room, key) {
 }
 
 function scheduleTurnTimer(room) {
+  if (!Games.enabled(room)) return;
   const key = turnTimerKey(room);
   if (key === room.timerKey) return;
   clearTimeout(room.turnTimerHandle);
@@ -102,6 +104,7 @@ function autoPlay(room, key) {
 }
 
 function scheduleBot(room) {
+  if (!Games.enabled(room)) return;
   const g = room.game;
   if (!g || room.botTimer) return;
   if (g.phase === 'handEnd') {

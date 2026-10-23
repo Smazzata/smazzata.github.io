@@ -33,7 +33,7 @@ function createRanked(ctx, options = {}) {
   }
   function checked(token) {
     if (!eligible(token)) throw new E.GameError('Ranked non disponibile per questo profilo');
-    for (const room of ctx.rooms.values()) if (room.game && !room.game.over && room.seats.some((s) => s && (s.token === token || s.leftToken === token))) throw new E.GameError('Completa prima la partita in corso');
+    for (const room of ctx.rooms.values()) if (Games.enabled(room) && room.game && !room.game.over && room.seats.some((s) => s && (s.token === token || s.leftToken === token))) throw new E.GameError('Completa prima la partita in corso');
     const all = ctx.ranked.players[token] || {};
     if (Object.values(all).some((p) => p.cooldownUntil > clock())) throw new E.GameError('Pausa Ranked dopo un abbandono');
   }
@@ -126,6 +126,7 @@ function createRanked(ctx, options = {}) {
   function tick() {
     party.tick();
     for (const room of ctx.rooms.values()) {
+      if (!Games.enabled(room)) continue;
       if (!room.rankedMatch || !room.game) continue;
       if (room.game.over) {
         if (!ctx.ranked.matches[room.rankedMatch.id]) {
@@ -152,7 +153,7 @@ function createRanked(ctx, options = {}) {
       }
     }
     for (const [id, invite] of invites) if (invite.expires < clock()) { invites.delete(id); invite.tokens.forEach((t) => emit(t, 'rankedQueue', { searching: false })); }
-    for (const entry of [...queue.values()]) if (entry.tokens.some((t) => !ctx.isConnected(t) || !eligible(t) || [...ctx.rooms.values()].some((r) => r.game && !r.game.over && r.seats.some((s) => s?.token === t)))) entry.tokens.forEach(cancel);
+    for (const entry of [...queue.values()]) if (entry.tokens.some((t) => !ctx.isConnected(t) || !eligible(t) || [...ctx.rooms.values()].some((r) => Games.enabled(r) && r.game && !r.game.over && r.seats.some((s) => s?.token === t)))) entry.tokens.forEach(cancel);
     // Ricerca limitata a 24 candidati per testa: limita il lavoro sul telefono-server.
     for (const entry of [...queue.values()]) {
       if (![...queue.values()].includes(entry)) continue;
@@ -169,6 +170,7 @@ function createRanked(ctx, options = {}) {
     }
   }
   function record(room) {
+    if (!Games.enabled(room)) return;
     const m = room.rankedMatch, g = room.game;
     if (!m || !g?.over || !room.rankedGame || ctx.ranked.matches[m.id]) return null;
     if (room.localGame || room.daily || room.tournament || room.tutorial || new Set(m.tokens).size !== room.n || m.tokens.some((t) => !ctx.sessions.has(t))) return null;
@@ -207,6 +209,7 @@ function createRanked(ctx, options = {}) {
       const live = new Set([...ctx.rooms.values()].map((r) => r.rankedMatch?.id));
       for (const [id, m] of Object.entries(ctx.ranked.matches)) if (now - m.at > 2 * c.seasonMs && !live.has(id)) delete ctx.ranked.matches[id];
       for (const key of keys) {
+        if (!Games.enabled(key.split(':')[0]) && !['reale','aberto','fechado'].includes(key.split(':')[0])) continue;
         const all = Object.keys(ctx.ranked.players).filter((t) => ctx.ranked.players[t][key]).map((token) => ({ token, p: profile(token, key, now) }));
         const pool = all.filter(({ token, p }) => eligible(token) && p.games >= c.minLegendGames && now - p.lastAt <= c.activeMs)
           .sort((a, b) => b.p.rating - a.p.rating || (a.token < b.token ? -1 : 1));
@@ -245,7 +248,7 @@ function createRanked(ctx, options = {}) {
       list: all.slice(0, 100).map(({ token: t, p }, i) => ({ ...view(p), history: undefined, seasons: undefined, rewards: undefined, name: ctx.sessions.get(t).nick,
         avatar: ctx.sessions.get(t).avatar || null, position: i + 1, me: t === token })) };
   }
-  function mine(token) { return Object.fromEntries(Object.keys(ctx.ranked.players[token] || {}).map((k) => [k, view(profile(token, k))])); }
+  function mine(token) { return Object.fromEntries(Object.keys(ctx.ranked.players[token] || {}).filter((k) => Games.enabled(k.split(':')[0]) || ['reale','aberto','fechado'].includes(k.split(':')[0])).map((k) => [k, view(profile(token, k))])); }
   function register(socket, handler) {
     socket.on('rankedJoin', handler((data) => join(socket.data.token, data)));
     socket.on('rankedAccept', handler(({ id }) => accept(socket.data.token, id)));

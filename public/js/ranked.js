@@ -3,7 +3,7 @@
 const RANKED_TEAMS = ['burraco', 'reale', 'aberto', 'fechado', 'canasta', 'scopa', 'scopone', 'briscola', 'tressette'];
 LEAGUE_GAMES.push(['reale', 'Burraco Reale'], ['aberto', 'Buraco Aberto'], ['fechado', 'Buraco Fechado']);
 function rankedSummaryHTML(ranks) {
-  return `<h3>${t('Profilo competitivo')}</h3>${Object.entries(ranks).map(([key,p]) => `<div class="ranked-profile">${leagueEmblem(playerRank(p),'league-row-emblem')}<b>${esc(key.split(':').join(' · '))}</b>${rankedCard(p)}</div>`).join('')}`;
+  return `<h3>${t('Profilo competitivo')}</h3>${Object.entries(ranks).filter(([key]) => AvailableGames.enabled(key.split(':')[0]) || ['reale','aberto','fechado'].includes(key.split(':')[0])).map(([key,p]) => `<div class="ranked-profile">${leagueEmblem(playerRank(p),'league-row-emblem')}<b>${esc(key.split(':').join(' · '))}</b>${rankedCard(p)}</div>`).join('')}`;
 }
 function rankedFormats(game) {
   const base = game === 'burraco' ? R.PRESETS[0].rules : RX.presetById(game).rules;
@@ -32,7 +32,7 @@ openLeaguePage = async function(el) {
   const d = el?.dataset || {};
   S.rankedSoloFormats ||= {};
   if (S.rankedQueue === 'solo' && S.rankedN) S.rankedSoloFormats[S.lbGame || 'burraco'] = S.rankedN;
-  if (d.game) S.lbGame = d.game;
+  S.lbGame = homeGame();
   const game = S.lbGame || 'burraco', formats = rankedFormats(game);
   S.rankedQueue = d.queue || S.rankedQueue || 'solo';
   if (!RANKED_TEAMS.includes(game) || !formats.some(([n]) => n === 4)) S.rankedQueue = 'solo';
@@ -52,7 +52,7 @@ leadersHTML = function() {
   const p = data?.mine, current = playerRank(p || { provisional: true }), preview = PLAYER_RANKS.find((r) => r.id === S.rankPreview) || current;
   const legend = data?.legend;
   return `<main class="page league-page theme-${preview.id}"><header class="league-header"><button class="league-back" data-act="leagueBack" aria-label="${t('Torna alla home')}">←</button><div><small>SMAZZATA RANKED</small><h1>${t('Classifica')}</h1></div></header>
-    <nav class="league-games">${LEAGUE_GAMES.map(([id, name]) => `<button class="league-game ${id === game ? 'on' : ''}" data-act="leaders" data-game="${id}">${name}</button>`).join('')}<button class="league-game ${game === 'scopone' ? 'on' : ''}" data-act="leaders" data-game="scopone">Scopone</button></nav>
+    <p class="ranked-format-note">${esc(LEAGUE_GAMES.find(([id]) => id === game)?.[1] || game)}</p>
     ${rankedSelectionHTML(game)}
     ${!data ? `<p role="status">${t(S.leagueError ? 'Classifica non disponibile' : 'Caricamento classifica…')}</p>` : `
     <section class="league-hero"><div class="league-halo" aria-hidden="true"></div>${leagueEmblem(preview, 'league-hero-emblem')}<h2>${t(preview.name)} ${preview.division || ''}</h2>${!S.rankPreview || preview.id === current.id ? rankedCard(p) : ''}
@@ -93,7 +93,7 @@ Object.assign(handlers, {
   async rankedProfile() {
     const r = await emit('rankedProfile'); if (!r.ok) return;
     const label = (value) => `${t(PLAYER_RANKS[value >= 3300 ? 8 : Math.min(7, Math.floor(value / 400))].name)} ${value >= 3300 ? '' : ['IV', 'III', 'II', 'I'][Math.min(31, Math.floor(value / 100)) % 4]}`;
-    openModal('rankedProfile', `<div class="result"><h2>${t('Profilo competitivo')}</h2>${Object.entries(r.ranks).map(([key, p]) => `<section class="ranked-profile"><h3>${esc(key.split(':').join(' · '))}</h3>${leagueEmblem(playerRank(p), 'league-row-emblem')}${rankedCard(p)}<p>${t('Miglior grado stagionale')}: ${p.provisional ? t('Non classificato') : label(p.best)}<br>${t('Miglior grado storico')}: ${p.provisional && !p.seasons.some(s => s.games >= (p.placementTotal || 10)) ? t('Non classificato') : label(p.allTimeBest)}</p>
+    openModal('rankedProfile', `<div class="result"><h2>${t('Profilo competitivo')}</h2>${Object.entries(r.ranks).filter(([key]) => AvailableGames.enabled(key.split(':')[0]) || ['reale','aberto','fechado'].includes(key.split(':')[0])).map(([key, p]) => `<section class="ranked-profile"><h3>${esc(key.split(':').join(' · '))}</h3>${leagueEmblem(playerRank(p), 'league-row-emblem')}${rankedCard(p)}<p>${t('Miglior grado stagionale')}: ${p.provisional ? t('Non classificato') : label(p.best)}<br>${t('Miglior grado storico')}: ${p.provisional && !p.seasons.some(s => s.games >= (p.placementTotal || 10)) ? t('Non classificato') : label(p.allTimeBest)}</p>
       <details><summary>${t('Storico competitivo')}</summary>${p.history.map((h) => `<p>${new Date(h.at).toLocaleDateString()} · ${t(h.score === 1 ? 'Vittoria' : h.score === 0 ? 'Sconfitta' : 'Pareggio')} · ${h.placementMatch ? t('Piazzamenti') : `${h.delta > 0 ? '+' : ''}${h.delta} LP`}</p>`).join('')}</details>
       <details><summary>${t('Stagioni e ricompense')}</summary>${p.seasons.map((s) => `<p>${t('Stagione')} ${s.season + 1} · ${label(s.best)} · ${s.wins}/${s.games} <span class="ranked-reward">${t('Insegna stagionale')} ${s.season + 1}${leagueEmblem(PLAYER_RANKS[s.best >= 3300 ? 8 : Math.min(7, Math.floor(s.best / 400))], 'league-row-emblem')}</span></p>`).join('')}</details></section>`).join('') || `<p>${t('Completa i piazzamenti per ottenere un grado.')}</p>`}</div>`);
   },

@@ -17,7 +17,7 @@ function fixture(count = 4, config = {}) {
     socketsOf: (t) => sockets.filter((s) => s.data.token === t && !s.offline), isConnected: (t) => sockets.some((s)=>s.data.token===t&&!s.offline),
     newCode: () => 'R'+(++codes), startGame(room) { room.rankedGame = true; room.game = require('./games').of(room).E.createGame({rules:room.rules,players:room.seats.map(s=>({name:s.name,isBot:false}))}); }, leaveRoom() {}, afterAction(room) { ranked.record(room); } };
   const ranked = createRanked(ctx, { clock: () => now, config });
-  const match = (tokens = ['p0','p1'], key = 'burraco:2:solo', id = 'm1') => ({ n: tokens.length, rankedGame: true,
+  const match = (tokens = ['p0','p1'], key = 'burraco:2:solo', id = 'm1') => ({ rules: { game: key.split(':')[0] }, n: tokens.length, rankedGame: true,
     rankedMatch: { id, key, tokens }, game: { over: true, winners: [0], teams: tokens.map((_, i) => ({ members: [i] })) } });
   return { ctx, ranked, sockets, match, advance(ms) { now += ms; }, fail(on) { fail = on; }, saved: () => JSON.parse(saved) };
 }
@@ -58,9 +58,9 @@ test('persistenza atomica, replay risultato e isolamento code/giochi', () => {
   assert.equal(R.view(placed).placementTotal, 10);
   assert.equal(f.ranked.record(a),null); assert.equal(JSON.stringify(f.ctx.ranked),saved);
   f.ctx.ranked=f.saved(); const restarted=createRanked(f.ctx,{clock:()=>now0}); assert.equal(restarted.record(a),null);
-  restarted.record(f.match(['p0','p1'],'scopa:2:solo','m2'));
+  restarted.record(f.match(['p0','p1'],'ramino:2:solo','m2'));
   restarted.record(f.match(['p0','p1'],'burraco:4:duo','m3'));
-  assert.equal(f.ctx.ranked.players.p0['burraco:2:solo'].games,1); assert.equal(f.ctx.ranked.players.p0['scopa:2:solo'].games,1);
+  assert.equal(f.ctx.ranked.players.p0['burraco:2:solo'].games,1); assert.equal(f.ctx.ranked.players.p0['ramino:2:solo'].games,1);
   f.fail(true); const before=JSON.stringify(f.ctx.ranked); assert.throws(()=>restarted.record(f.match(['p0','p1'],'burraco:2:solo','fail')),/disco pieno/); assert.equal(JSON.stringify(f.ctx.ranked),before);
 });
 test('formato Solo/Duo, consenso e abbinamento 2v2', () => {
@@ -77,14 +77,14 @@ test('Solo non incontra Duo; annullamento e disconnessione puliscono entrambi', 
   f.ranked.cancel('p0'); assert.equal(f.ranked.queue.size,1);
 });
 test('matchmaking progressivo e limite compagni', () => {
-  const f=fixture(); const key='scopa:2:solo'; f.ranked.profile('p1',key).rating=1700;
-  f.ranked.join('p0',{game:'scopa',n:2}); f.ranked.join('p1',{game:'scopa',n:2}); assert.equal(f.ctx.rooms.size,0);
+  const f=fixture(); const key='ramino:2:solo'; f.ranked.profile('p1',key).rating=1700;
+  f.ranked.join('p0',{game:'ramino',n:2}); f.ranked.join('p1',{game:'ramino',n:2}); assert.equal(f.ctx.rooms.size,0);
   f.advance(60000); f.ranked.tick(); assert.equal(f.ctx.rooms.size,1);
   const d=fixture(); d.ranked.profile('p1','burraco:4:duo').rating=2200;
   d.ranked.join('p0',{game:'burraco',n:4,queue:'duo',friend:'Player1'}); assert.throws(()=>d.ranked.accept('p1',[...d.ranked.invites.keys()][0]),/Differenza/);
 });
 test('Leggenda: cap 1%, abilità minima, esclusioni e retrocessione', () => {
-  const f=fixture(205), key='scopa:2:solo';
+  const f=fixture(205), key='ramino:2:solo';
   for(let i=0;i<205;i++) Object.assign(f.ranked.profile('p'+i,key),{games:30,rating:2800-i});
   f.ctx.sessions.get('p0').suspended=true; f.ranked.profile('p1',key).games=29; f.ranked.profile('p2',key).lastAt=now0-31*R.DAY;
   f.ranked.legends(true); assert.equal(f.ctx.ranked.legends[key].eligible,202);
@@ -120,14 +120,14 @@ test('promo isolata: una partita Duo non modifica la Solo', () => {
   f.ranked.record(f.match(['p0','p1'],'burraco:4:duo'));
   assert.deepEqual(f.ranked.profile('p0','burraco:2:solo').promo.results,[1]);
 });
-test('varianti: Scopa/Scopone e Burraco/Reale non condividono il rating', () => {
-  const f=fixture();assert.notEqual(f.ranked.format({game:'scopa',n:4}).key,f.ranked.format({game:'scopone',n:4}).key);
+test('giochi disabilitati e varianti Burraco separate', () => {
+  const f=fixture();for (const game of ['scopa','scopone','briscola','briscola5','tressette','rubamazzetto']) assert.throws(() => f.ranked.format({game,n:4}), /non disponibile/);
   for(const game of ['reale','aberto','fechado']){const v=f.ranked.format({game,n:4,queue:'duo'});assert.equal(v.key,game+':4:duo');assert.notDeepEqual(v.rules,f.ranked.format({game:'burraco',n:4}).rules);}
 });
 test('disconnessione: riconnessione entro grazia, poi resa autorevole', () => {
-  const f=fixture();f.ranked.join('p0',{game:'scopa',n:2});f.ranked.join('p1',{game:'scopa',n:2});
+  const f=fixture();f.ranked.join('p0',{game:'ramino',n:2});f.ranked.join('p1',{game:'ramino',n:2});
   const room=[...f.ctx.rooms.values()][0];f.sockets[0].offline=true;f.ranked.tick();f.advance(100000);f.sockets[0].offline=false;f.ranked.tick();assert.equal(room.game.over,false);
-  f.sockets[0].offline=true;f.ranked.tick();f.advance(121000);f.ranked.tick();assert.equal(room.game.over,true);assert.equal(f.ranked.profile('p0','scopa:2:solo').losses,1);
+  f.sockets[0].offline=true;f.ranked.tick();f.advance(121000);f.ranked.tick();assert.equal(room.game.over,true);assert.equal(f.ranked.profile('p0','ramino:2:solo').losses,1);
 });
 test('pareggio: Glicko aggiornato, BO3 non consumata', () => {
   const f=fixture();Object.assign(f.ranked.profile('p0','burraco:2:solo'),{games:20,promo:{results:[1],target:1},tier:0,division:3,lp:100});
@@ -135,7 +135,7 @@ test('pareggio: Glicko aggiornato, BO3 non consumata', () => {
   const p=f.ranked.profile('p0','burraco:2:solo');assert.equal(p.draws,1);assert.deepEqual(p.promo.results,[1]);assert.ok(p.rd<350);
 });
 test('Leggenda: pari merito deterministico e frequenza giornaliera', () => {
-  const f=fixture(3),key='scopa:2:solo';for(let i=0;i<3;i++)Object.assign(f.ranked.profile('p'+i,key),{games:30,rating:2700});
+  const f=fixture(3),key='ramino:2:solo';for(let i=0;i<3;i++)Object.assign(f.ranked.profile('p'+i,key),{games:30,rating:2700});
   f.ranked.legends(true);assert.equal(f.ranked.profile('p0',key).legend,true);f.ranked.profile('p1',key).rating=3000;f.ranked.legends();assert.equal(f.ranked.profile('p0',key).legend,true);
   f.advance(R.DAY);f.ranked.legends();assert.equal(f.ranked.profile('p1',key).legend,true);
 });
@@ -159,7 +159,7 @@ test('risultato riprovato dopo errore del disco senza duplicati', () => {
 test('timer scaduto offline si riarma alla riconnessione', () => {
   const ctx=require('./contesto'), previous=ctx.isConnected;
   require('./turni');
-  const Games=require('./games'), rules=Games.publicRules('briscola',2);
+  const Games=require('./games'), rules=Games.publicRules('scala40',2);
   const room={rules,game:Games.of(rules).E.createGame({rules,players:[{name:'A'},{name:'B'}]}),seats:[{token:'a'},{token:'b'}],rankedMatch:{},turnTime:60,turnCounter:0};
   try {
     ctx.isConnected=()=>false;room.timerKey=ctx.turnTimerKey(room);ctx.autoPlay(room,room.timerKey);
@@ -180,4 +180,15 @@ test('tavolo Duo: invito, consenso, annullamento, uscita e disconnessione', () =
   assert.equal(f.ranked.queue.size,0); assert.ok(p.mine('p0').members.every(m=>!m.ready));
   f.advance(120001); f.ranked.tick(); assert.equal(p.mine('p1'),null); assert.equal(p.mine('p0').members.length,1);
   p.leave('p0'); assert.equal(p.parties.size,0);
+});
+
+ test('lancio: quattro giochi, sfide francesi e vecchi tavoli congelati', () => {
+  const Games = require('./games'), Daily = require('./daily');
+  assert.deepEqual(Games.ids, ['burraco','scala40','ramino','canasta']);
+  for (let day=1; day<=28; day++) assert(Games.enabled(Daily.challenge('2026-10-'+String(day).padStart(2,'0')).rules));
+  const f=fixture(); const old=f.match(['p0','p1'],'scopa:2:solo');
+  f.ctx.rooms.set('vecchio',old); f.ranked.record(old); f.ranked.tick();
+  assert.equal(f.ctx.rooms.get('vecchio'),old); assert.equal(f.ctx.ranked.players.p0,undefined);
+  old.game.over=false; old.seats=[{token:'p0'},{token:'p1'}];
+  assert.doesNotThrow(()=>f.ranked.join('p0',{game:'ramino',n:2}));
 });

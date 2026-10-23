@@ -105,7 +105,7 @@ const GAMES = [
   ['briscola5', "{ game: 'briscola5' }"],
   ['tressette', "{ game: 'tressette', players: 2 }"],
   ['rubamazzetto', "{ game: 'rubamazzetto', players: 2 }"],
-];
+].filter(([id]) => require('../shared/available-games').enabled(id));
 
 (async () => {
   if (!process.argv.includes('--perf')) fs.rmSync(OUT, { recursive: true, force: true });

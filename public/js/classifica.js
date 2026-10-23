@@ -1,6 +1,6 @@
 'use strict';
 
-const LEAGUE_GAMES = [['burraco', 'Burraco'], ['scala40', 'Scala 40'], ['ramino', 'Ramino'], ['canasta', 'Canasta'], ['scopa', 'Scopa'], ['briscola', 'Briscola'], ['briscola5', 'Briscola in 5'], ['tressette', 'Tressette'], ['rubamazzetto', 'Rubamazzetto']];
+const LEAGUE_GAMES = [['burraco', 'Burraco'], ['scala40', 'Scala 40'], ['ramino', 'Ramino'], ['canasta', 'Canasta']];
 function leagueEmblem(rank, cls = '') {
   return `<img class="league-emblem ${cls}" src="${rank.id === 'unranked' ? 'art/leagues/unranked.webp' : `art/ranked/${rank.id}${rank.id === 'legend' ? '' : '-' + (rank.division || 'IV')}.svg`}" alt="${esc(t(rank.name))}" width="256" height="256" draggable="false">`;
 }

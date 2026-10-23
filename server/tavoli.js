@@ -32,7 +32,7 @@ function newCode() {
 function roomOfToken(token) {
   const sess = sessions.get(token);
   const room = sess && sess.room && rooms.get(sess.room);
-  return room && seatOfToken(room, token) >= 0 ? room : null;
+  return room && Games.enabled(room) && seatOfToken(room, token) >= 0 ? room : null;
 }
 
 /** Il nickname scelto diventa il nome mostrato nei tavoli e in classifica */
@@ -95,6 +95,7 @@ function isConnected(token) {
 }
 
 function broadcast(room) {
+  if (!Games.enabled(room)) return;
   scheduleTurnTimer(room);
   scheduleAbsent(room);
   for (const s of io.sockets.sockets.values()) {
@@ -119,6 +120,7 @@ function socketsOf(token) {
 function myGames(token) {
   const out = [];
   for (const room of rooms.values()) {
+    if (!Games.enabled(room)) continue;
     if (!room.slow) continue;
     const seat = seatOfToken(room, token);
     if (seat < 0) continue;
@@ -161,6 +163,7 @@ function slowRoomUpdates(room) {
  * (chi è offline non blocca il tavolo). A fine partita "pronto" vale come voto per la rivincita.
  */
 function checkReady(room) {
+  if (!Games.enabled(room)) return;
   const g = room.game;
   if (!g || g.phase !== 'handEnd') return;
   const humans = room.seats.map((s, i) => (s && !s.isBot && isConnected(s.token) ? i : -1)).filter((i) => i >= 0);
@@ -273,6 +276,7 @@ function takeOver(socket, mode) {
 }
 
 function joinRoom(socket, room) {
+  Games.assertEnabled(room);
   const token = socket.data.token;
   if (room.rankedMatch && !room.rankedMatch.tokens.includes(token)) throw new E.GameError('Tavolo riservato al matchmaking Ranked');
   const sess = sessions.get(token);
@@ -313,6 +317,7 @@ function joinRoom(socket, room) {
 function getRoom(socket) {
   const room = rooms.get(socket.data.room);
   if (!room) throw new E.GameError('Non sei in nessun tavolo');
+  Games.assertEnabled(room);
   return room;
 }
 
@@ -334,6 +339,7 @@ function fillBots(room) {
 }
 
 function startGame(room) {
+  Games.assertEnabled(room);
   if (room.rankedMatch && (room.game || ctx.ranked.matches[room.rankedMatch.id])) throw new E.GameError('Rientra in coda per una nuova Ranked');
   if (room.series && room.series.champion) room.series = { ...room.series, wins: Array(room.n).fill(0), games: 0, champion: null };
   clearTimeout(room.botTimer);
@@ -358,6 +364,7 @@ function startGame(room) {
 // Pulizia dei tavoli abbandonati
 setInterval(() => {
   for (const room of rooms.values()) {
+    if (!Games.enabled(room)) continue;
     const anyone = room.seats.some((s) => s && !s.isBot && isConnected(s.token));
     if (room.slow && room.seats.some((s) => s && !s.isBot)) {
       if (Date.now() - (room.lastActionAt || Date.now()) > 14 * 24 * 3600 * 1000) { clearTimeout(room.botTimer); rooms.delete(room.code); scheduleSave(); }

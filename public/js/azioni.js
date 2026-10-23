@@ -119,7 +119,8 @@
       if (code.length !== 4) return toast('Il codice ha 4 caratteri', true);
       joinRoom(code);
     },
-    presetRules(el) { const p = presetById(el.dataset.id); rulesModal(p.rules, p.name); },
+    presetRules(el) { const p = presetById(el.dataset.id);
+      if (!p || !AvailableGames.enabled(p.rules)) return; rulesModal(p.rules, p.name); },
     howto() { openModal('rules', `<div class="rules-text">${HOW_TO}${R.OTHER_VARIANTS}</div>`); },
     settings: settingsModal,
     pref(el) {
@@ -142,6 +143,7 @@
     },
     preset(el) {
       const p = presetById(el.dataset.id);
+      if (!p || !AvailableGames.enabled(p.rules)) return;
       if (S.modalKind === 'editRules') { S.editRules = RX.normalize({ ...p.rules, players: S.editRules.players }); editRulesModal(); return; }
       S.rules = RX.normalize({ ...p.rules, players: S.rules.players });
       store.set('bur_rules', S.rules);
@@ -307,6 +309,7 @@
     pickGame(el) {
       const players = S.rules.players;
       const g = el.dataset.game;
+      if (!AvailableGames.enabled(g)) return;
       S.rules = g === 'scopone' ? OTHER.scopa.normalize(OTHER.scopa.PRESETS[1].rules)
         : OTHER[g] ? OTHER[g].normalize({ players: g === 'scopa' ? Math.min(players, 4) : players }) : R.normalize({ ...R.PRESETS[0].rules, players });
       store.set('bur_rules', S.rules);

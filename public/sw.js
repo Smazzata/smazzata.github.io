@@ -1,7 +1,7 @@
 // Service worker: notifiche e copia del gioco per giocare anche senza internet.
 // "Prima la rete": da collegati si usa sempre la versione più recente (e se ne salva una copia);
 // senza rete si usa l'ultima copia salvata. La connessione di gioco (socket.io) non passa mai dalla copia.
-const CACHE = 'burraco-gioco-v55';
+const CACHE = 'burraco-gioco-v56';
 const SHELL = [
   'ranked.css', 'js/ranked.js', 'art/ranked/bronze-I.svg', 'art/ranked/bronze-II.svg', 'art/ranked/bronze-III.svg', 'art/ranked/bronze-IV.svg', 'art/ranked/champion-I.svg', 'art/ranked/champion-II.svg', 'art/ranked/champion-III.svg', 'art/ranked/champion-IV.svg', 'art/ranked/diamond-I.svg', 'art/ranked/diamond-II.svg', 'art/ranked/diamond-III.svg', 'art/ranked/diamond-IV.svg', 'art/ranked/gold-I.svg', 'art/ranked/gold-II.svg', 'art/ranked/gold-III.svg', 'art/ranked/gold-IV.svg', 'art/ranked/grandmaster-I.svg', 'art/ranked/grandmaster-II.svg', 'art/ranked/grandmaster-III.svg', 'art/ranked/grandmaster-IV.svg', 'art/ranked/legend.svg', 'art/ranked/master-I.svg', 'art/ranked/master-II.svg', 'art/ranked/master-III.svg', 'art/ranked/master-IV.svg', 'art/ranked/platinum-I.svg', 'art/ranked/platinum-II.svg', 'art/ranked/platinum-III.svg', 'art/ranked/platinum-IV.svg', 'art/ranked/silver-I.svg', 'art/ranked/silver-II.svg', 'art/ranked/silver-III.svg', 'art/ranked/silver-IV.svg',
   'classifica.css', 'js/classifica.js', 'art/leagues/unranked.webp', 'art/leagues/bronze.webp', 'art/leagues/silver.webp', 'art/leagues/gold.webp', 'art/leagues/platinum.webp', 'art/leagues/diamond.webp', 'art/leagues/master.webp', 'art/leagues/grandmaster.webp', 'art/leagues/champion.webp', 'art/leagues/legend.webp',
@@ -9,7 +9,7 @@ const SHELL = [
   'art/campaign/clockwork.webp', 'art/campaign/arturo.webp', 'art/campaign/nina.webp', 'art/campaign/conte.webp', 'art/campaign/bay.webp', 'art/campaign/marina.webp', 'art/campaign/pippo.webp', 'art/campaign/nebbia.webp', 'art/campaign/boosters-scala40.webp', 'art/campaign/boosters-ramino.webp',
   './', 'index.html', 'intro.css', 'style.css', 'campaign.css', 'shared/campaign.js', 'js/campagna.js', 'js/campaign-adventure.js', 'fonts/nunito.woff2', 'fonts/playfair.woff2',
   'js/lingue.js', 'lingue/en.js', 'lingue/es.js', 'lingue/pt.js', 'js/base.js', 'js/connessione.js', 'js/carte.js', 'js/ui.js', 'js/profilo.js', 'js/tutorial.js', 'js/schermate.js', 'js/tavolo.js', 'js/animazioni.js', 'js/finestre.js', 'js/moviola.js', 'js/azioni.js', 'js/comandi.js', 'local-server.js', 'engine.js',
-  'shared/rules.js', 'shared/melds.js', 'shared/scala40.js', 'shared/ramino.js', 'shared/canasta.js', 'shared/scopa.js', 'shared/briscola.js', 'shared/tressette.js', 'shared/rubamazzetto.js', 'shared/briscola5.js', 'shared/premi.js', 'icon.svg', 'manifest.webmanifest', 'licenze.html', 'fonts/nunito-OFL.txt', 'fonts/playfair-OFL.txt', 'privacy.html', 'elimina-profilo.html', 'regole.html', 'icons/icon-192.png',
+  'shared/available-games.js', 'shared/rules.js', 'shared/melds.js', 'shared/scala40.js', 'shared/ramino.js', 'shared/canasta.js', 'shared/scopa.js', 'shared/briscola.js', 'shared/tressette.js', 'shared/rubamazzetto.js', 'shared/briscola5.js', 'shared/premi.js', 'icon.svg', 'manifest.webmanifest', 'licenze.html', 'fonts/nunito-OFL.txt', 'fonts/playfair-OFL.txt', 'privacy.html', 'elimina-profilo.html', 'regole.html', 'icons/icon-192.png',
 ];
 
 self.addEventListener('install', (e) => {

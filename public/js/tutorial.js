@@ -95,12 +95,12 @@
 
   function tutorialModal(i = 0, game) {
     if (game) S.tutGame = game;
-    const gid = LESSONS[S.tutGame] ? S.tutGame : 'burraco';
+    const gid = AvailableGames.enabled(S.tutGame) && LESSONS[S.tutGame] ? S.tutGame : 'burraco';
     const slides = LESSONS[gid].slides;
     const sl = slides[i];
     const last = i === slides.length - 1;
     openModal('tutorial', `<div class="tutorial">
-      <div class="row tutgames">${Object.entries(LESSONS).map(([id, l]) => `<button class="swatch ${id === gid ? 'on' : ''}" data-act="tutStep" data-i="0" data-game="${id}">${l.name}</button>`).join('')}</div>
+      <div class="row tutgames">${Object.entries(LESSONS).filter(([id]) => AvailableGames.enabled(id)).map(([id, l]) => `<button class="swatch ${id === gid ? 'on' : ''}" data-act="tutStep" data-i="0" data-game="${id}">${l.name}</button>`).join('')}</div>
       <div class="tutdots">${slides.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</div>
       <h2>${i + 1}. ${sl.t}</h2>${sl.h}
       <div class="row" style="margin-top:14px">

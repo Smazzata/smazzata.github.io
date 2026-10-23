@@ -58,5 +58,5 @@
     if (n.trophies) return `${n.trophies} trofei`;
     return '';
   }
-  return { LIST, BY_ID, isUnlocked, unlockedIds, howTo };
+  return { LIST: LIST.filter((p) => !['t_scopa', 't_briscola', 't_tressette'].includes(p.id)), BY_ID, isUnlocked, unlockedIds, howTo };
 });

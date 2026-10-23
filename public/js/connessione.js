@@ -272,7 +272,7 @@
 
   /** c'è una partita sul telefono da riprendere? */
   function savedLocalGame() {
-    try { const r = JSON.parse(localStorage.getItem('bur_offline_room') || 'null'); return !!(r && r.game && !r.game.over); } catch (e) { return false; }
+    try { const r = JSON.parse(localStorage.getItem('bur_offline_room') || 'null'); return !!(r && AvailableGames.enabled(r) && r.game && !r.game.over); } catch (e) { return false; }
   }
   /** Scarta anche i risultati contro il computer rimasti in coda dalle versioni precedenti. */
   function flushLocalResults() {

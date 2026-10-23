@@ -155,9 +155,10 @@
           broadcast();
           return {};
         case 'createRoom': {
+          self.AvailableGames.assertEnabled(d.rules);
           const R = Rules();
           const s40 = d.rules && d.rules.game === 'scala40';
-          const rules = d.tutorial ? (s40 ? self.BurracoScala40.normalize({ players: 2 }) : R.normalize({ ...R.PRESETS[0].rules, players: 2, target: 505 }))
+          const rules = d.tutorial ? (s40 ? self.BurracoScala40.normalize({ players: 2 }) : otherRules(d.rules) ? otherRules(d.rules).normalize({ game: d.rules.game, players: 2 }) : R.normalize({ ...R.PRESETS[0].rules, players: 2, target: 505 }))
             : s40 ? self.BurracoScala40.normalize(d.rules) : otherRules(d.rules) ? otherRules(d.rules).normalize(d.rules) : R.normalize(d.rules);
           const free = BOT_NAMES.filter((n) => n !== me).sort(() => Math.random() - 0.5);
           room = {
@@ -226,6 +227,7 @@
     }
 
     room = store.get();
+    if (room && !self.AvailableGames.enabled(room)) room = null;
     if (room && room.game) room.memoTurn = -1;
     // il "collegamento" parte quando l'interfaccia è pronta (connect), come per socket.io con autoConnect: false
     let started = false;

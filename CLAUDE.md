@@ -42,6 +42,14 @@ Autore: Muliello S.F. L'utente scrive in italiano: rispondi, commenta il codice 
 - `android-app/` — app Capacitor (APK e AAB): pagina d'ingresso e gioco senza internet sono dentro l'app (`www/`, generata con `npm run app:www`, origine `https://localhost`); da collegati porta al server sul tunnel come il sito. User agent `BurracoApp/N SmazzataLocale` (+ `SmazzataStore` nell'AAB: niente avviso di aggiornamento APK). `burraco.p12` è la chiave di firma fissa (non cambiarla: gli aggiornamenti non si installerebbero più).
 - `scripts/android-server.sh` — avvio sul telefono-server (Termux): dipendenze, aggiornamento da GitHub ogni 5 min, tunnel Cloudflare, pubblicazione dell'indirizzo (`--set-token`, `--install-boot`).
 
+## Giochi disponibili al lancio
+
+La disponibilità è definita in `shared/available-games.js`: Burraco, Scala 40, Ramino e Canasta.
+I motori dei giochi italiani restano conservati e testati, ma i loro accessi online/offline sono disabilitati.
+Il gioco si sceglie nella Home: setup e Classificate ereditano la scelta senza riproporre un selettore.
+La Home privilegia le modalità di gioco; comandi secondari compatti in alto, testi leggibili e pulsanti facili da toccare.
+Il pubblico di riferimento è adulto/maturo: mantenere un aspetto tradizionale da tavolo da carte, etichette chiare e contrasti netti.
+
 ## Funzioni principali (oltre al gioco)
 Punteggio Elo per gioco (`server/elo.js`), premi da sbloccare (titoli, cornici, dorsi: `shared/premi.js`), accessibilità (testo grande,
 alto contrasto, senza animazioni, mosse lette ad alta voce), materiale Play Store in `store/`. I messaggi vocali sono stati tolti (niente microfono).

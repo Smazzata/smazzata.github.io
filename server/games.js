@@ -5,6 +5,7 @@
  * Per aggiungere un gioco: un motore con la stessa interfaccia (createGame, apply, isLegal, viewFor,
  * nextHand, surrender, teamOf, note), un computer (nextAction, thinkMs) e le regole (normalize, preset).
  */
+const Available = require('../shared/available-games');
 const Rules = require('../shared/rules');
 const { GameError } = require('./engine');
 const S40 = require('../shared/scala40');
@@ -79,6 +80,7 @@ const of = (rulesOrRoom) => GAMES[idOf(rulesOrRoom && rulesOrRoom.rules ? rulesO
 
 // Formati pubblici: solo regole standard, mai impostazioni inviate dal client.
 function publicRules(game = 'burraco', n) {
+  assertEnabled(game);
   const id = game === 'scopone' ? 'scopa' : game;
   if (!Object.hasOwn(GAMES, id)) throw new GameError('Gioco non valido');
   const base = game === 'scopone' ? SCO.PRESETS[1].rules : id === 'burraco' ? Rules.PRESETS[0].rules : {};
@@ -86,4 +88,7 @@ function publicRules(game = 'burraco', n) {
   if (![2, 3, 4, 5].includes(Number(n)) || rules.players !== Number(n)) throw new GameError('Numero di giocatori non valido per questo gioco');
   return rules;
 }
-module.exports = { GAMES, of, idOf, publicRules };
+function assertEnabled(value) {
+  if (!Available.enabled(value)) throw new GameError('Gioco non disponibile');
+}
+module.exports = { GAMES, of, idOf, publicRules, ...Available, assertEnabled };

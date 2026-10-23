@@ -67,27 +67,27 @@ module.exports = async function leagueFlow({ cdp, shot, open, URL, step }) {
     document.dispatchEvent(new KeyboardEvent('keydown', {key:'Escape', bubbles:true}));
     if (document.querySelector('.rank-transition') || document.querySelector('#app').inert) throw new Error('focus bloccato dopo la chiusura');
     S.prefs.anim = true;
-    await openLeaguePage({dataset:{game:'scala40',friends:'1'}});
+    store.set('smazzata_home_game','scala40'); await openLeaguePage({dataset:{game:'scala40',friends:'1'}});
     if (S.leagueData.game !== 'scala40' || !S.lbFriends) throw new Error('gioco o filtro amici persi');
     __tap('[data-act="rankedSearch"]');
     await __W(500);
     if (!S.rankedSearching || S.modalKind !== 'rankedSearch') throw new Error('ricerca Ranked non avviata');
     await emit('rankedCancel');
-    await openLeaguePage({dataset:{game:'burraco',n:'3',queue:'solo'}});
+    store.set('smazzata_home_game','burraco'); await openLeaguePage({dataset:{game:'burraco',n:'3',queue:'solo'}});
     if ([...document.querySelectorAll('.ranked-formats [data-n]')].map(e=>e.dataset.n).join(',') !== '2,3,4') throw new Error('formati Solo non ordinati');
     __tap('.ranked-queues [data-queue="duo"]'); await __W(600);
     if (S.leagueData.queue !== 'duo' || S.leagueData.n !== 4 || document.querySelector('.ranked-solo-formats')) throw new Error('Duo non forza quattro giocatori');
     __tap('.ranked-queues [data-queue="solo"]'); await __W(600);
     if (S.leagueData.n !== 3 || S.leagueData.queue !== 'solo') throw new Error('formato Solo perso tornando dalla Duo');
-    await openLeaguePage({dataset:{game:'scala40'}});
+    store.set('smazzata_home_game','scala40'); await openLeaguePage({dataset:{game:'scala40'}});
     if (document.querySelector('.ranked-queues [data-queue="duo"]')) throw new Error('Duo mostrata per un gioco non supportato');
-    await openLeaguePage({dataset:{game:'burraco',n:'4',queue:'duo'}});
+    store.set('smazzata_home_game','burraco'); await openLeaguePage({dataset:{game:'burraco',n:'4',queue:'duo'}});
     if (S.leagueData.queue !== 'duo') throw new Error('coda Duo persa');
     __tap('[data-act="rankedSearch"]'); await __W(100);
     if (S.screen!=='rankedLobby' || !document.querySelector('.ranked-party-seats') || document.querySelector('#rankedFriend')) throw new Error('tavolo Duo mancante');
     if (!document.querySelector('[data-act="rankedPartyReady"]').disabled) throw new Error('pronto senza compagno');
     await handlers.rankedPartyLeave();
-    await openLeaguePage({dataset:{game:'burraco',n:'2',queue:'solo'}});
+    store.set('smazzata_home_game','burraco'); await openLeaguePage({dataset:{game:'burraco',n:'2',queue:'solo'}});
     S.leagueData.mine={...S.leagueData.mine,tier:2,league:'Oro',id:'gold',division:'I',lp:100,provisional:false,promo:{results:[1,0],target:3}};
     render();
     if (document.querySelectorAll('.ranked-promo span').length!==3) throw new Error('BO3 mancante');
@@ -97,12 +97,12 @@ module.exports = async function leagueFlow({ cdp, shot, open, URL, step }) {
   for (const lang of ['en', 'es', 'pt']) {
     await cdp.run(`store.set('bur_prefs', {...S.prefs,lang:'${lang}'}); return true;`);
     await open(URL);
-    await cdp.run(`await openLeaguePage({dataset:{game:'burraco',n:'4',queue:'duo'}}); await __W(300); if(document.documentElement.scrollWidth>innerWidth)throw Error('overflow ${lang}'); if(LANG!=='${lang}')throw Error('lingua non caricata');`);
+    await cdp.run(`store.set('smazzata_home_game','burraco'); await openLeaguePage({dataset:{game:'burraco',n:'4',queue:'duo'}}); await __W(300); if(document.documentElement.scrollWidth>innerWidth)throw Error('overflow ${lang}'); if(LANG!=='${lang}')throw Error('lingua non caricata');`);
     await shot('ranked-' + lang);
   }
   await cdp.run(`store.set('bur_prefs', {...S.prefs,lang:'it'}); return true;`);
   await open(URL);
-  await cdp.run(`await openLeaguePage({dataset:{game:'burraco',queue:'duo'}}); await handlers.rankedSearch(); await __W(1800);`);
+  await cdp.run(`store.set('smazzata_home_game','burraco'); await openLeaguePage({dataset:{game:'burraco',queue:'duo'}}); await handlers.rankedSearch(); await __W(1800);`);
   await shot('ranked-duo-lobby');
   await cdp.run(`await handlers.rankedPartyLeave();`);
   await cdp.send('Emulation.setDeviceMetricsOverride', { width: 900, height: 1050, deviceScaleFactor: 1, mobile: false });

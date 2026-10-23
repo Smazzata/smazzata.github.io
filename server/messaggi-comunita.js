@@ -21,6 +21,7 @@ const { GSTATS0 } = require('./statistiche');
 
 module.exports.register = function register(socket, handler) {
   socket.on('leaderboard', handler(({ friends, game } = {}) => {
+    Games.assertEnabled(game || 'burraco');
     const gid = Games.GAMES[game] ? game : 'burraco';
     const me = socket.data.token;
     const mine = sessions.get(me) || {};

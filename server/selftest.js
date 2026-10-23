@@ -255,7 +255,7 @@ function tournamentTests() {
     openMatch: (t, m) => { opened.push(m); return 'R' + opened.length; },
     simulate: () => 'a', notify: (tok, text) => notes.push(text), champion: (tok) => champs.push(tok),
   });
-  const id = T.create('a', { name: 'Coppa', game: 'scopa', size: 8 });
+  const id = T.create('a', { name: 'Coppa', game: 'ramino', size: 8 });
   const t = T.get(id);
   T.join(t, 'b');
   assert.throws(() => T.start(t, 'a'), /Servono 8/);

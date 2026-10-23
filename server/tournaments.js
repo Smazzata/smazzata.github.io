@@ -9,7 +9,7 @@
  *   champion(token)      → premia il vincitore
  */
 const SIZES = [4, 8, 16];
-const GAMES = ['burraco', 'scala40', 'canasta', 'scopa', 'briscola', 'tressette', 'rubamazzetto'];
+const GAMES = require('../shared/available-games').ids;
 const { nomeComputer } = require('./nomi-computer');
 const Parole = require('../shared/parole');
 
@@ -29,7 +29,7 @@ module.exports = function createTournaments({ tournaments, nickOf, openMatch, si
     if (Parole.contiene(nm)) err('Nome non permesso dalle regole');
     if (!GAMES.includes(game)) err('Gioco non valido');
     if (!SIZES.includes(Number(size))) err('Numero di partecipanti non valido');
-    if ([...tournaments.values()].filter((t) => t.owner === owner && t.status !== 'finito').length >= 2) err('Hai già due tornei aperti');
+    if ([...tournaments.values()].filter((t) => GAMES.includes(t.game) && t.owner === owner && t.status !== 'finito').length >= 2) err('Hai già due tornei aperti');
     const id = newId();
     tournaments.set(id, {
       id, name: nm, game, size: Number(size), owner, status: 'iscrizioni', createdAt: Date.now(),
@@ -38,7 +38,7 @@ module.exports = function createTournaments({ tournaments, nickOf, openMatch, si
     return id;
   }
 
-  function get(id) { const t = tournaments.get(String(id || '')); if (!t) err('Torneo non trovato'); return t; }
+  function get(id) { const t = tournaments.get(String(id || '')); if (!t) err('Torneo non trovato'); if (!GAMES.includes(t.game)) err('Gioco non disponibile'); return t; }
 
   function join(t, token) {
     if (t.status !== 'iscrizioni') err('Le iscrizioni sono chiuse');
@@ -134,7 +134,7 @@ module.exports = function createTournaments({ tournaments, nickOf, openMatch, si
   function list(me) {
     const recent = Date.now() - 7 * 24 * 3600 * 1000;
     return [...tournaments.values()]
-      .filter((t) => t.status !== 'finito' || (t.endedAt || 0) > recent)
+      .filter((t) => GAMES.includes(t.game) && (t.status !== 'finito' || (t.endedAt || 0) > recent))
       .sort((a, b) => (b.players.some((p) => p.token === me) - a.players.some((p) => p.token === me)) || b.createdAt - a.createdAt)
       .slice(0, 30)
       .map((t) => view(t, me));

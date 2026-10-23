@@ -924,6 +924,7 @@ I18N.load({"Per calare servono almeno 3 carte: selezionale e trascinale insieme"
 "Carte francesi":"Baralho francês",
 "Carte italiane":"Baralho italiano",
 "Crea il tavolo":"Criar mesa",
+"Gioco non disponibile":"Jogo indisponível",
 "⚡ Gioca subito":"⚡ Jogar agora",
 "📅 Sfida del giorno":"📅 Desafio do dia",
 "🏆 Tornei":"🏆 Torneios",

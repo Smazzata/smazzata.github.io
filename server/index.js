@@ -109,7 +109,7 @@ io.on('connection', (socket) => {
     socket.emit('myGames', myGames(token));
     social.push(token);
     social.pushFriends(token);
-    if (sess.room && rooms.has(sess.room)) {
+    if (sess.room && rooms.has(sess.room) && require('./games').enabled(rooms.get(sess.room))) {
       const room = rooms.get(sess.room);
       if (seatOfToken(room, token) >= 0 || (room.spectators || []).includes(token)) {
         // la partita è aperta su un altro dispositivo: qui si chiede se spostarla

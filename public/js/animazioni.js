@@ -381,6 +381,7 @@
   }
 
   function historyHTML(list) {
+    list = list.filter((h) => AvailableGames.enabled(h.game || 'burraco'));
     if (!list.length) return '<p class="muted">Nessuna partita completata.</p>';
     return list.map((h) => `<div class="hist ${h.won ? 'won' : 'lost'}">
       <span class="hres">${h.won ? '🏆' : '—'}</span>
@@ -390,6 +391,7 @@
 
   /** Grafici delle statistiche: andamento delle vittorie, vittorie per gioco, avversari */
   function chartsHTML(tl) {
+    tl = tl.filter((h) => AvailableGames.enabled(h.g || 'burraco'));
     if (tl.length < 2) return '';
     const last = tl.slice(-40);
     // andamento: percentuale di vittorie cumulata, partita dopo partita
@@ -423,7 +425,7 @@
 
   /** Statistiche divise per gioco (una tabella per gioco giocato) */
   function byGameHTML(byGame, total) {
-    const games = Object.entries(byGame || {});
+    const games = Object.entries(byGame || {}).filter(([id]) => AvailableGames.enabled(id));
     if (!games.length) return total ? statsTable(total) : '<p class="muted">Gioca la tua prima smazzata per vedere le statistiche.</p>';
     const names = { burraco: '🃏 Burraco', scala40: '🂡 Scala 40', ramino: '🧩 Ramino', canasta: '🎴 Canasta', scopa: '🧹 Scopa', briscola: '🍷 Briscola', tressette: '🂱 Tressette', rubamazzetto: '🃁 Rubamazzetto', briscola5: '🍷 Briscola in 5' };
     return games.map(([gid, st]) => `<h3>${names[gid] || gid}</h3>${statsTable(st, gid)}`).join('');

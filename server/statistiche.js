@@ -176,7 +176,7 @@ function recordLeaderboard(room) {
 /** Sfida del giorno: a fine smazzata si registra il punteggio e la partita finisce */
 function recordDaily(room) {
   const g = room.game;
-  if (g.over) return;
+  if (g.dailyRecorded) return;
   const hr = g.handResult;
   const best = Math.max(...hr.teams.map((t) => t.total));
   g.over = true;
@@ -205,6 +205,7 @@ function recordDaily(room) {
     }
   });
   daily.set(room.daily, board);
+  g.dailyRecorded = true;
   // si tengono solo gli ultimi 7 giorni
   for (const d of [...daily.keys()].sort().slice(0, -7)) daily.delete(d);
 }

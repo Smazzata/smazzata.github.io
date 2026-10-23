@@ -134,7 +134,7 @@ function fromScala40(replay, hr, seat) {
 /** Elenco per l'interfaccia: sbloccati (con data) e da sbloccare (con avanzamento) */
 function view(e) {
   const got = (e && e.trophies) || {};
-  return LIST.map((t) => ({
+  return LIST.filter((t) => !/^(sc|br|tr|rb|b5)_/.test(t.id)).map((t) => ({
     id: t.id, e: t.e, name: t.name, desc: t.desc, at: got[t.id] || null,
     progress: t.stat && t.goal > 1 && !got[t.id] ? { now: Math.min((e && e[t.stat]) || 0, t.goal), goal: t.goal } : null,
   }));

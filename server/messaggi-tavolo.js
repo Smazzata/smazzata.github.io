@@ -62,6 +62,7 @@ module.exports.register = function register(socket, handler) {
   }));
 
   socket.on('createRoom', handler(({ rules, vsBots, tutorial, botLevel }) => {
+    Games.assertEnabled(rules);
     checkOtherDevice(socket, null);
     ctx.Ranked.cancel(socket.data.token);
     // allenamento: Classico in 2 (a 505) oppure un altro gioco in 2, contro un computer facile e lento, con i suggerimenti
@@ -187,6 +188,7 @@ module.exports.register = function register(socket, handler) {
   }));
 
   socket.on('configure', handler(({ rules }) => {
+    Games.assertEnabled(rules);
     const room = getRoom(socket);
     requireHost(socket, room);
     if (room.quick) throw new E.GameError('I tavoli pubblici usano regole fisse. Crea un tavolo con gli amici per personalizzarle.');

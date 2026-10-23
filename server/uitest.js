@@ -146,7 +146,7 @@ const HELPERS = `
       for (const [rating, name] of [[800, 'Bronzo'], [1099, 'Bronzo'], [1100, 'Argento'], [1249, 'Argento'], [1250, 'Oro'], [1400, 'Platino'], [1600, 'Diamante'], [1800, 'Maestro'], [2000, 'Gran Maestro'], [2200, 'Campione'], [2600, 'Leggenda']]) {
         if (playerRank(rating).name !== name) throw new Error('soglia grado errata: ' + rating);
       }
-      for (const game of ['burraco', 'scala40', 'scopa']) {
+      for (const game of ['burraco', 'scala40', 'ramino']) {
         const html = statsTable({elo: 1250, eloMax: 1600, games: 3, wins: 1}, game);
         if (!html.includes('Oro') || !html.includes('Diamante') || /Elo|1250|1600/.test(html)) throw new Error('statistiche mostrano il punteggio interno');
       }
@@ -175,13 +175,13 @@ const HELPERS = `
         document.querySelector('.modal-close').click();
         store.set('smazzata_home_game','burraco'); applyHomeGame(); render();
       }
-      if(document.querySelector('select#homeGame')) throw Error('selettore nativo presente'); __tap('[data-act="homeGameMenu"]'); __tap('[data-act="homeGameChoose"][data-game="scopa"]');
+      if(document.querySelector('select#homeGame')) throw Error('selettore nativo presente'); __tap('[data-act="homeGameMenu"]'); __tap('[data-act="homeGameChoose"][data-game="ramino"]');
       for(const act of ['playFriends','playBots']) {
-        __tap('[data-act="'+act+'"]'); if(document.querySelector('[data-act="pickGame"]') || !document.querySelector('.setup-game-heading').textContent.includes('Scopa')) throw Error('scelta gioco ripetuta nella configurazione'); if(pickedGame(S.rules)!=='scopa') throw Error('gioco home perso in '+act);
+        __tap('[data-act="'+act+'"]'); if(document.querySelector('[data-act="pickGame"]') || !document.querySelector('.setup-game-heading').textContent.includes('Ramino')) throw Error('scelta gioco ripetuta nella configurazione'); if(pickedGame(S.rules)!=='ramino') throw Error('gioco home perso in '+act);
         __tap('[data-act="goHome"]');
       }
       __tap('[data-act="quickMenu"][data-mode="ranked"]'); await __W(500);
-      if(S.leagueData.game!=='scopa') throw Error('Ranked ignora il gioco home');
+      if(document.querySelector('.league-games') || S.leagueData.game!=='ramino') throw Error('Ranked ignora il gioco home');
       handlers.goHome(); store.set('smazzata_home_game','burraco'); applyHomeGame(); render();
       __tap('[data-act="playBots"]'); await __W(100);
       __tap('[data-act="setupBotLevel"][data-val="difficile"]');
@@ -189,7 +189,7 @@ const HELPERS = `
       __tap('[data-act="setupBotLevel"][data-val="auto"]');
       __tap('[data-act="goHome"]'); closeModal(); await __W(300);`);
     await shot('01-home');
-    await cdp.run(`__tap('[data-act="homeGameMenu"]'); await __W(350); if(document.querySelectorAll('.home-game-option').length!==10) throw Error('giochi nel menu incompleti'); if(document.documentElement.scrollWidth>innerWidth) throw Error('menu fuori schermo');`);
+    await cdp.run(`__tap('[data-act="homeGameMenu"]'); await __W(350); if(document.querySelectorAll('.home-game-option').length!==4) throw Error('giochi nel menu incompleti'); if(document.documentElement.scrollWidth>innerWidth) throw Error('menu fuori schermo');`);
     await shot('01-game-menu');
     await cdp.run(`document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true})); if(S.modalKind || document.activeElement.id!=='homeGame') throw Error('chiusura menu e focus'); await __W(250);`);
     step('schermata iniziale e nickname');
@@ -276,29 +276,17 @@ const HELPERS = `
     await shot('04b-canasta-fine-smazzata');
     step(`Canasta: smazzata giocata toccando (${can.turns} turni)`);
 
-    // 5c. Scopa: si gioca toccando le carte (se servono, si sceglie la presa)
+    // 5c. Ramino: avvio dal gioco scelto nella Home, con carte francesi
     await cdp.run(`
       await __menu('leave'); await __W(400);
       if (document.querySelector('[data-act="leaveNow"]')) { __tap('[data-act="leaveNow"]'); await __W(800); }
       if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); await __menu('leave'); await __W(800); }
-      __tap('[data-act="homeGameMenu"]'); __tap('[data-act="homeGameChoose"][data-game="scopa"]'); __tap('[data-act="playBots"]'); await __W(400);
+      __tap('[data-act="homeGameMenu"]'); __tap('[data-act="homeGameChoose"][data-game="ramino"]'); __tap('[data-act="playBots"]'); await __W(400);
       __tap('[data-act="createBots"]'); await __W(1500);
-      if (document.querySelectorAll('#hand .card.it').length !== 3) throw new Error('Scopa: niente carte italiane in mano');
+      if (!document.querySelectorAll('#hand .card').length || document.querySelectorAll('#hand .card.it').length) throw new Error('Ramino: mano francese assente o carte italiane presenti');
       return true;`, 30000);
-    await shot('04c-scopa-tavolo');
-    const sco = await cdp.run(`
-      const end = Date.now() + 120000; let plays = 0;
-      while (Date.now() < end && !document.querySelector('#modal:not(.hidden) .result')) {
-        const opt = document.querySelector('#modal:not(.hidden) .takeopt');
-        if (opt) { __tap(opt); plays++; }
-        else if (/Tocca a te/.test(__status())) { const c = document.querySelector('#hand .card'); if (c) { __tap(c); plays++; } }
-        await __W(300);
-      }
-      if (!document.querySelector('#modal:not(.hidden) .result')) throw new Error('la smazzata di Scopa non finisce');
-      await __W(1500);
-      return { plays };`, 150000);
-    await shot('04c-scopa-fine-smazzata');
-    step(`Scopa: smazzata giocata toccando (${sco.plays} giocate)`);
+    await shot('04c-ramino-tavolo');
+    step('Ramino: avvio sul dispositivo con carte francesi');
 
     // 5d. torneo: creazione, riempimento con il computer, avvio, tabellone con «Vai al tavolo»
     const tour = await cdp.run(`
@@ -329,6 +317,11 @@ const HELPERS = `
     await cdp.run(HELPERS);
     const o = await cdp.run(`
       if (!document.querySelector('.offbanner')) throw new Error('niente schermata offline');
+      for (const game of ['scopa','scopone','briscola','briscola5','tressette','rubamazzetto']) {
+        const result = await emit('createRoom', { rules: { game, players: 2 }, vsBots: true });
+        if (result.ok) throw new Error('gioco italiano avviato offline: '+game);
+      }
+
       __tap('[data-act="homeGameMenu"]'); __tap('[data-act="homeGameChoose"][data-game="burraco"]'); __tap('[data-act="playBots"]'); await __W(400);
       __tap('[data-act="createBots"]'); await __W(2500);
       return { hand: document.querySelectorAll('#hand .card').length, title: document.querySelector('.topbar .title').textContent };`);

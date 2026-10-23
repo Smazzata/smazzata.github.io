@@ -93,7 +93,7 @@
   const S = {
     token: store.get('bur_token', null),
     name: store.get('bur_name', ''),
-    rules: RX.normalize(store.get('bur_rules', R.PRESETS[0].rules)),
+    rules: RX.normalize(AvailableGames.enabled(store.get('bur_rules', {})) ? store.get('bur_rules', R.PRESETS[0].rules) : R.PRESETS[0].rules),
     prefs: (() => {
       const p = { ...DEFAULT_PREFS, ...store.get('bur_prefs', {}) };
       // vecchie scelte (automatico/giorno/notte) → chiaro/scuro

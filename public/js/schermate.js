@@ -78,13 +78,26 @@
         <p class="muted small" style="margin-top:10px"><a href="#" data-act="recover">Usa un altro profilo</a></p></div></div>`;
   }
 
+  function homeToolbarHTML() {
+    const reqs = S.social?.reqIn?.length || 0;
+    return `<div class="home-toolbar">
+      <div class="home-game"><span id="homeGameLabel">${t('Scegli il gioco')}</span><button id="homeGame" class="home-game-trigger" data-act="homeGameMenu" aria-haspopup="dialog" aria-labelledby="homeGameLabel homeGameName"><span class="home-game-symbol" aria-hidden="true">${GAME_TILES.find(([id])=>id===homeGame())[1]}</span><b id="homeGameName">${esc(GAME_TILES.find(([id])=>id===homeGame())[2])}</b><span class="home-game-chevron" aria-hidden="true">⌄</span></button></div>
+      <div class="home-tools"><button class="btn small" data-act="tutorial">📖 Regole</button><button class="btn small morebtn" data-act="more">☰ Altro</button></div>
+      ${OFFLINE ? '' : `<nav class="home-shortcuts" aria-label="Community">
+        <button class="home-shortcut" data-act="friends"><span class="shortcut-icon" aria-hidden="true">👥</span><span>Amici</span>${reqs ? `<b class="shortcut-count">${reqs}</b>` : ''}</button>
+        <button class="home-shortcut" data-act="daily"><span class="shortcut-icon" aria-hidden="true">📅</span><span>Sfida del giorno</span></button>
+        <button class="home-shortcut" data-act="tournaments"><span class="shortcut-icon" aria-hidden="true">🏆</span><span>Tornei</span></button>
+        <button class="home-shortcut" data-act="leaders"><span class="shortcut-icon" aria-hidden="true">🏅</span><span>Classifica</span></button>
+      </nav>`}
+    </div>`;
+  }
+
   function homeHTML() {
     if (!OFFLINE && S.mailOn && S.social && S.social.nick && S.social.hasEmail === false) return emailGateHTML();
-    const fan = [{ r: 1, s: 'S' }, { r: 13, s: 'H' }, { r: 0, s: 'J' }, { r: 2, s: 'D' }, { r: 7, s: 'C' }]
-      .map((c, i) => cardHTML({ ...c, id: -1 - i }, 'logo-card', `style="--i:${i - 2}"`)).join('');
-    return `<div class="page">
-      <div class="logo"><div class="logo-fan">${fan}</div><h1 translate="no">Smazzata</h1>
+    return `<div class="page home-page">
+      <div class="logo"><h1 translate="no">Smazzata</h1>
         <div class="muted">Gioca con gli amici o contro il computer</div></div>
+      ${homeToolbarHTML()}
       ${S.appUpdate && !S.appUpdate.dismissed ? `<div class="apkbanner update">
         <img src="icons/icon-192.png" alt=""><span><b>📲 Nuova versione dell'app</b><br>Scaricala e installala sopra quella che hai: profilo e partite restano.</span>
         <span class="updbtns"><a class="btn primary small" href="${APK_URL}">Scarica</a><button class="btn small" data-act="appUpdateLater">Più tardi</button></span></div>` : ''}
@@ -134,16 +147,8 @@
   function homeButtonsHTML() {
     if (store.get('bur_lastroom', '') === '🤖') store.set('bur_lastroom', ''); // codice delle partite sul telefono: non è un tavolo
     const last = !OFFLINE && (store.get('bur_lastroom', '') || (savedLocalGame() ? '🤖' : ''));
-    const reqs = S.social && S.social.reqIn ? S.social.reqIn.length : 0;
     return `<div class="homebtns">
       ${S.rankedParty ? `<button class="btn primary" data-act="rankedPartyOpen">${t('Torna al tavolo Duo')}</button>` : ''}
-      <div class="home-game"><span id="homeGameLabel">${t('Scegli il gioco')}</span><button id="homeGame" class="home-game-trigger" data-act="homeGameMenu" aria-haspopup="dialog" aria-labelledby="homeGameLabel homeGameName"><span class="home-game-symbol" aria-hidden="true">${GAME_TILES.find(([id])=>id===homeGame())[1]}</span><b id="homeGameName">${esc(GAME_TILES.find(([id])=>id===homeGame())[2])}</b><span class="home-game-chevron" aria-hidden="true">⌄</span></button></div>
-      ${OFFLINE ? '' : `<nav class="home-shortcuts" aria-label="Community">
-        <button class="home-shortcut" data-act="friends"><span class="shortcut-icon" aria-hidden="true">👥</span><span>Amici</span>${reqs ? `<b class="shortcut-count">${reqs}</b>` : ''}</button>
-        <button class="home-shortcut" data-act="daily"><span class="shortcut-icon" aria-hidden="true">📅</span><span>Sfida del giorno</span></button>
-        <button class="home-shortcut" data-act="tournaments"><span class="shortcut-icon" aria-hidden="true">🏆</span><span>Tornei</span></button>
-        <button class="home-shortcut" data-act="leaders"><span class="shortcut-icon" aria-hidden="true">🏅</span><span>Classifica</span></button>
-      </nav>`}
       ${S.pendingJoin && !OFFLINE ? `<div class="invitebox">✉️ Sei stato invitato al tavolo <b>${esc(S.pendingJoin)}</b>
         <button class="btn primary big grow" data-act="joinCode" data-code="${esc(S.pendingJoin)}">Entra al tavolo</button></div>` : ''}
       ${last ? `<button class="btn primary big grow" data-act="rejoin">↩ Torna alla partita</button>` : ''}
@@ -153,8 +158,7 @@
       <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked"><span>🏅</span><div>Classificata<small>Scala i gradi, da Bronzo a Leggenda</small></div></button>`}
       <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots"><span>🤖</span><div>Gioca contro il computer<small>Allenamento · senza progressi o statistiche</small></div></button>
       ${CAMPAIGN_VISIBLE ? '<button class="btn grow campaign-entry" data-act="campaign">🌱 Avventura<small>Tre percorsi: Burraco, Scala 40 e Ramino</small></button>' : ''}
-      <button class="btn ghost grow" data-act="tutorial">📖 Regole e tutorial</button>
-      <button class="btn ghost grow morebtn" data-act="more">☰ Altro</button>
+
     </div>`;
   }
 
@@ -175,7 +179,7 @@
 
   /** elenco dei giochi e delle varianti con la loro descrizione (prima stava nella schermata iniziale) */
   function gamesRulesModal() {
-    const list = R.PRESETS.concat([S40R.PRESET, OTHER.ramino.PRESET, CANR.PRESET, OTHER.scopa.PRESET, OTHER.scopa.PRESETS[1], OTHER.briscola.PRESET, OTHER.briscola5.PRESET, OTHER.tressette.PRESET, OTHER.rubamazzetto.PRESET]);
+    const list = R.PRESETS.concat([S40R.PRESET, OTHER.ramino.PRESET, CANR.PRESET]);
     openModal('gamesRules', `<h2>📖 Regole dei giochi</h2><p class="muted small">Tocca un gioco per leggerne le regole.</p>
       <div class="presets">${list.map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>`);
   }
@@ -183,9 +187,7 @@
   /** gioco scelto nella schermata "Nuova partita" (lo Scopone è una Scopa con un'altra distribuzione) */
   const pickedGame = (r) => (r.game === 'scopa' && r.deal && r.deal !== 3 ? 'scopone' : r.game || 'burraco');
 
-  const GAME_TILES = [['burraco', '🃏', 'Burraco'], ['scala40', '🪜', 'Scala 40'], ['ramino', '🧩', 'Ramino'], ['canasta', '🧺', 'Canasta'],
-    ['scopa', '🧹', 'Scopa'], ['scopone', '🤝', 'Scopone'], ['briscola', '🍷', 'Briscola'],
-    ['briscola5', '🖐️', 'Briscola in 5'], ['tressette', '3️⃣', 'Tressette'], ['rubamazzetto', '🦝', 'Rubamazzetto']];
+  const GAME_TILES = [['burraco', '🃏', 'Burraco'], ['scala40', '🪜', 'Scala 40'], ['ramino', '🧩', 'Ramino'], ['canasta', '🧺', 'Canasta']];
   function homeGame() { const id=store.get('smazzata_home_game','burraco'); return GAME_TILES.some(([g])=>g===id)?id:'burraco'; }
   function applyHomeGame() {
     const game=homeGame();
@@ -193,7 +195,7 @@
     store.set('bur_rules',S.rules); S.lbGame=game;
   }
   function homeGameMenu() {
-    openModal('homeGamePicker', `<section class="home-game-menu"><small>SMAZZATA</small><h2>${t('Scegli il gioco')}</h2><p>${t('Un solo gioco per tutte le modalità della home.')}</p>${[['Carte francesi',GAME_TILES.slice(0,4)],['Carte italiane',GAME_TILES.slice(4)]].map(([label,games])=>`<h3>${t(label)}</h3><div class="home-game-options">${games.map(([id,icon,name])=>`<button class="home-game-option ${id===homeGame()?'selected':''}" data-act="homeGameChoose" data-game="${id}" aria-pressed="${id===homeGame()}"><span class="home-game-symbol" aria-hidden="true">${icon}</span><b>${esc(name)}</b><span class="home-game-check" aria-hidden="true">${id===homeGame()?'✓':''}</span></button>`).join('')}</div>`).join('')}</section>`);
+    openModal('homeGamePicker', `<section class="home-game-menu"><small>SMAZZATA</small><h2>${t('Scegli il gioco')}</h2><p>${t('Un solo gioco per tutte le modalità della home.')}</p>${[['Carte francesi',GAME_TILES]].map(([label,games])=>`<h3>${t(label)}</h3><div class="home-game-options">${games.map(([id,icon,name])=>`<button class="home-game-option ${id===homeGame()?'selected':''}" data-act="homeGameChoose" data-game="${id}" aria-pressed="${id===homeGame()}"><span class="home-game-symbol" aria-hidden="true">${icon}</span><b>${esc(name)}</b><span class="home-game-check" aria-hidden="true">${id===homeGame()?'✓':''}</span></button>`).join('')}</div>`).join('')}</section>`);
     document.querySelector('.home-game-option.selected')?.focus();
   }
 

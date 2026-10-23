@@ -80,3 +80,5 @@ Un solo gioco per tutte le modalità della home. ‖ One game for every mode on 
 Carte francesi ‖ French-suited cards ‖ Baraja francesa ‖ Baralho francês
 Carte italiane ‖ Italian-suited cards ‖ Baraja italiana ‖ Baralho italiano
 Crea il tavolo ‖ Create table ‖ Crear mesa ‖ Criar mesa
+
+Gioco non disponibile ‖ Game unavailable ‖ Juego no disponible ‖ Jogo indisponível

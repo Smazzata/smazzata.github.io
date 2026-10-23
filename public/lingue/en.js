@@ -924,6 +924,7 @@ I18N.load({"Per calare servono almeno 3 carte: selezionale e trascinale insieme"
 "Carte francesi":"French-suited cards",
 "Carte italiane":"Italian-suited cards",
 "Crea il tavolo":"Create table",
+"Gioco non disponibile":"Game unavailable",
 "⚡ Gioca subito":"⚡ Play now",
 "📅 Sfida del giorno":"📅 Daily challenge",
 "🏆 Tornei":"🏆 Tournaments",
