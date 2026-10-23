@@ -37,3 +37,11 @@ Le verifiche non sostituiscono una prova Android fisica né attestano l'aggiorna
 Il workflow Prove di `5d94385` è fallito nel test completo della UI: i controlli cercavano i vecchi riquadri Solo/Duo anche per un profilo senza partite. Aggiornati al nuovo stato vuoto con azione utile; i controlli su code, risultati, piazzamenti e stagioni con dati restano presenti. Aggiornato anche il controllo offline, che cercava una emoji sostituita dagli SVG.
 
 `npm run ui` è passato integralmente in locale. Il controllo successivo `node server/uitest.js --campaign` ha individuato un overflow reale di 8 px nel tavolo a 320 px: le icone negli header di squadra avevano la misura generale da 24 px. Ora seguono la dimensione del testo, senza alzare la riga. La ripetizione del test Avventura è passata: tre mondi, 30 situazioni, tavoli piccoli, animazioni ridotte e risorse offline. Aggiornate entrambe le cache; screenshot store rigenerati dopo la correzione. L’esito del nuovo workflow remoto resta distinto dalle verifiche locali.
+
+## Carte e scorrimento della collezione
+
+Corretti con imagegen i ventagli del Coniglio prestigiatore, del Gatto stregone e delle tre pose del Drago imperatore: quattro assi, uno per seme, senza duplicati. Ispezionati gli asset WebP finali. I prompt di correzione sono registrati in `avatar-prompts.json`; i tentativi con carte ancora duplicate sono stati scartati.
+
+Rimosso lo scorrimento interno della griglia: ora scorre soltanto la finestra del profilo, così l’ultima riga resta raggiungibile interamente. L’anteprima parte dall’alto e il ritorno alla collezione ripristina la posizione. La prova grafica controlla questi comportamenti a 320 e 375 px e salva le schermate dell’ultima riga.
+
+Passati nuovamente `test:rapido`, `test:avatar` e `uitest --polish` dopo le correzioni. Rigenerati gli screenshot store con `release-ui-test --store`: 23 acquisizioni, 78 hash delle sorgenti verificati. Il workflow Prove del precedente commit `ad5ade8` è passato su GitHub; questo non attesta la distribuzione delle nuove correzioni.

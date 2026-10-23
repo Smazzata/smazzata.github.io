@@ -492,7 +492,7 @@
       const entry = catalog.LIST.find(a => a.id === el.dataset.avatarId);
       if (!entry) return;
       const request = S.avatarPreviewRequest = (S.avatarPreviewRequest || 0) + 1;
-      S.avatarCatalogScroll = $('#avatar-grid')?.scrollTop || 0;
+      S.avatarCatalogScroll = $('#modal .modal-box')?.scrollTop || 0;
       S.avatarPreviewId = entry.id;
       const profile = await emit('profile');
       if (!profile.ok || S.modalKind !== 'profile' || request !== S.avatarPreviewRequest) return;
@@ -501,22 +501,23 @@
       const selectable = (profile.ownedAvatarIds || S.avatarOwnedIds || []).includes(entry.id) || catalog.isSelectable(entry.id);
       const av = {...profile.avatar, id:entry.id, e:entry.e};
       openModal('avatarDetail', `<section class="avatar-detail"><button class="btn small" data-act="avatarCatalog">${t('Torna alla collezione')}</button><div class="avatar-detail-art">${avatarHTML(profile.nick,0,false,av)}</div><h2>${esc(t(entry.name))}</h2><p class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</p><p>${t(current.id === entry.id ? 'Il tuo avatar attuale' : selectable ? 'Disponibile per il tuo profilo' : 'Non ancora disponibile')}</p>${selectable && current.id !== entry.id ? `<button class="btn primary" data-act="pickAvatar" data-avatar-id="${entry.id}" data-c="${esc(profile.avatar?.c || profile.colors[0])}">${t('Usa questo avatar')}</button>` : ''}${!selectable && current.id !== entry.id ? `<p class="muted small">${t('Puoi ammirarlo in anteprima. Non è ancora selezionabile.')}</p>` : ''}</section>`);
+      $('#modal .modal-box').scrollTop = 0;
       $('#modal [data-act=avatarCatalog]')?.focus({preventScroll:true});
     },
     async avatarCatalog() {
       await profileModal();
       const grid = $('#avatar-grid');
-      if (grid) { grid.scrollTop = S.avatarCatalogScroll || 0; grid.querySelector(`[data-avatar-id="${S.avatarPreviewId}"]`)?.focus({preventScroll:true}); }
+      if (grid) { $('#modal .modal-box').scrollTop = S.avatarCatalogScroll || 0; grid.querySelector(`[data-avatar-id="${S.avatarPreviewId}"]`)?.focus({preventScroll:true}); }
     },
     async pickAvatar(el) {
       const grid = $('#avatar-grid');
-      const scrollTop = grid ? grid.scrollTop : S.avatarCatalogScroll || 0;
+      const scrollTop = grid ? $('#modal .modal-box').scrollTop : S.avatarCatalogScroll || 0;
       const r = await emit('setAvatar', { id: el.dataset.avatarId, c: el.dataset.c });
       if (r.ok) {
         await profileModal();
         const updated = $('#avatar-grid');
         if (updated) {
-          updated.scrollTop = scrollTop;
+          $('#modal .modal-box').scrollTop = scrollTop;
           const focused = el.classList.contains('avcol') ? $('#modal .avcol.on') : updated.querySelector('.avopt.on');
           focused?.focus({preventScroll:true});
         }

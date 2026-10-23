@@ -81,7 +81,19 @@ module.exports = async ({ cdp, shot, step }) => {
       await __W(300);
       const grid=document.querySelector('.avgrid');
       if (grid.scrollWidth>grid.clientWidth || document.documentElement.scrollWidth>innerWidth) throw Error('avatar fuori schermo');
+      if(grid.scrollHeight>grid.clientHeight+1) throw Error('griglia avatar tagliata da uno scorrimento interno');
+      const last=grid.querySelector('.avopt:last-child');
+      last.scrollIntoView({block:'end'});await __W(150);
+      const row=last.getBoundingClientRect(),box=document.querySelector('#modal .modal-box').getBoundingClientRect();
+      if(row.bottom>box.bottom+1 || row.top<box.top) throw Error('ultima riga avatar non raggiungibile interamente');
+      const before=document.querySelector('#modal .modal-box').scrollTop;
+      await handlers.previewAvatar(last);
+      if(document.querySelector('#modal .modal-box').scrollTop!==0) throw Error('anteprima aperta fuori posizione');
+      await handlers.avatarCatalog();await __W(100);
+      if(Math.abs(document.querySelector('#modal .modal-box').scrollTop-before)>2) throw Error('posizione della collezione persa');
     `);
+    await shot('avatar-ultima-riga-' + width);
+    await cdp.run(`document.querySelector('#modal .modal-box').scrollTop=0;`);
     await shot('avatar-profilo-' + width);
   }
   await cdp.run(`S.prefs.theme='scuro';applyPrefs();await profileModal();document.querySelector('#modal .modal-box').scrollTop=0;await __W(300);`);

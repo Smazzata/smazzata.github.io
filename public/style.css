@@ -1327,7 +1327,7 @@ body[data-theme="notte"] .tour-create #tourname { background: #2a312e; color: #e
 .avatar-collection-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; }
 .avatar-collection-heading h4,.avatar-collection-heading p { margin:0 0 5px; }.avatar-collected { color:#9e722b; font-size:20px; }
 .avscope { display:flex; width:100%; align-self:stretch; box-sizing:border-box; gap:6px; padding:5px; background:#294b3c0c; border-radius:14px; margin:16px 0 10px; }.avscope .btn { flex:1; }
-.avgrid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; padding:5px; max-height:min(48vh,480px); }
+.avgrid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; padding:5px; max-height:none; overflow:visible; }
 .avopt { padding:0 0 8px; overflow:hidden; border-radius:14px; gap:6px; background:#fffaf0; border:1px solid #c9bfa6; }
 .avopt .avatar-art { aspect-ratio:1; height:auto; width:100%; border-radius:12px 12px 0 0; }
 .avopt > span:not(.avatar-art) { padding:0 3px; font-size:11px; line-height:1.25; }
