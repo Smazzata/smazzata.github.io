@@ -2,6 +2,8 @@
 
 Il test non risulta avviato o completato: manca accesso alla Play Console e non abbiamo verificato un elenco di tester. Non confondere i test automatici del codice con il test chiuso Google Play.
 
+Aggiornamento 22 ottobre 2026: il titolare attende la risposta Google sul riconoscimento dei documenti. Questa attesa non avvia il conteggio dei 14 giorni. Nel frattempo si possono completare backup, fornitori e accessi al server; tipo/data dell'account e applicabilità del requisito restano da verificare in Console.
+
 ## Prima di iniziare
 
 1. Completare i blocchi in `PRIMA-DI-PUBBLICARE.md`, verificare tipo e data di creazione dell'account sviluppatore.
