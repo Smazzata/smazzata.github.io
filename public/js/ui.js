@@ -60,7 +60,7 @@
     // Lascia aperto il gruppo durante la navigazione con le frecce.
   });
   document.addEventListener('keydown', (e) => {
-    const menu = e.target.closest('.choice-menu');
+    const menu = e.target instanceof Element ? e.target.closest('.choice-menu') : null;
     if (menu && menu.open && (e.key === 'Escape' || e.key === 'Enter' && e.target.matches('input'))) {
       e.preventDefault(); e.stopImmediatePropagation(); menu.open = false; menu.querySelector('summary').focus();
     }

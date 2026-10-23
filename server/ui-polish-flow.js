@@ -3,6 +3,10 @@
 // Controlli responsive e interazioni reali dei menu condivisi prima del lancio.
 module.exports = async ({ cdp, shot, errors, step }) => {
   const capture = async (name) => { await cdp.run('await __W(400);'); await shot(name); };
+  await cdp.run(`
+    document.dispatchEvent(new KeyboardEvent('keydown', {key:'Escape',bubbles:true}));
+    document.dispatchEvent(new KeyboardEvent('keydown', {key:'Tab',bubbles:true}));
+  `);
   for (const width of [320, 375, 768]) {
     await cdp.send('Emulation.setDeviceMetricsOverride', { width, height: 812, deviceScaleFactor: 1, mobile: true });
     await cdp.run(`
