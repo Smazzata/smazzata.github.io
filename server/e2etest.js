@@ -211,6 +211,8 @@ async function signup(p, nick, email = mailOf()) {
     for(const id of ['re-cuori','drago','drago-imperatore']) assert(!(await A.call('setAvatar', { id, c: '#64b5f6' })).ok, 'avatar non comune bloccato');
     assert(!(await A.call('setAvatar', { e: '😎', c: '#64b5f6' })).ok, 'la vecchia chiave non aggira il blocco');
     assert(!(await A.call('setAvatar', { id: 'avatar-inventato', c: '#64b5f6' })).ok, 'ID avatar arbitrario rifiutato');
+    assert(!(await A.call('setAvatar', { id:'drago-imperatore', c:'#64b5f6', avatarOwned:['drago-imperatore'], ownedAvatarIds:['drago-imperatore'] })).ok, 'il client non può autoassegnarsi un avatar');
+    const collection=await A.call('profile');assert.equal(collection.ownedAvatarIds.length,24,'possesso iniziale dei comuni');
     assert((await A.call('setAvatar', { e: '🦊', c: '#64b5f6' })).ok, 'scelta dal client precedente compatibile');
     const reacted = new Promise((res) => B.sock.once('reaction', res));
     assert((await A.call('react', { emoji: '👏' })).ok);

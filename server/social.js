@@ -363,9 +363,10 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
         // I client precedenti inviano ancora la chiave emoji; il colore non cambia l'identità.
         avatar = s.avatar && s.avatar.e === e && Avatars.byId.get(s.avatar.id) || Avatars.resolve(e);
       }
-      const current = s.avatar && (Avatars.byId.get(s.avatar.id) || Avatars.resolve(s.avatar.e, s.nick));
       // Le scelte già salvate restano utilizzabili; cambiarne lo sfondo non assegna un nuovo avatar.
-      if (!Avatars.isSelectable(avatar.id) && (!current || current.id !== avatar.id)) fail('Questo avatar non è ancora disponibile');
+      const owned = Avatars.ownedIds(s);
+      if (!owned.includes(avatar.id)) fail('Questo avatar non è ancora disponibile');
+      s.avatarOwned = owned;
       // e è la rappresentazione di compatibilità per i client precedenti; id identifica l'illustrazione.
       s.avatar = { ...(s.avatar || {}), id:avatar.id, e:avatar.e, c };
       renamePlayer(token, null);
@@ -397,7 +398,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     socket.on('profile', handler(() => {
       const token = me();
       const s = sess(token);
-      return { nick: s.nick || null, code: s.nick ? ensureCode(token) : null, hasPassword: !!s.pw, email: s.email || null, emailPending: s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null, emailLast: s.emailCode ? s.emailCode.email : null, mail: Posta.enabled(), avatar: s.avatar || null, emoji: AVATAR_EMOJI, colors: AVATAR_COLORS };
+      return { nick: s.nick || null, code: s.nick ? ensureCode(token) : null, hasPassword: !!s.pw, email: s.email || null, emailPending: s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null, emailLast: s.emailCode ? s.emailCode.email : null, mail: Posta.enabled(), avatar: s.avatar || null, ownedAvatarIds: Avatars.ownedIds(s), emoji: AVATAR_EMOJI, colors: AVATAR_COLORS };
     }));
 
     socket.on('regenCode', handler(() => {

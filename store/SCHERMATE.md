@@ -7,7 +7,7 @@ Selezione consigliata per la scheda italiana, in ordine:
 1. `schermate-rilascio/01-home.png` — giochi e modalità disponibili al lancio.
 2. `schermate-rilascio/03-burraco-tavolo.png` — allenamento Burraco con il motore locale.
 3. `schermate-rilascio/05-scala40-tavolo.png` — allenamento Scala 40.
-4. `schermate-rilascio/06-collezione.png` — avatar comuni selezionabili.
+4. `schermate-rilascio/06-collezione.png` — nuova collezione illustrata di 50 avatar, 24 comuni inizialmente posseduti e filtro Solo posseduti.
 5. `schermate-rilascio/08-risultato.png` — risultato di una partita dimostrativa calcolata dal motore, nessun progresso attribuito all'allenamento.
 6. `schermate-rilascio/07-amici.png` — elenco amici vuoto con azione utile.
 7. `schermate-rilascio/09-classifica.png` — primo accesso alle classificate, nessun giocatore o grado inventato.

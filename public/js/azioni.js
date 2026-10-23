@@ -481,6 +481,12 @@
       await profileModal();
       [...document.querySelectorAll('.avfilter')].find(b=>b.dataset.rarity===S.avatarFilter)?.focus({preventScroll:true});
     },
+    async avatarScope(el) {
+      S.avatarScope = el.dataset.scope === 'owned' ? 'owned' : 'all';
+      store.set('smazzata_avatar_scope', S.avatarScope);
+      await profileModal();
+      document.querySelector('[data-act=avatarScope][data-scope="'+S.avatarScope+'"]')?.focus({preventScroll:true});
+    },
     async previewAvatar(el) {
       const catalog = window.SmazzataAvatars;
       const entry = catalog.LIST.find(a => a.id === el.dataset.avatarId);
@@ -492,7 +498,7 @@
       if (!profile.ok || S.modalKind !== 'profile' || request !== S.avatarPreviewRequest) return;
       const rarity = catalog.RARITIES.find(r => r.id === entry.rarity);
       const current = catalog.resolve(profile.avatar?.id || profile.avatar?.e, profile.nick);
-      const selectable = catalog.isSelectable(entry.id);
+      const selectable = (profile.ownedAvatarIds || S.avatarOwnedIds || []).includes(entry.id) || catalog.isSelectable(entry.id);
       const av = {...profile.avatar, id:entry.id, e:entry.e};
       openModal('avatarDetail', `<section class="avatar-detail"><button class="btn small" data-act="avatarCatalog">${t('Torna alla collezione')}</button><div class="avatar-detail-art">${avatarHTML(profile.nick,0,false,av)}</div><h2>${esc(t(entry.name))}</h2><p class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</p><p>${t(current.id === entry.id ? 'Il tuo avatar attuale' : selectable ? 'Disponibile per il tuo profilo' : 'Non ancora disponibile')}</p>${selectable && current.id !== entry.id ? `<button class="btn primary" data-act="pickAvatar" data-avatar-id="${entry.id}" data-c="${esc(profile.avatar?.c || profile.colors[0])}">${t('Usa questo avatar')}</button>` : ''}${!selectable && current.id !== entry.id ? `<p class="muted small">${t('Puoi ammirarlo in anteprima. Non è ancora selezionabile.')}</p>` : ''}</section>`);
       $('#modal [data-act=avatarCatalog]')?.focus({preventScroll:true});

@@ -107,19 +107,46 @@
     ['asso-destino','Asso del destino','card','#dbc17a','#879fa7','destiny','spade']
   ];
   const fallback = { human:'😎',rabbit:'😺',dog:'🐶',raccoon:'🐻',otter:'🐻',hedgehog:'🐻',squirrel:'🦊',mouse:'😺',koala:'🐼',penguin:'🦉',duck:'🦉',badger:'🐼',frog:'🐸',redpanda:'🦊',deer:'🦄',cat:'😺',bear:'🐻',owl:'🦉',fox:'🦊',wolf:'🐶',tiger:'🐯',panda:'🐼',turtle:'🐢',dragon:'🐸',jester:'🥳',card:'♠️',swan:'🦉',peacock:'🦉',unicorn:'🦄',griffin:'🦁',phoenix:'🔥',octopus:'🐙',mantis:'🐸',lion:'🦁' };
-  const LIST = original.concat(rows.map(([id,name,design,color,accent,gear,suit],i) => ({id,name,design,color,accent,gear,suit,rarity:i<27?'common':i<52?'rare':i<71?'epic':'legendary',e:fallback[design]})));
-  const byId = new Map(LIST.map(a => [a.id,a]));
+  const PREVIOUS = original.concat(rows.map(([id,name,design,color,accent,gear,suit],i) => ({id,name,design,color,accent,gear,suit,rarity:i<27?'common':i<52?'rare':i<71?'epic':'legendary',e:fallback[design]})));
+  // Cinquanta ritratti curati; i vecchi ID vengono ricondotti alla stessa famiglia.
+  const curated = {
+    common: 'fante-quadri dama-fiori mazziere volpe gatto gufo orso tartaruga giardiniere-fiori asso-cuori asso-picche asso-quadri asso-fiori coniglio-gentile marinaia-coppe procione-curioso lontra-allegra riccio-trifoglio scoiattolo-ghianda topo-lettore koala-rilassato pinguino-elegante pasticciera-vaniglia panda-rosso',
+    rare: 're-cuori regina-picche jolly-corallo jolly-zaffiro leone volpe-lunare gatto-zaffiro gufo-astronomo coniglio-prestigiatore panda-imperiale lupo-argento pinguino-ammiraglio incantatrice-fiori alchimista-mazzo pavone-giada',
+    epic: 'drago kitsune-corallo gatto-stregone gufo-oracolo unicorno-perlaceo grifone-dorato kraken-mazzo regina-nebbie',
+    legendary: 'fenice drago-imperatore volpe-nove-code'
+  };
+  const oldById = new Map(PREVIOUS.map(a=>[a.id,a]));
+  const LIST = Object.entries(curated).flatMap(([rarity,ids])=>ids.split(' ').map(id=>({...oldById.get(id),rarity,art:'art/avatars/'+id+'.webp',frames:rarity==='legendary'?3:1})));
+  const byId = new Map(LIST.map(a=>[a.id,a]));
+  const aliases = {};
+  const previousDesigns={'fante-quadri':'human','dama-fiori':'human',mazziere:'human',volpe:'fox',gatto:'cat',gufo:'owl',orso:'bear',tartaruga:'turtle',panda:'panda','re-cuori':'human','regina-picche':'human','jolly-corallo':'jester','jolly-zaffiro':'jester',leone:'lion',drago:'dragon',fenice:'phoenix','asso-cuori':'card','asso-picche':'card','asso-quadri':'card','asso-fiori':'card'};
+  const canonicalDesign=a=>a.design||previousDesigns[a.id];
+  const nearest={panda:'koala-rilassato','cane-compagno':'orso','anatra-marina':'pinguino-elegante','tasso-tranquillo':'procione-curioso','rana-laghetto':'tartaruga','cerbiatto-timido':'coniglio-gentile','pittrice-corallo':'dama-fiori','marinaia-coppe':'dama-fiori','pasticciera-vaniglia':'dama-fiori','cervo-bosco':'pavone-giada','tigre-ambra':'leone','koala-sognatore':'panda-imperiale','drago-giovane':'lupo-argento','asso-velluto':'jolly-zaffiro','cigno-lago':'pavone-giada','cervo-luce':'unicorno-perlaceo','lupo-boreale':'kitsune-corallo','tigre-giada':'grifone-dorato','fenice-crepuscolo':'grifone-dorato','maestro-jolly':'gatto-stregone','asso-stellare':'kraken-mazzo','mantide-smeraldo':'drago','regina-costellazioni':'volpe-nove-code','leone-sovrano':'drago-imperatore'};
+  for(const old of PREVIOUS) if(!byId.has(old.id)) {
+    const candidates=LIST.filter(a=>a.rarity===old.rarity);
+    const next=byId.get(nearest[old.id]) || candidates.find(a=>canonicalDesign(a)===old.design) || (old.rarity==='common'?byId.get('fante-quadri'):candidates[0]);
+    aliases[old.id]=next.id;
+    byId.set(old.id,next);
+  }
   const legacy = new Map();
-  for (const a of original) for (const key of [a.e,a.e.replace(/\uFE0F/g,'')]) legacy.set(key,a);
+  for (const a of original) for (const key of [a.e,a.e.replace(/\uFE0F/g,'')]) legacy.set(key,byId.get(a.id));
   for (const [key,id] of Object.entries({'🐶':'orso','🐯':'leone','🐵':'fante-quadri','🦄':'regina-picche','🐙':'jolly-zaffiro','🌻':'dama-fiori','🍀':'panda','⭐':'fenice'})) legacy.set(key,byId.get(id));
   function resolve(value,name='') {
     if(byId.has(value)) return byId.get(value);
     if(legacy.has(value)) return legacy.get(value);
     let hash=0;for(const char of String(name))hash=(hash*31+char.codePointAt(0))>>>0;
-    const starters=original.filter(a=>a.rarity==='common');
+    const starters=LIST.filter(a=>a.rarity==='common');
     return starters[hash%starters.length];
   }
   const isSelectable = id => byId.get(id)?.rarity === 'common';
-  const api={LIST,RARITIES,byId,resolve,isSelectable};
+  // Il server è l'autorità: nessun possesso proviene da parametri della richiesta.
+  function ownedIds(profile={}) {
+    const ids=new Set(LIST.filter(a=>a.rarity==='common').map(a=>a.id));
+    for(const id of Array.isArray(profile.avatarOwned)?profile.avatarOwned:[]) if(byId.has(id)) ids.add(byId.get(id).id);
+    const current=profile.avatar;
+    if(current && (current.id || current.e)) ids.add(resolve(current.id || current.e,profile.nick).id);
+    return [...ids];
+  }
+  const api={LIST,RARITIES,byId,resolve,isSelectable,ownedIds,aliases};
   if(typeof module==='object'&&module.exports)module.exports=api;else root.SmazzataAvatarCatalog=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

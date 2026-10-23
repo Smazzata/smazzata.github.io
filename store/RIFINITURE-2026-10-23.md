@@ -2,6 +2,10 @@
 
 Base: `7149eee`. Questa revisione raccoglie tutte le modifiche intenzionali autorizzate dal titolare, inclusi documenti store e script operativi preparati nelle sessioni precedenti. Le verifiche locali non attestano la distribuzione online: per quella servono esito del push, workflow Prove e riscontro sul server pubblico.
 
+## Aggiornamento della collezione avatar
+
+La successiva richiesta del titolare sostituisce i 100 disegni vettoriali descritti nella prima revisione con **50 ritratti illustrati** nello stile dei personaggi Avventura: 24 comuni, 15 rari, 8 epici e 3 leggendari con tre pose e movimenti leggeri. Aggiunti Tutti/Solo posseduti, preferenza ricordata sul dispositivo e possesso verificato dal server; gli sblocchi futuri non sono ancora definiti. I tre comuni non ottenuti dal servizio immagini sono sostituiti da giardiniere, marinaia e pasticciera. Dettagli, compatibilità, provenienza e prove in `../docs/avatar-illustrati.md`; screenshot store rigenerati. Le sezioni successive conservano il resoconto della prima revisione.
+
 ## Interventi
 
 1. Esteso il sistema SVG con pittogrammi originali e simboli riutilizzabili. Sostituiti i pittogrammi decorativi nelle schermate secondarie, impostazioni, regole, avvisi e trofei. Nickname, nomi dei tornei, chat e reazioni dei giocatori conservano le emoji.

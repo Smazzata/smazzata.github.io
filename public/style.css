@@ -1305,3 +1305,35 @@ body[data-theme="notte"] .tour-create #tourname { background: #2a312e; color: #e
   .modal:not(.hidden) .modal-box, .modal.swap .modal-content, .toast, .enter { animation: none; }
   .btn, .swatch, .menuitem, .modal { transition: none; }
 }
+
+/* Collezione illustrata: il ritratto è il protagonista, tre soli leggendari viventi. */
+.avatar.illustrated:not(.fr-arcobaleno) { border-color:var(--c); }
+.avatar-art { display:block; width:100%; height:100%; object-fit:cover; border-radius:inherit; overflow:hidden; }
+.avatar-living { position:relative; isolation:isolate; background:#123f3c; }
+.avatar-pose { position:absolute; inset:0; background-size:300% 100%; background-repeat:no-repeat; transform-origin:50% 70%; animation:avatar-breathe 6s ease-in-out infinite; }
+.pose-1 { opacity:0; animation:avatar-breathe 6s ease-in-out infinite, avatar-blink 9s linear infinite; }
+.pose-2 { opacity:0; animation:avatar-breathe 6s ease-in-out infinite, avatar-smile 9s linear infinite; }
+.avatar-living[data-avatar=fenice] .avatar-pose { animation-delay:-2.3s; }
+.avatar-living[data-avatar=volpe-nove-code] .avatar-pose { animation-delay:-4.1s; }
+.avatar-shimmer { position:absolute; inset:-30%; pointer-events:none; background:linear-gradient(115deg,transparent 35%,#fff4c440 48%,transparent 60%); mix-blend-mode:screen; animation:avatar-light 8s ease-in-out infinite; }
+.avatar-mote { position:absolute; width:3px; height:3px; border-radius:50%; background:#ffe5a0; box-shadow:0 0 7px #ffd36b; animation:avatar-mote 5s ease-in-out infinite; }
+.mote-a { left:18%; top:75%; }.mote-b { right:17%; top:60%; animation-delay:-2.5s; }
+@keyframes avatar-breathe { 0%,100%{transform:scale(1)}50%{transform:scale(1.025) translateY(-.5%)} }
+@keyframes avatar-blink { 0%,32%,39%,100%{opacity:0}34%,37%{opacity:1} }
+@keyframes avatar-smile { 0%,65%,98%,100%{opacity:0}72%,91%{opacity:1} }
+@keyframes avatar-light { 0%,55%,100%{transform:translateX(-80%);opacity:0}65%{opacity:.7}85%{transform:translateX(80%);opacity:0} }
+@keyframes avatar-mote { 0%,100%{opacity:0;transform:translateY(0)}45%{opacity:.8}85%{opacity:0;transform:translateY(-38px)} }
+.avatar-collection-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; }
+.avatar-collection-heading h4,.avatar-collection-heading p { margin:0 0 5px; }.avatar-collected { color:#9e722b; font-size:20px; }
+.avscope { display:flex; width:100%; align-self:stretch; box-sizing:border-box; gap:6px; padding:5px; background:#294b3c0c; border-radius:14px; margin:16px 0 10px; }.avscope .btn { flex:1; }
+.avgrid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; padding:5px; max-height:min(48vh,480px); }
+.avopt { padding:0 0 8px; overflow:hidden; border-radius:14px; gap:6px; background:#fffaf0; border:1px solid #c9bfa6; }
+.avopt .avatar-art { aspect-ratio:1; height:auto; width:100%; border-radius:12px 12px 0 0; }
+.avopt > span:not(.avatar-art) { padding:0 3px; font-size:11px; line-height:1.25; }
+.avopt .avatar-rarity { margin-left:3px; margin-right:3px; }.avopt.on { outline:2px solid #b18b44; outline-offset:1px; }
+.avopt[data-rarity=legendary] { border-color:#c79c41; box-shadow:0 2px 12px #c79c4126; }
+.avpreview .avatar { width:86px; height:86px; }.avatar-detail-art .avatar { border-radius:24px; width:min(300px,75vw); height:min(300px,75vw); }
+.av-empty { grid-column:1/-1; text-align:center; padding:24px 8px; color:#647261; }
+body.noanim .avatar-pose,body.noanim .avatar-shimmer,body.noanim .avatar-mote { animation:none; }body.noanim .pose-1,body.noanim .pose-2,body.noanim .avatar-shimmer,body.noanim .avatar-mote { display:none; }
+@media(max-width:360px){.avgrid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media(prefers-reduced-motion:reduce){.avatar-pose,.avatar-shimmer,.avatar-mote{animation:none!important}.pose-1,.pose-2,.avatar-shimmer,.avatar-mote{display:none}}

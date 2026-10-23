@@ -4,9 +4,10 @@ module.exports = async ({ cdp, shot, step }) => {
     document.querySelector('#toast').classList.add('hidden');
     const catalog = window.SmazzataAvatars;
     const profile = await emit('profile');
-    if (catalog.LIST.length !== 100 || new Set(catalog.LIST.map(a => a.id)).size !== 100) throw Error('catalogo avatar incompleto');
-    if (new Set(catalog.LIST.map(a=>a.art)).size!==100) throw Error('illustrazioni duplicate');
-    const counts={common:40,rare:30,epic:20,legendary:10};
+    if (catalog.LIST.length !== 50 || new Set(catalog.LIST.map(a => a.id)).size !== 50) throw Error('catalogo avatar incompleto');
+    if (new Set(catalog.LIST.map(a=>a.art)).size!==50) throw Error('illustrazioni duplicate');
+    const counts={common:24,rare:15,epic:8,legendary:3};
+    await Promise.all(catalog.LIST.map(a=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>img.naturalWidth/img.naturalHeight===a.frames?resolve():reject(Error('pose non valide: '+a.id));img.onerror=()=>reject(Error('ritratto non caricato: '+a.id));img.src=a.art;})));
     for (const rarity of catalog.RARITIES) if(catalog.LIST.filter(a=>a.rarity===rarity.id).length!==counts[rarity.id]) throw Error('distribuzione rarità errata');
     for (const entry of catalog.LIST) {
       if (!profile.emoji.includes(entry.e)) throw Error('avatar incompatibile con i profili salvati');
@@ -21,7 +22,7 @@ module.exports = async ({ cdp, shot, step }) => {
     if(legacy.avatar.id!=='coniglio-gentile') throw Error('il client precedente ha perso il nuovo avatar cambiando colore');
     if((await emit('setAvatar',{e:'😎',c:'#64b5f6'})).ok) throw Error('rarità aggirata usando la chiave precedente');
     await emit('setAvatar', {e:'🐶',c:'#81c784'});
-    await profileModal();
+    S.avatarFilter='common';await profileModal();
     if (!document.querySelector('.avopt.on').title.includes('Orso')) throw Error('avatar precedente non convertito');
     document.querySelector('.avopt[data-avatar-id="volpe"]').click(); await __W(300);
     if (!document.querySelector('.avatar-detail-art')) throw Error('anteprima comune assente');
@@ -31,8 +32,9 @@ module.exports = async ({ cdp, shot, step }) => {
     const saved = await emit('profile');
     if (saved.avatar.id!=='volpe' || saved.avatar.e !== '🦊' || saved.avatar.c !== '#64b5f6') throw Error('scelta o colore persi');
     await profileModal();
-    if (document.querySelectorAll('.avopt .avatar-art').length !== 40 || document.querySelectorAll('.avopt[aria-pressed=true]').length !== 1) throw Error('selezione avatar non accessibile');
-    if(document.querySelectorAll('.avopt:not(:disabled)').length!==40) throw Error('i comuni non sono tutti selezionabili');
+    if (document.querySelectorAll('.avopt .avatar-art').length !== 24 || document.querySelectorAll('.avopt[aria-pressed=true]').length !== 1) throw Error('selezione avatar non accessibile');
+    if(document.querySelectorAll('.avopt:not(:disabled)').length!==24) throw Error('i comuni non sono tutti selezionabili');
+    await handlers.avatarScope({dataset:{scope:'all'}});
     for(const rarity of catalog.RARITIES) {
       await handlers.avatarFilter({dataset:{rarity:rarity.id}});
       if(document.querySelectorAll('.avopt').length!==counts[rarity.id] || [...document.querySelectorAll('.avopt')].some(b=>b.dataset.rarity!==rarity.id)) throw Error('filtro rarità errato');
@@ -46,7 +48,18 @@ module.exports = async ({ cdp, shot, step }) => {
     await handlers.avatarCatalog();
     await emit('setAvatar',{id:'volpe',c:'#64b5f6'});
     await handlers.avatarFilter({dataset:{rarity:'all'}});
-    if(document.querySelectorAll('.avlock').length!==60 || document.querySelectorAll('.avopt').length!==100) throw Error('disponibilità del catalogo errata');
+    if(document.querySelectorAll('.avlock').length!==26 || document.querySelectorAll('.avopt').length!==50) throw Error('disponibilità del catalogo errata');
+    await handlers.avatarScope({dataset:{scope:'owned'}});
+    if(document.querySelectorAll('.avopt').length!==24 || document.querySelector('.avlock')) throw Error('filtro posseduti errato');
+    await handlers.avatarFilter({dataset:{rarity:'legendary'}});
+    if(!document.querySelector('.av-empty') || document.querySelector('.avopt')) throw Error('rarità non posseduta visibile');
+    await handlers.avatarScope({dataset:{scope:'all'}});
+    if(document.querySelectorAll('.avatar-living').length!==3 || document.querySelectorAll('.avatar-pose').length!==9) throw Error('pose dei tre leggendari mancanti');
+    document.body.classList.add('noanim');
+    if([...document.querySelectorAll('.avatar-pose')].some(el=>getComputedStyle(el).animationName!=='none')) throw Error('animazione non disattivabile');
+    document.body.classList.remove('noanim');
+    await handlers.avatarFilter({dataset:{rarity:'all'}});
+    await Promise.all([...document.querySelectorAll('.avatar-portrait')].map(i=>{i.loading='eager';return i.decode();}));
     const gradientIds=[...document.querySelectorAll('#modal svg defs [id]')].map(el=>el.id);
     if(new Set(gradientIds).size!==gradientIds.length) throw Error('gradienti avatar con ID duplicati');
     for(const svg of document.querySelectorAll('#modal .avatar-art')) {
@@ -78,5 +91,5 @@ module.exports = async ({ cdp, shot, step }) => {
     if (document.querySelector('.hello .avatar').getAttribute('aria-label')!=='Volpe del fante') throw Error('avatar perso nella home');
     await emit('setAvatar',{e:'🦊',c:'#64b5f6'});
   `);
-  step('100 avatar: solo 40 comuni selezionabili, rarità bloccate anche via API, compatibilità e profilo mobile verificati');
+  step('50 avatar: solo 24 comuni selezionabili, rarità bloccate anche via API, compatibilità e profilo mobile verificati');
 };
