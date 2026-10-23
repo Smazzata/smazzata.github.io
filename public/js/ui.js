@@ -4,20 +4,33 @@
 'use strict';
 
   /* ================= UI di base ================= */
-  // Icone locali: stesso tratto e dimensioni su ogni dispositivo.
+  // Piccole illustrazioni originali: panno verde, carta avorio e dettagli d'oro.
   function uiIcon(name) {
     const paths = {
-      friends: '<circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6m2 3a5 5 0 0 1 3 4v3"/>',
-      trophy: '<path d="M8 3h8v6a4 4 0 0 1-8 0V3Zm0 2H4v3a4 4 0 0 0 4 4m8-7h4v3a4 4 0 0 1-4 4m-4 1v5m-5 3h10m-8 0v-3h6v3"/>',
-      medal: '<circle cx="12" cy="9" r="6"/><path d="m8 14-2 7 6-3 6 3-2-7m-4-8v6m-3-3h6"/>',
-      calendar: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-14 4h3m4 0h3m-10 3h3"/>',
-      book: '<path d="M12 5v16M3 4h5a4 4 0 0 1 4 2 4 4 0 0 1 4-2h5v15h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3V4Z"/>',
-      menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
-      cards: '<rect x="8" y="3" width="12" height="17" rx="2"/><path d="M5 6H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10m0-15 3 4-3 4-3-4 3-4Z"/>',
-      bot: '<rect x="4" y="7" width="16" height="14" rx="4"/><path d="M12 3v4M1 12v5m22-5v5M8 12v2m8-2v2m-8 3h8"/>',
-      settings: '<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="10" cy="18" r="2"/>'
+      friends: '<path d="M23 24c7-2 13 3 13 10H20" fill="#68a6bd"/><circle cx="27" cy="15" r="6" fill="#f6cb91"/><path d="M4 35v-3c0-6 5-10 11-10s11 4 11 10v3Z" fill="#3f9470"/><circle cx="15" cy="13" r="7" fill="#f6d6a6"/><path d="M9 10c1-6 11-7 13 0-5 1-8-1-9-3" fill="#775440"/><path d="m30 4 1 3 3 1-3 1-1 3-1-3-3-1 3-1Z" fill="#f0bc45" stroke="none"/><path d="m11 27 4 4 4-4" stroke="#c7ead0"/>',
+      trophy: '<path d="M11 9H5v5c0 5 4 8 9 8m15-13h6v5c0 5-4 8-9 8" fill="#efb642" stroke="#8a601c"/><path d="M10 5h20v9c0 7-4 11-10 11s-10-4-10-11Z" fill="#f5c454" stroke="#8a601c"/><path d="M13 8v6c0 3 1 5 3 6" stroke="#ffedb9" stroke-width="3"/><path d="M20 25v7m-7 0h14v4H13Z" fill="#d29a36" stroke="#8a601c"/><path d="m20 10 4 6-4 6-4-6Z" fill="#287a55" stroke="none"/>',
+      medal: '<path d="m12 20-4 16 9-4 4 5 3-16" fill="#d96d54"/><path d="m24 20 7 16-8-4-5 4-1-15" fill="#72a7ba"/><circle cx="20" cy="15" r="12" fill="#f1bd46" stroke="#986b24"/><circle cx="20" cy="15" r="8" fill="#fff2c7" stroke="#c99737"/><path d="M20 9c-2 3-6 5-6 8 0 3 4 4 6 1 2 3 6 2 6-1 0-3-4-5-6-8Zm0 9-2 5h4Z" fill="#287a55" stroke="none"/>',
+      calendar: '<rect x="5" y="7" width="30" height="29" rx="5" fill="#fff7df"/><path d="M5 16v-4a5 5 0 0 1 5-5h20a5 5 0 0 1 5 5v4Z" fill="#d76f57"/><path d="M12 4v7m16-7v7" stroke="#315b47" stroke-width="3"/><path d="m22 20 2 4 5 1-4 3 1 5-4-2-4 2 1-5-4-3 5-1Z" fill="#edbd4e" stroke="#a67b2b"/><path d="M10 22h2m-2 6h2" stroke="#7b9d88" stroke-width="2"/>',
+      book: '<path d="M3 10c6-3 12-3 17 1 5-4 11-4 17-1v24c-6-3-12-3-17 1-5-4-11-4-17-1Z" fill="#327451"/><path d="M5 6c5-2 10-2 15 2 5-4 10-4 15-2v24c-5-2-10-2-15 2-5-4-10-4-15-2Z" fill="#fff4d5"/><path d="M20 8v24" stroke="#c39a42"/><path d="M26 6v11l3-2 3 2V6" fill="#d76f57" stroke="none"/><path d="m9 13 7 1m-7 4 7 1m-7 4 7 1m8-1 7-1" stroke="#a6af92"/>',
+      menu: '<rect x="5" y="5" width="12" height="12" rx="3" fill="#edbd4e"/><rect x="23" y="5" width="12" height="12" rx="3" fill="#6cabc0"/><rect x="5" y="23" width="12" height="12" rx="3" fill="#d87962"/><rect x="23" y="23" width="12" height="12" rx="3" fill="#66a780"/><path d="m11 8 3 3-3 3-3-3Zm18 18v6m-3-3h6" stroke="#fff5dd" stroke-width="2"/>',
+      cards: '<rect x="5" y="8" width="21" height="28" rx="3" fill="#398566" transform="rotate(-9 15 22)"/><path d="m9 15 12 16m-13-8 10-10" stroke="#98c7a4"/><rect x="15" y="4" width="21" height="29" rx="3" fill="#fff5da" stroke="#9b783b" transform="rotate(7 25 18)"/><path d="M25 14c-5-6-10 2 0 9 10-7 5-15 0-9Z" fill="#d56651" stroke="none"/><path d="m20 9 2 1m7 18 2 1" stroke="#d56651" stroke-width="2"/>',
+      run: '<rect x="3" y="17" width="15" height="20" rx="3" fill="#fff1cd" stroke="#ae8b41"/><rect x="13" y="10" width="15" height="20" rx="3" fill="#86b9c9"/><rect x="23" y="3" width="15" height="20" rx="3" fill="#fff1cd" stroke="#ae8b41"/><path d="m10 23 4 5-4 5-4-5Zm10-7 4 5-4 5-4-5Zm10-7 4 5-4 5-4-5Z" fill="#3b8061" stroke="none"/><path d="m6 10 4-5 5 1" stroke="#d47056" stroke-width="2"/>',
+      fan: '<rect x="5" y="7" width="17" height="28" rx="3" fill="#d98169" transform="rotate(-15 14 21)"/><rect x="13" y="5" width="17" height="29" rx="3" fill="#e9c261"/><rect x="21" y="7" width="17" height="28" rx="3" fill="#fff1cd" stroke="#a18041" transform="rotate(12 29 21)"/><path d="M28 16c-4-5-8 1 0 7 8-6 4-12 0-7Z" fill="#c96c55" stroke="none"/><path d="m11 13-2 6 4-2m5-6v8" stroke="#fff1cd" stroke-width="2"/>',
+      basket: '<rect x="10" y="3" width="13" height="21" rx="2" fill="#fff1cd" transform="rotate(-12 16 14)"/><rect x="20" y="5" width="13" height="21" rx="2" fill="#78afbd" transform="rotate(12 26 16)"/><path d="M17 9c-3-4-6 1 0 5 6-4 3-9 0-5Z" fill="#cb6b53" stroke="none"/><path d="M7 20h28l-4 15H11Z" fill="#e5b14e" stroke="#9d7632"/><path d="m15 22 2 11m9-11-2 11M10 25h22m-21 5h20" stroke="#bd8b38"/><path d="M6 19h30v4H6Z" fill="#3b8061"/>',
+      bot: '<path d="M20 6v5"/><circle cx="20" cy="4" r="2" fill="#e6b546"/><path d="M6 19H3v9h3m28-9h3v9h-3" fill="#dfa643"/><rect x="6" y="11" width="28" height="24" rx="7" fill="#fff1cb"/><rect x="10" y="16" width="20" height="11" rx="4" fill="#367e60"/><path d="M15 20v3m10-3v3" stroke="#e8f3cf" stroke-width="2.5"/><path d="M16 31h8" stroke="#c08d34" stroke-width="2"/><path d="m30 7 1 3 3 1-3 1-1 3-1-3-3-1 3-1Z" fill="#d87962" stroke="none"/>',
+      settings: '<path d="m16 4 1 4 6 1 3-3 5 4-2 4 3 5 4 1-1 7-4 1-4 4v4l-7 1-2-4-5-2-4 2-4-5 3-3-1-6-4-1 2-7 4 1 5-3V5Z" fill="#74ac96"/><circle cx="20" cy="21" r="9" fill="#fff0c7"/><circle cx="20" cy="21" r="4" fill="#e8b445" stroke="#986f2b"/>',
+      profile: '<rect x="5" y="4" width="30" height="32" rx="9" fill="#f4c65e" stroke="#9b7935"/><path d="M10 34v-3c0-6 4-10 10-10s10 4 10 10v3" fill="#3b8764"/><circle cx="20" cy="15" r="7" fill="#fff0cb"/><path d="M14 12c2-6 10-5 12 0" fill="#775440"/>',
+      stats: '<path d="M5 7v28h31" stroke="#6b927a" stroke-width="2"/><rect x="10" y="23" width="6" height="9" rx="2" fill="#6cabc0"/><rect x="20" y="16" width="6" height="16" rx="2" fill="#65a781"/><rect x="30" y="8" width="6" height="24" rx="2" fill="#edbd4e"/><path d="m9 17 10-8 7 1 7-6m-5 0h5v5" stroke="#cf6d54" stroke-width="2"/>',
+      help: '<path d="M31 30c4-4 6-9 4-15C32 3 17 1 9 8 2 14 3 26 10 31l-1 6 8-3c5 1 10 0 14-4Z" fill="#fff1cd" stroke="#af8740"/><path d="M15 15c0-6 11-6 11 0 0 4-6 4-6 8" stroke="#398566" stroke-width="3"/><circle cx="20" cy="28" r="2" fill="#d66e56" stroke="none"/>',
+      report: '<path d="M20 5 37 32a3 3 0 0 1-3 4H6a3 3 0 0 1-3-4L17 5a2 2 0 0 1 3 0Z" fill="#efbd52" stroke="#a4782c"/><path d="M19 14v10" stroke="#75502c" stroke-width="3"/><circle cx="19" cy="30" r="2" fill="#b95343" stroke="none"/>',
+      rules: '<path d="M10 4h21v28a4 4 0 0 1-4 4H10Z" fill="#fff1cd" stroke="#b18b44"/><path d="M6 4h5v26H6a3 3 0 0 0 0 6h21" fill="#e9c875" stroke="#b18b44"/><path d="m15 12 2 2 4-5m-6 13 2 2 4-5m3-6h3m-3 10h3" stroke="#398566" stroke-width="2"/>',
+      privacy: '<path d="M11 17V12a9 9 0 0 1 18 0v5" stroke="#b28b40" stroke-width="4"/><rect x="6" y="16" width="28" height="21" rx="5" fill="#398566"/><path d="M10 21v11" stroke="#86bca1" stroke-width="2"/><circle cx="20" cy="25" r="3" fill="#f4cb67" stroke="none"/><path d="M20 27v4" stroke="#f4cb67" stroke-width="3"/>'
     };
-    return `<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths[name] || paths.cards}</svg>`;
+    return `<svg class="ui-icon" viewBox="0 0 40 40" fill="none" stroke="#294c3d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths[name] || paths.cards}</svg>`;
+  }
+
+  function gameIcon(game) {
+    return uiIcon(({ burraco: 'cards', scala40: 'run', ramino: 'fan', canasta: 'basket' })[game] || 'cards');
   }
 
   function choiceMenuHTML(id, choices, value, label, rule = '', disabled = false) {

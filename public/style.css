@@ -1182,9 +1182,10 @@ body.noanim .bigtoast, body.noanim .bigtoast::before, body.noanim .bigtoast b, b
 
 /* Controlli condivisi: leggibili e toccabili anche nei pannelli più piccoli. */
 .ui-icon { width: 24px; height: 24px; flex: 0 0 auto; vertical-align: middle; }
-.homebtn > .ui-icon { width: 28px; height: 28px; }
-.home-tools .ui-icon { width: 18px; height: 18px; }
-.menuitem .ui-icon { width: 25px; height: 25px; }
+.homebtn > .ui-icon { width: 36px; height: 36px; }
+.home-tools .ui-icon { width: 21px; height: 21px; }
+.menuitem .ui-icon { width: 30px; height: 30px; }
+.home-game-symbol .ui-icon { width: 100%; height: 100%; padding: 2px; }
 .modal-close { width: 44px; height: 44px; display: grid; place-items: center; }
 .modal-box .small, .page .small { font-size: 13px; line-height: 1.45; }
 .modal-box .btn.small, .page .btn.small, .modal-box .swatch { min-height: 44px; }

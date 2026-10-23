@@ -82,7 +82,7 @@
   function homeToolbarHTML() {
     const reqs = S.social?.reqIn?.length || 0;
     return `<div class="home-toolbar">
-      <div class="home-game"><span id="homeGameLabel">${t('Scegli il gioco')}</span><button id="homeGame" class="home-game-trigger" data-act="homeGameMenu" aria-haspopup="dialog" aria-labelledby="homeGameLabel homeGameName"><span class="home-game-symbol" aria-hidden="true">${GAME_TILES.find(([id])=>id===homeGame())[1]}</span><b id="homeGameName">${esc(GAME_TILES.find(([id])=>id===homeGame())[2])}</b><span class="home-game-chevron" aria-hidden="true">⌄</span></button></div>
+      <div class="home-game"><span id="homeGameLabel">${t('Scegli il gioco')}</span><button id="homeGame" class="home-game-trigger" data-act="homeGameMenu" aria-haspopup="dialog" aria-labelledby="homeGameLabel homeGameName"><span class="home-game-symbol" aria-hidden="true">${gameIcon(homeGame())}</span><b id="homeGameName">${esc(GAME_TILES.find(([id])=>id===homeGame())[2])}</b><span class="home-game-chevron" aria-hidden="true">⌄</span></button></div>
       <div class="home-tools"><button class="btn small" data-act="tutorial">${uiIcon('book')} Regole</button><button class="btn small morebtn" data-act="more">${uiIcon('menu')} Altro</button></div>
       ${OFFLINE ? '' : `<nav class="home-shortcuts" aria-label="Community">
         <button class="home-shortcut" data-act="friends"><span class="shortcut-icon" aria-hidden="true">${uiIcon('friends')}</span><span>Amici</span>${reqs ? `<b class="shortcut-count">${reqs}</b>` : ''}</button>
@@ -167,15 +167,15 @@
   function moreModal() {
     const so = S.social || {};
     const item = (act, icon, label, extra = '') => `<button class="menuitem" data-act="${act}"><span>${icon}</span>${label}${extra}</button>`;
-    openModal('more', `<h2>☰ Altro</h2><div class="menulist">
-      ${so.nick ? item('profile', '👤', 'Il mio profilo') : ''}
-      ${item('stats', '📊', 'Le mie statistiche')}
+    openModal('more', `<h2>${uiIcon('menu')} Altro</h2><div class="menulist">
+      ${so.nick ? item('profile', uiIcon('profile'), 'Il mio profilo') : ''}
+      ${item('stats', uiIcon('stats'), 'Le mie statistiche')}
       ${item('gamesRules', uiIcon('book'), 'Regole dei giochi')}
-      ${item('howto', '❓', 'Come si usa l\'app')}
+      ${item('howto', uiIcon('help'), 'Come si usa l\'app')}
       ${item('settings', uiIcon('settings'), 'Impostazioni')}
-      ${OFFLINE ? '' : item('report', '🐞', 'Segnala un problema')}
-      <a class="menuitem" href="regole.html"><span>📜</span>Regole di comportamento</a>
-      <a class="menuitem" href="privacy.html"><span>🔒</span>Privacy</a></div>`);
+      ${OFFLINE ? '' : item('report', uiIcon('report'), 'Segnala un problema')}
+      <a class="menuitem" href="regole.html"><span>${uiIcon('rules')}</span>Regole di comportamento</a>
+      <a class="menuitem" href="privacy.html"><span>${uiIcon('privacy')}</span>Privacy</a></div>`);
   }
 
   /** elenco dei giochi e delle varianti con la loro descrizione (prima stava nella schermata iniziale) */
@@ -196,7 +196,7 @@
     store.set('bur_rules',S.rules); S.lbGame=game;
   }
   function homeGameMenu() {
-    openModal('homeGamePicker', `<section class="home-game-menu"><small>SMAZZATA</small><h2>${t('Scegli il gioco')}</h2><p>${t('Un solo gioco per tutte le modalità della home.')}</p>${[['Carte francesi',GAME_TILES]].map(([label,games])=>`<h3>${t(label)}</h3><div class="home-game-options">${games.map(([id,icon,name])=>`<button class="home-game-option ${id===homeGame()?'selected':''}" data-act="homeGameChoose" data-game="${id}" aria-pressed="${id===homeGame()}"><span class="home-game-symbol" aria-hidden="true">${icon}</span><b>${esc(name)}</b><span class="home-game-check" aria-hidden="true">${id===homeGame()?'✓':''}</span></button>`).join('')}</div>`).join('')}</section>`);
+    openModal('homeGamePicker', `<section class="home-game-menu"><small>SMAZZATA</small><h2>${t('Scegli il gioco')}</h2><p>${t('Un solo gioco per tutte le modalità della home.')}</p>${[['Carte francesi',GAME_TILES]].map(([label,games])=>`<h3>${t(label)}</h3><div class="home-game-options">${games.map(([id,icon,name])=>`<button class="home-game-option ${id===homeGame()?'selected':''}" data-act="homeGameChoose" data-game="${id}" aria-pressed="${id===homeGame()}"><span class="home-game-symbol" aria-hidden="true">${gameIcon(id)}</span><b>${esc(name)}</b><span class="home-game-check" aria-hidden="true">${id===homeGame()?'✓':''}</span></button>`).join('')}</div>`).join('')}</section>`);
     document.querySelector('.home-game-option.selected')?.focus();
   }
 

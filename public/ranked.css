@@ -65,7 +65,8 @@
 .home-tools .btn{min-height:48px;padding:8px;font-size:14px}
 .home-toolbar .home-shortcuts{grid-column:1/-1;margin:0;gap:6px}
 .home-toolbar .home-shortcut{min-height:54px;justify-content:center;gap:3px;padding:5px 2px;font-size:13px;border-radius:10px;box-shadow:0 2px 0 #0002}
-.home-toolbar .shortcut-icon{width:24px;height:24px;font-size:20px;line-height:1}
+.home-toolbar .shortcut-icon{width:30px;height:30px;font-size:20px;line-height:1;background:transparent}
+.home-toolbar .shortcut-icon .ui-icon{width:30px;height:30px}
 .home-page .hello{margin-top:0;margin-bottom:8px}
 .home-page .homebtns{gap:9px}
 .home-page .homebtn{min-height:64px;border-radius:14px;font-size:19px;justify-content:flex-start;text-align:left;padding:11px 14px}
