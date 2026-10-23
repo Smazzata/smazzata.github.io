@@ -1,0 +1,89 @@
+Rarità degli avatar ‖ Avatar rarity ‖ Rareza de los avatares ‖ Raridade dos avatares
+Comune ‖ Common ‖ Común ‖ Comum
+Comuni ‖ Common ‖ Comunes ‖ Comuns
+Raro ‖ Rare ‖ Raro ‖ Raro
+Rari ‖ Rare ‖ Raros ‖ Raros
+Epico ‖ Epic ‖ Épico ‖ Épico
+Epici ‖ Epic ‖ Épicos ‖ Épicos
+Leggendario ‖ Legendary ‖ Legendario ‖ Lendário
+Leggendari ‖ Legendary ‖ Legendarios ‖ Lendários
+Coniglio gentile ‖ Gentle rabbit ‖ Conejo amable ‖ Coelho gentil
+Cane compagno ‖ Faithful dog ‖ Perro compañero ‖ Cão companheiro
+Procione curioso ‖ Curious raccoon ‖ Mapache curioso ‖ Guaxinim curioso
+Lontra allegra ‖ Cheerful otter ‖ Nutria alegre ‖ Lontra alegre
+Riccio del trifoglio ‖ Clover hedgehog ‖ Erizo del trébol ‖ Ouriço do trevo
+Scoiattolo della ghianda ‖ Acorn squirrel ‖ Ardilla de la bellota ‖ Esquilo da bolota
+Topolino lettore ‖ Reading mouse ‖ Ratón lector ‖ Ratinho leitor
+Koala rilassato ‖ Relaxed koala ‖ Koala relajado ‖ Coala tranquilo
+Pinguino elegante ‖ Elegant penguin ‖ Pingüino elegante ‖ Pinguim elegante
+Anatra marina ‖ Seafaring duck ‖ Pato marinero ‖ Pato marinheiro
+Tasso tranquillo ‖ Peaceful badger ‖ Tejón tranquilo ‖ Texugo tranquilo
+Rana del laghetto ‖ Pond frog ‖ Rana del estanque ‖ Sapo do lago
+Panda rosso ‖ Red panda ‖ Panda rojo ‖ Panda-vermelho
+Cerbiatto timido ‖ Shy fawn ‖ Cervatillo tímido ‖ Cervinho tímido
+Cagnolino barista ‖ Barista dog ‖ Perrito barista ‖ Cachorrinho barista
+Gatto tigrato ‖ Tabby cat ‖ Gato atigrado ‖ Gato rajado
+Orsetto del miele ‖ Honey bear ‖ Osito de la miel ‖ Ursinho do mel
+Gufo lettore ‖ Reading owl ‖ Búho lector ‖ Coruja leitora
+Volpe viaggiatrice ‖ Travelling fox ‖ Zorro viajero ‖ Raposa viajante
+Apprendista delle carte ‖ Card apprentice ‖ Aprendiz de cartas ‖ Aprendiz das cartas
+Pittrice corallo ‖ Coral painter ‖ Pintora coral ‖ Pintora coral
+Giardiniere di fiori ‖ Club gardener ‖ Jardinero de tréboles ‖ Jardineiro de paus
+Marinaia di cuori ‖ Sailor of hearts ‖ Marinera de corazones ‖ Marinheira de copas
+Postino dei cuori ‖ Postman of hearts ‖ Cartero de corazones ‖ Carteiro de copas
+Pasticciera vaniglia ‖ Vanilla pastry chef ‖ Pastelera vainilla ‖ Confeiteira baunilha
+Esploratore del mazzo ‖ Deck explorer ‖ Explorador del mazo ‖ Explorador do baralho
+Musicista del tavolo ‖ Table musician ‖ Músico de la mesa ‖ Músico da mesa
+Volpe lunare ‖ Moon fox ‖ Zorro lunar ‖ Raposa lunar
+Gatto zaffiro ‖ Sapphire cat ‖ Gato zafiro ‖ Gato safira
+Gufo astronomo ‖ Astronomer owl ‖ Búho astrónomo ‖ Coruja astrônoma
+Coniglio prestigiatore ‖ Magician rabbit ‖ Conejo mago ‖ Coelho mágico
+Procione degli assi ‖ Raccoon of aces ‖ Mapache de los ases ‖ Guaxinim dos ases
+Lontra delle perle ‖ Pearl otter ‖ Nutria de las perlas ‖ Lontra das pérolas
+Cervo del bosco ‖ Woodland deer ‖ Ciervo del bosque ‖ Cervo do bosque
+Lupo d’argento ‖ Silver wolf ‖ Lobo de plata ‖ Lobo de prata
+Tigre d’ambra ‖ Amber tiger ‖ Tigre de ámbar ‖ Tigre de âmbar
+Panda imperiale ‖ Imperial panda ‖ Panda imperial ‖ Panda imperial
+Koala sognatore ‖ Dreaming koala ‖ Koala soñador ‖ Coala sonhador
+Pinguino ammiraglio ‖ Admiral penguin ‖ Pingüino almirante ‖ Pinguim almirante
+Tartaruga maestra ‖ Master turtle ‖ Tortuga maestra ‖ Tartaruga mestra
+Riccio di rame ‖ Copper hedgehog ‖ Erizo de cobre ‖ Ouriço de cobre
+Drago giovane ‖ Young dragon ‖ Dragón joven ‖ Dragão jovem
+Dama delle perle ‖ Lady of pearls ‖ Dama de las perlas ‖ Dama das pérolas
+Cavaliere di picche ‖ Knight of spades ‖ Caballero de picas ‖ Cavaleiro de espadas
+Capitano di quadri ‖ Captain of diamonds ‖ Capitán de diamantes ‖ Capitão de ouros
+Incantatrice di fiori ‖ Enchantress of clubs ‖ Hechicera de tréboles ‖ Encantadora de paus
+Viandante delle carte ‖ Card wanderer ‖ Viajero de las cartas ‖ Viajante das cartas
+Alchimista del mazzo ‖ Deck alchemist ‖ Alquimista del mazo ‖ Alquimista do baralho
+Jolly di giada ‖ Jade joker ‖ Comodín de jade ‖ Coringa de jade
+Asso di velluto ‖ Velvet ace ‖ As de terciopelo ‖ Ás de veludo
+Cigno del lago ‖ Lake swan ‖ Cisne del lago ‖ Cisne do lago
+Pavone di giada ‖ Jade peacock ‖ Pavo real de jade ‖ Pavão de jade
+Kitsune corallo ‖ Coral kitsune ‖ Kitsune coral ‖ Kitsune coral
+Gatto stregone ‖ Wizard cat ‖ Gato hechicero ‖ Gato feiticeiro
+Gufo oracolo ‖ Oracle owl ‖ Búho oráculo ‖ Coruja oráculo
+Cervo di luce ‖ Deer of light ‖ Ciervo de luz ‖ Cervo de luz
+Lupo boreale ‖ Boreal wolf ‖ Lobo boreal ‖ Lobo boreal
+Tigre di giada ‖ Jade tiger ‖ Tigre de jade ‖ Tigre de jade
+Drago zaffiro ‖ Sapphire dragon ‖ Dragón zafiro ‖ Dragão safira
+Drago porpora ‖ Purple dragon ‖ Dragón púrpura ‖ Dragão púrpura
+Unicorno perlaceo ‖ Pearlescent unicorn ‖ Unicornio perlado ‖ Unicórnio perolado
+Grifone dorato ‖ Golden griffin ‖ Grifo dorado ‖ Grifo dourado
+Fenice del crepuscolo ‖ Twilight phoenix ‖ Fénix del crepúsculo ‖ Fênix do crepúsculo
+Kraken del mazzo ‖ Deck kraken ‖ Kraken del mazo ‖ Kraken do baralho
+Guardiana dei cuori ‖ Guardian of hearts ‖ Guardiana de corazones ‖ Guardiã de copas
+Paladino di quadri ‖ Paladin of diamonds ‖ Paladín de diamantes ‖ Paladino de ouros
+Regina delle nebbie ‖ Queen of mists ‖ Reina de las nieblas ‖ Rainha das névoas
+Strega della luna ‖ Moon witch ‖ Bruja de la luna ‖ Bruxa da lua
+Maestro dei jolly ‖ Joker master ‖ Maestro de los comodines ‖ Mestre dos coringas
+Asso stellare ‖ Stellar ace ‖ As estelar ‖ Ás estelar
+Mantide smeraldo ‖ Emerald mantis ‖ Mantis esmeralda ‖ Louva-a-deus esmeralda
+Drago imperatore ‖ Emperor dragon ‖ Dragón emperador ‖ Dragão imperador
+Fenice solare ‖ Solar phoenix ‖ Fénix solar ‖ Fênix solar
+Volpe dalle nove code ‖ Nine-tailed fox ‖ Zorro de nueve colas ‖ Raposa de nove caudas
+Leone sovrano ‖ Sovereign lion ‖ León soberano ‖ Leão soberano
+Cervo celeste ‖ Celestial deer ‖ Ciervo celestial ‖ Cervo celestial
+Regina delle costellazioni ‖ Queen of constellations ‖ Reina de las constelaciones ‖ Rainha das constelações
+Re del mazzo ‖ King of the deck ‖ Rey del mazo ‖ Rei do baralho
+Jolly eterno ‖ Eternal joker ‖ Comodín eterno ‖ Coringa eterno
+Asso del destino ‖ Ace of destiny ‖ As del destino ‖ Ás do destino

@@ -206,6 +206,10 @@ async function signup(p, nick, email = mailOf()) {
     assert(!(await A.call('setAvatar', { e: '💩', c: '#000' })).ok, 'avatar non previsto rifiutato');
     assert((await A.call('setAvatar', { e: '🦊', c: '#64b5f6' })).ok);
     await B.until((s) => s.room.seats.some((x) => x && x.avatar && x.avatar.e === '🦊'), 'avatar visibile al tavolo');
+    assert((await A.call('setAvatar', { id: 'drago-imperatore', c: '#64b5f6' })).ok, 'avatar con ID stabile');
+    await B.until((s) => s.room.seats.some((x) => x && x.avatar && x.avatar.id === 'drago-imperatore'), 'nuovo avatar trasmesso agli altri giocatori');
+    assert(!(await A.call('setAvatar', { id: 'avatar-inventato', c: '#64b5f6' })).ok, 'ID avatar arbitrario rifiutato');
+    assert((await A.call('setAvatar', { e: '🦊', c: '#64b5f6' })).ok, 'scelta dal client precedente compatibile');
     const reacted = new Promise((res) => B.sock.once('reaction', res));
     assert((await A.call('react', { emoji: '👏' })).ok);
     const re = await reacted;

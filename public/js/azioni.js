@@ -472,7 +472,25 @@
     },
     async pickTitle(el) { const r = await emit('setLook', { title: el.dataset.id }); if (r.ok) profileModal(); },
     async pickFrame(el) { const r = await emit('setLook', { frame: el.dataset.id }); if (r.ok) profileModal(); },
-    async pickAvatar(el) { const r = await emit('setAvatar', { e: el.dataset.e, c: el.dataset.c }); if (r.ok) profileModal(); },
+    async avatarFilter(el) {
+      S.avatarFilter = el.dataset.rarity;
+      await profileModal();
+      [...document.querySelectorAll('.avfilter')].find(b=>b.dataset.rarity===S.avatarFilter)?.focus({preventScroll:true});
+    },
+    async pickAvatar(el) {
+      const grid = $('#avatar-grid');
+      const scrollTop = grid ? grid.scrollTop : 0;
+      const r = await emit('setAvatar', { id: el.dataset.avatarId, c: el.dataset.c });
+      if (r.ok) {
+        await profileModal();
+        const updated = $('#avatar-grid');
+        if (updated) {
+          updated.scrollTop = scrollTop;
+          const focused = el.classList.contains('avcol') ? $('#modal .avcol.on') : updated.querySelector('.avopt.on');
+          focused?.focus({preventScroll:true});
+        }
+      }
+    },
     reactPicker() {
       S.reactOpen = !S.reactOpen;
       render();

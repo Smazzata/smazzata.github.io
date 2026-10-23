@@ -14,6 +14,7 @@ const Premi = require('../shared/premi');
 const Levels = require('./levels');
 const Posta = require('./posta');
 const Parole = require('../shared/parole');
+const Avatars = require('../shared/avatars');
 
 const NICK_RE = /^[A-Za-z0-9_.-]{3,16}$/;
 const CODE_ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -349,12 +350,21 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       return { nick, code: s.code };
     }));
 
-    socket.on('setAvatar', handler(({ e, c }) => {
+    socket.on('setAvatar', handler(({ id, e, c }) => {
       const token = me();
       const s = sess(token);
-      if (!AVATAR_EMOJI.includes(e) || !AVATAR_COLORS.includes(c)) fail('Avatar non valido');
-      // si cambiano emoji e colore, titolo e cornice restano
-      s.avatar = { ...(s.avatar || {}), e, c };
+      if (!AVATAR_COLORS.includes(c)) fail('Avatar non valido');
+      let avatar;
+      if (id !== undefined) {
+        avatar = Avatars.byId.get(id);
+        if (!avatar) fail('Avatar non valido');
+      } else {
+        if (!AVATAR_EMOJI.includes(e)) fail('Avatar non valido');
+        // I client precedenti inviano ancora la chiave emoji; il colore non cambia l'identità.
+        avatar = s.avatar && s.avatar.e === e && Avatars.byId.get(s.avatar.id) || Avatars.resolve(e);
+      }
+      // e è la rappresentazione di compatibilità per i client precedenti; id identifica l'illustrazione.
+      s.avatar = { ...(s.avatar || {}), id:avatar.id, e:avatar.e, c };
       renamePlayer(token, null);
       push(token);
       pushFriends(token);
