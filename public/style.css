@@ -820,6 +820,30 @@ label.radio { display: block; padding: 6px 2px; font-size: 14px; }
 /* tornei */
 .tourbtn { background: linear-gradient(180deg, #8e44ad, #6c3483); color: #fff; border-color: transparent; }
 .tourcard { width: 100%; padding: 0; text-align: left; cursor: pointer; background: transparent; font: inherit; color: inherit; }
+.tour-create { margin-top: 20px; padding-top: 18px; border-top: 1px solid #d8d3c6; display: grid; gap: 12px; text-align: left; }
+.tour-create h3 { margin: 0 0 2px; }
+.tour-label, .tour-create legend { font-size: 13px; font-weight: 800; }
+.tour-create #tourname { width: 100%; min-width: 0; min-height: 48px; font-size: 16px; border: 1px solid #c9c5b9; border-radius: 12px; padding: 12px; background: var(--paper); color: var(--ink); }
+.tour-create fieldset { min-width: 0; margin: 4px 0 0; padding: 0; border: 0; }
+.tour-create legend { padding: 0; margin-bottom: 8px; }
+.tour-options { display: grid; gap: 8px; }
+.tour-games { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tour-sizes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.tour-option { position: relative; cursor: pointer; min-width: 0; }
+.tour-option input { position: absolute; width: 1px; height: 1px; padding: 0; margin: 0; opacity: 0; }
+.tour-option > span { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-height: 52px; height: 100%; padding: 12px; border: 1px solid #c9c5b9; border-radius: 12px; background: var(--paper); color: var(--ink); }
+.tour-option i { font-style: normal; visibility: hidden; }
+.tour-option input:checked + span { border-color: #23734d; background: #e5f2e9; color: #124a2e; box-shadow: inset 0 0 0 1px #23734d; }
+.tour-option input:checked + span i { visibility: visible; }
+.tour-option input:focus-visible + span, .tour-create #tourname:focus-visible { outline: 3px solid #b58016; outline-offset: 3px; }
+.tour-sizes .tour-option > span { position: relative; flex-direction: column; justify-content: center; gap: 2px; padding: 12px 6px; }
+.tour-sizes b { font-size: 23px; }
+.tour-sizes small { font-size: 12px; }
+.tour-sizes i { position: absolute; right: 7px; top: 5px; font-size: 12px; }
+.tour-create > .btn { width: 100%; min-height: 48px; margin-top: 4px; }
+body[data-theme="notte"] .tour-create { border-color: #46564c; }
+body[data-theme="notte"] .tour-option > span { background: #2a312e; color: #eee; border-color: #64766b; }
+body[data-theme="notte"] .tour-option input:checked + span { background: #203e2d; color: #e1f6e9; border-color: #8acaa3; box-shadow: inset 0 0 0 1px #8acaa3; }
 .tourready { margin-top: 8px; padding: 8px 10px; border-radius: 12px; background: rgba(142,68,173,.25); border: 1px solid rgba(142,68,173,.6); font-size: 13px; display: flex; align-items: center; gap: 8px; justify-content: space-between; }
 .bracket { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; }
 .tround { min-width: 150px; display: flex; flex-direction: column; justify-content: space-around; gap: 8px; }
@@ -1155,3 +1179,48 @@ body.noanim .bigtoast, body.noanim .bigtoast::before, body.noanim .bigtoast b, b
 .center .pile:not(.active) { background: rgba(0,0,0,.07); box-shadow: inset 0 1px 3px rgba(0,0,0,.32), inset 0 0 0 1px rgba(242,193,78,.12); }
 /* titoli con il carattere dei titoli */
 .panel h2, .modal-box h2, .winner { font-family: var(--font-title); letter-spacing: .2px; }
+
+/* Controlli condivisi: leggibili e toccabili anche nei pannelli più piccoli. */
+.ui-icon { width: 24px; height: 24px; flex: 0 0 auto; vertical-align: middle; }
+.homebtn > .ui-icon { width: 28px; height: 28px; }
+.home-tools .ui-icon { width: 18px; height: 18px; }
+.menuitem .ui-icon { width: 25px; height: 25px; }
+.modal-close { width: 44px; height: 44px; display: grid; place-items: center; }
+.modal-box .small, .page .small { font-size: 13px; line-height: 1.45; }
+.modal-box .btn.small, .page .btn.small, .modal-box .swatch { min-height: 44px; }
+.modal-box .row, .page .row { min-width: 0; }
+.modal-box input:not([type=radio]):not([type=checkbox]):not([type=hidden]):not([type=range]) { min-width: 0; max-width: 100%; font-size: 16px; min-height: 44px; padding: 10px; border: 1px solid #aaa99f; border-radius: 10px; }
+.tour-create #lgname { width: 100%; }
+.modal-box .rules-form .hint { color: #62665d; font-size: 13px; }
+.page .rules-form .hint { font-size: 13px; }
+.choice-control { flex: 1; min-width: 0; }
+.rules-form .choice-control { flex: 0 1 55%; }
+.choice-menu { border: 1px solid #a4aa9e; border-radius: 12px; background: var(--paper); color: var(--ink); overflow: hidden; }
+.choice-menu summary, .choice-disabled { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 46px; padding: 10px 12px; cursor: pointer; font-size: 15px; }
+.choice-menu summary { list-style: none; }
+.choice-menu summary::-webkit-details-marker { display: none; }
+.choice-menu summary .choice-value { flex: 1; overflow-wrap: anywhere; }
+.choice-menu[open] summary { border-bottom: 1px solid #d8d3c6; }
+.choice-list { max-height: 240px; overflow-y: auto; overscroll-behavior: contain; padding: 5px; }
+.choice-list label { display: flex; align-items: center; gap: 10px; min-height: 46px; padding: 8px; border-radius: 8px; cursor: pointer; overflow-wrap: anywhere; }
+.choice-list input { flex-shrink: 0; width: 20px; height: 20px; accent-color: #21643e; }
+.choice-list label:has(input:checked) { background: #e5f2e9; color: #124a2e; font-weight: 800; }
+.choice-list label:focus-within { outline: 2px solid #9b7014; outline-offset: -2px; }
+.choice-menu summary:focus-visible, .modal-close:focus-visible, .modal-box .btn:focus-visible, .swatch:focus-visible { outline: 3px solid #b58016; outline-offset: 2px; }
+.rules-form .opt { min-height: 48px; }
+.field-error { margin: 6px 0 12px; padding: 10px 12px; border-left: 3px solid #d74742; border-radius: 6px; background: #fff0ed; color: #8a2020; font-size: 14px; line-height: 1.4; }
+[aria-invalid="true"] { outline: 2px solid #d74742; outline-offset: 2px; }
+.toast { top: calc(12px + env(safe-area-inset-top)); width: max-content; max-width: min(480px, calc(100vw - 24px)); padding: 12px 16px; border: 1px solid #ffffff40; border-radius: 12px; font-size: 14px; line-height: 1.4; text-align: left; pointer-events: none; }
+body[data-theme="notte"] .choice-menu { background: #2a312e; color: #eee; border-color: #64766b; }
+body[data-theme="notte"] .choice-list label:has(input:checked) { background: #203e2d; color: #e1f6e9; }
+body[data-theme="notte"] .modal-box .rules-form .hint { color: #c1ccbf; }
+body[data-theme="notte"] .field-error { background: #422a28; color: #ffcdc5; }
+body[data-theme="notte"] .tour-create #tourname { background: #2a312e; color: #eee; border-color: #64766b; }
+@media (max-width: 420px) {
+  .rules-form .opt:has(.choice-control) { align-items: stretch; flex-direction: column; gap: 6px; }
+  .rules-form .choice-control { flex-basis: auto; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .modal:not(.hidden) .modal-box, .modal.swap .modal-content, .toast, .enter { animation: none; }
+  .btn, .swatch, .menuitem, .modal { transition: none; }
+}

@@ -1,0 +1,6 @@
+Nome del torneo ‖ Tournament name ‖ Nombre del torneo ‖ Nome do torneio
+2 turni ‖ 2 rounds ‖ 2 rondas ‖ 2 rodadas
+3 turni ‖ 3 rounds ‖ 3 rondas ‖ 3 rodadas
+4 turni ‖ 4 rounds ‖ 4 rondas ‖ 4 rodadas
+Nome del campionato ‖ League name ‖ Nombre de la liga ‖ Nome da liga
+Durata ‖ Duration ‖ Duración ‖ Duração

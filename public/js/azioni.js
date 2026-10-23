@@ -391,13 +391,13 @@
     async claimNick() {
       const nick = ($('#nick') || {}).value || '';
       const password = ($('#nickpw') || {}).value || '';
-      if (password.length < 6) { toast('La password deve avere almeno 6 caratteri', true); return; }
+      if (password.length < 6) { fieldError($('#nickpw'), 'La password deve avere almeno 6 caratteri'); return; }
       // età minima e regole: lo controlla anche il server
-      if (!($('#nickage') || {}).checked) { toast('Per creare un profilo devi avere almeno 14 anni e accettare le regole', true); return; }
+      if (!($('#nickage') || {}).checked) { fieldError($('#nickage'), 'Per creare un profilo devi avere almeno 14 anni e accettare le regole'); return; }
       const email = (($('#nickmail') || {}).value || '').trim();
       if (S.mailOn) {
         // con le email: prima arriva il codice, il profilo nasce quando lo si scrive
-        if (!email) { toast('Scrivi la tua email', true); return; }
+        if (!email) { fieldError($('#nickmail'), 'Scrivi la tua email'); return; }
         const st = await emit('startSignup', { nick: nick.trim(), password, email, adult: true });
         if (st.ok) { S.signup = { nick: nick.trim(), email: st.email }; render(); setTimeout(() => { const i = $('#sucode'); if (i) i.focus(); }, 50); }
         return;

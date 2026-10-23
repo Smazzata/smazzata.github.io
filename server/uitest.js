@@ -118,6 +118,37 @@ const HELPERS = `
       __tap('[data-act="savedCode"]'); await __W(300);
       return document.querySelector('.hello') ? document.querySelector('.hello').innerText : null;`);
     if (!nick || !nick.includes('Robot_UI')) throw new Error('nickname non confermato');
+    if (process.argv.includes('--polish')) {
+      await require('./ui-polish-flow')({ cdp, shot, errors, step });
+      return;
+    }
+    if (process.argv.includes('--tournaments')) {
+      await cdp.run(`await __menu('tournaments'); await __W(700);`);
+      for (const width of [320, 375, 768]) {
+        await cdp.send('Emulation.setDeviceMetricsOverride', { width, height: 812, deviceScaleFactor: 1, mobile: true });
+        await cdp.run(`
+          const form = document.querySelector('#tourform');
+          if (form.querySelector('select')) throw new Error('menu nativo nel torneo');
+          if (form.scrollWidth > form.clientWidth) throw new Error('form fuori schermo');
+          if (form.querySelectorAll('input[type=radio]').length !== 7) throw new Error('scelte mancanti');
+          for (const option of form.querySelectorAll('.tour-option')) {
+            option.click();
+            if (!option.querySelector('input').checked) throw new Error('selezione non aggiornata');
+          }
+        `);
+        await shot('torneo-creazione-' + width);
+      }
+      await cdp.run(`
+        document.querySelector('#tourname').value = 'Coppa del robot';
+        document.querySelector('[name=tourgame][value=scala40]').click();
+        document.querySelector('[name=toursize][value="4"]').click();
+        document.querySelector('#tourform button').click(); await __W(900);
+        const detail = document.querySelector('#modal').textContent;
+        if (!detail.includes('Coppa del robot') || !detail.includes('Scala 40 · 4 giocatori')) throw new Error('creazione con scelte errate');
+      `);
+      step('torneo: selezione e creazione verificate a 320, 375 e 768 px');
+      return;
+    }
     await cdp.run(`
       await __W(2500);
       const choices = [...document.querySelectorAll('.homebtn')];
@@ -295,7 +326,7 @@ const HELPERS = `
       if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); await __menu('leave'); await __W(800); }
       await __menu('tournaments'); await __W(700);
       document.querySelector('#tourname').value = 'Coppa del robot';
-      document.querySelector('#toursize').value = '4';
+      document.querySelector('[name=toursize][value="4"]').click();
       document.querySelector('#tourform button').click(); await __W(900);
       const waitFor = async (sel) => { for (let i = 0; i < 40 && !document.querySelector(sel); i++) await __W(150); return document.querySelector(sel); };
       __tap(await waitFor('[data-act="tourFill"]'));

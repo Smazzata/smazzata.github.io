@@ -168,7 +168,7 @@
         ${open ? `<table>${lg.standings.map((x) => `<tr class="${x.me ? 'meRow' : ''}"><td>${['🥇', '🥈', '🥉'][x.pos - 1] || x.pos}</td><td style="text-align:left">${esc(x.name)}</td><td><b>${x.pts}</b> pt</td><td class="muted small">${x.wins}/${x.games}</td></tr>`).join('')}</table>
           <p class="muted small">3 punti a vittoria, 1 a partecipazione. Contano le partite finite con almeno due membri al tavolo.</p>
           ${lg.past.length ? `<h4>Albo d'oro</h4>${lg.past.slice(0, 5).map((p) => `<div class="small">🏆 ${esc(p.winners.join(', '))} <span class="muted">(${p.pts} pt · ${new Date(p.to - 1).toLocaleDateString(LOCALE)})</span></div>`).join('')}` : ''}
-          ${lg.mineOwner && addable.length ? `<div class="row" style="margin-top:8px"><select id="lgadd-${lg.id}" class="grow">${addable.map((f) => `<option>${esc(f.nick)}</option>`).join('')}</select>
+          ${lg.mineOwner && addable.length ? `<div class="row" style="margin-top:8px">${choiceMenuHTML('lgadd-' + lg.id, addable.map(f => [f.nick, f.nick]), addable[0].nick, 'Amici')}
             <button class="btn small primary" data-act="leagueAdd" data-id="${lg.id}">Aggiungi</button></div>` : ''}
           ${lg.mineOwner ? `<div class="small" style="margin-top:6px">Membri: ${lg.members.map((n) => `${esc(n)}${n !== lg.owner ? ` <a href="#" data-act="leagueKick" data-id="${lg.id}" data-nick="${esc(n)}" title="Togli">✕</a>` : ''}`).join(' · ')}</div>` : ''}
           <div class="row" style="margin-top:8px"><button class="btn small danger" data-act="leagueLeave" data-id="${lg.id}">Esci dal campionato</button></div>` : ''}</div>`;
@@ -176,9 +176,9 @@
     openModal('leagues', `<div class="result"><button class="btn small" data-act="friends">← Amici</button><h2>🏟️ Campionati tra amici</h2>
       ${r.list.length ? r.list.map(card).join('') : '<p class="muted">Non fai ancora parte di un campionato. Creane uno e aggiungi i tuoi amici!</p>'}
       <h3>Nuovo campionato</h3>
-      <form id="leagueform"><div class="row"><input id="lgname" class="grow" maxlength="30" placeholder="Es. Burraco del giovedì"></div>
-        <div class="row" style="margin-top:6px"><label class="small"><input type="radio" name="lgperiod" value="settimana" checked> Settimanale</label>
-        <label class="small"><input type="radio" name="lgperiod" value="mese"> Mensile</label><button class="btn small primary grow">Crea</button></div></form></div>`);
+      <form id="leagueform" class="tour-create"><label class="tour-label" for="lgname">Nome del campionato</label><input id="lgname" maxlength="30" placeholder="Es. Burraco del giovedì">
+        <fieldset><legend>Durata</legend><div class="tour-options tour-games"><label class="tour-option"><input type="radio" name="lgperiod" value="settimana" checked><span><b>Settimanale</b><i aria-hidden="true">✓</i></span></label>
+        <label class="tour-option"><input type="radio" name="lgperiod" value="mese"><span><b>Mensile</b><i aria-hidden="true">✓</i></span></label></div></fieldset><button class="btn primary">Crea</button></form></div>`);
   }
 
   /* ---------- Tornei a eliminazione ---------- */
@@ -196,11 +196,18 @@
     openModal('tournaments', `<div class="result"><h2>🏆 Tornei</h2>
       <p class="muted small">A eliminazione diretta, partite uno contro uno in versione breve. Quando tocca a te ti avvisiamo.</p>
       ${r.list.length ? r.list.map(card).join('') : '<p class="muted">Nessun torneo in corso: creane uno!</p>'}
-      <h3>Nuovo torneo</h3>
-      <form id="tourform"><div class="row"><input id="tourname" class="grow" maxlength="30" placeholder="Es. Coppa del venerdì"></div>
-        <div class="row" style="margin-top:6px"><select id="tourgame" class="grow">${Object.entries(TOUR_GAMES).map(([id, n]) => `<option value="${id}">${n}</option>`).join('')}</select>
-        <select id="toursize">${[4, 8, 16].map((n) => `<option value="${n}" ${n === 8 ? 'selected' : ''}>${n} giocatori</option>`).join('')}</select></div>
-        <div class="row" style="margin-top:6px"><button class="btn primary grow">Crea il torneo</button></div></form></div>`);
+      <form id="tourform" class="tour-create">
+        <h3>Nuovo torneo</h3>
+        <label class="tour-label" for="tourname">Nome del torneo</label>
+        <input id="tourname" maxlength="30" placeholder="Es. Coppa del venerdì">
+        <fieldset><legend>Scegli il gioco</legend><div class="tour-options tour-games">
+          ${Object.entries(TOUR_GAMES).map(([id, n]) => `<label class="tour-option"><input type="radio" name="tourgame" value="${id}" ${id === 'burraco' ? 'checked' : ''}><span><b>${n}</b><i aria-hidden="true">✓</i></span></label>`).join('')}
+        </div></fieldset>
+        <fieldset><legend>Giocatori</legend><div class="tour-options tour-sizes">
+          ${[4, 8, 16].map((n) => `<label class="tour-option"><input type="radio" name="toursize" value="${n}" ${n === 8 ? 'checked' : ''}><span><b>${n}</b><small>${Math.log2(n)} turni</small><i aria-hidden="true">✓</i></span></label>`).join('')}
+        </div></fieldset>
+        <button type="submit" class="btn primary">Crea il torneo</button>
+      </form></div>`);
   }
 
   function tournamentDetail(t) {

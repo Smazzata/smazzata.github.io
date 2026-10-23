@@ -82,6 +82,7 @@ Computer: 3 livelli + apertura da vulnerabile con più combinazioni + pianificat
 - Server di prova per le verifiche a mano: `node scripts/qa-server.js` (porta 3100, dati in una cartella temporanea, computer veloci): non toccare il server vero.
 
 ## Preferenze dell'utente
+- Al termine di ogni modifica completata e verificata, eseguire commit e push su GitHub, senza attendere una richiesta separata.
 - Mobile-first, niente pulsanti grandi: si gioca toccando/trascinando; solo piccole icone. Il tavolo non deve scorrere su smartphone.
 - Soluzioni gratuite. Spiega in modo semplice: l'utente non è uno sviluppatore esperto.
 - Commit con autore "Muliello S.F." e email noreply GitHub già configurati nel repository.

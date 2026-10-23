@@ -83,12 +83,12 @@
     const reqs = S.social?.reqIn?.length || 0;
     return `<div class="home-toolbar">
       <div class="home-game"><span id="homeGameLabel">${t('Scegli il gioco')}</span><button id="homeGame" class="home-game-trigger" data-act="homeGameMenu" aria-haspopup="dialog" aria-labelledby="homeGameLabel homeGameName"><span class="home-game-symbol" aria-hidden="true">${GAME_TILES.find(([id])=>id===homeGame())[1]}</span><b id="homeGameName">${esc(GAME_TILES.find(([id])=>id===homeGame())[2])}</b><span class="home-game-chevron" aria-hidden="true">⌄</span></button></div>
-      <div class="home-tools"><button class="btn small" data-act="tutorial">📖 Regole</button><button class="btn small morebtn" data-act="more">☰ Altro</button></div>
+      <div class="home-tools"><button class="btn small" data-act="tutorial">${uiIcon('book')} Regole</button><button class="btn small morebtn" data-act="more">${uiIcon('menu')} Altro</button></div>
       ${OFFLINE ? '' : `<nav class="home-shortcuts" aria-label="Community">
-        <button class="home-shortcut" data-act="friends"><span class="shortcut-icon" aria-hidden="true">👥</span><span>Amici</span>${reqs ? `<b class="shortcut-count">${reqs}</b>` : ''}</button>
-        <button class="home-shortcut" data-act="daily"><span class="shortcut-icon" aria-hidden="true">📅</span><span>Sfida del giorno</span></button>
-        <button class="home-shortcut" data-act="tournaments"><span class="shortcut-icon" aria-hidden="true">🏆</span><span>Tornei</span></button>
-        <button class="home-shortcut" data-act="leaders"><span class="shortcut-icon" aria-hidden="true">🏅</span><span>Classifica</span></button>
+        <button class="home-shortcut" data-act="friends"><span class="shortcut-icon" aria-hidden="true">${uiIcon('friends')}</span><span>Amici</span>${reqs ? `<b class="shortcut-count">${reqs}</b>` : ''}</button>
+        <button class="home-shortcut" data-act="daily"><span class="shortcut-icon" aria-hidden="true">${uiIcon('calendar')}</span><span>Sfida del giorno</span></button>
+        <button class="home-shortcut" data-act="tournaments"><span class="shortcut-icon" aria-hidden="true">${uiIcon('trophy')}</span><span>Tornei</span></button>
+        <button class="home-shortcut" data-act="leaders"><span class="shortcut-icon" aria-hidden="true">${uiIcon('medal')}</span><span>Classifica</span></button>
       </nav>`}
     </div>`;
   }
@@ -154,10 +154,10 @@
         <button class="btn primary big grow" data-act="joinCode" data-code="${esc(S.pendingJoin)}">Entra al tavolo</button></div>` : ''}
       ${last ? `<button class="btn primary big grow" data-act="rejoin">↩ Torna alla partita</button>` : ''}
       ${S.tourMatch && !S.room ? `<div class="tourready">🏆 ${esc(S.tourMatch.text)} <button class="btn small primary" data-act="tourPlay" data-code="${esc(S.tourMatch.code)}">▶ Gioca</button></div>` : ''}
-      ${OFFLINE ? '' : `<button class="btn primary big grow homebtn" data-act="playFriends"><span>👥</span>Gioca con gli amici</button>`}
-      ${OFFLINE ? '' : `<button class="btn big grow homebtn" data-act="quickMenu" data-mode="casual"><span>🃏</span><div>Amichevole online<small>Trova un tavolo · senza punti classifica</small></div></button>
-      <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked"><span>🏅</span><div>Classificata<small>Scala i gradi, da Bronzo a Leggenda</small></div></button>`}
-      <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots"><span>🤖</span><div>Gioca contro il computer<small>Allenamento · senza progressi o statistiche</small></div></button>
+      ${OFFLINE ? '' : `<button class="btn primary big grow homebtn" data-act="playFriends">${uiIcon('friends')}Gioca con gli amici</button>`}
+      ${OFFLINE ? '' : `<button class="btn big grow homebtn" data-act="quickMenu" data-mode="casual">${uiIcon('cards')}<div>Amichevole online<small>Trova un tavolo · senza punti classifica</small></div></button>
+      <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked">${uiIcon('medal')}<div>Classificata<small>Scala i gradi, da Bronzo a Leggenda</small></div></button>`}
+      <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots">${uiIcon('bot')}<div>Gioca contro il computer<small>Allenamento · senza progressi o statistiche</small></div></button>
       ${CAMPAIGN_VISIBLE ? '<button class="btn grow campaign-entry" data-act="campaign">🌱 Avventura<small>Tre percorsi: Burraco, Scala 40 e Ramino</small></button>' : ''}
 
     </div>`;
@@ -170,9 +170,9 @@
     openModal('more', `<h2>☰ Altro</h2><div class="menulist">
       ${so.nick ? item('profile', '👤', 'Il mio profilo') : ''}
       ${item('stats', '📊', 'Le mie statistiche')}
-      ${item('gamesRules', '📖', 'Regole dei giochi')}
+      ${item('gamesRules', uiIcon('book'), 'Regole dei giochi')}
       ${item('howto', '❓', 'Come si usa l\'app')}
-      ${item('settings', '⚙️', 'Impostazioni')}
+      ${item('settings', uiIcon('settings'), 'Impostazioni')}
       ${OFFLINE ? '' : item('report', '🐞', 'Segnala un problema')}
       <a class="menuitem" href="regole.html"><span>📜</span>Regole di comportamento</a>
       <a class="menuitem" href="privacy.html"><span>🔒</span>Privacy</a></div>`);

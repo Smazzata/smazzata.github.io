@@ -51,10 +51,10 @@
 @media(max-width:340px){.home-game-options{grid-template-columns:1fr}}
 
 /* Home: comandi raccolti in alto, modalità di gioco in primo piano. */
-.home-page .logo{margin:8px 0 14px;padding:0}
+.home-page .logo{margin:4px 0 10px;padding:0}
 .home-page .logo h1{font-size:36px;margin:0 0 3px}
 .home-page .logo>.muted{font-size:14px}
-.home-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin-bottom:16px}
+.home-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-bottom:12px}
 .home-toolbar .home-game{margin:0;min-width:0}
 .home-toolbar .home-game>span{font-size:13px;margin-bottom:4px}
 .home-toolbar .home-game-trigger{min-height:48px;padding:5px 10px;gap:8px;border-radius:12px;box-shadow:0 2px 0 #0002}
@@ -66,9 +66,9 @@
 .home-toolbar .home-shortcuts{grid-column:1/-1;margin:0;gap:6px}
 .home-toolbar .home-shortcut{min-height:54px;justify-content:center;gap:3px;padding:5px 2px;font-size:13px;border-radius:10px;box-shadow:0 2px 0 #0002}
 .home-toolbar .shortcut-icon{width:24px;height:24px;font-size:20px;line-height:1}
-.home-page .hello{margin-top:0;margin-bottom:12px}
-.home-page .homebtns{gap:12px}
-.home-page .homebtn{min-height:74px;border-radius:14px;font-size:19px;justify-content:flex-start;text-align:left;padding:14px 16px}
+.home-page .hello{margin-top:0;margin-bottom:8px}
+.home-page .homebtns{gap:9px}
+.home-page .homebtn{min-height:64px;border-radius:14px;font-size:19px;justify-content:flex-start;text-align:left;padding:11px 14px}
 .home-page .homebtn small{font-size:14px;line-height:1.35;margin-top:4px}
 @media(max-width:360px){.home-toolbar{gap:8px}.home-tools{gap:4px}.home-tools .btn{padding:6px;font-size:13px}.home-page .homebtn{font-size:18px}}
 

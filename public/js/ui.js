@@ -4,6 +4,67 @@
 'use strict';
 
   /* ================= UI di base ================= */
+  // Icone locali: stesso tratto e dimensioni su ogni dispositivo.
+  function uiIcon(name) {
+    const paths = {
+      friends: '<circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6m2 3a5 5 0 0 1 3 4v3"/>',
+      trophy: '<path d="M8 3h8v6a4 4 0 0 1-8 0V3Zm0 2H4v3a4 4 0 0 0 4 4m8-7h4v3a4 4 0 0 1-4 4m-4 1v5m-5 3h10m-8 0v-3h6v3"/>',
+      medal: '<circle cx="12" cy="9" r="6"/><path d="m8 14-2 7 6-3 6 3-2-7m-4-8v6m-3-3h6"/>',
+      calendar: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-14 4h3m4 0h3m-10 3h3"/>',
+      book: '<path d="M12 5v16M3 4h5a4 4 0 0 1 4 2 4 4 0 0 1 4-2h5v15h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3V4Z"/>',
+      menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+      cards: '<rect x="8" y="3" width="12" height="17" rx="2"/><path d="M5 6H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10m0-15 3 4-3 4-3-4 3-4Z"/>',
+      bot: '<rect x="4" y="7" width="16" height="14" rx="4"/><path d="M12 3v4M1 12v5m22-5v5M8 12v2m8-2v2m-8 3h8"/>',
+      settings: '<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="10" cy="18" r="2"/>'
+    };
+    return `<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths[name] || paths.cards}</svg>`;
+  }
+
+  function choiceMenuHTML(id, choices, value, label, rule = '', disabled = false) {
+    const selected = choices.find(([v]) => String(v) === String(value)) || choices[0];
+    return `<div class="choice-control"><input type="hidden" id="${esc(id)}" value="${esc(selected[0])}">
+      ${disabled ? `<span class="choice-disabled">${esc(selected[1])}</span>` : `<details class="choice-menu"><summary><span class="sr-only">${esc(label)}: </span><span class="choice-value">${esc(selected[1])}</span><span aria-hidden="true">⌄</span></summary>
+      <div class="choice-list" role="group" aria-label="${esc(label)}">${choices.map(([v, text]) => `<label><input type="radio" name="choice-${esc(id)}" value="${esc(v)}" ${rule ? `data-rule="${esc(rule)}"` : ''} ${String(v) === String(selected[0]) ? 'checked' : ''}><span>${esc(text)}</span></label>`).join('')}</div></details>`}</div>`;
+  }
+
+  function fieldError(field, message) {
+    if (!field) { toast(message, true); return; }
+    const id = field.id + '-error';
+    let note = document.getElementById(id);
+    if (!note) {
+      note = document.createElement('p'); note.id = id; note.className = 'field-error'; note.setAttribute('role', 'alert');
+      const anchor = field.closest('.field, .agecheck') || field;
+      anchor.insertAdjacentElement('afterend', note);
+    }
+    note.textContent = t(message);
+    field.setAttribute('aria-invalid', 'true');
+    field.setAttribute('aria-describedby', [...new Set((field.getAttribute('aria-describedby') || '').split(' ').filter(Boolean).concat(id))].join(' '));
+    field.focus();
+  }
+
+  document.addEventListener('input', (e) => {
+    const field = e.target;
+    if (field.getAttribute('aria-invalid') !== 'true') return;
+    const id = field.id + '-error';
+    document.getElementById(id)?.remove();
+    field.removeAttribute('aria-invalid');
+    const remaining = (field.getAttribute('aria-describedby') || '').split(' ').filter(x => x && x !== id).join(' ');
+    if (remaining) field.setAttribute('aria-describedby', remaining); else field.removeAttribute('aria-describedby');
+  });
+
+  document.addEventListener('change', (e) => {
+    const menu = e.target.closest('.choice-menu');
+    if (!menu) return;
+    menu.closest('.choice-control').querySelector('input[type=hidden]').value = e.target.value;
+    menu.querySelector('.choice-value').textContent = e.target.nextElementSibling.textContent;
+    // Lascia aperto il gruppo durante la navigazione con le frecce.
+  });
+  document.addEventListener('keydown', (e) => {
+    const menu = e.target.closest('.choice-menu');
+    if (menu && menu.open && (e.key === 'Escape' || e.key === 'Enter' && e.target.matches('input'))) {
+      e.preventDefault(); e.stopImmediatePropagation(); menu.open = false; menu.querySelector('summary').focus();
+    }
+  });
   let toastTimer = null;
   function toast(msg, error = false) {
     const t = $('#toast');
@@ -91,8 +152,9 @@
       let input;
       if (f.type === 'bool') input = `<input type="checkbox" data-rule="${f.key}" ${rules[f.key] ? 'checked' : ''} ${disabled ? 'disabled' : ''}>`;
       else if (f.type === 'number') input = `<input type="number" data-rule="${f.key}" value="${rules[f.key]}" min="${f.min}" max="${f.max}" step="${f.step}">`;
-      else input = `<select data-rule="${f.key}" ${disabled ? 'disabled' : ''}>${f.choices.map(([v, l]) => `<option value="${v}" ${String(v) === String(rules[f.key]) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
-      html += `<label class="opt ${disabled ? 'disabled' : ''}"><span>${esc(f.label)}${f.hint ? `<br><span class="hint">${esc(f.hint)}</span>` : ''}</span>${input}</label>`;
+      else input = choiceMenuHTML('rule-' + f.key, f.choices, rules[f.key], f.label, f.key, disabled);
+      const tag = f.type === 'bool' || f.type === 'number' ? 'label' : 'div';
+      html += `<${tag} class="opt ${disabled ? 'disabled' : ''}"><span>${esc(f.label)}${f.hint ? `<br><span class="hint">${esc(f.hint)}</span>` : ''}</span>${input}</${tag}>`;
     }
     return html + '</div>';
   }

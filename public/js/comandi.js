@@ -234,6 +234,11 @@
       const target = S.modalKind === 'editRules' ? 'edit' : 'setup';
       const value = el.type === 'checkbox' ? el.checked : el.value;
       setRule(target, el.dataset.rule, value);
+      if (el.closest('.choice-menu')) {
+        const control = document.getElementById('rule-' + el.dataset.rule)?.closest('.choice-control');
+        const menu = control?.querySelector('details');
+        if (menu) { menu.open = true; [...menu.querySelectorAll('input')].find(input => input.value === value)?.focus({ preventScroll: true }); }
+      }
     }
     if (el.id === 'name') {
       S.name = el.value.trim();
@@ -273,7 +278,8 @@
       },
       forgotform: async () => { const r = await emit('resetPassword', { nick: $('#fnick').value.trim(), code: $('#fcode').value, password: $('#fpw').value }); if (r.ok) { toast('Password cambiata'); adoptProfile(r.token, r.nick); } },
       tourform: async () => {
-        const r = await emit('tournamentCreate', { name: $('#tourname').value, game: $('#tourgame').value, size: Number($('#toursize').value) });
+        if ($('#tourname').value.trim().length < 3) { fieldError($('#tourname'), 'Dai un nome al torneo (almeno 3 caratteri)'); return; }
+        const r = await emit('tournamentCreate', { name: $('#tourname').value, game: $('#tourform input[name="tourgame"]:checked').value, size: Number($('#tourform input[name="toursize"]:checked').value) });
         if (r.ok) { toast('Torneo creato: invita gli amici a iscriversi!'); tournamentsModal(r.id); }
       },
       reportPlayerForm: async (form) => {
@@ -282,6 +288,7 @@
         if (r.ok) { closeModal(); toast('Grazie, segnalazione inviata 🙏'); }
       },
       leagueform: async () => {
+        if ($('#lgname').value.trim().length < 3) { fieldError($('#lgname'), 'Dai un nome al campionato (almeno 3 caratteri)'); return; }
         const per = document.querySelector('input[name=lgperiod]:checked');
         const r = await emit('leagueCreate', { name: $('#lgname').value, period: per ? per.value : 'settimana' });
         if (r.ok) { toast('Campionato creato: aggiungi i tuoi amici!'); leaguesModal(r.id); }
