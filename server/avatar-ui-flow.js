@@ -11,12 +11,15 @@ module.exports = async ({ cdp, shot, step }) => {
     for (const entry of catalog.LIST) {
       if (!profile.emoji.includes(entry.e)) throw Error('avatar incompatibile con i profili salvati');
       const saved = await emit('setAvatar', {id:entry.id,c:'#64b5f6'});
-      if (!saved.ok || saved.avatar.id!==entry.id || saved.avatar.e !== entry.e || saved.avatar.c !== '#64b5f6') throw Error('avatar non salvato: '+entry.id);
+      if (catalog.isSelectable(entry.id)) {
+        if (!saved.ok || saved.avatar.id!==entry.id || saved.avatar.e !== entry.e || saved.avatar.c !== '#64b5f6') throw Error('avatar comune non salvato: '+entry.id);
+      } else if(saved.ok) throw Error('avatar non comune assegnato: '+entry.id);
     }
     if((await emit('setAvatar',{id:'inesistente',c:'#64b5f6'})).ok) throw Error('ID avatar arbitrario accettato');
-    const modern = await emit('setAvatar',{id:'drago-imperatore',c:'#64b5f6'});
+    const modern = await emit('setAvatar',{id:'coniglio-gentile',c:'#64b5f6'});
     const legacy = await emit('setAvatar',{e:modern.avatar.e,c:'#81c784'});
-    if(legacy.avatar.id!=='drago-imperatore') throw Error('il client precedente ha perso il nuovo avatar cambiando colore');
+    if(legacy.avatar.id!=='coniglio-gentile') throw Error('il client precedente ha perso il nuovo avatar cambiando colore');
+    if((await emit('setAvatar',{e:'😎',c:'#64b5f6'})).ok) throw Error('rarità aggirata usando la chiave precedente');
     await emit('setAvatar', {e:'🐶',c:'#81c784'});
     await profileModal();
     if (!document.querySelector('.avopt.on').title.includes('Orso')) throw Error('avatar precedente non convertito');
@@ -26,17 +29,20 @@ module.exports = async ({ cdp, shot, step }) => {
     const saved = await emit('profile');
     if (saved.avatar.id!=='volpe' || saved.avatar.e !== '🦊' || saved.avatar.c !== '#64b5f6') throw Error('scelta o colore persi');
     await profileModal();
-    if (document.querySelectorAll('.avopt svg').length !== 100 || document.querySelectorAll('.avopt[aria-pressed=true]').length !== 1) throw Error('selezione avatar non accessibile');
+    if (document.querySelectorAll('.avopt .avatar-art').length !== 40 || document.querySelectorAll('.avopt[aria-pressed=true]').length !== 1) throw Error('selezione avatar non accessibile');
+    if(document.querySelectorAll('.avopt:not(:disabled)').length!==40) throw Error('i comuni non sono tutti selezionabili');
     for(const rarity of catalog.RARITIES) {
       await handlers.avatarFilter({dataset:{rarity:rarity.id}});
       if(document.querySelectorAll('.avopt').length!==counts[rarity.id] || [...document.querySelectorAll('.avopt')].some(b=>b.dataset.rarity!==rarity.id)) throw Error('filtro rarità errato');
+      if(rarity.id!=='common' && document.querySelector('.avopt:not(:disabled)')) throw Error('avatar superiore selezionabile');
     }
     const legendary = document.querySelector('.avopt[data-avatar-id="drago-imperatore"]');
     legendary.click();await __W(400);
     const picked = await emit('profile');
-    if(picked.avatar.id!=='drago-imperatore' || !document.querySelector('.avpreview .avatar-rarity[data-rarity=legendary]')) throw Error('avatar leggendario perso');
+    if(picked.avatar.id!=='volpe') throw Error('avatar bloccato selezionato dal catalogo');
     await emit('setAvatar',{id:'volpe',c:'#64b5f6'});
     await handlers.avatarFilter({dataset:{rarity:'all'}});
+    if(document.querySelectorAll('.avopt:disabled').length!==60 || document.querySelectorAll('.avopt:not(:disabled)').length!==40) throw Error('disponibilità del catalogo errata');
     document.querySelector('#toast').classList.add('hidden');
     if (!avatarHTML('Anna',0,false,{e:'🦊',c:'#64b5f6',f:'oro'}).includes('fr-oro')) throw Error('cornice persa');
     if (avatarHTML('Computer',0,true).includes('🤖')) throw Error('emoji al posto del mazziere');
@@ -58,5 +64,5 @@ module.exports = async ({ cdp, shot, step }) => {
     if (document.querySelector('.hello .avatar').getAttribute('aria-label')!=='Volpe del fante') throw Error('avatar perso nella home');
     await emit('setAvatar',{e:'🦊',c:'#64b5f6'});
   `);
-  step('100 avatar: rarità, filtri, salvataggio, compatibilità, colori, cornici e profilo mobile verificati');
+  step('100 avatar: solo 40 comuni selezionabili, rarità bloccate anche via API, compatibilità e profilo mobile verificati');
 };

@@ -184,7 +184,7 @@
     const entry = resolve(value, name);
     return `<svg class="avatar-art" viewBox="0 0 64 64" fill="none" stroke="${ink}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ornament(entry)}${entry.art}</svg>`;
   }
-  const api = { LIST, RARITIES:catalog.RARITIES, resolve, svg };
+  const api = { LIST, RARITIES:catalog.RARITIES, resolve, svg, isSelectable:catalog.isSelectable };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.SmazzataAvatars = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

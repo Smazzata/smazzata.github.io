@@ -116,8 +116,10 @@
     if(byId.has(value)) return byId.get(value);
     if(legacy.has(value)) return legacy.get(value);
     let hash=0;for(const char of String(name))hash=(hash*31+char.codePointAt(0))>>>0;
-    return original[hash%original.length];
+    const starters=original.filter(a=>a.rarity==='common');
+    return starters[hash%starters.length];
   }
-  const api={LIST,RARITIES,byId,resolve};
+  const isSelectable = id => byId.get(id)?.rarity === 'common';
+  const api={LIST,RARITIES,byId,resolve,isSelectable};
   if(typeof module==='object'&&module.exports)module.exports=api;else root.SmazzataAvatarCatalog=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

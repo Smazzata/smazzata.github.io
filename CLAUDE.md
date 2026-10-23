@@ -53,7 +53,7 @@ Ranked: ogni gioco ha un solo punteggio Solo (`gioco:solo`), comune ai tavoli da
 Il pubblico di riferimento è adulto/maturo: mantenere un aspetto tradizionale da tavolo da carte, etichette chiare e contrasti netti.
 
 ## Funzioni principali (oltre al gioco)
-Avatar: 100 illustrazioni originali; 40 comuni, 30 rare, 20 epiche e 10 leggendarie. Il catalogo con ID stabili e rarità è in `shared/avatars.js`, i disegni in `public/js/avatars.js`. Al momento sono tutti selezionabili: la rarità è una classificazione visiva, senza regole di sblocco o estrazione. Il campo `avatar.id` identifica il personaggio; `avatar.e` rimane per la compatibilità con i client precedenti. Conservare colori, titoli e cornici quando cambia l'avatar.
+Avatar: 100 illustrazioni originali; 40 comuni, 30 rare, 20 epiche e 10 leggendarie. Il catalogo con ID stabili e rarità è in `shared/avatars.js`, i disegni in `public/js/avatars.js`. Solo i 40 comuni sono selezionabili; rari, epici e leggendari restano visibili ma bloccati anche dal server, in attesa di un futuro sistema di sblocco. Le scelte già salvate restano utilizzabili e possono cambiare colore. Il campo `avatar.id` identifica il personaggio; `avatar.e` rimane per la compatibilità con i client precedenti. Conservare colori, titoli e cornici quando cambia l'avatar.
 
 Punteggio Elo per gioco (`server/elo.js`), premi da sbloccare (titoli, cornici, dorsi: `shared/premi.js`), accessibilità (testo grande,
 alto contrasto, senza animazioni, mosse lette ad alta voce), materiale Play Store in `store/`. I messaggi vocali sono stati tolti (niente microfono).

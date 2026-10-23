@@ -1,4 +1,7 @@
 Rarità degli avatar ‖ Avatar rarity ‖ Rareza de los avatares ‖ Raridade dos avatares
+Sono selezionabili gli avatar comuni. Gli altri saranno disponibili in seguito. ‖ Common avatars can be selected. The others will be available later. ‖ Puedes seleccionar los avatares comunes. Los demás estarán disponibles más adelante. ‖ Os avatares comuns podem ser selecionados. Os demais estarão disponíveis mais tarde.
+Non ancora disponibile ‖ Not available yet ‖ Aún no disponible ‖ Ainda não disponível
+Questo avatar non è ancora disponibile ‖ This avatar is not available yet ‖ Este avatar aún no está disponible ‖ Este avatar ainda não está disponível
 Comune ‖ Common ‖ Común ‖ Comum
 Comuni ‖ Common ‖ Comunes ‖ Comuns
 Raro ‖ Rare ‖ Raro ‖ Raro
