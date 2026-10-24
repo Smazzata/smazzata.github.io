@@ -9,7 +9,7 @@ test('Chest via socket: concorrenza, isolamento, scambio e riavvio del server',{
  const s={nick:'Chest_Prova',name:'Chest_Prova',cosmeticOwned:samples.map(x=>x.id),devices:[{h:crypto.createHash('sha256').update(key).digest('hex'),at:Date.now()}]};
  const profiles=new Map([['test',s],['other',{nick:'Altro'}]]);
  for(let i=0;i<3;i++)C.recordGame({chestGameId:String(i),seats:[{token:'test'},{token:'other'}],progressEligible:true,game:{over:true,handResult:{reason:'close'}}},profiles,()=>{});
- s.chests.items[0].type='legendary';s.chests.fragments=2000;
+ s.chests.items=s.chests.items.filter(x=>x.source!=='weekly');s.chests.items[0].type='legendary';s.chests.fragments=2000;
  fs.writeFileSync(path.join(dir,'stato.json'),JSON.stringify({accountsEpoch:3,progressEpoch:1,sessions:[['test',s]],leaderboard:[],rooms:[],leagues:[],tournaments:[],daily:[]}));
  let proc;const sockets=[];
  const start=()=>new Promise((resolve,reject)=>{

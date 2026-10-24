@@ -1,8 +1,21 @@
 /* Materiali illustrati e cornici: gli effetti non riducono l'area utile del tavolo. */
 body.cx-back .card.back{background:var(--cx-back) center/100% 100% no-repeat;box-shadow:inset 0 0 0 1px #fff8,0 1px 3px #0006}
 body.cx-back .card.back::before,body.cx-back .card.back::after{display:none}
-body.cx-felt .game{background:var(--cx-felt) center/cover no-repeat #10251e}
-body.contrast.cx-felt .game{background:#000!important}
+.game{isolation:isolate}
+.game .felt{position:relative;isolation:isolate}
+.game .felt:has(.personal-felt) .center{background:#103b2dcc;border-radius:12px;box-shadow:0 0 18px #103b2d77}
+.personal-felts{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden;border-radius:inherit}
+.personal-felt{position:absolute;inset:0;background-image:var(--seat-felt);background-size:cover;background-position:center;opacity:.8;mask-image:radial-gradient(ellipse at center,transparent 0%,#0009 35%,#000 70%)}
+.personal-felts.n2 .personal-felt.pos-top{clip-path:polygon(0 0,100% 0,100% 50%,0 50%)}
+.personal-felts.n2 .personal-felt.pos-bottom{clip-path:polygon(0 50%,100% 50%,100% 100%,0 100%)}
+.personal-felts:not(.n2) .personal-felt.pos-bottom{clip-path:polygon(0 100%,50% 50%,100% 100%)}
+.personal-felts:not(.n2) .personal-felt.pos-top{clip-path:polygon(0 0,100% 0,50% 50%)}
+.personal-felts:not(.n2) .personal-felt.pos-left{clip-path:polygon(0 0,50% 50%,0 100%)}
+.personal-felts:not(.n2) .personal-felt.pos-right{clip-path:polygon(100% 0,100% 100%,50% 50%)}
+.personal-felts.n3 .personal-felt.pos-left{clip-path:polygon(0 0,50% 0,50% 50%,0 100%)}
+.personal-felts.n3 .personal-felt.pos-right{clip-path:polygon(50% 0,100% 0,100% 100%,50% 50%)}
+.personal-felts::after{content:'';position:absolute;inset:25% 18%;background:radial-gradient(ellipse,#103b2d 10%,#103b2dbb 40%,transparent 70%);filter:blur(12px)}
+body.contrast .personal-felts{display:none}
 .cx-tabs{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0}
 .cx-tabs button{min-height:40px}.cx-tabs small{opacity:.8;margin-left:4px}
 .cx-reset{margin-bottom:16px}
@@ -45,3 +58,8 @@ body.noanim .cx-victory-phoenix{display:none}
 body.noanim .cx-celebration,body.noanim .cx-celebration-skip{display:none}
 @media(max-width:350px){.cx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-art{height:125px}.cx-pool-table{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.cx-celebration,.cx-celebration-skip,.cx-victory-phoenix{display:none}.cx-tier-3{animation:none}}
+/* Bordi dei settori sfumati: il centro resta sul panno comune. */
+.personal-felt{--sector-from:-45deg;--sector-end:87deg;mask-image:radial-gradient(ellipse at center,transparent 0%,#0009 35%,#000 70%),conic-gradient(from var(--sector-from) at 50% 50%,transparent 0deg,#000 3deg,#000 var(--sector-end),transparent calc(var(--sector-end) + 3deg),transparent 360deg);mask-composite:intersect}
+.personal-felt.pos-bottom{--sector-from:135deg}.personal-felt.pos-left{--sector-from:225deg}.personal-felt.pos-right{--sector-from:45deg}
+.personal-felts.n2 .personal-felt{--sector-end:177deg}.personal-felts.n2 .personal-felt.pos-top{--sector-from:270deg}.personal-felts.n2 .personal-felt.pos-bottom{--sector-from:90deg}
+.personal-felts.n3 .personal-felt.pos-left{--sector-from:225deg;--sector-end:132deg}.personal-felts.n3 .personal-felt.pos-right{--sector-from:0deg;--sector-end:132deg}

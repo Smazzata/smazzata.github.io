@@ -56,7 +56,10 @@ function eraseRelated(ctx, token, dataDir) {
   // Prima di confermare la cancellazione eliminiamo tutte le copie locali precedenti.
   // Se fallisce, la richiesta restituisce un errore e può essere ripetuta.
   cleanCopies(dataDir, { all: true });
-  if(ctx.deliveries) scrub(ctx.deliveries, token, names);
+  // Anonimizzare il testo, conservando gli identificativi tecnici necessari a impedire accrediti doppi.
+  for(const d of ctx.deliveries||[])d.title=scrub(d.title,token,names);
+  for(const d of ctx.deliveryDrafts||[])for(const k of ['title','body','nicks'])if(d.fields?.[k])d.fields[k]=scrub(d.fields[k],token,names);
+  if(ctx.welcomeCampaign)for(const k of ['title','body'])ctx.welcomeCampaign[k]=scrub(ctx.welcomeCampaign[k],token,names);
   ctx.leaderboard.delete(token);
   if (ctx.Ranked) ctx.Ranked.cancel(token);
   if (ctx.ranked) {

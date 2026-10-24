@@ -1,0 +1,18 @@
+Ordina oggetti ‖ Sort items ‖ Ordenar objetos ‖ Ordenar itens
+Nome ‖ Name ‖ Nombre ‖ Nome
+Nuovi ‖ New items ‖ Nuevos ‖ Novos
+Nuovo ‖ New ‖ Nuevo ‖ Novo
+Titoli e colori ‖ Titles and colours ‖ Títulos y colores ‖ Títulos e cores
+Il tuo stile nella tua metà del campo. Il centro rimane condiviso. ‖ Your style on your half of the table. The centre remains shared. ‖ Tu estilo en tu mitad de la mesa. El centro sigue compartido. ‖ Seu estilo na sua metade da mesa. O centro permanece compartilhado.
+Avversario ‖ Opponent ‖ Rival ‖ Adversário
+È solo una prova: il tuo equipaggiamento cambia quando confermi. ‖ This is a preview: your equipment changes when you confirm. ‖ Es una vista previa: tu equipamiento cambia al confirmar. ‖ É uma prévia: seu equipamento muda ao confirmar.
+Identità, sicurezza e accesso al tuo account ‖ Identity, security and account access ‖ Identidad, seguridad y acceso a tu cuenta ‖ Identidade, segurança e acesso à sua conta
+Personalizza nella collezione ‖ Customise in your collection ‖ Personaliza en la colección ‖ Personalize na coleção
+La tua settimana ‖ Your week ‖ Tu semana ‖ Sua semana
+Tre obiettivi, fino a tre chest aggiuntive. Si riparte ogni lunedì, ora italiana. ‖ Three goals, up to three extra chests. Resets every Monday, Italian time. ‖ Tres objetivos, hasta tres cofres adicionales. Se reinicia cada lunes, hora italiana. ‖ Três objetivos, até três baús extras. Reinicia toda segunda-feira, horário italiano.
+Completa 3 partite online ‖ Complete 3 online games ‖ Completa 3 partidas en línea ‖ Complete 3 partidas online
+Gioca a 2 giochi diversi ‖ Play 2 different games ‖ Juega a 2 juegos diferentes ‖ Jogue 2 jogos diferentes
+Gioca in 2 giorni diversi ‖ Play on 2 different days ‖ Juega en 2 días diferentes ‖ Jogue em 2 dias diferentes
+Premio consegnato ‖ Reward delivered ‖ Premio entregado ‖ Prêmio entregue
+Mostra nella collezione ‖ Show in collection ‖ Ver en la colección ‖ Mostrar na coleção
+Hai completato un obiettivo settimanale: il premio è nel bottino. ‖ You completed a weekly goal: your reward is in Loot. ‖ Has completado un objetivo semanal: tu premio está en el botín. ‖ Você completou um objetivo semanal: seu prêmio está nos saques.

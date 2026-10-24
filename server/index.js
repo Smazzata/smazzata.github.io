@@ -105,6 +105,8 @@ io.on('connection', (socket) => {
     if (require('./posta').LANGS.includes(lang)) sess.lang = lang;
     socket.data.token = token;
     socket.emit('welcome', { token: key, name: sess.name, nick: sess.nick || null, mail: require('./posta').enabled(), progressEpoch: require('./progress-reset').PROGRESS_EPOCH });
+    // Riprova anche un eventuale accredito di benvenuto rimasto in sospeso per un errore di salvataggio.
+    if(sess.nick)social.welcomeGift(token);
     socket.emit('progress', progressOf(leaderboard.get(token)));
     socket.emit('myGames', myGames(token));
     social.push(token);

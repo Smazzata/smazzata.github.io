@@ -96,3 +96,21 @@ Ogni invio richiede un’anteprima con elenco completo dei destinatari, valida 1
 I messaggi sono salvati insieme ai premi e alla ricevuta globale prima di confermare; un errore di salvataggio annulla tutte le assegnazioni dell’invio. Lo storico persiste in SQLite e JSON e impedisce repliche anche dopo riavvio. Non conserva elenchi di nickname/token; i titoli sono ripuliti dei riferimenti al profilo in caso di cancellazione. L’interfaccia espone i nomi degli oggetti, non identificativi interni o credenziali. L’accesso amministrativo ha controllo della chiave e token anti-CSRF; il testo viene sempre mostrato come testo, mai come HTML.
 
 La notifica esterna è facoltativa, solo per dispositivi già abilitati, dopo il salvataggio. La posta persistente è la fonte della consegna: la richiesta push non certifica la ricezione o la lettura e non viene ripetuta automaticamente dopo un riavvio. Nessuna email viene inviata. La posta non è salvata nella cache locale; offline resta consultabile l’inventario già memorizzato.
+
+## Premi settimanali e campagne con codice
+
+Tre obiettivi settimanali, basati esclusivamente sulle stesse partite online umane idonee alle chest ordinarie:
+
+| Obiettivo | Premio |
+|---|---|
+| Completa 3 partite online | Una chest comune |
+| Completa partite a 2 giochi diversi | Una chest rara |
+| Completa partite in 2 giorni diversi | Una chest comune |
+
+I premi settimanali sono aggiuntivi: non consumano il limite giornaliero delle chest ordinarie. Un solo accredito per obiettivo e profilo nella settimana; reset il lunedì a mezzanotte, fuso Europe/Rome. Le chest guadagnate non scadono. Nessun recupero retroattivo di partite concluse prima dell'introduzione. L'apertura usa le stesse percentuali, un oggetto per chest e i contatori globali delle garanzie. Il salvataggio atomico include contatori, marcatori della partita e premi: gli errori annullano tutto l'accredito.
+
+Un codice campagna facoltativo collega invii amministrativi diversi allo stesso omaggio: ogni profilo lo riceve una sola volta. Il codice vincola il regalo; cambiarlo richiede un codice nuovo. I destinatari che hanno già la ricevuta sono esclusi dall'anteprima e ricontrollati al momento dell'invio. Conferme ripetute dello stesso invio restano idempotenti anche senza codice campagna.
+
+Le bozze salvate sono private al gestore e non inviano messaggi; massimo 30, da eliminare esplicitamente quando non servono. Il benvenuto automatico è un'opzione separata, inizialmente disattivata, con anteprima e conferma della configurazione. Alla creazione e alla riconnessione di un nuovo profilo idoneo assegna una volta il regalo impostato; non assegna regali ai profili già iscritti prima dell'attivazione e non invia notifiche esterne automatiche. Il gestore può disattivarlo dalla stessa pagina. Questa aggiunta sostituisce il precedente limite documentato che escludeva qualsiasi campagna automatica futura.
+
+Le novità della Collezione sono ricavate dalle ricevute di aperture, scambi e regali. Un oggetto già posseduto convertito in frammenti non diventa una nuova acquisizione. Visualizzare un oggetto aggiorna un marcatore del solo profilo, senza cambiare possesso o premi. La copia dei metadati resta nel cache privato dell'inventario già previsto; gli stili pubblici condivisi al tavolo non includono l'inventario o le ricevute.

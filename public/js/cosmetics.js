@@ -11,6 +11,18 @@ function applyCosmetics(){
   }
 }
 let cosmeticSvgId=0;
+function personalFeltsHTML(g,r){
+  if(r.campaign)return '';
+  const me=g.you>=0?g.you:0,n=g.n,rel=k=>(me+k)%n;
+  const places=n===2?[[me,'bottom'],[rel(1),'top']]:n===3?[[me,'bottom'],[rel(1),'left'],[rel(2),'right']]:[[me,'bottom'],[rel(1),'left'],[rel(2),'top'],[rel(3),'right']];
+  return `<div class="personal-felts n${n}" aria-hidden="true">${places.map(([seat,pos])=>{
+    let id=r.seats?.[seat]?.style?.felt;
+    // L'allenamento locale non possiede profili degli avversari: solo il mio settore usa la copia privata.
+    if(seat===g.you&&(r.onDevice||r.offline))id=cosmeticState().loadout.felt;
+    const item=window.SmazzataCosmetics.byId.get(id);
+    return item?.kind==='felt'?`<div class="personal-felt pos-${pos}" data-seat="${seat}" data-item="${item.id}" style="--seat-felt:url('${item.art}')"></div>`:'';
+  }).join('')}</div>`;
+}
 function cosmeticFrame(item){
   const uid='cf'+(++cosmeticSvgId),[base,light]=item.colors,tier=window.SmazzataCosmetics.RARITIES.indexOf(item.rarity),n=item.index;
   // Ogni cornice ha un disegno proprio; i livelli superiori aggiungono incisioni, pietre e intagli.

@@ -28,6 +28,7 @@ async function chestsModal() {
     <p class="muted small">${t('Scegli la chest da aprire. Le probabilità mostrate includono le garanzie attive.')}</p>
     ${request?`<p role="status">${t('Un risultato è in attesa di conferma. Recuperalo prima di continuare.')}</p><button class="btn primary" data-act="chestRetry" ${!online?'disabled':''}>${t('Recupera risultato')}</button>`:
       `<button class="btn primary chest-open-button" data-act="chestOpen" data-id="${esc(selected?.id || '')}" ${disabled||!data.pending.length?'disabled':''}>${t('Apri una chest')}</button>`}
+    ${data.weekly?`<section class="weekly-goals"><h3>${t('La tua settimana')}</h3><p>${t('Tre obiettivi, fino a tre chest aggiuntive. Si riparte ogni lunedì, ora italiana.')}</p>${data.weekly.missions.map(m=>`<div class="weekly-goal ${m.awarded?'is-complete':''}"><span><b>${t(m.name)}</b><small>${t(rules.types[m.type].name)} · ${m.progress}/${m.goal} ${m.awarded?' · '+t('Premio consegnato'):''}</small></span><progress value="${m.progress}" max="${m.goal}" aria-label="${t(m.name)}"></progress></div>`).join('')}</section>`:''}
     <details class="collection-loot-details"><summary>${t('Progressi, garanzie e frammenti')}</summary><div class="chest-guarantees"><p>${t('Epico o leggendario entro')}: <b>${data.epicIn}</b> ${t('aperture')}</p><p>${t('Leggendario entro')}: <b>${data.legendaryIn}</b> ${t('aperture')}</p></div>
     <p>${t('Una chest ogni 3 partite online completate con avversari umani. Massimo 2 al giorno.')}</p><progress class="chest-progress" value="${data.progress}" max="3" aria-label="${t('Progressi verso la prossima chest')}"></progress><p class="muted small">${data.progress}/3 · ${t('Chest ottenute oggi')}: ${data.earnedToday}/2</p>
     <p class="muted small">${t('Allenamento, partite annullate e abbandoni non contano. Il limite si rinnova a mezzanotte, ora italiana.')}</p>
@@ -51,7 +52,7 @@ function chestReveal(reward) {
   openModal('chestReward',collectionShell('loot',`<section class="chest-reveal ${reduce?'':'is-opening'}" data-rarity="${rarity.id}">
     <h2>${t('Il tuo premio')}</h2><div class="chest-stage" data-chest-type="${reward.chestType || reward.rarity}" aria-hidden="true"><div class="chest-burst"></div><div class="chest-sprite"></div>${Array.from({length:8},(_,i)=>`<i class="chest-spark" style="--spark:${i}"></i>`).join('')}</div>
     <button class="btn small chest-skip" data-act="chestSkip">${t('Salta animazione')}</button>
-    <div class="chest-prize" hidden role="status"><div class="chest-prize-art">${a.html}</div><span class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</span><h3>${esc(t(a.name))}</h3><p>${reward.duplicate?t('Doppione')+' · +'+reward.fragments+' '+t('frammenti'):t('Nuovo oggetto nella tua collezione')}</p><div class="row"><button class="btn primary" data-act="chestEquip" data-kind="${a.kind}" data-item-id="${a.id}">${a.kind==='avatar'?t('Usa avatar'):t('Usa questo stile')}</button><button class="btn" data-act="chests">${t('Continua')}</button></div></div></section>`));
+    <div class="chest-prize" hidden role="status"><div class="chest-prize-art">${a.html}</div><span class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</span><h3>${esc(t(a.name))}</h3><p>${reward.duplicate?t('Doppione')+' · +'+reward.fragments+' '+t('frammenti'):t('Nuovo oggetto nella tua collezione')}</p><div class="row"><button class="btn primary" data-act="chestEquip" data-kind="${a.kind}" data-item-id="${a.id}">${a.kind==='avatar'?t('Usa avatar'):t('Usa questo stile')}</button><button class="btn" data-act="chestShowItem" data-id="${a.id}" data-kind="${a.kind}">${t('Mostra nella collezione')}</button><button class="btn" data-act="chests">${t('Continua')}</button></div></div></section>`));
   $('#modal .modal-box').scrollTop=0;
   if(reduce)handlers.chestSkip();else S.chestRevealTimer=setTimeout(()=>{if(S.modalKind==='chestReward')handlers.chestSkip();},1900);
 }
@@ -77,6 +78,7 @@ Object.assign(handlers,{
     const requestId=crypto.randomUUID?.() || Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
     return chestSubmit({type:'exchange',rarity:el.dataset.rarity,requestId});
   },
+  async chestShowItem(el){await collectionModal(el.dataset.kind);if(collectionOwned().has(el.dataset.id))await handlers.collectionSelect(el);},
   chestRetry(){const r=chestRequest();if(r)return chestSubmit(r);},
   chestSkip(){
     clearTimeout(S.chestRevealTimer);const root=$('#modal .chest-reveal');if(!root)return;
@@ -94,6 +96,7 @@ Object.assign(handlers,{
 socket.on('chests',data=>{
   cacheChestState(data);
   if(data.justEarned)toast(t('Hai ottenuto una chest gratuita!'));
+  if(data.weeklyEarned)toast(t('Hai completato un obiettivo settimanale: il premio è nel bottino.'));
   const count=$('#modal .chest-entry small');if(count)count.textContent=t('Chest disponibili')+': '+data.pending.length;
   if(S.modalKind==='chests'&&!S.chestBusy)chestsModal();
   if(S.modalKind==='cosmetics'&&!S.collectionBusy)collectionModal();

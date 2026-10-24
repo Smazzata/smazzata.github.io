@@ -19,22 +19,28 @@ function normalize(input){
   if(mode==='dates'&&(!from&&!before||from&&before&&from>=before))fail('Intervallo di iscrizione non valido');
   const gift=String(input.gift||'');
   if(gift&&!Object.hasOwn(Chests.RULES.types,gift)&&!catalog().some(x=>x.id===gift))fail('Regalo non valido');
-  return {title,body,mode,nicks:mode==='selected'?nicks:[],from:mode==='dates'?from:'',before:mode==='dates'?before:'',gift,push:input.push===true||input.push==='on'};
+  const campaignKey=String(input.campaignKey||'').trim().toLowerCase();
+  if(campaignKey&&!/^[a-z0-9][a-z0-9-]{2,63}$/.test(campaignKey))fail('Codice campagna: da 3 a 64 lettere minuscole, numeri o trattini');
+  return {title,body,mode,nicks:mode==='selected'?nicks:[],from:mode==='dates'?from:'',before:mode==='dates'?before:'',gift,campaignKey,push:input.push===true||input.push==='on'};
 }
+const eligible=(s,p)=>!p.campaignKey||!(s.campaignReceipts||[]).includes(p.campaignKey);
+function checkCampaign(ctx,p){const previous=(ctx.deliveries||[]).find(x=>x.campaignKey===p.campaignKey&&p.campaignKey);if(previous&&previous.gift!==p.gift)fail('Questo codice campagna identifica già un regalo diverso. Scegli un codice nuovo.');}
 function recipients(sessions,p){
   const rows=[...sessions].filter(([,s])=>s.nick);
   if(p.mode==='selected')for(const n of p.nicks)if(!rows.some(([,s])=>s.nick.toLowerCase()===n))fail('Nickname non trovato: '+n);
-  return rows.filter(([,s])=>p.mode==='all'||p.mode==='selected'&&p.nicks.includes(s.nick.toLowerCase())||p.mode==='dates'&&date(s)&&(!p.from||Chests.dayOf(date(s))>=p.from)&&(!p.before||Chests.dayOf(date(s))<p.before)).map(([token,s])=>({token,nick:s.nick}));
+  return rows.filter(([,s])=>eligible(s,p)&&(p.mode==='all'||p.mode==='selected'&&p.nicks.includes(s.nick.toLowerCase())||p.mode==='dates'&&date(s)&&(!p.from||Chests.dayOf(date(s))>=p.from)&&(!p.before||Chests.dayOf(date(s))<p.before))).map(([token,s])=>({token,nick:s.nick}));
 }
 function deliver(ctx,id,p,targets,persist,now=Date.now()){
   const existing=(ctx.deliveries||[]).find(x=>x.id===id);
   if(existing)return {...existing,replayed:true};
   if(!/^[a-zA-Z0-9-]{16,80}$/.test(id))fail('Invio non valido');
+  checkCampaign(ctx,p);
   const before=[],log=ctx.deliveries||[],item=catalog().find(x=>x.id===p.gift);
-  let count=0,duplicates=0;
+  let count=0,duplicates=0,skipped=0;
   try{
     for(const token of new Set(targets)){
       const s=ctx.sessions.get(token);if(!s?.nick)continue;
+      if(!eligible(s,p)){skipped++;continue;}
       before.push([s,structuredClone(s)]);
       if((s.inbox||[]).some(x=>x.id===id))continue;
       let gift=null;
@@ -48,10 +54,11 @@ function deliver(ctx,id,p,targets,persist,now=Date.now()){
         if(duplicate){const b=Chests.inventory(s);b.fragments+=fragments;s.chests=b;duplicates++;}
         gift={kind:item.kind,itemId:item.id,rarity:item.rarity,duplicate,fragments};
       }
-      s.inbox=[...(s.inbox||[]),{id,title:p.title,body:p.body,at:now,read:false,gift}];count++;
+      s.inbox=[...(s.inbox||[]),{id,title:p.title,body:p.body,at:now,read:false,gift}];
+      if(p.campaignKey)s.campaignReceipts=[...(s.campaignReceipts||[]),p.campaignKey];count++;
     }
     // Lo storico non conserva nickname o token: la cancellazione del profilo rimuove le sue ricevute.
-    const result={id,title:p.title,at:now,count,duplicates,gift:p.gift,mode:p.mode,from:p.from,before:p.before,push:p.push};
+    const result={id,title:p.title,at:now,count,duplicates,skipped,campaignKey:p.campaignKey||'',gift:p.gift,mode:p.mode,from:p.from,before:p.before,push:p.push};
     ctx.deliveries=[...log,result];persist();return result;
   }catch(e){
     for(const [s,old] of before){for(const k of Object.keys(s))delete s[k];Object.assign(s,old);}
@@ -69,4 +76,4 @@ function read(s,id,persist){
   if(!msg.read){msg.read=true;try{persist();}catch(e){msg.read=false;throw e;}}
   return inbox(s);
 }
-module.exports={normalize,recipients,deliver,inbox,read,date,catalog};
+module.exports={normalize,recipients,deliver,inbox,read,date,catalog,eligible,checkCampaign};

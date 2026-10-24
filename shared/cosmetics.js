@@ -16,5 +16,7 @@
   const byId=new Map(LIST.map(x=>[x.id,x]));
   const ownedIds=s=>[...new Set((Array.isArray(s?.cosmeticOwned)?s.cosmeticOwned:[]).filter(id=>byId.has(id)))];
   function equipped(s){const owned=new Set(ownedIds(s));return Object.fromEntries(KINDS.flatMap(k=>{const id=s?.cosmeticLoadout?.[k.id];return owned.has(id)&&byId.get(id).kind===k.id?[[k.id,id]]:[];}));}
-  return {LIST,KINDS,RARITIES,byId,ownedIds,equipped};
+  // Al tavolo si condividono soltanto gli stili equipaggiati, mai l'inventario privato.
+  function publicLook(s){const look=equipped(s);return Object.fromEntries(['felt','back'].filter(k=>look[k]).map(k=>[k,look[k]]));}
+  return {LIST,KINDS,RARITIES,byId,ownedIds,equipped,publicLook};
 });

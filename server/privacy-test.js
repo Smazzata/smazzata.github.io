@@ -36,6 +36,8 @@ module.exports = function privacyTests() {
       rooms: new Map([['ABC', room]]), reports: [{ at: now, nick: 'Anna', text: 'Problema' }, { at: now, nick: 'Tempo', text: 'Errore' }, { at: now, nick: 'Anna', target: 'Tempo', chat: ['Tempo: ciao'] }], broadcast() {},
     };
     ctx.deliveries=[{id:'invio-da-conservare',title:'Benvenuto Tempo',count:1}];
+    ctx.deliveryDrafts=[{id:'bozza-tecnica',fields:{title:'Per Tempo',body:'Grazie Tempo',nicks:'Tempo, Anna',campaignKey:'Tempo'}}];
+    ctx.welcomeCampaign={title:'Benvenuto Tempo',body:'Grazie Tempo',campaignKey:'Tempo'};
     ctx.League = require('./leagues')({ leagues: ctx.leagues, nickOf: (t) => t === token ? 'Tempo' : 'Anna' });
     P.eraseRelated(ctx, token, dir);
     assert.strictEqual(P.privateCopies(dir).length, 0, 'eliminazione anche delle copie non ancora scadute');
@@ -48,6 +50,9 @@ module.exports = function privacyTests() {
     assert.strictEqual(ctx.reports.length, 1);
     assert(!JSON.stringify(ctx.deliveries).includes('Tempo'));
     assert.strictEqual(ctx.deliveries[0].id,'invio-da-conservare','ricevuta antireplica conservata dopo cancellazione');
+    assert(!ctx.deliveryDrafts[0].fields.body.includes('Tempo'));assert(!ctx.deliveryDrafts[0].fields.nicks.includes('Tempo'));
+    assert.strictEqual(ctx.deliveryDrafts[0].fields.campaignKey,'Tempo');assert.strictEqual(ctx.welcomeCampaign.campaignKey,'Tempo');
+    assert(!ctx.welcomeCampaign.title.includes('Tempo'));
     assert(room.seats[0].isBot && !room.seats[0].avatar && room.hostToken === 'other');
     // La trasformazione del posto non rompe il motore né gli indici delle carte/moviole.
     for (let i = 0; i < 15 && game.phase !== 'handEnd'; i++) E.apply(game, game.turn, Bot.nextAction(game, game.turn, {}));

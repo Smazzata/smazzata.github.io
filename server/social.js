@@ -325,6 +325,10 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     return t;
   }
 
+  function welcomeGift(token){
+    const ctx=require('./contesto');
+    try{const r=require('./welcome-gifts').grant(ctx,token,()=>ctx.saveNow(true,false));if(r?.count)push(token);}catch(e){console.error('Regalo di benvenuto da riprovare:',e.message);}
+  }
   function register(socket, handler) {
     const me = () => socket.data.token || fail('Sessione non valida');
     const ip = socket.handshake.address || 'ip';
@@ -348,6 +352,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       s.name = nick;
       nickIndex.set(nick.toLowerCase(), token);
       ensureCode(token);
+      welcomeGift(token);
       renamePlayer(token, nick);
       push(token);
       pushFriends(token);
@@ -388,6 +393,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     }));
     socket.on('chests', handler(() => ({chests:Chests.view(sess(me()))})));
     socket.on('cosmetics', handler(() => ({cosmetics:Chests.collection(sess(me()))})));
+    socket.on('seeCollectionItem',handler(({id})=>Chests.seeItem(sess(me()),String(id||''),()=>require('./contesto').saveNow(true,false))));
     socket.on('setCosmetic', handler(({kind,id}) => {
       const token=me(),s=sess(token);
       if(!s.nick)fail('Scegli prima il tuo nickname');
@@ -398,7 +404,8 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if(id===null)delete s.cosmeticLoadout[kind];else s.cosmeticLoadout[kind]=id;
       if(kind==='frame'){s.avatar={...(s.avatar||{})};if(id===null)delete s.avatar.cf;else s.avatar.cf=id;}
       try{require('./contesto').saveNow(true,false);}catch(e){if(before===undefined)delete s.cosmeticLoadout;else s.cosmeticLoadout=before;if(avatar===undefined)delete s.avatar;else s.avatar=avatar;throw e;}
-      if(kind==='frame'){renamePlayer(token,null);push(token);pushFriends(token);}
+      if(['frame','felt','back'].includes(kind))renamePlayer(token,null);
+      if(kind==='frame'){push(token);pushFriends(token);}
       return {cosmetics:Chests.collection(s),avatar:s.avatar};
     }));
     socket.on('openChest', handler(({id}) => {
@@ -430,7 +437,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     }));
 
     socket.on('profile', handler(() => {
-      const token = me();
+      const token = me();welcomeGift(token);
       const s = sess(token);
       return { nick: s.nick || null, code: s.nick ? ensureCode(token) : null, hasPassword: !!s.pw, email: s.email || null, emailPending: s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null, emailLast: s.emailCode ? s.emailCode.email : null, mail: Posta.enabled(), avatar: s.avatar || null, ownedAvatarIds: Avatars.ownedIds(s), chests:Chests.view(s), cosmetics:Chests.collection(s), emoji: AVATAR_EMOJI, colors: AVATAR_COLORS };
     }));
@@ -535,6 +542,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       nickIndex.set(s.nick.toLowerCase(), token);
       emailIndex.set(s.email, token);
       ensureCode(token);
+      welcomeGift(token);
       renamePlayer(token, s.nick);
       push(token);
       pushFriends(token);
@@ -705,5 +713,5 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     }));
   }
 
-  return { keyHash, newDevice, resolveDevice, rebuildIndexes, register, push, pushFriends, socialView, checkNick, adminNewCode, adminModerate, nicks: () => [...nickIndex.values()].map(nickOf).filter(Boolean).sort((a, b) => a.localeCompare(b)) };
+  return { keyHash, newDevice, resolveDevice, rebuildIndexes, register, push, pushFriends, socialView, checkNick, adminNewCode, adminModerate, welcomeGift, nicks: () => [...nickIndex.values()].map(nickOf).filter(Boolean).sort((a, b) => a.localeCompare(b)) };
 };

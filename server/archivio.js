@@ -36,6 +36,8 @@ function saveNow(throwOnError = false, purgeResiduals = true) {
       leaderboard: [...leaderboard],
       reports: ctx.reports,
       deliveries: ctx.deliveries || [],
+      deliveryDrafts: ctx.deliveryDrafts || [],
+      welcomeCampaign: ctx.welcomeCampaign || null,
       ranked: ctx.ranked,
       daily: [...daily].map(([d, m]) => [d, m]),
       leagues: [...leagues.values()],
@@ -91,6 +93,8 @@ function loadSaved() {
     }
     ctx.reports = data.reports || [];
     ctx.deliveries = data.deliveries || [];
+    ctx.deliveryDrafts = data.deliveryDrafts || [];
+    ctx.welcomeCampaign = data.welcomeCampaign || null;
     ctx.ranked = data.ranked || require('./ranked').empty();
     for (const [d, m] of data.daily || []) daily.set(d, m);
     for (const lg of data.leagues || []) leagues.set(lg.id, lg);

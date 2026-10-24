@@ -11,14 +11,10 @@ module.exports = async ({cdp,shot,step}) => {
     }
     if((await emit('setAvatar',{id:'inventato',c:'#64b5f6'})).ok)throw Error('ID arbitrario');
     await emit('setAvatar',{id:'fante-quadri',c:'#64b5f6'});
-    S.avatarScope='all';S.avatarFilter='legendary';await profileModal();
-    if(document.querySelectorAll('.avopt').length!==4)throw Error('collezione iniziale errata');
-    if(document.querySelector('[data-act=avatarScope], [data-act=avatarFilter]'))throw Error('catalogo nascosto accessibile');
-    await handlers.previewAvatar({dataset:{avatarId:'drago-imperatore'}});
-    if(S.modalKind!=='profile')throw Error('anteprima non posseduto accessibile');
-    await handlers.previewAvatar(document.querySelector('[data-avatar-id=giardiniere-fiori]'));
-    if(!document.querySelector('[data-act=pickAvatar]'))throw Error('avatar iniziale non selezionabile');
-    document.querySelector('[data-act=pickAvatar]').click();await __W(200);
+    await profileModal();if(document.querySelector('.avopt')||!document.querySelector('[data-act=collectionAvatar]'))throw Error('profilo ancora duplicato');
+    await collectionModal('avatar');if(document.querySelectorAll('.collection-card').length!==4)throw Error('collezione iniziale errata');
+    await handlers.collectionSelect({dataset:{id:'giardiniere-fiori'}});
+    await handlers.collectionEquip({dataset:{id:'giardiniere-fiori'}});
     if((await emit('profile')).avatar.id!=='giardiniere-fiori')throw Error('selezione persa');
   `);
   for(const width of [320,375,768]){
@@ -27,5 +23,5 @@ module.exports = async ({cdp,shot,step}) => {
     await shot('avatar-profilo-'+width);
   }
   await cdp.run(`closeModal();S.screen='home';render();`);
-  step('Quattro avatar iniziali: possesso server, anteprime nascoste, selezione e profilo responsive verificati');
+  step('Quattro avatar iniziali: possesso server, selezione nella collezione e profilo essenziale responsive verificati');
 };

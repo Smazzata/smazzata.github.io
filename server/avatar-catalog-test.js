@@ -21,7 +21,7 @@ test('Possesso persistente, compatibilità degli ID ritirati e nessuno sblocco i
   assert.deepEqual(A.ownedIds({avatar:{id:'drago-imperatore'},ownedAvatarIds:['fenice']}),A.ownedIds({avatar:{id:'drago-imperatore'}}));
 });
 
-test('Il profilo nasconde avatar non posseduti e titoli non sbloccati',async()=>{
+test('Il profilo gestisce l’account e rimanda la personalizzazione alla collezione',async()=>{
   const vm=require('node:vm');
   const catalog=require('../public/js/avatars');
   let html='';
@@ -31,8 +31,8 @@ test('Il profilo nasconde avatar non posseduti e titoli non sbloccati',async()=>
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(path.join(__dirname,'../public/js/profilo.js'),'utf8'),context);
   await vm.runInContext('profileModal()',context);
-  assert.equal((html.match(/class="avopt /g)||[]).length,4);
-  for(const id of A.STARTER_IDS)assert(html.includes('data-avatar-id="'+id+'"'));
+  assert.equal((html.match(/class="avopt /g)||[]).length,0);
+  assert(html.includes('data-act="collectionAvatar"'));assert(html.includes('id="nickform"'));assert(!html.includes('class="avcolors"'));
   assert(!html.includes('data-act="avatarScope"'));
   assert(!html.includes('data-act="avatarFilter"'));
   assert(!html.includes('data-id="t_maestro"'));

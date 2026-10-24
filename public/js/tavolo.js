@@ -393,7 +393,7 @@
       <div class="scorebar">${r.series ? `<span class="sc series">${seriesHTML(r, g)}</span>` : ''}${scores}${pozz}</div>
       <div class="seats-row n${g.n} ${g.you < 0 ? 'spect' : ''}">${seats}</div>
       ${surrenderBarHTML(g, r)}
-      <div class="felt" id="felt">${g.presa ? presaCenterHTML(g) : others + center + mineZone}</div>
+      <div class="felt" id="felt">${typeof personalFeltsHTML==='function'?personalFeltsHTML(g,r):''}${g.presa ? presaCenterHTML(g) : others + center + mineZone}</div>
       ${r.campaign ? campaignCoachHTML() : r.tutorial && !S.coachOff ? `<div class="coach"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-book /></svg> ${uiLabel(coachTip(g))} <button class="ico" data-act="coachOff" title="Nascondi">✕</button></div>` : ''}
       <div class="sr-only" id="turnmsg" aria-live="polite">${statusText(g).replace(/<[^>]+>/g, '')}</div>
       <div class="floatbar"><span class="fl">${left}</span><span class="fr">${actions}</span></div>

@@ -6,7 +6,7 @@ test('Pagina di stato: autorizzazione, anteprima, invio, posta privata e persist
  const profile={nick:'Destinatario',terms:Date.parse('2026-10-01'),devices:[{h:crypto.createHash('sha256').update(key).digest('hex'),at:Date.now()}]};
  fs.writeFileSync(path.join(dir,'stato.json'),JSON.stringify({accountsEpoch:3,progressEpoch:1,sessions:[['one',profile],['two',{nick:'Escluso'}]],rooms:[]}));
  let proc;const sockets=[],base='http://127.0.0.1:3993',url=base+'/stato/invii?k='+admin;
- const start=()=>new Promise((res,rej)=>{proc=spawn(process.execPath,[path.join(__dirname,'index.js')],{env:{...process.env,DATA_DIR:dir,PORT:'3993',ADMIN_KEY:admin},stdio:['ignore','pipe','pipe']});proc.once('error',rej);proc.stdout.on('data',d=>{if(String(d).includes('ascolto'))res();});proc.once('exit',c=>{if(c)rej(Error('server '+c));});});
+ const start=()=>new Promise((res,rej)=>{proc=spawn(process.execPath,[path.join(__dirname,'index.js')],{env:{...process.env,DATA_DIR:dir,PORT:'3993',ADMIN_KEY:admin,MAIL_FILE:path.join(dir,'mail-disabilitata'),MAIL_TEST:'0'},stdio:['ignore','pipe','pipe']});proc.once('error',rej);proc.stdout.on('data',d=>{if(String(d).includes('ascolto'))res();});proc.once('exit',c=>{if(c)rej(Error('server '+c));});});
  const stop=async()=>{for(const s of sockets)s.disconnect();if(proc&&proc.exitCode===null){const p=new Promise(r=>proc.once('exit',r));proc.kill();await p;}};
  const post=(body)=>fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(body)});
  const client=async token=>{const s=io(base,{transports:['websocket'],forceNew:true});sockets.push(s);await new Promise((res,rej)=>{s.once('connect',res);s.once('connect_error',rej);});await new Promise(res=>{s.once('welcome',res);s.emit('hello',{token});});return (event,data={})=>new Promise((res,rej)=>s.timeout(5000).emit(event,data,(err,r)=>err?rej(err):res(r)));};
@@ -35,5 +35,17 @@ test('Pagina di stato: autorizzazione, anteprima, invio, posta privata e persist
   assert((await(await post({csrf:csrf2,id})).text()).includes('Nessun regalo duplicato'));
   const open=await again('openChest',{id:'1'});assert(open.ok);assert.equal(open.reward.rarity,'legendary');
   assert.deepEqual((await again('openChest',{id:'1'})).reward,open.reward);
+  const saved=await post({csrf:csrf2,action:'draft',title:'Bozza da completare',mode:'selected'});assert(saved.ok);const savedHtml=await saved.text();assert(savedHtml.includes('value="Bozza da completare"'));
+  const campaign={csrf:csrf2,title:'Benvenuto automatico',body:'Il tuo regalo',gift:'rare',campaignKey:'benvenuto-e2e',action:'welcome'};
+  const welcomePreview=await(await post(campaign)).text();assert(welcomePreview.includes('Anteprima benvenuto automatico'));const welcomeId=welcomePreview.match(/name="id" value="([^"]+)"/)[1];
+  assert.equal((await again('chests')).chests.pending.length,0);
+  assert((await(await post({csrf:csrf2,id:welcomeId})).text()).includes('Benvenuto automatico attivato'));
+  assert((await(await post({csrf:csrf2,id:welcomeId})).text()).includes('Benvenuto già configurato'));
+  const newGuest=await client();assert((await newGuest('setNick',{nick:'NuovoIscritto',password:'password-test-1234',adult:true})).ok);
+  assert.equal((await newGuest('chests')).chests.pending.length,1);assert.equal((await newGuest('inbox')).inbox.messages[0].title,'Benvenuto automatico');
+  await newGuest('profile');await newGuest('profile');assert.equal((await newGuest('chests')).chests.pending.length,1);
+  assert.equal((await again('chests')).chests.pending.length,0);
+  assert((await post({csrf:csrf2,action:'disableWelcome'})).ok);
+
  }finally{await stop();}
 });

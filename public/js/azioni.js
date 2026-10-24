@@ -503,8 +503,8 @@
         ${r.trophies && r.trophies.length ? `<h3><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Trofei (${r.trophies.length})</h3><div class="trophyrow">${r.trophies.map((t) => `<span title="${esc(t.name)}">${uiIcon('trophy')}</span>`).join('')}</div>` : ''}
         ${r.nick !== (S.social && S.social.nick) ? `<div class="row" style="margin-top:12px"><button class="btn small danger" data-act="block" data-nick="${esc(r.nick)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Rimuovi e blocca</button><button class="btn small" data-act="reportPlayer" data-nick="${esc(r.nick)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Segnala</button></div>` : ''}</div>`);
     },
-    async pickTitle(el) { const r = await emit('setLook', { title: el.dataset.id }); if (r.ok) profileModal(); },
-    async pickFrame(el) { const r = await emit('setLook', { frame: el.dataset.id }); if (r.ok) profileModal(); },
+    async pickTitle(el) { const r = await emit('setLook', { title: el.dataset.id }); if (r.ok) collectionLookModal(); },
+    async pickFrame(el) { const r = await emit('setLook', { frame: el.dataset.id }); if (r.ok) collectionLookModal(); },
     async avatarFilter(el) {
       S.avatarFilter = el.dataset.rarity;
       await profileModal();

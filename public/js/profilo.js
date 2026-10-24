@@ -63,19 +63,11 @@
     const avatars = window.SmazzataAvatars;
     const selected = avatars.resolve(r.avatar && (r.avatar.id || r.avatar.e), r.nick);
     const av = { ...(r.avatar || {}), id:selected.id, e: selected.e, c: r.avatar && r.avatar.c || r.colors[0] };
-    const rarity = avatars.RARITIES.find(x=>x.id===selected.rarity);
     const owned = new Set(r.ownedAvatarIds || avatars.LIST.filter(a=>avatars.isSelectable(a.id)).map(a=>a.id));
     S.avatarOwnedIds = [...owned];
-    const shown = avatars.LIST.filter(a=>owned.has(a.id));
     openModal('profile', `<h2>${uiIcon('profile')} ${esc(r.nick)}</h2>
-      <div class="avatar-collection-heading"><div><p class="muted small">${t('La tua collezione')}</p><h4>Avatar</h4></div><b class="avatar-collected">${shown.length}</b></div>
-      <div class="avpick"><div class="avpreview">${avatarHTML(r.nick, 0, false, av)}<div><b>${esc(t(selected.name))}</b><span class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</span></div></div>
-        <div id="avatar-grid" class="avgrid" role="group" aria-label="${t('Scegli il tuo avatar')}">${!shown.length?`<p class="av-empty">${t('Nessun avatar posseduto in questa rarità.')}</p>`:''}${shown.map((a) => `<button type="button" class="avopt ${a.id === selected.id ? 'on' : ''}" aria-haspopup="dialog" data-act="previewAvatar" data-avatar-id="${a.id}" data-rarity="${a.rarity}" data-c="${av.c}" aria-pressed="${a.id === selected.id}" aria-label="${esc(t(a.name))}, ${t(avatars.RARITIES.find(r=>r.id===a.rarity).name)}${owned.has(a.id)?'':', '+t('Non ancora disponibile')}" title="${esc(t(a.name))}" >${avatars.svg(a.id)}<span>${esc(t(a.name))}</span><small class="avatar-rarity" data-rarity="${a.rarity}">${owned.has(a.id)?'':'<svg class="avlock" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7V4a4 4 0 0 1 8 0v3"/><rect x="2" y="7" width="12" height="8" rx="2"/><path d="M8 10v2"/></svg>'}${t(avatars.RARITIES.find(r=>r.id===a.rarity).name)}</small></button>`).join('')}</div>
-        <span class="avcolor-label">Colore del bordo</span><div class="avcolors">${r.colors.map((c) => `<button type="button" class="avcol ${c === av.c ? 'on' : ''}" style="background:${c}" data-act="pickAvatar" data-avatar-id="${av.id}" data-c="${c}" aria-label="${t('Colore del bordo')}: ${c}" aria-pressed="${c === av.c}"></button>`).join('')}</div></div>
-      <button class="btn small" data-act="inbox">${uiIcon('mail')} ${t('Posta personale')}${S.social?.unreadMail?' · '+S.social.unreadMail:''}</button>
-      <button class="chest-entry" data-act="chests"><span class="chest-thumb" aria-hidden="true"></span><span><b>${t('Inventario personale')}</b><small>${t('Chest disponibili')}: ${r.chests?.pending?.length || 0}</small></span>${uiIcon('play')}</button>
-      <button class="btn" data-act="collection">${uiIcon('cards')}${t('Collezione')}</button>
-      ${lookHTML(av)}
+      <div class="profile-identity">${avatarHTML(r.nick,0,false,av)}<div><b>${esc(t(selected.name))}</b><p class="muted small">${t('Identità, sicurezza e accesso al tuo account')}</p></div></div>
+      <div class="row"><button class="btn" data-act="collectionAvatar">${uiIcon('cards')}${t('Personalizza nella collezione')}</button><button class="btn small" data-act="inbox">${uiIcon('mail')}${t('Posta personale')}${S.social?.unreadMail?' · '+S.social.unreadMail:''}</button><button class="btn small" data-act="stats">${t('Le mie statistiche')}</button></div>
       <h4>Cambia nickname</h4>
       <form id="nickform" class="row"><input id="nickEdit" class="grow" maxlength="16" autocomplete="off" value="${esc(r.nick)}"><button class="btn primary">Salva</button></form>
       <div class="nickstatus" id="nickStatusEdit"></div>

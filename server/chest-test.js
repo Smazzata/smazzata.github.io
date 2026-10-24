@@ -15,10 +15,10 @@ test('Tre partite umane, due chest al giorno e nessun accredito ripetuto dopo ri
  const p=players();let saves=0;const r=game('unique');
  C.recordGame(r,p,()=>saves++,DAY);C.recordGame(JSON.parse(JSON.stringify(r)),p,()=>saves++,DAY);
  assert.equal(saves,1);assert.equal(C.view(p.get('a'),DAY).progress,1);
- earn(p,8);assert.equal(C.view(p.get('a'),DAY).pending.length,2);assert.equal(C.view(p.get('a'),DAY).progress,0);
+ earn(p,8);assert.equal(C.view(p.get('a'),DAY).pending.filter(x=>x.source!=='weekly').length,2);assert.equal(C.view(p.get('a'),DAY).progress,0);
  assert.equal(C.view(p.get('a'),DAY).earnedToday,2);
  const next=DAY+86400000;earn(p,2,next);assert.equal(C.view(p.get('a'),next).progress,2);
- earn(p,1,next);assert.equal(C.view(p.get('a'),next).pending.length,3);
+ earn(p,1,next);assert.equal(C.view(p.get('a'),next).pending.filter(x=>x.source!=='weekly').length,3);
  assert.equal(C.dayOf(Date.parse('2026-10-24T22:05:00Z')),'2026-10-25');
 });
 test('Niente chest da bot, tutorial, offline, abbandoni, vecchie partite o identità duplicate',()=>{

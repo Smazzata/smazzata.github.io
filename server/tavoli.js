@@ -62,6 +62,7 @@ function roomInfo(room) {
     seats: room.seats.map((s) => (s ? {
       name: s.name, isBot: !!s.isBot, connected: s.isBot || isConnected(s.token), avatar: s.isBot ? null : s.avatar || null,
       level: s.isBot ? null : Levels.levelOf(leaderboard.get(s.token)).level,
+      style: s.isBot ? {} : require('../shared/cosmetics').publicLook(sessions.get(s.token)),
     } : null)),
     started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
     progressEligible: room.progressEligible,

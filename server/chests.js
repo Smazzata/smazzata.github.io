@@ -3,6 +3,7 @@
 const crypto=require('node:crypto');
 const A=require('../shared/avatars');
 const C=require('../shared/cosmetics');
+const Weekly=require('./weekly-rewards');
 const {GameError}=require('./engine');
 const RULES={version:3,matches:3,dailyLimit:2,epicPity:20,legendaryPity:50,
   chestRates:{common:75,rare:20,epic:4,legendary:1},
@@ -17,7 +18,20 @@ const dayOf=now=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Rome',year:'n
 const empty=()=>({version:3,progress:0,day:'',earnedToday:0,fragments:0,epicMisses:0,legendaryMisses:0,issued:0,items:[],exchanges:{}});
 const POOL=[...A.LIST.filter(a=>!A.STARTER_IDS.includes(a.id)).map(a=>({...a,kind:'avatar'})),...C.LIST];
 const ownedOf=s=>new Set([...A.ownedIds(s),...C.ownedIds(s)]);
-const collection=s=>({ownedIds:C.ownedIds(s),loadout:C.equipped(s)});
+function collection(s){
+  const acquiredAt={};
+  const note=r=>{const id=r?.itemId||r?.avatarId;if(id&&!r.duplicate&&Number.isFinite(r.at))acquiredAt[id]=Math.max(acquiredAt[id]||0,r.at);};
+  for(const x of s.chests?.items||[])note(x.reward);
+  for(const x of Object.values(s.chests?.exchanges||{}))note(x);
+  for(const x of s.inbox||[])if(x.gift?.kind!=='chest')note({...x.gift,at:x.at});
+  const owned=ownedOf(s),seen=new Set(s.collectionSeen||[]);
+  return {ownedIds:C.ownedIds(s),loadout:C.equipped(s),meta:{acquiredAt,newIds:Object.keys(acquiredAt).filter(id=>owned.has(id)&&!seen.has(id)&&!A.STARTER_IDS.includes(id))}};
+}
+function seeItem(s,id,persist){
+  if(!ownedOf(s).has(id))fail('Oggetto non posseduto');
+  if(!(s.collectionSeen||[]).includes(id))commit(s,{collectionSeen:[...(s.collectionSeen||[]),id]},persist);
+  return {cosmetics:collection(s)};
+}
 function grant(s,item){return item.kind==='avatar'?{avatarOwned:[...new Set([...A.ownedIds(s),item.id])],avatarInventoryVersion:1}:{cosmeticOwned:[...new Set([...C.ownedIds(s),item.id])]};}
 function receipt(item){return {kind:item.kind,itemId:item.id,...(item.kind==='avatar'?{avatarId:item.id}:{})};}
 const inventory=s=>{
@@ -47,7 +61,7 @@ function view(s,now=Date.now()) {
     pending:b.items.filter(x=>!x.reward).map(x=>({id:x.id,type:typeOf(x),version:x.version,at:x.at,source:x.source||'game',odds:odds(b,typeOf(x))})),
     recent:b.items.filter(x=>x.reward).slice(-10).reverse().map(x=>({id:x.id,...x.reward})),
     fragments:b.fragments,epicIn:RULES.epicPity-b.epicMisses,legendaryIn:RULES.legendaryPity-b.legendaryMisses,
-    odds:odds(b,typeOf(b.items.find(x=>!x.reward))),
+    odds:odds(b,typeOf(b.items.find(x=>!x.reward))),weekly:Weekly.view(b,dayOf(now)),
     missing:Object.fromEntries(Object.keys(RULES.types).map(r=>[r,POOL.filter(a=>a.rarity===r&&!owned.has(a.id)).length])),
     pools:Object.fromEntries(Object.keys(RULES.types).map(r=>[r,Object.fromEntries(['avatar',...C.KINDS.map(k=>k.id)].map(k=>[k,POOL.filter(a=>a.rarity===r&&a.kind===k).length]))])),rules:RULES};
 }
@@ -96,7 +110,7 @@ function recordGame(room,sessions,persist,now=Date.now(),randomInt=crypto.random
   const tokens=[...new Set(room.seats.map(x=>x.token))];
   if(tokens.length!==room.seats.length)return;
   const previous=tokens.map(t=>[sessions.get(t),sessions.get(t).chests]);
-  const awarded=new Set();
+  const awarded=new Set(),weeklyAwarded=new Map();
   const marker=room.chestRecordedGame;
   try { for(const token of tokens) {
     const s=sessions.get(token),b=inventory(s),day=dayOf(now);
@@ -105,7 +119,8 @@ function recordGame(room,sessions,persist,now=Date.now(),randomInt=crypto.random
       b.progress=0;b.earnedToday++;b.items.push({id:String(++b.issued),type:draw(RULES.chestRates,randomInt),version:RULES.version,at:now});
       awarded.add(token);
     }
-    s.chests=b;
+    const weeklyCount=Weekly.record(b,room,now,day,(type,at,mission)=>b.items.push({id:String(++b.issued),type,version:RULES.version,at,source:'weekly',mission}));
+    weeklyAwarded.set(token,weeklyCount);s.chests=b;
   }
   room.chestRecordedGame=room.chestGameId;
   persist();}catch(e){
@@ -113,6 +128,6 @@ function recordGame(room,sessions,persist,now=Date.now(),randomInt=crypto.random
     if(marker===undefined)delete room.chestRecordedGame;else room.chestRecordedGame=marker;
     throw e;
   }
-  return tokens.map(token=>({token,earned:awarded.has(token)}));
+  return tokens.map(token=>({token,earned:awarded.has(token),weeklyEarned:weeklyAwarded.get(token)||0}));
 }
-module.exports={RULES,POOL,collection,view,open,exchange,recordGame,dayOf,inventory,grant,odds};
+module.exports={RULES,POOL,collection,view,open,exchange,recordGame,dayOf,inventory,grant,odds,seeItem};
