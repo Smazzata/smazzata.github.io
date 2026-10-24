@@ -135,9 +135,15 @@ leadersHTML = function() {
     <aside class="league-note"><p>${t('Solo e Duo hanno progressi separati. Le partite contro il computer non contano.')}</p><p>${t('Turni di 60 secondi. Hai 120 secondi per riconnetterti; abbandoni e inattività comportano sconfitta e pausa Ranked.')}</p></aside></main>`;
 };
 function searchModal() {
-  openModal('rankedSearch', `<div class="result"><h2>${t('Ricerca Ranked')}</h2><p role="status">${t('Ricerca di avversari in corso…')}</p><p>${t('La ricerca amplia gradualmente il rating senza mescolare Solo e Duo.')}</p><button class="btn" data-act="rankedCancel">${t('Annulla ricerca')}</button></div>`);
+  openModal('rankedSearch', `<div class="result"><h2>${t('Ricerca Ranked')}</h2><p>${t('Tempo di ricerca')}: <b data-wait-since="${S.rankedSince || Date.now()}">0:00</b></p><p role="status">${t('Ricerca di avversari in corso…')}</p><p>${t('La ricerca amplia gradualmente il rating senza mescolare Solo e Duo.')}</p><button class="btn" data-act="rankedCancel">${t('Annulla ricerca')}</button><button class="btn" data-act="rankedTrain">${uiIcon('bot')}${t('Passa all’allenamento')}</button></div>`);
 }
 Object.assign(handlers, {
+  async rankedTrain() {
+    const game = S.rankedSearchGame || homeGame();
+    const r = await emit('rankedCancel'); if (!r.ok) return;
+    closeModal(); store.set('smazzata_home_game',game); applyHomeGame();
+    await handlers.playBots();
+  },
   async rankedAgain() {
     const game = S.room.rankedFormat.key.split(':')[0], n = S.room.n, queue = S.room.rankedFormat.queue;
     const r = await emit('leaveRoom'); if (r.ok) { await openLeaguePage({ dataset: { game, n, queue } }); await handlers.rankedSearch(); }
@@ -164,6 +170,8 @@ Object.assign(handlers, {
 const originalQuickMenu = handlers.quickMenu;
 handlers.quickMenu = function(el) { if (el?.dataset.mode === 'ranked') return openLeaguePage({dataset:{...el.dataset,game:el.dataset.game || homeGame()}}); return originalQuickMenu(el); };
 function rankedQueueState(r) {
+  S.rankedSince = r.searching ? r.at || S.rankedSince || Date.now() : null;
+  if (r.game) S.rankedSearchGame = r.game;
   S.rankedSearching = r.searching;
   document.getElementById('rankedQueueStatus')?.remove();
   if (r.searching) {
@@ -185,6 +193,7 @@ for (const name of ['playBots', 'playFriends', 'goSetup']) {
 socket.on('rankedInvite', (r) => openModal('rankedInvite', `<div class="result"><h2>Ranked Duo</h2><p>${esc(r.from)} · ${esc(r.game)}</p><button class="btn primary" data-act="rankedAccept" data-id="${esc(r.id)}">${t('Accetta ricerca')}</button><button class="btn" data-act="rankedCancel">${t('Annulla ricerca')}</button></div>`));
 socket.on('rankedResult', (r) => {
   S.rankedLast = r;
+  if (S.modalKind === 'result') showResult();
   setTimeout(() => { toast(r.after.provisional ? `${t('Piazzamenti')}: ${r.after.placements}/${r.after.placementTotal || 10}` : r.placementMatch ? `${t('Piazzamenti completati!')} · ${t(r.after.league)} ${r.after.division || ''}` : `${t(r.after.league)} ${r.after.division || ''} · ${r.delta > 0 ? '+' : ''}${r.delta} LP · ${r.after.lp}/100 LP`); showRankTransition(r.key.split(':')[0], r.before, r.after); }, 1800);
 });
 socket.on('rankedRankChange', (r) => showRankTransition(r.key.split(':')[0], r.before, r.after));

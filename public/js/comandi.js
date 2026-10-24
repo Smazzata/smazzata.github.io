@@ -220,6 +220,7 @@
   }, true);
 
   document.addEventListener('input', (e) => {
+    if (e.target.id === 'reportin') store.set('smazzata_report_draft',e.target.value.slice(0,1000));
     if (e.target.id === 'nick') { S.nickDraft = e.target.value; checkNickLive(e.target.value, '#nickStatus'); }
     if (e.target.id === 'nickpw') S.pwDraft = e.target.value;
     if (e.target.id === 'nickage') S.ageOk = e.target.checked;
@@ -294,7 +295,12 @@
         if (r.ok) { toast('Campionato creato: aggiungi i tuoi amici!'); leaguesModal(r.id); }
       },
       reportform: async () => {
-        const r = await emit('report', { text: $('#reportin').value, screen: S.screen, device: `${navigator.userAgent.slice(0, 120)} · ${innerWidth}x${innerHeight}` });
+        const text = $('#reportin').value.trim();
+        if (text.length < 5) { fieldError($('#reportin'), 'Descrivi il problema in qualche parola'); return; }
+        const r = await emit('report', { text, screen: S.screen, build: CLIENT_BUILD,
+          context: {game:S.game?.game || S.room?.rules?.game || homeGame(),code:S.room?.code,gameSeq:S.room?.gameSeq,hand:S.game?.handNo,phase:S.game?.phase,local:!!(S.localGame || OFFLINE),connected:S.connected},
+          device: `${navigator.userAgent.slice(0, 120)} · ${innerWidth}x${innerHeight}` });
+        if (r.ok) store.set('smazzata_report_draft','');
         if (r.ok) { closeModal(); toast('Grazie! Segnalazione inviata '); }
       },
       friendform: async () => { const n = $('#friendin').value.trim(); if (!n) return; const r = await emit('friendRequest', { nick: n }); if (r.ok) toast(`Richiesta inviata a ${n}`); },
@@ -329,6 +335,10 @@
   });
 
   setInterval(() => {
+    for (const el of $$('[data-wait-since]')) {
+      const secs = Math.max(0, Math.floor((Date.now() - Number(el.dataset.waitSince)) / 1000));
+      el.textContent = Math.floor(secs / 60) + ':' + String(secs % 60).padStart(2,'0');
+    }
     if (!S.turnEnd) return;
     const left = Math.max(0, Math.ceil((S.turnEnd - Date.now()) / 1000));
     for (const el of $$('[data-cd]')) {

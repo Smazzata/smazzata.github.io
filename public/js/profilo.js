@@ -38,7 +38,7 @@
     return q.createDataURL(6, 2);
   }
 
-  /** Il mio stile: titolo e cornice tra i premi sbloccati (gli altri si vedono con il lucchetto e come sbloccarli) */
+  /** I titoli compaiono solo dopo lo sblocco nella progressione. */
   function lookHTML(av) {
     const P = window.BurracoPremi;
     const free = new Set((S.progress && S.progress.unlocks) || []);
@@ -48,7 +48,7 @@
       : `<button class="swatch locked" disabled title="Si sblocca con: ${esc(P.howTo(p))}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-privacy /></svg> ${esc(p.name)} <small>· ${esc(P.howTo(p))}</small></button>`);
     return `<h4>Il tuo stile</h4>
       <p class="muted small">Titolo e cornice si vedono al tavolo. Si sbloccano salendo di livello e vincendo trofei.</p>
-      <div class="looks">${P.LIST.filter((p) => p.kind === 'title').map((p) => chip(p, curT, 'pickTitle')).join('')}</div>
+      <div class="looks">${P.LIST.filter((p) => p.kind === 'title' && free.has(p.id)).map((p) => chip(p, curT, 'pickTitle')).join('')}</div>
       <div class="looks" style="margin-top:8px">${P.LIST.filter((p) => p.kind === 'frame').map((p) => chip(p, curF, 'pickFrame')).join('')}</div>`;
   }
 
@@ -62,16 +62,12 @@
     const selected = avatars.resolve(r.avatar && (r.avatar.id || r.avatar.e), r.nick);
     const av = { ...(r.avatar || {}), id:selected.id, e: selected.e, c: r.avatar && r.avatar.c || r.colors[0] };
     const rarity = avatars.RARITIES.find(x=>x.id===selected.rarity);
-    const filter = S.avatarFilter==='all' || avatars.RARITIES.some(x=>x.id===S.avatarFilter) ? S.avatarFilter : 'all';
-    const owned = new Set(r.ownedAvatarIds || avatars.LIST.filter(a=>avatars.isSelectable(a.id)||a.id===selected.id).map(a=>a.id));
+    const owned = new Set(r.ownedAvatarIds || avatars.LIST.filter(a=>avatars.isSelectable(a.id)).map(a=>a.id));
     S.avatarOwnedIds = [...owned];
-    const ownedOnly = (S.avatarScope || store.get('smazzata_avatar_scope','owned')) === 'owned';
-    const shown = avatars.LIST.filter(a=>(filter==='all'||a.rarity===filter)&&(!ownedOnly||owned.has(a.id)));
+    const shown = avatars.LIST.filter(a=>owned.has(a.id));
     openModal('profile', `<h2>${uiIcon('profile')} ${esc(r.nick)}</h2>
-      <div class="avatar-collection-heading"><div><p class="muted small">${t('La tua collezione')}</p><h4>Avatar</h4></div><b class="avatar-collected">${owned.size}/50</b></div>
+      <div class="avatar-collection-heading"><div><p class="muted small">${t('La tua collezione')}</p><h4>Avatar</h4></div><b class="avatar-collected">${shown.length}</b></div>
       <div class="avpick"><div class="avpreview">${avatarHTML(r.nick, 0, false, av)}<div><b>${esc(t(selected.name))}</b><span class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</span></div></div>
-        <div class="avscope" role="group" aria-label="${t('Disponibilità degli avatar')}"><button class="btn small ${!ownedOnly?'primary':''}" data-act="avatarScope" data-scope="all" aria-pressed="${!ownedOnly}">${t('Mostra tutti')}</button><button class="btn small ${ownedOnly?'primary':''}" data-act="avatarScope" data-scope="owned" aria-pressed="${ownedOnly}">${t('Solo posseduti')}</button></div><div class="avfilters" role="group" aria-label="${t('Rarità degli avatar')}">${[{id:'all',plural:'Tutti'},...avatars.RARITIES].map(r=>`<button type="button" class="avfilter ${r.id===filter?'on':''}" data-act="avatarFilter" data-rarity="${r.id}" aria-pressed="${r.id===filter}">${t(r.plural)} <small>${r.id==='all'?avatars.LIST.length:avatars.LIST.filter(a=>a.rarity===r.id).length}</small></button>`).join('')}</div>
-        <p class="avavailability">I comuni fanno già parte della tua collezione. Gli altri sono disponibili in anteprima.</p>
         <div id="avatar-grid" class="avgrid" role="group" aria-label="${t('Scegli il tuo avatar')}">${!shown.length?`<p class="av-empty">${t('Nessun avatar posseduto in questa rarità.')}</p>`:''}${shown.map((a) => `<button type="button" class="avopt ${a.id === selected.id ? 'on' : ''}" aria-haspopup="dialog" data-act="previewAvatar" data-avatar-id="${a.id}" data-rarity="${a.rarity}" data-c="${av.c}" aria-pressed="${a.id === selected.id}" aria-label="${esc(t(a.name))}, ${t(avatars.RARITIES.find(r=>r.id===a.rarity).name)}${owned.has(a.id)?'':', '+t('Non ancora disponibile')}" title="${esc(t(a.name))}" >${avatars.svg(a.id)}<span>${esc(t(a.name))}</span><small class="avatar-rarity" data-rarity="${a.rarity}">${owned.has(a.id)?'':'<svg class="avlock" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7V4a4 4 0 0 1 8 0v3"/><rect x="2" y="7" width="12" height="8" rx="2"/><path d="M8 10v2"/></svg>'}${t(avatars.RARITIES.find(r=>r.id===a.rarity).name)}</small></button>`).join('')}</div>
         <span class="avcolor-label">Colore del bordo</span><div class="avcolors">${r.colors.map((c) => `<button type="button" class="avcol ${c === av.c ? 'on' : ''}" style="background:${c}" data-act="pickAvatar" data-avatar-id="${av.id}" data-c="${c}" aria-label="${t('Colore del bordo')}: ${c}" aria-pressed="${c === av.c}"></button>`).join('')}</div></div>
       ${lookHTML(av)}

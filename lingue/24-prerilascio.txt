@@ -1,0 +1,26 @@
+# Affidabilità, primo accesso e aiuto contestuale
+Gli aiuti visivi sono disattivati per questo tavolo: consulta le regole della partita. ‖ Visual aids are disabled at this table: check the game rules. ‖ Las ayudas visuales están desactivadas en esta mesa: consulta las reglas de la partida. ‖ As ajudas visuais estão desativadas nesta mesa: consulte as regras da partida.
+Riconnessione in corso. Attendi il ripristino del tavolo. ‖ Reconnecting. Please wait for the table to recover. ‖ Reconectando. Espera a que se restaure la mesa. ‖ Reconectando. Aguarde a recuperação da mesa.
+Risposta non ricevuta. Verifico lo stato del tavolo. ‖ No response received. Checking the table state. ‖ No se recibió respuesta. Comprobando el estado de la mesa. ‖ Nenhuma resposta recebida. Verificando o estado da mesa.
+Ripristino del tavolo in corso. ‖ Restoring your table. ‖ Restaurando tu mesa. ‖ Restaurando sua mesa.
+Connessione al server. ‖ Connecting to the server. ‖ Conectando con el servidor. ‖ Conectando ao servidor.
+Prova senza registrarti ‖ Try without signing up ‖ Prueba sin registrarte ‖ Experimente sem cadastro
+Scegli un gioco e prova ‖ Choose a game and try it ‖ Elige un juego y pruébalo ‖ Escolha um jogo e experimente
+Crea un profilo per giocare online ‖ Create a profile to play online ‖ Crea un perfil para jugar en línea ‖ Crie um perfil para jogar online
+Allenamento non disponibile. Riprova. ‖ Practice is unavailable. Please try again. ‖ El entrenamiento no está disponible. Inténtalo de nuevo. ‖ Treino indisponível. Tente novamente.
+Tempo di ricerca ‖ Search time ‖ Tiempo de búsqueda ‖ Tempo de busca
+Puoi continuare ad aspettare, invitare un amico o allenarti con il computer. ‖ You can keep waiting, invite a friend or practice against the computer. ‖ Puedes seguir esperando, invitar a un amigo o entrenar contra el ordenador. ‖ Você pode continuar esperando, convidar um amigo ou treinar contra o computador.
+Passa all’allenamento ‖ Switch to practice ‖ Pasar al entrenamiento ‖ Ir para o treino
+Passa al computer ‖ Play against the computer ‖ Jugar contra el ordenador ‖ Jogar contra o computador
+Aiuto per questa mossa ‖ Help with this move ‖ Ayuda con esta jugada ‖ Ajuda com esta jogada
+Stai osservando la partita. ‖ You are watching the game. ‖ Estás observando la partida. ‖ Você está assistindo à partida.
+La smazzata è terminata: guarda il riepilogo. ‖ The hand is over: check the summary. ‖ La mano ha terminado: consulta el resumen. ‖ A rodada terminou: veja o resumo.
+Attendi il tuo turno prima di giocare. ‖ Wait for your turn before playing. ‖ Espera tu turno antes de jugar. ‖ Aguarde sua vez antes de jogar.
+Prima pesca dal tallone o raccogli gli scarti secondo le regole del tavolo. ‖ First draw from the stock or take the discard pile according to the table rules. ‖ Primero roba del mazo o recoge los descartes según las reglas de la mesa. ‖ Primeiro compre do monte ou pegue o descarte conforme as regras da mesa.
+Seleziona le carte che vuoi calare o attaccare. Per scartare seleziona una sola carta. ‖ Select the cards you want to meld or add. Select a single card to discard. ‖ Selecciona las cartas que quieras bajar o añadir. Para descartar, selecciona solo una carta. ‖ Selecione as cartas que deseja baixar ou acrescentar. Para descartar, selecione apenas uma carta.
+Le carte selezionate formano una calata valida: tocca la casella di calata. ‖ The selected cards form a valid meld: tap the meld slot. ‖ Las cartas seleccionadas forman una combinación válida: toca la casilla para bajarlas. ‖ As cartas selecionadas formam uma combinação válida: toque no espaço para baixar.
+Puoi attaccare le carte selezionate a un gioco evidenziato. ‖ You can add the selected cards to a highlighted meld. ‖ Puedes añadir las cartas seleccionadas a una combinación resaltada. ‖ Você pode acrescentar as cartas selecionadas a uma combinação destacada.
+Le carte selezionate non formano una calata valida. Controlla combinazione, matte e punti di apertura. ‖ The selected cards do not form a valid meld. Check the combination, wild cards and opening points. ‖ Las cartas seleccionadas no forman una combinación válida. Comprueba la combinación, los comodines y los puntos de apertura. ‖ As cartas selecionadas não formam uma combinação válida. Confira a combinação, os curingas e os pontos de abertura.
+Punti minimi per aprire ‖ Minimum opening points ‖ Puntos mínimos de apertura ‖ Pontos mínimos para abrir
+La bozza resta salvata se manca la rete. ‖ Your draft is saved if the connection drops. ‖ Tu borrador se guarda si se pierde la conexión. ‖ Seu rascunho fica salvo se a conexão cair.
+Premio sbloccato ‖ Reward unlocked ‖ Premio desbloqueado ‖ Recompensa desbloqueada

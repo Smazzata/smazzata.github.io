@@ -368,7 +368,7 @@
     // niente fasce di testo sul tavolo: piccole icone che galleggiano sopra la mano, così le carte hanno più spazio.
     // ❓ dice cosa fare (si apre al tocco e sparisce da sola); 🕘 in alto apre lo storico dei turni
     const sel = S.selected.size;
-    let actions = '';
+    let actions = '<button class="ico" data-act="moveHelp" aria-label="'+t('Aiuto per questa mossa')+'" title="'+t('Aiuto per questa mossa')+'">'+uiIcon('rules')+'</button>';
     if (myTurn && r.hints && !r.campaign) actions += '<button class="ico" data-act="hint" title="Suggerimento" aria-label="Suggerimento"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-help /></svg></button>';
     if (g.you >= 0 && !r.campaign) actions = '<button class="ico" data-act="reactPicker" title="Reazioni"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-profile /></svg></button>' + actions;
     if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';

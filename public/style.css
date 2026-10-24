@@ -1338,3 +1338,13 @@ body[data-theme="notte"] .tour-create #tourname { background: #2a312e; color: #e
 body.noanim .avatar-pose,body.noanim .avatar-shimmer,body.noanim .avatar-mote { animation:none; }body.noanim .pose-1,body.noanim .pose-2,body.noanim .avatar-shimmer,body.noanim .avatar-mote { display:none; }
 @media(max-width:360px){.avgrid{grid-template-columns:repeat(3,minmax(0,1fr));}}
 @media(prefers-reduced-motion:reduce){.avatar-pose,.avatar-shimmer,.avatar-mote{animation:none!important}.pose-1,.pose-2,.avatar-shimmer,.avatar-mote{display:none}}
+
+/* Accessi e attese leggibili anche su telefoni piccoli. */
+.guest-start,.queue-help {padding:12px;margin-bottom:12px;border:1px solid var(--line,#b9c9bb);border-radius:12px;}
+.queue-help .row {flex-wrap:wrap;}
+#profile-signup>summary {cursor:pointer;padding:12px 0;font-weight:800;}
+.game .ico,.game .iconbtn {min-width:40px;min-height:40px;touch-action:manipulation;}
+.offline {flex-wrap:wrap;color:#fff;padding-top:max(6px,env(safe-area-inset-top));}
+.offline .btn {color:#fff;border-color:currentColor;}
+.game.offline-lock .topbar {pointer-events:auto;}
+@media (pointer:coarse) { .hand .card.sel {filter:drop-shadow(0 0 3px #f3c969);} }

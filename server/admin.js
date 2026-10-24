@@ -175,7 +175,7 @@ function setupStatus(app) {
   ${r.kind === 'player' ? `<span style="color:#ffb4a8">⚠️ <b>${esc(r.nick)}</b> segnala <b>${esc(r.target)}</b>: ${esc(r.reason)}</span><br>` : ''}<b>${esc(r.nick)}</b> <span class="m">${esc(r.quando)} · ${esc(r.screen)}${r.table ? ` · tavolo ${esc(r.table.code)} (${esc(r.table.rules)})` : ''}</span><br>${esc(r.text)}
   ${r.chat && r.chat.length ? `<pre style="color:#ffe">${r.chat.map(esc).join('\n')}</pre>` : ''}
   ${r.table && r.table.game ? `<pre style="color:#cfe">smazzata ${r.table.game.hand} · fase ${esc(r.table.game.phase)} · turno ${r.table.game.turn} · posto ${r.table.seat} · tallone ${r.table.game.stock} · scarti ${r.table.game.discard} · carte in mano ${r.table.game.myCards}
-  ${r.table.game.log.map(esc).join('\n')}</pre>` : ''}<span class="m">${esc(r.device)}</span></div>`).join('') : '<p class="m">Nessuna segnalazione.</p>'}</div>
+  ${r.table.game.log.map(esc).join('\n')}</pre>` : ''}<span class="m">${esc(r.device)}${r.build ? " · build " + esc(r.build) : ""}${r.clientContext ? " · " + esc(JSON.stringify(r.clientContext)) : ""}</span></div>`).join('') : '<p class="m">Nessuna segnalazione.</p>'}</div>
   <div class="box"><b>Iscritti</b>
   <div><span class="k">Iscritti<b>${d.iscritti.totali.iscritti}</b></span><span class="k">Online ora<b>${d.iscritti.totali.online}</b></span><span class="k">Hanno giocato oggi<b>${d.iscritti.totali.oggi}</b></span><span class="k">Ultimi 7 giorni<b>${d.iscritti.totali.settimana}</b></span></div>
   ${d.iscritti.lista.length ? `<div style="overflow-x:auto"><table><tr><th></th><th>Nickname</th><th>Email</th><th>Liv.</th><th>Partite</th><th>Ultimo gioco</th><th>🔥</th><th>🔔</th><th></th><th>Moderazione</th></tr>

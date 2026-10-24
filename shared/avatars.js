@@ -131,22 +131,23 @@
   const legacy = new Map();
   for (const a of original) for (const key of [a.e,a.e.replace(/\uFE0F/g,'')]) legacy.set(key,byId.get(a.id));
   for (const [key,id] of Object.entries({'🐶':'orso','🐯':'leone','🐵':'fante-quadri','🦄':'regina-picche','🐙':'jolly-zaffiro','🌻':'dama-fiori','🍀':'panda','⭐':'fenice'})) legacy.set(key,byId.get(id));
+  const STARTER_IDS = ['fante-quadri', 'dama-fiori', 'giardiniere-fiori', 'pasticciera-vaniglia'];
   function resolve(value,name='') {
     if(byId.has(value)) return byId.get(value);
     if(legacy.has(value)) return legacy.get(value);
     let hash=0;for(const char of String(name))hash=(hash*31+char.codePointAt(0))>>>0;
-    const starters=LIST.filter(a=>a.rarity==='common');
+    const starters=STARTER_IDS.map(id=>byId.get(id));
     return starters[hash%starters.length];
   }
-  const isSelectable = id => byId.get(id)?.rarity === 'common';
+  const isSelectable = id => STARTER_IDS.includes(byId.get(id)?.id);
   // Il server è l'autorità: nessun possesso proviene da parametri della richiesta.
   function ownedIds(profile={}) {
-    const ids=new Set(LIST.filter(a=>a.rarity==='common').map(a=>a.id));
+    const ids=new Set(STARTER_IDS);
     for(const id of Array.isArray(profile.avatarOwned)?profile.avatarOwned:[]) if(byId.has(id)) ids.add(byId.get(id).id);
     const current=profile.avatar;
     if(current && (current.id || current.e)) ids.add(resolve(current.id || current.e,profile.nick).id);
     return [...ids];
   }
-  const api={LIST,RARITIES,byId,resolve,isSelectable,ownedIds,aliases};
+  const api={LIST,RARITIES,STARTER_IDS,byId,resolve,isSelectable,ownedIds,aliases};
   if(typeof module==='object'&&module.exports)module.exports=api;else root.SmazzataAvatarCatalog=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

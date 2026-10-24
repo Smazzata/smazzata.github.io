@@ -99,6 +99,7 @@ function recordLeaderboard(room) {
     const e = { ...STATS0, ...(leaderboard.get(s.token) || {}) };
     e.name = s.name;
     const beforeProgress = Levels.levelOf(e);
+    const beforeUnlocks = new Set(Premi.unlockedIds({level:beforeProgress.level,trophies:e.trophies || {}}));
     const levelBefore = beforeProgress.level;
     const won = []; // trofei guadagnati con questa smazzata/partita
     const gid = Games.idOf(room.rules);
@@ -156,7 +157,8 @@ function recordLeaderboard(room) {
     if (room.recordedHand !== handKey || gameEnds) {
       const unlocks = Premi.unlockedIds({ level: lv.level, trophies: e.trophies || {} });
       const earned = { roomCode: room.code, gameSeq: room.gameSeq, handNo: g.handNo,
-        xp: lv.xp - beforeProgress.xp, trophies: fresh.map(id => ({id, name:Trophies.BY_ID.get(id).name})) };
+        xp: lv.xp - beforeProgress.xp, trophies: fresh.map(id => ({id, name:Trophies.BY_ID.get(id).name})),
+        rewards: unlocks.filter(id=>!beforeUnlocks.has(id)).map(id=>({id,name:Premi.BY_ID[id].name,kind:Premi.BY_ID[id].kind})) };
       for (const sock of io.sockets.sockets.values()) if (sock.data.token === s.token) sock.emit('progress', { ...lv, unlocks, up: lv.level > levelBefore, streak: ctx.streakOf(e), earned });
     }
     if (fresh.length) {

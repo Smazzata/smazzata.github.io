@@ -22,7 +22,8 @@
     "ui:rilascio": "node server/release-ui-test.js",
     "sim:ranked": "node server/ranked-simulation.js",
     "e2e:ranked": "node server/ranked-e2e.js",
-    "test:avatar": "node --test server/avatar-catalog-test.js"
+    "test:avatar": "node --test server/avatar-catalog-test.js",
+    "test:prerilascio": "node --test server/pre-release-test.js server/avatar-catalog-test.js server/result-progress-test.js"
   },
   "engines": {
     "node": ">=18"

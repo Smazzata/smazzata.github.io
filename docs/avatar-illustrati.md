@@ -8,6 +8,8 @@ Fenice dorata, Drago imperatore e Volpe dalle nove code hanno ciascuno uno sprit
 
 ## Possesso e compatibilità
 
+Aggiornamento del 24 ottobre: il profilo mostra solo i posseduti. I quattro avatar iniziali sono Fante di quadri, Dama di fiori, Giardiniere di fiori e Pasticciera vaniglia; gli sblocchi espliciti e le scelte pregresse sono conservati. Rimossi catalogo completo e filtri di rarità. La descrizione dei 24 comuni qui sotto documenta la versione precedente. La proposta chest è in `chest-design.md` e non è attiva.
+
 I 24 comuni sono posseduti fin dall'inizio. Gli altri sono visibili in anteprima ma non assegnabili, salvo avatar già salvati nei profili precedenti. La collezione si apre su Solo posseduti e ricorda la preferenza sul dispositivo. Il filtro Solo posseduti usa la risposta privata `ownedAvatarIds` del server. Il server conserva le scelte pregresse in `avatarOwned` quando si cambia ritratto, così si può tornare a quello posseduto.
 
 Gli ID ritirati sono ricondotti a personaggi della collezione curata, privilegiando famiglia e rarità; i profili restano leggibili e utilizzabili. Non si cambiano nickname, titoli o cornici. Il colore scelto resta come bordo del ritratto. Il vecchio campo emoji rimane solo per i client precedenti.

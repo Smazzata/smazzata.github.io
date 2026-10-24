@@ -204,16 +204,16 @@ async function signup(p, nick, email = mailOf()) {
 
     // --- avatar e reazioni ---
     assert(!(await A.call('setAvatar', { e: '💩', c: '#000' })).ok, 'avatar non previsto rifiutato');
-    assert((await A.call('setAvatar', { e: '🦊', c: '#64b5f6' })).ok);
-    await B.until((s) => s.room.seats.some((x) => x && x.avatar && x.avatar.e === '🦊'), 'avatar visibile al tavolo');
-    assert((await A.call('setAvatar', { id: 'coniglio-gentile', c: '#64b5f6' })).ok, 'avatar con ID stabile');
-    await B.until((s) => s.room.seats.some((x) => x && x.avatar && x.avatar.id === 'coniglio-gentile'), 'nuovo avatar trasmesso agli altri giocatori');
+    assert((await A.call('setAvatar', { e: '🤠', c: '#64b5f6' })).ok);
+    await B.until((s) => s.room.seats.some((x) => x && x.avatar && x.avatar.e === '🤠'), 'avatar visibile al tavolo');
+    assert((await A.call('setAvatar', { id: 'giardiniere-fiori', c: '#64b5f6' })).ok, 'avatar con ID stabile');
+    await B.until((s) => s.room.seats.some((x) => x && x.avatar && x.avatar.id === 'giardiniere-fiori'), 'nuovo avatar trasmesso agli altri giocatori');
     for(const id of ['re-cuori','drago','drago-imperatore']) assert(!(await A.call('setAvatar', { id, c: '#64b5f6' })).ok, 'avatar non comune bloccato');
-    assert(!(await A.call('setAvatar', { e: '😎', c: '#64b5f6' })).ok, 'la vecchia chiave non aggira il blocco');
+    assert(!(await A.call('setAvatar', { e: '🐉', c: '#64b5f6' })).ok, 'la vecchia chiave non aggira il blocco');
     assert(!(await A.call('setAvatar', { id: 'avatar-inventato', c: '#64b5f6' })).ok, 'ID avatar arbitrario rifiutato');
     assert(!(await A.call('setAvatar', { id:'drago-imperatore', c:'#64b5f6', avatarOwned:['drago-imperatore'], ownedAvatarIds:['drago-imperatore'] })).ok, 'il client non può autoassegnarsi un avatar');
-    const collection=await A.call('profile');assert.equal(collection.ownedAvatarIds.length,24,'possesso iniziale dei comuni');
-    assert((await A.call('setAvatar', { e: '🦊', c: '#64b5f6' })).ok, 'scelta dal client precedente compatibile');
+    const collection=await A.call('profile');assert.equal(collection.ownedAvatarIds.length,4,'quattro avatar iniziali');
+    assert((await A.call('setAvatar', { e: '🤠', c: '#64b5f6' })).ok, 'scelta dal client precedente compatibile');
     const reacted = new Promise((res) => B.sock.once('reaction', res));
     assert((await A.call('react', { emoji: '👏' })).ok);
     const re = await reacted;

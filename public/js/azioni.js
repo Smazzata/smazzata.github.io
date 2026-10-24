@@ -7,6 +7,7 @@
   function requireName() {
     if (OFFLINE || (S.social && S.social.nick)) return true;
     toast('Scegli prima il tuo nickname', true);
+    const gate = $('#profile-signup'); if (gate) gate.open = true;
     const el = $('#nick');
     if (el) el.focus();
     return false;
@@ -35,6 +36,12 @@
   }
 
   async function act(type, extra = {}) {
+    if (S.actionPending) return {ok:false, busy:true};
+    if (!S.localGame && !OFFLINE && !S.campaignActive && (!S.connected || S.syncPending)) {
+      toast(t('Riconnessione in corso. Attendi il ripristino del tavolo.'), true); return {ok:false};
+    }
+    S.actionPending = true;
+    try {
     if (type === 'add' && isS40Game() && extra.cardIds && extra.cardIds.length === 1) {
       const g = S.game;
       const m = g.teams.flatMap((t) => t.melds).find((x) => x.id === extra.meldId);
@@ -61,6 +68,7 @@
     // mossa rifiutata: le carte nascoste dall'anticipo tornano al loro posto
     if (!r.ok) { S.antic = null; clearAnticipated(); render(); }
     return r;
+    } finally { S.actionPending = false; }
   }
 
   // dietro il tunnel l'indirizzo cambia: gli inviti passano dalla pagina d'ingresso fissa
@@ -95,7 +103,7 @@
     },
     goSetup() { if (!requireName()) return; applyHomeGame(); S.screen = 'setup'; render(); },
     // schermata iniziale semplice: contro il computer, con gli amici, menu «Altro»
-    playBots() { if (!requireName()) return; applyHomeGame(); S.playMode = 'bots'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
+    playBots() { applyHomeGame(); S.playMode = 'bots'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
     playFriends() { if (!requireName()) return; applyHomeGame(); S.playMode = 'friends'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
     more() { moreModal(); },
     homeGameMenu,
@@ -107,6 +115,15 @@
       store.set('smazzata_home_game',el.dataset.game); applyHomeGame(); closeModal(); render(); $('#homeGame')?.focus();
     },
     turnHelp() { turnHelp(); },
+    moveHelp() { moveHelpModal(); },
+    reconnect() { if (!OFFLINE) { socket.disconnect(); socket.connect(); } },
+    async queueBots() {
+      const rules = S.room?.rules || S.rules;
+      const r = await emit('leaveRoom');
+      if (!r.ok) return;
+      S.rules = RX.normalize(rules); S.playMode = 'bots';
+      await handlers.createBots();
+    },
     turnLog() { turnLogModal(); },
     gamesRules() { gamesRulesModal(); },
     pickPlayers(el) { S.rules = RX.normalize({ ...S.rules, players: Number(el.dataset.n) }); store.set('bur_rules', S.rules); render(); },
@@ -419,7 +436,7 @@
       openModal('report', `<h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Segnala un problema</h2>
         <p class="muted small">Descrivi cosa è successo e cosa ti aspettavi. Insieme al messaggio inviamo la situazione del tavolo
           (smazzata, turno, ultime mosse e quante carte hai), senza le carte degli altri giocatori. <a href="privacy.html">Privacy</a></p>
-        <form id="reportform"><textarea id="reportin" rows="5" maxlength="1000" placeholder="Es. ho trascinato una carta sugli scarti ma non è stata scartata…"></textarea>
+        <p class="muted small">${t("La bozza resta salvata se manca la rete.")} · ${t("Versione")}: ${CLIENT_BUILD} · ${esc(S.room?.code || "—")}</p><form id="reportform"><textarea id="reportin" rows="5" maxlength="1000" placeholder="Es. ho trascinato una carta sugli scarti ma non è stata scartata…">${esc(store.get("smazzata_report_draft",""))}</textarea>
         <div class="row" style="margin-top:8px"><button class="btn primary grow">Invia segnalazione</button></div></form>`);
       setTimeout(() => { const t = $('#reportin'); if (t) t.focus(); }, 50);
     },
@@ -437,7 +454,15 @@
       if (!r.ok) render();
     },
     tutStep(el) { tutorialModal(Number(el.dataset.i), el.dataset.game); },
-    practice(el) { if (!requireName()) return; closeModal(); emit('createRoom', { tutorial: true, rules: el && el.dataset.game && el.dataset.game !== 'burraco' ? { game: el.dataset.game } : undefined }); },
+    async practice(el) {
+      closeModal();
+      const rules = {game:el?.dataset.game || homeGame()};
+      if (OFFLINE) return emit('createRoom', {tutorial:true,rules});
+      try { await localSocket(); } catch (e) { toast(t('Allenamento non disponibile. Riprova.'),true); return; }
+      S.localGame = true; Local.attached = true;
+      const r = await new Promise(res=>Local.sock.emit('createRoom',{tutorial:true,rules},res));
+      if (!r?.ok) { S.localGame = false; Local.attached = false; toast(t('Allenamento non disponibile. Riprova.'),true); }
+    },
     coachOff() { S.coachOff = true; render(); },
     setupBotLevel(el) {
       if (!['auto', 'facile', 'normale', 'difficile', 'esperto'].includes(el.dataset.val)) return;
@@ -499,6 +524,7 @@
       const rarity = catalog.RARITIES.find(r => r.id === entry.rarity);
       const current = catalog.resolve(profile.avatar?.id || profile.avatar?.e, profile.nick);
       const selectable = (profile.ownedAvatarIds || S.avatarOwnedIds || []).includes(entry.id) || catalog.isSelectable(entry.id);
+      if (!selectable) return;
       const av = {...profile.avatar, id:entry.id, e:entry.e};
       openModal('avatarDetail', `<section class="avatar-detail"><button class="btn small" data-act="avatarCatalog">${t('Torna alla collezione')}</button><div class="avatar-detail-art">${avatarHTML(profile.nick,0,false,av)}</div><h2>${esc(t(entry.name))}</h2><p class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</p><p>${t(current.id === entry.id ? 'Il tuo avatar attuale' : selectable ? 'Disponibile per il tuo profilo' : 'Non ancora disponibile')}</p>${selectable && current.id !== entry.id ? `<button class="btn primary" data-act="pickAvatar" data-avatar-id="${entry.id}" data-c="${esc(profile.avatar?.c || profile.colors[0])}">${t('Usa questo avatar')}</button>` : ''}${!selectable && current.id !== entry.id ? `<p class="muted small">${t('Puoi ammirarlo in anteprima. Non è ancora selezionabile.')}</p>` : ''}</section>`);
       $('#modal .modal-box').scrollTop = 0;

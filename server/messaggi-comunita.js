@@ -165,7 +165,7 @@ module.exports.register = function register(socket, handler) {
     return {};
   }));
 
-  socket.on('report', handler(({ text, screen, device }) => {
+  socket.on('report', handler(({ text, screen, device, build, context }) => {
     const t = String(text || '').trim().slice(0, 1000);
     if (t.length < 5) throw new E.GameError('Descrivi il problema in qualche parola');
     const now = Date.now();
@@ -178,6 +178,13 @@ module.exports.register = function register(socket, handler) {
     ctx.reports.unshift({
       at: now, nick: sess.nick || sess.name || 'anonimo', text: t,
       screen: String(screen || '').slice(0, 20), device: String(device || '').slice(0, 160),
+      build: String(build || '').slice(0,40),
+      clientContext: {
+        game: String(context?.game || '').slice(0,24), code: String(context?.code || '').slice(0,16),
+        gameSeq: Number.isSafeInteger(context?.gameSeq) ? context.gameSeq : null,
+        hand: Number.isSafeInteger(context?.hand) ? context.hand : null,
+        phase: String(context?.phase || '').slice(0,24), local: context?.local === true, connected: context?.connected === true,
+      },
       table: room ? {
         code: room.code, rules: Games.of(room).presetOf(room.rules) || 'personalizzate', seat,
         game: g ? {

@@ -25,9 +25,9 @@
       campaignDecorateTable();
     }
     if (changed && app.firstElementChild) app.firstElementChild.classList.add('enter');
-    if (S.screen === 'home' && !store.get('smazzata_intro_seen', false) && !S.modalKind && (OFFLINE ? S.name : S.social?.nick) && !S.pendingJoin && !S.room) {
+    if (S.screen === 'home' && !store.get('smazzata_intro_seen', false) && !S.modalKind && !S.pendingJoin && !S.room) {
       setTimeout(() => {
-        if (S.screen === 'home' && !S.modalKind && !store.get('smazzata_intro_seen', false) && !(S.mailOn && S.social?.hasEmail === false)) firstRunModal();
+        if (S.screen === 'home' && !S.modalKind && !store.get('smazzata_intro_seen', false)) firstRunModal();
       }, 450);
     }
     campaignStoryMount();
@@ -35,8 +35,8 @@
       const field = document.getElementById(draft.id);
       if (field) { field.value = draft.value; field.focus({preventScroll:true}); if (draft.start != null) field.setSelectionRange(draft.start,draft.end); }
     }
-    if (!S.connected && !S.localGame && !S.campaignActive && S.screen !== 'campaign') {
-      app.insertAdjacentHTML('afterbegin', `<div class="offline"><span class="spin"></span>${S.lostConnection ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Connessione persa: mi ricollego…' : 'Connessione al server…'}</div>`);
+    if ((!S.connected || S.syncPending) && !S.localGame && !S.campaignActive && S.screen !== 'campaign') {
+      app.insertAdjacentHTML('afterbegin', `<div class="offline" role="status"><span class="spin"></span>${t(S.syncPending ? "Ripristino del tavolo in corso." : "Connessione al server.")}<button class="btn small" data-act="reconnect">${t("Riprova")}</button></div>`);
       const gm = $('.game');
       if (gm) gm.classList.add('offline-lock');
     }
@@ -113,7 +113,7 @@
   }
 
   function homeHTML() {
-    if (!OFFLINE && S.mailOn && S.social && S.social.nick && S.social.hasEmail === false) return emailGateHTML();
+    if (!OFFLINE && S.mailOn && S.social && S.social.nick && S.social.hasEmail === false) return emailGateHTML() + `<div class="panel"><button class="btn" data-act="playBots">${uiIcon('bot')}${t('Prova senza registrarti')}</button></div>`;
     return `<div class="page home-page">
       <div class="logo"><h1 translate="no">Smazzata</h1>
         <div class="muted">Gioca con gli amici o contro il computer</div></div>
@@ -122,6 +122,7 @@
         <img src="icons/icon-192.png" alt=""><span><b><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-home /></svg> Nuova versione dell'app</b><br>Scaricala e installala sopra quella che hai: profilo e partite restano.</span>
         <span class="updbtns"><a class="btn primary small" href="${APK_URL}">Scarica</a><button class="btn small" data-act="appUpdateLater">Più tardi</button></span></div>` : ''}
       <div class="panel">
+        ${!OFFLINE && !S.social?.nick ? `<div class="guest-start"><p>${t("Prova senza registrarti")}</p><button class="btn primary" data-act="firstRun">${uiIcon("play")}${t("Scegli un gioco e prova")}</button></div>` : ""}
         ${OFFLINE ? `<div class="offbanner"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-privacy /></svg> <b>Senza internet</b><br>Puoi giocare contro il computer e fare l'allenamento.
             Amici, classifica e partite online tornano quando sei collegato.
             <div class="row" style="margin-top:6px"><button class="btn small" data-act="goOnline"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-refresh /></svg> Riprova online</button></div></div>`
@@ -133,7 +134,7 @@
               <p>Scrivilo qui per creare il profilo <b>${esc(S.signup.nick)}</b>:</p>
               <form id="signupform" class="row"><input id="sucode" class="grow" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="123456"><button class="btn primary">Crea il profilo</button></form>
               <p class="muted small">Non arriva? Guarda anche nello spam, oppure <a href="#" data-act="resendSignup">mandalo di nuovo</a> · <a href="#" data-act="signupBack">cambia i dati</a></p></div>`
-          : `<label class="field"><span>Scegli il tuo nickname</span>
+          : `<details id="profile-signup"${S.pendingJoin || S.nickDraft != null ? ' open' : ''}><summary>${t('Crea un profilo per giocare online')}</summary><label class="field"><span>Scegli il tuo nickname</span>
               <input type="text" id="nick" maxlength="16" autocomplete="off" placeholder="Es. Simone_88" value="${esc(S.nickDraft != null ? S.nickDraft : (S.name || ''))}"></label>
               <div class="nickstatus" id="nickStatus">${nickStatusHTML()}</div>
               <label class="field"><span>Scegli una password</span>
@@ -144,7 +145,7 @@
               <p class="muted small" style="margin:0 0 6px">Se dimentichi la password ti mandiamo un codice per sceglierne una nuova.</p>` : ''}
               <label class="agecheck"><input type="checkbox" id="nickage"${S.ageOk ? ' checked' : ''}><span><span>Ho almeno 14 anni e accetto le regole</span> (<a href="regole.html">Regole</a> · <a href="privacy.html">Privacy</a>)</span></label>
               <div class="row"><button class="btn primary grow" data-act="claimNick">Crea il profilo</button></div>
-              <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a></p>`}
+              <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a></p></details>`}
         ${homeButtonsHTML()}
       </div>
       ${!OFFLINE && S.myGames && S.myGames.length ? `<div class="panel"><h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-clock /></svg> Le tue partite con calma</h2>
@@ -302,6 +303,7 @@
       <div class="panel">
         <h2>Giocatori (${filled}/${r.n}) ${r.ranked ? `<span class="rankbadge" title="${RANKED_TIP}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-medal /></svg> Classificata</span>` : ''}</h2>
         ${r.quick ? `<p class="muted">${r.queueMode === 'casual' ? 'Amichevole online' : 'Classificata'} · ${Games2.idOf(r.rules) === 'burraco' ? 'Burraco Classico' : esc(RX.gameName(r.rules))} · ${r.n} giocatori.<br>In cerca di altri ${r.n - filled} giocatori. La partita parte appena il tavolo è pieno.</p>` : ''}
+        ${r.quick ? `<div class="queue-help"><p>${t('Tempo di ricerca')}: <b data-wait-since="${S.queueSince || Date.now()}">0:00</b></p><p>${t('Puoi continuare ad aspettare, invitare un amico o allenarti con il computer.')}</p><div class="row"><button class="btn small" data-act="share">${uiIcon('friends')}${t('Invita un amico')}</button><button class="btn small" data-act="queueBots">${uiIcon('bot')}${t('Passa all’allenamento')}</button><button class="btn small" data-act="leaveNow">${t('Annulla ricerca')}</button></div></div>` : ''}
         ${r.quick && !r.ranked ? '<p class="muted small">Partita amichevole: il tuo grado non cambia.</p>' : ''}
         <div class="seats">${seats}</div>
         ${isHost ? `<div class="row" style="margin-top:12px">

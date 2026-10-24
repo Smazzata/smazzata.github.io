@@ -33,7 +33,9 @@
     location.replace(launcherHome() + '#salva=' + token);
     return true;
   }
+  const pendingRequests = new Set();
   socket.on('connect', () => {
+    S.syncPending = !OFFLINE;
     if (S.lostConnection) toast('✓ Riconnesso');
     S.lostConnection = false;
     S.connected = true;
@@ -41,6 +43,8 @@
   });
   socket.on('disconnect', () => {
     S.connected = false;
+    S.syncPending = !OFFLINE;
+    for (const cancel of [...pendingRequests]) cancel();
     if (S.silentReconnect) { S.silentReconnect = false; return; } // riconnessione voluta: niente avvisi
     S.lostConnection = true;
     render();
@@ -49,12 +53,20 @@
   // senza che il browser se ne accorga: se si è stati via più di qualche secondo se ne apre subito una nuova.
   let hiddenAt = 0;
   const freshConnection = () => {
+    if (OFFLINE) { socket.emit('sync'); return; }
+    if (S.localGame && Local.sock) Local.sock.emit('sync');
     if (!socket.connected) { socket.connect(); return; }
     if (Date.now() - hiddenAt > 4000) { S.silentReconnect = true; socket.disconnect(); socket.connect(); }
   };
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') hiddenAt = Date.now();
-    else if (hiddenAt) freshConnection();
+    else if (hiddenAt) { freshConnection(); hiddenAt = 0; }
+  });
+  window.addEventListener('offline', () => {
+    if (OFFLINE) return;
+    S.connected = false; S.syncPending = true; S.lostConnection = true;
+    for (const cancel of [...pendingRequests]) cancel();
+    socket.disconnect(); render();
   });
   window.addEventListener('online', () => { if (!socket.connected) socket.connect(); });
   window.addEventListener('pageshow', (event) => { if (event.persisted) freshConnection(); });
@@ -131,6 +143,7 @@
   socket.on('state', ({ room, game, __local }) => {
     // mentre si gioca sul telefono contro il computer, lo stato del server (es. al ricollegamento) non conta
     if (S.localGame && !__local) { hideIntro(); return; }
+    S.syncPending = false;
     onState(room, game); hideIntro();
   });
 
@@ -300,18 +313,38 @@
 
   function emit(ev, data) {
     if (S.campaignActive && LOCAL_EVENTS.has(ev)) return Promise.resolve(campaignEvent(ev, data));
+    const target = S.localGame && LOCAL_EVENTS.has(ev) && Local.sock ? Local.sock : socket;
+    const network = !OFFLINE && target === socket;
+    if (network && (!S.connected || !socket.connected || (ev === 'action' && S.syncPending))) {
+      toast(t('Riconnessione in corso. Attendi il ripristino del tavolo.'), true);
+      return Promise.resolve({ok:false, disconnected:true});
+    }
     return new Promise((res) => {
-      const target = S.localGame && LOCAL_EVENTS.has(ev) && Local.sock ? Local.sock : socket;
+      let settled = false;
+      const finish = r => {
+        if (settled) return false;
+        settled = true; clearTimeout(timer); pendingRequests.delete(cancel); res(r); return true;
+      };
+      const cancel = () => finish({ok:false, disconnected:true});
+      const timer = setTimeout(() => {
+        if (!finish({ok:false, timeout:true})) return;
+        toast(t('Risposta non ricevuta. Verifico lo stato del tavolo.'), true);
+        // Nessuna ripetizione automatica: la mossa potrebbe essere già stata applicata.
+        if (network && S.room) { S.syncPending = true; render(); socket.disconnect(); socket.connect(); }
+      }, 12000);
+      if (network) pendingRequests.add(cancel);
       target.emit(ev, data, async (r) => {
-        // partita in corso su un altro dispositivo dello stesso profilo: si chiede prima di continuare
+        if (settled) return;
+        clearTimeout(timer); pendingRequests.delete(cancel);
         if (r && !r.ok && (r.error === 'BUSY_HERE' || r.error === 'BUSY_OTHER')) {
+          settled = true;
           const mode = r.error === 'BUSY_HERE' ? 'here' : 'abandon';
           if (!(await askOtherDevice(mode))) return res({ ok: false });
           const tk = await emit('takeOver', { mode });
           return res(tk.ok ? await emit(ev, data) : tk);
         }
         if (r && !r.ok) { toast(r.error, true); Sound.play('error'); }
-        res(r || { ok: false });
+        finish(r || { ok: false });
       });
     });
   }
@@ -344,6 +377,9 @@
     S.turnEnd = room && room.turnLeft != null ? Date.now() + room.turnLeft : null;
     S.warned10 = S.turnKey === (game && `${game.handNo}:${game.turn}`) ? S.warned10 : false;
     S.turnKey = game && `${game.handNo}:${game.turn}`;
+    if (room?.quick && !game) {
+      if (S.queueRoom !== room.code) { S.queueRoom = room.code; S.queueSince = Date.now(); }
+    } else { S.queueRoom = null; S.queueSince = null; }
     S.room = room;
     S.game = game;
     if (!room) {

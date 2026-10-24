@@ -3,6 +3,24 @@
  * dichiarazioni (S, socket, render…). Il codice in cima al file può usare solo ciò che è nei file precedenti. */
 'use strict';
 
+  /** Spiegazioni basate esclusivamente sulle carte visibili al giocatore. */
+  function moveHelpModal() {
+    const g = S.game;
+    if (!g) return;
+    const team = g.teams.find(x=>x.members.includes(g.you));
+    const preview = team ? selectionPreview(g,team) : {canAdd:new Set()};
+    const message = g.you < 0 ? 'Stai osservando la partita.' : g.phase === 'handEnd' ? 'La smazzata è terminata: guarda il riepilogo.'
+      : g.turn !== g.you ? 'Attendi il tuo turno prima di giocare.'
+      : g.phase === 'draw' ? 'Prima pesca dal tallone o raccogli gli scarti secondo le regole del tavolo.'
+      : !S.selected.size ? 'Seleziona le carte che vuoi calare o attaccare. Per scartare seleziona una sola carta.'
+      : S.room?.aids === false ? 'Gli aiuti visivi sono disattivati per questo tavolo: consulta le regole della partita.'
+      : preview.newMeld?.ok ? 'Le carte selezionate formano una calata valida: tocca la casella di calata.'
+      : preview.canAdd.size ? 'Puoi attaccare le carte selezionate a un gioco evidenziato.'
+      : 'Le carte selezionate non formano una calata valida. Controlla combinazione, matte e punti di apertura.';
+    const minimum = isS40Game() && !team?.opened ? g.cfg.opening : isCanastaGame() && !team?.melds.length ? team?.minimum : null;
+    openModal('moveHelp', `<h2>${uiIcon('help')} ${t('Aiuto per questa mossa')}</h2><p>${t(message)}</p>${preview.newMeld?.label ? '<p>'+esc(t(preview.newMeld.label))+'</p>' : ''}${minimum ? '<p>'+t('Punti minimi per aprire')+': <b>'+minimum+'</b></p>' : ''}<div class="row"><button class="btn" data-act="gameRules">${uiIcon('rules')}${t('Regole del gioco')}</button><button class="btn primary" data-act="closeModal">${t('Torna al tavolo')}</button></div>`);
+  }
+
   /* ================= Modali di gioco ================= */
   function showResult() {
     const g = S.game;
@@ -14,7 +32,7 @@
     const mode = training ? 'Allenamento' : S.room.daily ? 'Sfida del giorno' : S.room.rankedFormat ? 'Classificata' : 'Amichevole online';
     const outcome = g.over && g.you >= 0 ? g.winners.length === 0 ? 'Pareggio' : g.winners.includes(g.you) ? 'Vittoria' : 'Sconfitta' : 'Fine smazzata';
     const progressHTML = training ? `<p class="result-mode-note">${t('Allenamento: nessun punto classifica, esperienza o trofeo.')}</p>`
-      : earned ? `<section class="result-progress"><h3>${uiIcon('stats')} ${t('Progressi confermati')}</h3><p><b>+${earned.xp} ${t('punti esperienza')}</b> · ${t('Livello')} ${progress.level}</p><progress max="${progress.need}" value="${progress.into}" aria-label="${t('Esperienza nel livello')}"></progress><p>${progress.into}/${progress.need}</p>${earned.trophies.map(x=>`<p>${uiIcon('trophy')} ${esc(t(x.name))}</p>`).join('')}</section>` : '';
+      : earned ? `<section class="result-progress"><h3>${uiIcon('stats')} ${t('Progressi confermati')}</h3><p><b>+${earned.xp} ${t('punti esperienza')}</b> · ${t('Livello')} ${progress.level}</p><progress max="${progress.need}" value="${progress.into}" aria-label="${t('Esperienza nel livello')}"></progress><p>${progress.into}/${progress.need}</p>${earned.trophies.map(x=>`<p>${uiIcon('trophy')} ${esc(t(x.name))}</p>`).join('')}${(earned.rewards || []).map(x=>`<p>${uiIcon('check')} ${t('Premio sbloccato')}: ${esc(t(x.name))}</p>`).join('')}</section>` : '';
     const P = g.cfg.pozzettoName;
     const cols = hr.teams.map((t) => `<th>${esc(t.members.map((s) => (s === g.you ? 'Tu' : g.players[s].name)).join(' & '))}</th>`).join('');
     const row = (label, fn) => `<tr><td>${label}</td>${hr.teams.map((t) => `<td>${fn(t)}</td>`).join('')}</tr>`;
@@ -45,7 +63,7 @@
       const result = S.rankedLast?.matchId === S.room.rankedFormat.id ? S.rankedLast : null;
       footer = `
         ${result ? `${rankedCard(result.after)}${result.after.provisional || result.placementMatch ? '' : `<p>${result.delta > 0 ? '+' : ''}${result.delta} LP</p>`}` : ''}
-        <div class="endopts"><button class="btn primary" data-act="rankedAgain">${t('Cerca partita')}</button><button class="btn" data-act="rankedProfile">${t('Profilo competitivo')}</button><button class="btn" data-act="leaveNow">${t('Esci dal tavolo')}</button></div>`;
+        <div class="endopts"><button class="btn primary" data-act="rankedAgain">${t('Cerca partita')}</button><button class="btn" data-act="rankedProfile">${t('Profilo competitivo')}</button><button class="btn" data-act="leaveNow">${t('Torna alla home')}</button></div>`;
     } else if (g.over) {
       // fine partita: tre strade chiare (rivincita, di nuovo al tavolo, uscire)
       const solo = S.room.onDevice || S.room.offline || humans.length <= 1;
@@ -53,7 +71,7 @@
         <div class="endopts">
           <button class="btn primary big" data-act="ready" ${imReady ? 'disabled' : ''}>${imReady ? 'Rivincita: hai votato ✓' : solo ? t('Gioca ancora') : t('Rivincita')}</button>
           ${solo ? '<button class="btn big" data-act="newFromResult"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-cards /></svg> Nuova partita</button>' : '<button class="btn big" data-act="backToLobby"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg> Torna al tavolo</button>'}
-          <button class="btn big" data-act="leaveNow"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Esci dal tavolo</button>
+          <button class="btn big" data-act="leaveNow"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Torna alla home</button>
         </div>
         ${imReady && waiting.length ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : solo ? '' : '<p class="muted small">Rivincita: stessi posti e stesse regole, si riparte quando tutti la premono. Torna al tavolo: per cambiare regole o giocatori.</p>'}`;
     } else {
@@ -173,6 +191,8 @@
     }
     openModal('tableMenu', `<h2>☰ Menu</h2><div class="menulist">
       ${item('scores', '🏆', 'Punteggi')}
+      ${item('moveHelp', uiIcon('help'), t('Aiuto per questa mossa'))}
+      ${item('report', uiIcon('report'), t('Segnala un problema'))}
       ${item('gameRules', '📜', 'Regole del gioco')}
       ${OFFLINE ? '' : item('music', '🎵', `Musica del tavolo${r.music ? ' (attiva)' : ''}`)}
       ${item('settings', '⚙️', 'Impostazioni')}
