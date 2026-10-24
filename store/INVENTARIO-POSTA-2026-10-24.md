@@ -33,3 +33,18 @@ Gli invii riguardano i destinatari fissati nell'anteprima; non sono regole autom
 La notifica push richiesta non prova la ricezione sul telefono: la consegna garantita dal salvataggio è la posta personale con il regalo accreditato. I test hanno usato soltanto server e utenti temporanei, senza invii reali o notifiche esterne a dispositivi degli utenti.
 
 Gli screenshot store usano file locali e risposte dimostrative; i controlli della posta e del pannello usano un server temporaneo reale. Non attestano una pubblicazione Android o l'aggiornamento del server pubblico. Il server si aggiorna soltanto dopo Prove; stato remoto da verificare dopo il push. L'AAB precedente non viene rigenerato o pubblicato da questa modifica.
+
+## Secondo controllo — casi limite e prove estese
+
+Correzioni successive richieste dal titolare:
+
+- I filtri data vengono validati soltanto quando si sceglie l'intervallo di iscrizione: valori rimasti nei campi non bloccano gli invii per nickname o a tutti.
+- Date impossibili restituite come errore comprensibile; timestamp storici non validi ignorati, con recupero della data documentata quando disponibile.
+- Paginazione della posta ricondotta a pagine valide: una richiesta oltre l'ultima pagina mostra l'ultima disponibile. Copiati soltanto i venti messaggi da mostrare, anziché l'intero archivio.
+- Richieste amministrative con contenuto inatteso rifiutate senza accedere a un corpo assente.
+
+Verifiche aggiunte e passate: due conferme HTTP simultanee assegnano un solo regalo; parametri regalo/destinatari alterati nella conferma non cambiano l'anteprima; conferme sconosciute rifiutate; regalo di avatar e doppioni; destinatari eliminati o ospiti esclusi; garanzie invariate dalla consegna; 10.003 messaggi paginati senza modificare l'archivio; invio simulato a 1.000 profili con un solo salvataggio e nessuna scrittura al replay; anonimizzazione del titolo dello storico senza perdere la ricevuta antireplica.
+
+Passati `npm run test:rapido`, le 37 prove di `test:prerilascio` prima dell'ultimo caso massivo e tutte le nove prove dedicate dopo la sua aggiunta. Privacy verificata anche con la nuova asserzione sullo storico. Nessun cambiamento visivo o alle probabilità, nessun invio reale.
+
+Anche `npm run ui` è passato integralmente: Burraco e Scala 40 giocati tramite tocchi, Canasta, avvio Ramino, moviola, impostazioni, tornei, offline, aggiornamenti APK/Store e tre lingue, senza errori della pagina. Non sono stati modificati file dell'interfaccia: gli screenshot store precedenti restano pertinenti.

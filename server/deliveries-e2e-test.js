@@ -14,12 +14,16 @@ test('Pagina di stato: autorizzazione, anteprima, invio, posta privata e persist
   await start();assert.equal((await fetch(base+'/stato/invii')).status,403);
   const html=await(await fetch(url)).text(),csrf=html.match(/name="csrf" value="([^"]+)"/)[1];
   assert.equal((await post({title:'x'})).status,403);
+  assert.equal((await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:'csrf=inesistente'})).status,403);
+  assert.equal((await post({csrf,id:'conferma-inesistente'})).status,400);
   const data={csrf,title:'<script>Avviso</script>',body:'Test riservato',mode:'dates',before:'2026-10-24',gift:'legendary'};
   const preview=await(await post(data)).text();assert(preview.includes('Anteprima: 1 destinatario'));assert(preview.includes('&lt;script&gt;Avviso&lt;/script&gt;'));
   const id=preview.match(/name="id" value="([^"]+)"/)[1],a=await client(key),guest=await client();
   assert.equal((await a('chests')).chests.pending.length,0);
   assert.equal((await guest('inbox')).inbox.total,0);
-  const delivered=await(await post({csrf,id})).text();assert(delivered.includes('1 consegne salvate'));
+  const concurrent=await Promise.all([post({csrf,id,gift:'common',mode:'all'}),post({csrf,id})]);
+  const replies=await Promise.all(concurrent.map(r=>r.text()));
+  assert(replies.some(x=>x.includes('1 consegne salvate')));assert(replies.some(x=>x.includes('Nessun regalo duplicato')));
   assert((await(await post({csrf,id})).text()).includes('Nessun regalo duplicato'));
   assert.equal((await a('chests')).chests.pending[0].type,'legendary');
   const mail=(await a('inbox')).inbox;assert.equal(mail.unread,1);assert.equal(mail.messages[0].id,id);

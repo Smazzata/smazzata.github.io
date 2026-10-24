@@ -40,3 +40,35 @@ test('Posta paginata e storico consegne sopravvivono a salvataggio e riavvio',()
  assert(D.deliver(restored,'test-delivery-00000000',D.normalize(base),['a'],()=>{}).replayed);
  assert.equal(C.view(restored.sessions.get('a')).pending.length,0);
 });
+
+test('Filtri inattivi ignorati, date impossibili rifiutate e data storica conservata',()=>{
+ assert.equal(D.normalize({...base,before:'non-una-data'}).before,'');
+ assert.equal(D.normalize({...base,mode:'selected',nicks:'Anna',from:'2026-99-99'}).from,'');
+ for(const before of ['2026-99-99','2026-02-30','2026-04-31'])assert.throws(()=>D.normalize({...base,mode:'dates',before}),/Data non valida/);
+ const terms=Date.parse('2026-01-01');assert.equal(D.date({registeredAt:1e30,terms}),terms);
+ assert.equal(D.date({registeredAt:Infinity}),null);
+});
+test('Posta lunga: pagine stabili, estremi validi e nessuna modifica all’archivio',()=>{
+ const s={inbox:Array.from({length:10003},(_,i)=>({id:String(i),read:i%2===0}))};
+ const first=D.inbox(s),last=D.inbox(s,Number.MAX_SAFE_INTEGER);
+ assert.equal(first.messages[0].id,'10002');assert.equal(first.messages.at(-1).id,'9983');
+ assert.equal(last.offset,10000);assert.deepEqual(last.messages.map(x=>x.id),['2','1','0']);
+ assert.equal(D.inbox(s,21).offset,20);assert.equal(D.inbox(s,-1).offset,0);assert.equal(D.inbox({},999).offset,0);
+ assert.equal(first.unread,5001);assert.equal(s.inbox[0].id,'0');
+});
+test('Regalo avatar, destinatari rimossi e garanzie non consumate dalla consegna',()=>{
+ const A=require('../shared/avatars'),ctx=context(),a=A.LIST.find(x=>x.rarity==='legendary'),s=ctx.sessions.get('a');
+ s.chests=C.inventory(s);s.chests.epicMisses=17;s.chests.legendaryMisses=35;
+ const p=D.normalize({...base,gift:a.id});ctx.sessions.delete('b');
+ const result=D.deliver(ctx,'test-avatar-delivery-01',p,['a','b','guest'],()=>{});
+ assert.equal(result.count,1);assert(A.ownedIds(s).includes(a.id));assert.equal(s.chests.epicMisses,17);assert.equal(s.chests.legendaryMisses,35);
+ D.deliver(ctx,'test-avatar-delivery-02',p,['a'],()=>{});assert.equal(C.view(s).fragments,150);
+});
+test('Invio a 1000 profili: un salvataggio, un regalo ciascuno e replay senza scritture',()=>{
+ const ctx={sessions:new Map(Array.from({length:1000},(_,i)=>['user-'+i,{nick:'Utente_'+i}]))};
+ const p=D.normalize(base),targets=D.recipients(ctx.sessions,p).map(x=>x.token);let saves=0;
+ const r=D.deliver(ctx,'bulk-delivery-test-0001',p,targets,()=>{saves++;});
+ assert.equal(r.count,1000);assert.equal(saves,1);
+ for(const s of ctx.sessions.values()){assert.equal(s.inbox.length,1);assert.equal(s.chests.items.length,1);assert.equal(s.chests.items[0].type,'rare');}
+ D.deliver(ctx,'bulk-delivery-test-0001',p,targets,()=>{saves++;});assert.equal(saves,1);
+});

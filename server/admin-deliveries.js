@@ -31,7 +31,7 @@ module.exports=function setup(app,key){
     <section><h2>Ultimi invii</h2><ul>${(ctx.deliveries||[]).slice(-30).reverse().map(x=>`<li><b>${esc(x.title)}</b> — ${x.count} destinatari · ${esc(new Date(x.at).toLocaleString('it-IT',{timeZone:'Europe/Rome'}))}<br><small>${x.duplicates} doppioni convertiti · ${x.push?'Notifica sul telefono richiesta; la consegna dipende dal dispositivo.':'Solo posta personale.'}</small></li>`).join('')||'<li>Nessun invio effettuato.</li>'}</ul></section>`));
   });
   app.post('/stato/invii',express.urlencoded({extended:false,limit:'32kb'}),(req,res)=>{
-    if(req.body.csrf!==csrf)return res.status(403).send('Pagina scaduta: riaprila dalla pagina di stato');
+    if(req.body?.csrf!==csrf)return res.status(403).send('Pagina scaduta: riaprila dalla pagina di stato');
     try{
       for(const [id,p] of previews)if(p.expires<Date.now())previews.delete(id);
       const id=String(req.body.id||'');

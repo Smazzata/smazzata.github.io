@@ -35,6 +35,7 @@ module.exports = function privacyTests() {
       leagues: new Map([['L', league]]), tournaments: new Map([['T', { owner: token, players: [{ token, name: 'Tempo' }, { token: 'other', name: 'Anna' }], rounds: [{ a: 0, b: 1 }] }]]),
       rooms: new Map([['ABC', room]]), reports: [{ at: now, nick: 'Anna', text: 'Problema' }, { at: now, nick: 'Tempo', text: 'Errore' }, { at: now, nick: 'Anna', target: 'Tempo', chat: ['Tempo: ciao'] }], broadcast() {},
     };
+    ctx.deliveries=[{id:'invio-da-conservare',title:'Benvenuto Tempo',count:1}];
     ctx.League = require('./leagues')({ leagues: ctx.leagues, nickOf: (t) => t === token ? 'Tempo' : 'Anna' });
     P.eraseRelated(ctx, token, dir);
     assert.strictEqual(P.privateCopies(dir).length, 0, 'eliminazione anche delle copie non ancora scadute');
@@ -45,6 +46,8 @@ module.exports = function privacyTests() {
       assert(!text.includes(token) && !text.includes('Tempo'), 'nessun riferimento al profilo nelle collezioni condivise');
     }
     assert.strictEqual(ctx.reports.length, 1);
+    assert(!JSON.stringify(ctx.deliveries).includes('Tempo'));
+    assert.strictEqual(ctx.deliveries[0].id,'invio-da-conservare','ricevuta antireplica conservata dopo cancellazione');
     assert(room.seats[0].isBot && !room.seats[0].avatar && room.hostToken === 'other');
     // La trasformazione del posto non rompe il motore né gli indici delle carte/moviole.
     for (let i = 0; i < 15 && game.phase !== 'handEnd'; i++) E.apply(game, game.turn, Bot.nextAction(game, game.turn, {}));
