@@ -1,0 +1,24 @@
+Collezione ‖ Collection ‖ Colección ‖ Coleção
+Bottino ‖ Loot ‖ Botín ‖ Saques
+Posta ‖ Inbox ‖ Correo ‖ Mensagens
+Il tuo mondo di gioco ‖ Your world of play ‖ Tu mundo de juego ‖ Seu mundo de jogo
+Fai tuo ogni dettaglio. ‖ Make every detail yours. ‖ Haz tuyo cada detalle. ‖ Dê seu toque a cada detalhe.
+oggetti posseduti ‖ items owned ‖ objetos en propiedad ‖ itens possuídos
+COLLEZIONE PERSONALE ‖ PERSONAL COLLECTION ‖ COLECCIÓN PERSONAL ‖ COLEÇÃO PESSOAL
+Anteprima oggetto ‖ Item preview ‖ Vista previa del objeto ‖ Prévia do item
+Torna agli oggetti ‖ Back to items ‖ Volver a los objetos ‖ Voltar aos itens
+Nella tua collezione ‖ In your collection ‖ En tu colección ‖ Na sua coleção
+Da scoprire nelle chest ‖ Discover in chests ‖ Descúbrelo en los cofres ‖ Descubra nos baús
+Equipaggiato ‖ Equipped ‖ Equipado ‖ Equipado
+Equipaggia ‖ Equip ‖ Equipar ‖ Equipar
+Vai al bottino ‖ Go to loot ‖ Ir al botín ‖ Ir aos saques
+Oggetti posseduti ‖ Owned items ‖ Objetos en propiedad ‖ Itens possuídos
+Cerca nella collezione ‖ Search your collection ‖ Buscar en la colección ‖ Buscar na coleção
+Disponibilità ‖ Availability ‖ Disponibilidad ‖ Disponibilidade
+Rarità ‖ Rarity ‖ Rareza ‖ Raridade
+Posseduto ‖ Owned ‖ En propiedad ‖ Possuído
+Non posseduto ‖ Not owned ‖ No adquirido ‖ Não possuído
+Nessun oggetto da mostrare ‖ No items to display ‖ No hay objetos que mostrar ‖ Nenhum item para mostrar
+Prova un altro filtro oppure scopri i premi nel bottino. ‖ Try another filter or discover rewards in Loot. ‖ Prueba otro filtro o descubre premios en el botín. ‖ Experimente outro filtro ou descubra prêmios nos saques.
+Azzera filtri ‖ Reset filters ‖ Restablecer filtros ‖ Limpar filtros
+Progressi, garanzie e frammenti ‖ Progress, guarantees and fragments ‖ Progreso, garantías y fragmentos ‖ Progresso, garantias e fragmentos

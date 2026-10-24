@@ -17,7 +17,7 @@ async function chestsModal() {
   const rules=data.rules,request=chestRequest(),disabled=!online||!!request;
   const selected=data.pending.find(x=>x.id===S.selectedChestId)||data.pending[0];
   const rarities=window.SmazzataAvatars.RARITIES,type=selected?.type || 'common',openingOdds=selected?.odds||data.odds;
-  openModal('chests',`<section class="chest-room"><button class="btn small" data-act="profile">${t('Torna al profilo')}</button><h2>${t('Inventario personale')}</h2>
+  openModal('chests',collectionShell('loot',`<section class="chest-room"><button class="btn small" data-act="profile">${t('Torna al profilo')}</button><h2>${t('Bottino')}</h2>
     <nav class="inventory-nav" aria-label="${t('Inventario personale')}"><button class="btn small" data-act="inbox">${t('Posta personale')}${S.social?.unreadMail?' · '+S.social.unreadMail:''}</button><button class="btn small" data-act="profile">${t('Avatar')}</button><button class="btn small" data-act="cosmetics">${t('Dorsi, cornici e altri stili')}</button></nav>
     <p>${t('Le chest ottenute giocando e quelle ricevute in regalo restano qui finché decidi di aprirle.')}</p>
     <div class="inventory-chests">${rarities.map(r=>{const items=data.pending.filter(x=>x.type===r.id),first=items[0];return `<button class="inventory-chest" data-act="chestSelect" data-id="${esc(first?.id||'')}" data-chest-type="${r.id}" aria-pressed="${!!first&&type===r.id}" ${!first?'disabled':''}><span class="chest-sprite" aria-hidden="true"></span><b>${t(rules.types[r.id].name)}</b><small>${t('Disponibili')}: ${items.length}</small></button>`;}).join('')}</div>
@@ -28,7 +28,7 @@ async function chestsModal() {
     <p class="muted small">${t('Scegli la chest da aprire. Le probabilità mostrate includono le garanzie attive.')}</p>
     ${request?`<p role="status">${t('Un risultato è in attesa di conferma. Recuperalo prima di continuare.')}</p><button class="btn primary" data-act="chestRetry" ${!online?'disabled':''}>${t('Recupera risultato')}</button>`:
       `<button class="btn primary chest-open-button" data-act="chestOpen" data-id="${esc(selected?.id || '')}" ${disabled||!data.pending.length?'disabled':''}>${t('Apri una chest')}</button>`}
-    <div class="chest-guarantees"><p>${t('Epico o leggendario entro')}: <b>${data.epicIn}</b> ${t('aperture')}</p><p>${t('Leggendario entro')}: <b>${data.legendaryIn}</b> ${t('aperture')}</p></div>
+    <details class="collection-loot-details"><summary>${t('Progressi, garanzie e frammenti')}</summary><div class="chest-guarantees"><p>${t('Epico o leggendario entro')}: <b>${data.epicIn}</b> ${t('aperture')}</p><p>${t('Leggendario entro')}: <b>${data.legendaryIn}</b> ${t('aperture')}</p></div>
     <p>${t('Una chest ogni 3 partite online completate con avversari umani. Massimo 2 al giorno.')}</p><progress class="chest-progress" value="${data.progress}" max="3" aria-label="${t('Progressi verso la prossima chest')}"></progress><p class="muted small">${data.progress}/3 · ${t('Chest ottenute oggi')}: ${data.earnedToday}/2</p>
     <p class="muted small">${t('Allenamento, partite annullate e abbandoni non contano. Il limite si rinnova a mezzanotte, ora italiana.')}</p>
     ${data.earnedToday>=2?`<p class="chest-notice">${t('Limite giornaliero raggiunto. Riprendi domani; le tue chest non scadono.')}</p>`:''}
@@ -39,18 +39,19 @@ async function chestsModal() {
     </details>
     <h3>${t('Scambia frammenti')}</h3><p class="muted small">${t('Ricevi un oggetto casuale non posseduto della rarità scelta. Lo scambio non modifica le garanzie delle chest.')}</p>
     <div class="chest-exchanges">${rarities.map(r=>`<div><span><b>${t(r.name)}</b><small>${t('Doppione')}: +${rules.fragments[r.id]} ${t('frammenti')}</small></span><button class="btn small" data-act="chestExchange" data-rarity="${r.id}" ${disabled||!data.missing[r.id]||data.fragments<rules.costs[r.id]?'disabled':''}>${!data.missing[r.id]?t('Tutti ottenuti'):t('Scambia')+' · '+rules.costs[r.id]}</button></div>`).join('')}</div>
+    </details>
     ${data.recent.length?`<h3>${t('Ultime aperture')}</h3><div class="chest-history">${data.recent.map(x=>{const a=chestPrize(x);return `<div>${a.html}<span>${esc(t(a.name))}<small>${x.duplicate?'+'+x.fragments+' '+t('frammenti'):t('Nuovo oggetto')}</small></span></div>`;}).join('')}</div>`:''}
-  </section>`);
+  </section>`));
   $('#modal .modal-box').scrollTop=0;
 }
 function chestReveal(reward) {
   const a=chestPrize(reward),rarity=window.SmazzataAvatars.RARITIES.find(r=>r.id===reward.rarity);
   const reduce=S.prefs.anim===false || matchMedia('(prefers-reduced-motion: reduce)').matches;
   clearTimeout(S.chestRevealTimer);
-  openModal('chestReward',`<section class="chest-reveal ${reduce?'':'is-opening'}" data-rarity="${rarity.id}">
+  openModal('chestReward',collectionShell('loot',`<section class="chest-reveal ${reduce?'':'is-opening'}" data-rarity="${rarity.id}">
     <h2>${t('Il tuo premio')}</h2><div class="chest-stage" data-chest-type="${reward.chestType || reward.rarity}" aria-hidden="true"><div class="chest-burst"></div><div class="chest-sprite"></div>${Array.from({length:8},(_,i)=>`<i class="chest-spark" style="--spark:${i}"></i>`).join('')}</div>
     <button class="btn small chest-skip" data-act="chestSkip">${t('Salta animazione')}</button>
-    <div class="chest-prize" hidden role="status"><div class="chest-prize-art">${a.html}</div><span class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</span><h3>${esc(t(a.name))}</h3><p>${reward.duplicate?t('Doppione')+' · +'+reward.fragments+' '+t('frammenti'):t('Nuovo oggetto nella tua collezione')}</p><div class="row"><button class="btn primary" data-act="chestEquip" data-kind="${a.kind}" data-item-id="${a.id}">${a.kind==='avatar'?t('Usa avatar'):t('Usa questo stile')}</button><button class="btn" data-act="chests">${t('Continua')}</button></div></div></section>`);
+    <div class="chest-prize" hidden role="status"><div class="chest-prize-art">${a.html}</div><span class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</span><h3>${esc(t(a.name))}</h3><p>${reward.duplicate?t('Doppione')+' · +'+reward.fragments+' '+t('frammenti'):t('Nuovo oggetto nella tua collezione')}</p><div class="row"><button class="btn primary" data-act="chestEquip" data-kind="${a.kind}" data-item-id="${a.id}">${a.kind==='avatar'?t('Usa avatar'):t('Usa questo stile')}</button><button class="btn" data-act="chests">${t('Continua')}</button></div></div></section>`));
   $('#modal .modal-box').scrollTop=0;
   if(reduce)handlers.chestSkip();else S.chestRevealTimer=setTimeout(()=>{if(S.modalKind==='chestReward')handlers.chestSkip();},1900);
 }
@@ -70,7 +71,7 @@ async function chestSubmit(request) {
 }
 Object.assign(handlers,{
   chests:chestsModal,
-  chestSelect(el){S.selectedChestId=el.dataset.id;return chestsModal();},
+  async chestSelect(el){S.selectedChestId=el.dataset.id;await chestsModal();const button=$('#modal .chest-open-button');button?.scrollIntoView({block:'center'});button?.focus({preventScroll:true});},
   chestOpen(el){return chestSubmit({type:'open',id:el.dataset.id});},
   chestExchange(el){
     const requestId=crypto.randomUUID?.() || Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
@@ -95,17 +96,18 @@ socket.on('chests',data=>{
   if(data.justEarned)toast(t('Hai ottenuto una chest gratuita!'));
   const count=$('#modal .chest-entry small');if(count)count.textContent=t('Chest disponibili')+': '+data.pending.length;
   if(S.modalKind==='chests'&&!S.chestBusy)chestsModal();
+  if(S.modalKind==='cosmetics'&&!S.collectionBusy)collectionModal();
 });
 
 async function inboxModal(offset=0) {
   if(OFFLINE||!S.connected){toast(t('Collegati per leggere la posta personale'),true);return;}
   const owner=S.token,r=await emit('inbox',{offset});if(owner!==S.token||!r.ok)return;
   const box=r.inbox;
-  openModal('inbox',`<section class="personal-inbox"><button class="btn small" data-act="chests">${t('Inventario personale')}</button><h2>${t('Posta personale')}</h2><p>${t('Messaggi e regali da Smazzata')}</p>
+  openModal('inbox',collectionShell('mail',`<section class="personal-inbox"><button class="btn small" data-act="chests">${t('Inventario personale')}</button><h2>${t('Posta personale')}</h2><p>${t('Messaggi e regali da Smazzata')}</p>
     ${box.messages.length?box.messages.map(m=>`<article class="personal-letter ${m.read?'':'unread'}"><small>${esc(new Date(m.at).toLocaleString())} · ${t(m.read?'Letto':'Da leggere')}</small><h3>${esc(m.title)}</h3><p class="letter-body">${esc(m.body)}</p>
     ${m.gift?`<div class="letter-gift">${m.gift.kind==='chest'?`<div data-chest-type="${esc(m.gift.type)}"><div class="chest-sprite" aria-hidden="true"></div></div><b>${t(({common:'Chest comune',rare:'Chest rara',epic:'Chest epica',legendary:'Chest leggendaria'})[m.gift.type])}</b>`:`${chestPrize(m.gift).html}<b>${esc(t(chestPrize(m.gift).name))}</b>`}<p>${m.gift.duplicate?'+'+m.gift.fragments+' '+t('frammenti'):t('Regalo consegnato al tuo inventario')}</p><button class="btn small" data-act="chests">${t('Inventario personale')}</button></div>`:''}
     ${!m.read?`<button class="btn small" data-act="readMail" data-id="${esc(m.id)}" data-offset="${box.offset}">${t('Segna come letto')}</button>`:''}</article>`).join(''):`<p class="chest-notice">${t('Non hai ancora ricevuto messaggi.')}</p>`}
-    <nav class="inventory-nav">${box.offset?`<button class="btn small" data-act="inbox" data-offset="${Math.max(0,box.offset-20)}">${t('Più recenti')}</button>`:''}${box.offset+box.messages.length<box.total?`<button class="btn small" data-act="inbox" data-offset="${box.offset+20}">${t('Più vecchi')}</button>`:''}</nav></section>`);
+    <nav class="inventory-nav">${box.offset?`<button class="btn small" data-act="inbox" data-offset="${Math.max(0,box.offset-20)}">${t('Più recenti')}</button>`:''}${box.offset+box.messages.length<box.total?`<button class="btn small" data-act="inbox" data-offset="${box.offset+20}">${t('Più vecchi')}</button>`:''}</nav></section>`));
 }
 Object.assign(handlers,{
   inbox:el=>inboxModal(Number(el?.dataset?.offset)||0),

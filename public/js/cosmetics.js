@@ -57,16 +57,11 @@ function chestPrize(reward){
   const a=window.SmazzataAvatars.resolve(reward.avatarId||reward.itemId);return {...a,kind:'avatar',html:window.SmazzataAvatars.svg(a.id)};
 }
 async function cosmeticsModal(kind=S.cosmeticKind||'back'){
-  const owner=S.token;let online=false;
-  if(!OFFLINE&&S.connected){const r=await emit('cosmetics');if(owner!==S.token)return;if(r.ok){cacheCosmetics(r.cosmetics);online=true;}}
-  S.cosmeticKind=window.SmazzataCosmetics.KINDS.some(k=>k.id===kind)?kind:'back';
-  const C=window.SmazzataCosmetics,state=cosmeticState(),owned=new Set(state.ownedIds),items=C.LIST.filter(x=>x.kind===S.cosmeticKind&&owned.has(x.id));
-  S.cosmeticOnline=online;
-  openModal('cosmetics',`<section class="cx-collection"><button class="btn small" data-act="profile">${t('Torna al profilo')}</button><h2>${t('La tua collezione')}</h2><p class="muted">${t('Stili ottenuti nelle chest, da usare come preferisci.')}</p><div class="cx-tabs" role="group" aria-label="${t('Tipo di oggetto')}">${C.KINDS.map(k=>`<button class="btn small ${k.id===S.cosmeticKind?'primary':''}" data-act="cosmeticTab" data-kind="${k.id}" aria-pressed="${k.id===S.cosmeticKind}">${t(k.name)} <small>${C.LIST.filter(x=>x.kind===k.id&&owned.has(x.id)).length}</small></button>`).join('')}</div>${!online?`<p class="chest-notice">${t('Copia offline: collegati per cambiare stile.')}</p>`:''}<button class="btn small cx-reset" data-act="cosmeticReset" data-kind="${S.cosmeticKind}" ${!online||!state.loadout[S.cosmeticKind]?'disabled':''}>${t('Ripristina stile base')}</button><div class="cx-grid">${items.map(x=>`<button class="cx-item ${state.loadout[x.kind]===x.id?'on':''}" data-rarity="${x.rarity}" data-act="cosmeticPreview" data-id="${x.id}" aria-label="${esc(t(x.name))}">${cosmeticArt(x)}<b>${esc(t(x.name))}</b><small class="avatar-rarity" data-rarity="${x.rarity}">${t(window.SmazzataAvatars.RARITIES.find(r=>r.id===x.rarity).name)}</small>${state.loadout[x.kind]===x.id?'<span class="cx-equipped">'+t('In uso')+'</span>':''}</button>`).join('')||`<p class="cx-empty">${t('Qui compariranno gli oggetti che trovi nelle chest. Gli stili base restano sempre disponibili.')}</p>`}</div><button class="btn" data-act="chests">${t('Le tue chest')}</button></section>`);
+  S.cosmeticKind=kind;return collectionModal(kind);
 }
 function cosmeticPreview(id){
-  const item=window.SmazzataCosmetics.byId.get(id);if(!item||!cosmeticState().ownedIds.includes(id))return;
-  openModal('cosmeticPreview',`<section class="cx-detail" data-rarity="${item.rarity}"><button class="btn small" data-act="cosmetics">${t('La tua collezione')}</button><div class="cx-detail-art">${cosmeticArt(item)}</div><span class="avatar-rarity" data-rarity="${item.rarity}">${t(window.SmazzataAvatars.RARITIES.find(r=>r.id===item.rarity).name)}</span><h2>${esc(t(item.name))}</h2>${item.kind==='victory'?`<button class="btn" data-act="cosmeticPlay" data-id="${id}">${t('Prova animazione')}</button>`:''}<button class="btn primary" data-act="cosmeticEquip" data-id="${id}" ${!S.cosmeticOnline?'disabled':''}>${t('Usa questo stile')}</button></section>`);
+  const item=window.SmazzataCosmetics.byId.get(id);if(!item)return;
+  S.collectionCategory=item.kind;S.collectionSelected=id;S.collectionInspect=true;renderCollection();
 }
 async function equipCosmetic(kind,id){
   if(OFFLINE||!S.connected)return false;const owner=S.token,r=await emit('setCosmetic',{kind,id});

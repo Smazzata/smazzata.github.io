@@ -128,7 +128,7 @@
             <div class="row" style="margin-top:6px"><button class="btn small" data-act="goOnline"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-refresh /></svg> Riprova online</button></div></div>`
         : S.social && S.social.nick
           ? `<div class="hello" data-act="profile" title="Il mio profilo"><span class="row">${avatarHTML(S.social.nick, 0, false, S.social.avatar || { e: S.social.nick.charAt(0).toUpperCase(), c: '#f2c14e' })}<span>Ciao, <b>${esc(S.social.nick)}</b>!${S.progress && S.progress.streak && S.progress.streak.streak >= 2 ? ` <span class="streak" title="Giorni di gioco di fila"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> ${S.progress.streak.streak}</span>` : ''}${S.progress ? `<span class="lvlline">${lvlHTML(S.progress.level)} <em class="xpbar" title="${S.progress.into}/${S.progress.need} punti esperienza"><u style="width:${Math.round((S.progress.into / S.progress.need) * 100)}%"></u></em></span>` : ''}</span></span>
-</div><div class="inventory-nav"><button class="btn small" data-act="chests">${uiIcon('cards')}${t('Inventario personale')}</button><button class="btn small" data-act="inbox">${uiIcon('mail')}${t('Posta personale')}${S.social.unreadMail?' · '+S.social.unreadMail:''}</button></div>
+</div><div class="inventory-nav"><button class="btn small" data-act="collection">${uiIcon('cards')}${t('Collezione')}</button><button class="btn small" data-act="inbox">${uiIcon('mail')}${t('Posta personale')}${S.social.unreadMail?' · '+S.social.unreadMail:''}</button></div>
             ${S.social.hasPassword === false ? '<div class="offbanner"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> <b>Il tuo profilo non ha una password.</b> Impostala ora, così puoi sempre rientrare. <button class="btn small" data-act="profile"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-profile /></svg> Imposta</button></div>' : ''}`
           : S.signup ? `<div class="mailbox"><p><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-mail /></svg> Ti abbiamo mandato un codice a <b>${esc(S.signup.email)}</b>.</p>
               <p>Scrivilo qui per creare il profilo <b>${esc(S.signup.nick)}</b>:</p>
@@ -188,7 +188,7 @@
     const so = S.social || {};
     const item = (act, icon, label, extra = '') => `<button class="menuitem" data-act="${act}"><span>${icon}</span>${label}${extra}</button>`;
     openModal('more', `<h2>${uiIcon('menu')} Altro</h2><div class="menulist">
-      ${so.nick ? item('profile', uiIcon('profile'), 'Il mio profilo') + item('chests', uiIcon('cards'), t('Inventario personale')) + item('inbox', uiIcon('mail'), t('Posta personale'), so.unreadMail ? ' · '+so.unreadMail : '') : ''}
+      ${so.nick ? item('profile', uiIcon('profile'), 'Il mio profilo') + item('collection', uiIcon('cards'), t('Collezione')) + item('inbox', uiIcon('mail'), t('Posta personale'), so.unreadMail ? ' · '+so.unreadMail : '') : ''}
       ${item('firstRun', uiIcon('help'), 'Guida iniziale')}
       ${item('stats', uiIcon('stats'), 'Le mie statistiche')}
       ${item('gamesRules', uiIcon('book'), 'Regole dei giochi')}

@@ -74,7 +74,7 @@
         <span class="avcolor-label">Colore del bordo</span><div class="avcolors">${r.colors.map((c) => `<button type="button" class="avcol ${c === av.c ? 'on' : ''}" style="background:${c}" data-act="pickAvatar" data-avatar-id="${av.id}" data-c="${c}" aria-label="${t('Colore del bordo')}: ${c}" aria-pressed="${c === av.c}"></button>`).join('')}</div></div>
       <button class="btn small" data-act="inbox">${uiIcon('mail')} ${t('Posta personale')}${S.social?.unreadMail?' · '+S.social.unreadMail:''}</button>
       <button class="chest-entry" data-act="chests"><span class="chest-thumb" aria-hidden="true"></span><span><b>${t('Inventario personale')}</b><small>${t('Chest disponibili')}: ${r.chests?.pending?.length || 0}</small></span>${uiIcon('play')}</button>
-      <button class="btn" data-act="cosmetics">${t('Dorsi, cornici e altri stili')}</button>
+      <button class="btn" data-act="collection">${uiIcon('cards')}${t('Collezione')}</button>
       ${lookHTML(av)}
       <h4>Cambia nickname</h4>
       <form id="nickform" class="row"><input id="nickEdit" class="grow" maxlength="16" autocomplete="off" value="${esc(r.nick)}"><button class="btn primary">Salva</button></form>
