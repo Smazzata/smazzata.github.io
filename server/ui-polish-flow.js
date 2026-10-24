@@ -12,7 +12,7 @@ module.exports = async ({ cdp, shot, errors, step }) => {
     await cdp.run(`
       S.screen = 'home'; render(); closeModal(); await __W(300);
       if (document.documentElement.scrollWidth > innerWidth) throw Error('home fuori schermo');
-      if (document.querySelectorAll('.home-shortcut svg').length !== 4) throw Error('icone community mancanti');
+      if (document.querySelectorAll('.home-navigation svg').length !== 3) throw Error('icone navigazione mancanti');
     `);
     await capture('polish-home-' + width);
     await cdp.run(`

@@ -91,17 +91,13 @@
   }
 
   function homeToolbarHTML() {
-    const reqs = S.social?.reqIn?.length || 0;
-    return `<div class="home-toolbar">
-      <div class="home-game"><span id="homeGameLabel">${t('Scegli il gioco')}</span><button id="homeGame" class="home-game-trigger" data-act="homeGameMenu" aria-haspopup="dialog" aria-labelledby="homeGameLabel homeGameName"><span class="home-game-symbol" aria-hidden="true">${gameIcon(homeGame())}</span><b id="homeGameName">${esc(GAME_TILES.find(([id])=>id===homeGame())[2])}</b><span class="home-game-chevron" aria-hidden="true">⌄</span></button></div>
-      <div class="home-tools"><button class="btn small" data-act="tutorial">${uiIcon('book')} Regole</button><button class="btn small morebtn" data-act="more">${uiIcon('menu')} Altro</button></div>
-      ${OFFLINE ? '' : `<nav class="home-shortcuts" aria-label="Community">
-        <button class="home-shortcut" data-act="friends"><span class="shortcut-icon" aria-hidden="true">${uiIcon('friends')}</span><span>Amici</span>${reqs ? `<b class="shortcut-count">${reqs}</b>` : ''}</button>
-        <button class="home-shortcut" data-act="daily"><span class="shortcut-icon" aria-hidden="true">${uiIcon('calendar')}</span><span>Sfida del giorno</span></button>
-        <button class="home-shortcut" data-act="tournaments"><span class="shortcut-icon" aria-hidden="true">${uiIcon('trophy')}</span><span>Tornei</span></button>
-        <button class="home-shortcut" data-act="leaders"><span class="shortcut-icon" aria-hidden="true">${uiIcon('medal')}</span><span>Classifica</span></button>
-      </nav>`}
-    </div>`;
+    return `<div class="home-toolbar"><div class="home-game"><span id="homeGameLabel">${t('Scegli il gioco')}</span><button id="homeGame" class="home-game-trigger" data-act="homeGameMenu" aria-haspopup="dialog" aria-labelledby="homeGameLabel homeGameName"><span class="home-game-symbol" aria-hidden="true">${gameIcon(homeGame())}</span><b id="homeGameName">${esc(GAME_TILES.find(([id])=>id===homeGame())[2])}</b><span class="home-game-chevron" aria-hidden="true">⌄</span></button></div></div>`;
+  }
+  function homeNavigationHTML(){
+    return `<nav class="home-navigation" aria-label="${t('Menu principale')}">${!OFFLINE&&S.social?.nick?`<button data-act="collection">${uiIcon('cards')}<span>${t('Collezione')}</span></button><button data-act="friends">${uiIcon('friends')}<span>${t('Amici')}</span>${S.social.reqIn?.length?'<b>'+S.social.reqIn.length+'</b>':''}</button>`:''}<button data-act="more">${uiIcon('menu')}<span>${t('Menu')}</span></button></nav>`;
+  }
+  function menuCardsHTML(title,items,back='more'){
+    return `<section class="simple-menu">${back?`<button class="menu-back" data-act="${back}">← ${t('Menu')}</button>`:''}<h2>${t(title)}</h2><div class="menu-cards">${items.map(x=>`<button class="menu-card" data-act="${x.act}">${uiIcon(x.icon)}<span><b>${t(x.name)}</b>${x.note?`<small>${t(x.note)}</small>`:''}</span><span aria-hidden="true">›</span></button>`).join('')}</div></section>`;
   }
 
   function firstRunModal(step = 0) {
@@ -117,7 +113,7 @@
     if (!OFFLINE && S.mailOn && S.social && S.social.nick && S.social.hasEmail === false) return emailGateHTML() + `<div class="panel"><button class="btn" data-act="playBots">${uiIcon('bot')}${t('Prova senza registrarti')}</button></div>`;
     return `<div class="page home-page">
       <div class="logo"><h1 translate="no">Smazzata</h1>
-        <div class="muted">Gioca con gli amici o contro il computer</div></div>
+        <div class="muted">Scegli il gioco e comincia</div></div>
       ${homeToolbarHTML()}
       ${S.appUpdate && !S.appUpdate.dismissed ? `<div class="apkbanner update">
         <img src="icons/icon-192.png" alt=""><span><b><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-home /></svg> Nuova versione dell'app</b><br>Scaricala e installala sopra quella che hai: profilo e partite restano.</span>
@@ -128,8 +124,7 @@
             Amici, classifica e partite online tornano quando sei collegato.
             <div class="row" style="margin-top:6px"><button class="btn small" data-act="goOnline"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-refresh /></svg> Riprova online</button></div></div>`
         : S.social && S.social.nick
-          ? `<div class="hello" data-act="profile" title="Il mio profilo"><span class="row">${avatarHTML(S.social.nick, 0, false, S.social.avatar || { e: S.social.nick.charAt(0).toUpperCase(), c: '#f2c14e' })}<span>Ciao, <b>${esc(S.social.nick)}</b>!${S.progress && S.progress.streak && S.progress.streak.streak >= 2 ? ` <span class="streak" title="Giorni di gioco di fila"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> ${S.progress.streak.streak}</span>` : ''}${S.progress ? `<span class="lvlline">${lvlHTML(S.progress.level)} <em class="xpbar" title="${S.progress.into}/${S.progress.need} punti esperienza"><u style="width:${Math.round((S.progress.into / S.progress.need) * 100)}%"></u></em></span>` : ''}</span></span>
-</div><div class="inventory-nav"><button class="btn small" data-act="collection">${uiIcon('cards')}${t('Collezione')}</button><button class="btn small" data-act="inbox">${uiIcon('mail')}${t('Posta personale')}${S.social.unreadMail?' · '+S.social.unreadMail:''}</button></div>
+          ? `<button class="home-account" data-act="profile">${avatarHTML(S.social.nick,0,false,S.social.avatar)}<b>${esc(S.social.nick)}</b><span aria-hidden="true">›</span></button>
             ${S.social.hasPassword === false ? '<div class="offbanner"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> <b>Il tuo profilo non ha una password.</b> Impostala ora, così puoi sempre rientrare. <button class="btn small" data-act="profile"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-profile /></svg> Imposta</button></div>' : ''}`
           : S.signup ? `<div class="mailbox"><p><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-mail /></svg> Ti abbiamo mandato un codice a <b>${esc(S.signup.email)}</b>.</p>
               <p>Scrivilo qui per creare il profilo <b>${esc(S.signup.nick)}</b>:</p>
@@ -147,7 +142,7 @@
               <label class="agecheck"><input type="checkbox" id="nickage"${S.ageOk ? ' checked' : ''}><span><span>Ho almeno 14 anni e accetto le regole</span> (<a href="regole.html">Regole</a> · <a href="privacy.html">Privacy</a>)</span></label>
               <div class="row"><button class="btn primary grow" data-act="claimNick">Crea il profilo</button></div>
               <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a></p></details>`}
-        ${homeButtonsHTML()}
+        ${homeButtonsHTML()}${homeNavigationHTML()}
       </div>
       ${!OFFLINE && S.myGames && S.myGames.length ? `<div class="panel"><h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-clock /></svg> Le tue partite con calma</h2>
         ${S.myGames.map((m) => `<button class="slowgame ${m.myTurn ? 'myturn' : ''}" data-act="openSlow" data-code="${esc(m.code)}">
@@ -176,34 +171,34 @@
       ${last ? `<button class="btn primary big grow" data-act="rejoin"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-refresh /></svg> Torna alla partita</button>` : ''}
       ${S.tourMatch && !S.room ? `<div class="tourready"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> ${esc(S.tourMatch.text)} <button class="btn small primary" data-act="tourPlay" data-code="${esc(S.tourMatch.code)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Gioca</button></div>` : ''}
       ${OFFLINE ? '' : `<button class="btn primary big grow homebtn" data-act="playFriends">${uiIcon('friends')}Gioca con gli amici</button>`}
-      ${OFFLINE ? '' : `<button class="btn big grow homebtn" data-act="quickMenu" data-mode="casual">${uiIcon('cards')}<div>Amichevole online<small>Trova un tavolo · senza punti classifica</small></div></button>
-      <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked">${uiIcon('medal')}<div>Classificata<small>Scala i gradi, da Bronzo a Leggenda</small></div></button>`}
-      <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots">${uiIcon('bot')}<div>Gioca contro il computer<small>Allenamento · senza progressi o statistiche</small></div></button>
+      ${OFFLINE ? '' : `<button class="btn big grow homebtn" data-act="quickMenu" data-mode="casual">${uiIcon('cards')}<div>Gioca online<small>Trova altri giocatori</small></div></button>
+      <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked">${uiIcon('medal')}<div>Classificata<small>Gioca per salire di grado</small></div></button>`}
+      <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots">${uiIcon('bot')}<div>Allenamento<small>Gioca contro il computer</small></div></button>
       ${CAMPAIGN_VISIBLE ? '<button class="btn grow campaign-entry" data-act="campaign"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-book /></svg> Avventura<small>Tre percorsi: Burraco, Scala 40 e Ramino</small></button>' : ''}
-      ${!OFFLINE&&S.social?.nick?`<button class="journey-entry home-journey" data-act="journey">${uiIcon('calendar')}<span><b>${t('Il tuo percorso')}</b><small>${S.social.nextChest?.limit?t('Il percorso mensile continua ad avanzare.'):S.social.nextChest?.remaining===1?t('Ancora una partita per la prossima chest'):t('Ancora {0} partite per la prossima chest').replace('{0}',String(S.social.nextChest?.remaining||3))}</small></span><span aria-hidden="true">›</span></button>`:''}
+      ${!OFFLINE&&S.social?.nick?`<button class="home-journey home-progress" data-act="journey" aria-label="${t('Il tuo percorso')}"><span>${S.social.nextChest?.limit?t('Il percorso mensile continua ad avanzare.'):S.social.nextChest?.remaining===1?t('Ancora una partita per la prossima chest'):t('Ancora {0} partite per la prossima chest').replace('{0}',String(S.social.nextChest?.remaining||3))}</span><span aria-hidden="true">›</span></button>`:''}
 
     </div>`;
   }
 
   /** menu «Altro»: tutte le funzioni che non servono per iniziare a giocare */
   function moreModal() {
-    const so = S.social || {};
-    const item = (act, icon, label, extra = '') => `<button class="menuitem" data-act="${act}"><span>${icon}</span>${label}${extra}</button>`;
-    openModal('more', `<h2>${uiIcon('menu')} Altro</h2><div class="menulist">
-      ${so.nick ? item('profile', uiIcon('profile'), 'Il mio profilo') + item('collection', uiIcon('cards'), t('Collezione')) + item('inbox', uiIcon('mail'), t('Posta personale'), so.unreadMail ? ' · '+so.unreadMail : '') : ''}
-      ${item('firstRun', uiIcon('help'), 'Guida iniziale')}
-      ${item('stats', uiIcon('stats'), 'Le mie statistiche')}
-      ${item('gamesRules', uiIcon('book'), 'Regole dei giochi')}
-      ${item('howto', uiIcon('help'), 'Come si usa l\'app')}
-      ${item('settings', uiIcon('settings'), 'Impostazioni')}
-      ${OFFLINE ? '' : item('report', uiIcon('report'), 'Segnala un problema')}
-      <a class="menuitem" href="regole.html"><span>${uiIcon('rules')}</span>Regole di comportamento</a>
-      <a class="menuitem" href="privacy.html"><span>${uiIcon('privacy')}</span>Privacy</a></div>`);
+    openModal('more',menuCardsHTML('Menu',[
+      ...(!OFFLINE?[{act:S.social?.nick?'profile':'recover',icon:'profile',name:S.social?.nick?'Il mio profilo':'Accedi al tuo profilo'}]:[{act:'stats',icon:'stats',name:'Le mie statistiche'}]),
+      ...(!OFFLINE?[{act:'activities',icon:'trophy',name:'Attività',note:'Classifica, sfide e tornei'}]:[]),
+      {act:'settings',icon:'settings',name:'Impostazioni',note:'Suoni, aspetto e leggibilità'},
+      {act:'helpMenu',icon:'help',name:'Aiuto',note:'Impara e consulta le regole'}
+    ],''));
+  }
+  function activitiesModal(){openModal('activities',menuCardsHTML('Attività',[
+    {act:'leaders',icon:'medal',name:'Classifica'},{act:'daily',icon:'calendar',name:'Sfida del giorno'},{act:'tournaments',icon:'trophy',name:'Tornei'}]));}
+  function helpMenuModal(){
+    const html=menuCardsHTML('Aiuto',[{act:'tutorial',icon:'bot',name:'Impara a giocare'},{act:'gamesRules',icon:'book',name:'Regole dei giochi'},{act:'firstRun',icon:'play',name:'Guida iniziale'},...(!OFFLINE?[{act:'report',icon:'report',name:'Segnala un problema'}]:[])]);
+    openModal('helpMenu',html.replace('</section>',`<details class="menu-details"><summary>${t('Informazioni')}</summary><button class="btn" data-act="howto">${t('Come si usa l’app')}</button><p><a href="regole.html">${t('Regole di comportamento')}</a> · <a href="privacy.html">Privacy</a></p>${IN_APP?`<p>${t('Versione app')}: ${APP_VERSION||'—'}</p>`:''}</details></section>`));
   }
 
   /** elenco dei giochi e delle varianti con la loro descrizione (prima stava nella schermata iniziale) */
   function gamesRulesModal() {
-    const list = R.PRESETS.concat([S40R.PRESET, OTHER.ramino.PRESET, CANR.PRESET]);
+    const list = [R.PRESETS[0],S40R.PRESET,OTHER.ramino.PRESET,CANR.PRESET];
     openModal('gamesRules', `<h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-book /></svg> Regole dei giochi</h2><p class="muted small">Tocca un gioco per leggerne le regole.</p>
       <div class="presets">${list.map((p) => `<button class="preset" data-act="presetRules" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.tagline)}</span></button>`).join('')}</div>`);
   }
@@ -230,7 +225,7 @@
   function setupHTML() {
     const friends = S.playMode === 'friends' && !OFFLINE;
     const pf = RX.schema(S.rules).find((f) => f.key === 'players');
-    const adv = S.setupAdvanced || FULL();
+    const adv = !!S.setupAdvanced;
     return `<div class="page">
       <div class="row"><button class="btn ghost small" data-act="goHome">← Indietro</button></div>
       ${friends ? `<div class="panel joinbox"><b>Un amico ti ha dato un codice?</b>
@@ -238,7 +233,7 @@
       <header class="setup-game-heading"><small>${t(friends ? 'Crea il tavolo' : 'Nuova partita')}</small><h2 class="bigtitle">${esc(RX.gameName(S.rules))}</h2></header>
       <div class="panel">
         ${pf ? `<h3>Quanti giocatori?</h3><div class="row">${pf.choices.map(([v, l]) => `<button class="swatch big ${Number(S.rules.players) === Number(v) ? 'on' : ''}" data-act="pickPlayers" data-n="${v}">${esc(l)}</button>`).join('')}</div>` : ''}
-        ${friends ? '' : `<h3>Difficoltà del computer</h3><div class="row">${[['auto', 'Automatica'], ['facile', 'Facile'], ['normale', 'Normale'], ['difficile', 'Difficile'], ['esperto', 'Esperto']].map(([v, label]) => `<button class="swatch ${(S.prefs.botLevel || 'auto') === v ? 'on' : ''}" data-act="setupBotLevel" data-val="${v}" aria-pressed="${(S.prefs.botLevel || 'auto') === v}">${label}</button>`).join('')}</div><p class="muted small">Automatica: si adatta ai tuoi risultati.</p>`}
+        ${friends ? '' : `<details class="setup-computer"><summary>${t('Difficoltà del computer')} · ${t(({auto:'Automatica',facile:'Facile',normale:'Normale',difficile:'Difficile',esperto:'Esperto'})[S.prefs.botLevel||'auto'])}</summary><div class="row">${[['auto', 'Automatica'], ['facile', 'Facile'], ['normale', 'Normale'], ['difficile', 'Difficile'], ['esperto', 'Esperto']].map(([v, label]) => `<button class="swatch ${(S.prefs.botLevel || 'auto') === v ? 'on' : ''}" data-act="setupBotLevel" data-val="${v}" aria-pressed="${(S.prefs.botLevel || 'auto') === v}">${label}</button>`).join('')}</div><p class="muted small">Automatica: si adatta ai tuoi risultati.</p></details>`}
         <div class="row" style="margin-top:12px">${friends
           ? '<button class="btn primary big grow" data-act="create"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg> Crea il tavolo</button>'
           : '<button class="btn primary big grow" data-act="createBots"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Inizia la partita</button>'}</div>
@@ -314,7 +309,7 @@
             ${ready ? '' : '<p class="muted small" style="text-align:center">I posti ancora vuoti li prende il computer.</p>'}`
           : `<p class="muted" style="text-align:center">Aspettiamo che ${esc(hostName)} inizi la partita…</p>`}
       </div>
-      <details class="panel tableset" ${full ? 'open' : ''}>
+      <details class="panel tableset">
         <summary><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-settings /></svg> Impostazioni del tavolo</summary>
         <p>${rulesStatus(r.rules)} <span class="muted">· ${r.n} giocatori · si vince a ${r.rules.target}</span></p>
         <div class="row"><button class="btn small" data-act="music"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-music /></svg> Musica del tavolo${r.music ? ' (attiva)' : ''}</button></div>

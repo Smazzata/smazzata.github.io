@@ -40,6 +40,7 @@ const HELPERS = `
     if (!document.querySelector('[data-act="' + act + '"]')) {
       __tap(document.querySelector('[data-act="tableMenu"]') || document.querySelector('[data-act="more"]')); await __W(350);
     }
+    if(['daily','tournaments','leaders'].includes(act)&&!document.querySelector('#modal [data-act="'+act+'"]')){__tap('#modal [data-act=activities]');await __W(250);}
     return __tap('[data-act="' + act + '"]');
   };
   // il messaggio del turno non è più una fascia visibile: sta nascosto per la lettura ad alta voce (#turnmsg)
@@ -117,7 +118,7 @@ const HELPERS = `
       if (!document.querySelector('[data-act="savedCode"]')) throw new Error('codice di recupero non mostrato');
       __tap('[data-act="savedCode"]'); await __W(300);
       if (S.modalKind === 'firstRun') { __tap('[data-act="closeModal"]'); await __W(250); }
-      return document.querySelector('.hello') ? document.querySelector('.hello').innerText : null;`);
+      return document.querySelector('.home-account') ? document.querySelector('.home-account').innerText : null;`);
     if (!nick || !nick.includes('Robot_UI')) throw new Error('nickname non confermato');
     if (process.argv.includes('--polish')) {
       await require('./ui-polish-flow')({ cdp, shot, errors, step });
@@ -156,12 +157,12 @@ const HELPERS = `
       if(document.querySelector('[data-act="campaign"]'))throw Error('Avventura ancora visibile nella home pubblica');
       if (choices.map((b) => b.dataset.act + ':' + (b.dataset.mode || '')).join(',') !== 'playFriends:,quickMenu:casual,quickMenu:ranked,playBots:') throw new Error('ordine delle modalità nella home');
       if (!choices[0].classList.contains('primary')) throw new Error('gioco con gli amici non evidenziato');
-      const shortcuts = [...document.querySelectorAll('.home-shortcut')];
-      if (shortcuts.map((b) => b.dataset.act).join(',') !== 'friends,daily,tournaments,leaders') throw new Error('scorciatoie community mancanti');
-      for (const button of shortcuts) {
-        const rect = button.getBoundingClientRect();
-        if (rect.width < 44 || rect.height < 44 || rect.right > innerWidth) throw new Error('scorciatoie non utilizzabili su telefono');
-        __tap(button); await __W(450);
+      if(document.querySelector('.home-shortcuts')||document.querySelector('.home-tools'))throw Error('comandi duplicati nella home');
+      moreModal();if(document.querySelectorAll('.simple-menu>.menu-cards>.menu-card').length!==4)throw Error('Menu non essenziale');
+      for(const act of ['daily','tournaments','leaders']){
+        activitiesModal();const button=document.querySelector('[data-act="'+act+'"]');
+        const rect=button.getBoundingClientRect();if(rect.width<44||rect.height<44||rect.right>innerWidth)throw Error('Menu non utilizzabile su telefono');
+        __tap(button);await __W(450);
         if (button.dataset.act === 'leaders') {
           if (S.screen !== 'rankedOverview' || !document.querySelector('.ranked-overview')) throw new Error('resoconto personale mancante');
           if (document.querySelector('.ranked-selection') || document.querySelector('[data-act="rankedSearch"]')) throw new Error('Classifica apre la ricerca invece del resoconto');
@@ -171,7 +172,7 @@ const HELPERS = `
           __tap('[data-act="leagueBack"]');
           continue;
         }
-        if (S.modalKind !== button.dataset.act || document.querySelector('#modal').classList.contains('hidden')) throw new Error('scorciatoia non apre il contenuto: ' + button.dataset.act);
+        if(S.modalKind!==act)throw Error('attività non raggiungibile: '+act);
         document.querySelector('.modal-close').click();
       }
       if (/Elo/i.test(document.querySelector('#app').innerText)) throw new Error('Elo visibile nella home');
@@ -270,7 +271,7 @@ const HELPERS = `
     // 4. impostazioni: stili delle carte (anteprime)
     const st = await cdp.run(`
       document.querySelector('.modal-close').click(); await __W(300);
-      await __menu('settings'); await __W(500);
+      await __menu('settings');await __W(200);__tap('[data-act=settingsSection][data-section=appearance]');await __W(200);document.querySelector('.settings-page .menu-details').open=true;await __W(200);
       const decks = document.querySelectorAll('#modal .deckprev').length;
       __tap('#modal [data-key="deck"][data-val="francesi"]'); await __W(400);
       const fig = document.querySelectorAll('#hand .card.hasfig, #hand .card.haspips').length;

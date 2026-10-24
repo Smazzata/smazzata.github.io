@@ -65,16 +65,21 @@
     const av = { ...(r.avatar || {}), id:selected.id, e: selected.e, c: r.avatar && r.avatar.c || r.colors[0] };
     const owned = new Set(r.ownedAvatarIds || avatars.LIST.filter(a=>avatars.isSelectable(a.id)).map(a=>a.id));
     S.avatarOwnedIds = [...owned];
-    openModal('profile', `<h2>${uiIcon('profile')} ${esc(r.nick)}</h2>
+    openModal('profile', `<section class="simple-menu profile-page"><h2>${uiIcon('profile')} ${esc(r.nick)}</h2>
       <div class="profile-identity">${avatarHTML(r.nick,0,false,av)}<div><b>${esc(t(selected.name))}</b><p class="muted small">${t('Identità, sicurezza e accesso al tuo account')}</p></div></div>
-      <div class="row"><button class="btn" data-act="collectionAvatar">${uiIcon('cards')}${t('Personalizza nella collezione')}</button><button class="btn small" data-act="inbox">${uiIcon('mail')}${t('Posta personale')}${S.social?.unreadMail?' · '+S.social.unreadMail:''}</button><button class="btn small" data-act="stats">${t('Le mie statistiche')}</button></div>
-      <h4>Cambia nickname</h4>
+      <div class="row"><button class="btn" data-act="collectionAvatar">${uiIcon('cards')}${t('Personalizza nella collezione')}</button><button class="btn small" data-act="stats">${t('Le mie statistiche')}</button></div>
+      <details class="menu-details"><summary>${t('Nome del profilo')}</summary><h4>Cambia nickname</h4>
       <form id="nickform" class="row"><input id="nickEdit" class="grow" maxlength="16" autocomplete="off" value="${esc(r.nick)}"><button class="btn primary">Salva</button></form>
       <div class="nickstatus" id="nickStatusEdit"></div>
+      </details><details class="menu-details" ${!r.hasPassword||r.emailPending?'open':''}><summary>${t('Accesso e sicurezza')}</summary>
       ${r.mail ? `<h4>Email ${r.email ? '(confermata ✓)' : ''}</h4>
       <p class="muted small">Serve per ricevere un codice se dimentichi la password, e un avviso se la password cambia.</p>
       ${r.emailPending ? verifyEmailHTML(r.emailPending) : !r.email && r.emailLast ? '<p class="muted small"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Email non ancora confermata: premi «Manda il codice» per riceverne uno nuovo.</p>' : ''}
       <form id="emailform" class="row"><input id="emailin" type="email" class="grow" maxlength="250" autocomplete="email" value="${esc(r.email || r.emailLast || '')}" placeholder="nome@esempio.it"><button class="btn">${r.email ? 'Cambia' : r.emailLast ? 'Manda il codice' : 'Aggiungi'}</button></form>` : ''}
+      <h4>Password ${r.hasPassword ? '(impostata ✓)' : '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> (da impostare)'}</h4>
+      <p class="muted small">Con nickname e password entri nel tuo profilo da qualsiasi dispositivo.</p>
+      <form id="pwform" class="row"><input id="pwin" type="password" class="grow" minlength="6" autocomplete="new-password" placeholder="${r.hasPassword ? 'Nuova password' : 'Almeno 6 caratteri'}"><button class="btn">${r.hasPassword ? 'Cambia' : 'Imposta'}</button></form>
+</details><details class="menu-details"><summary>${t('Recupero del profilo')}</summary>
       <h4>Codice di recupero</h4>
       <p class="muted small">Serve se dimentichi la password, oppure per entrare da un altro telefono: inquadra il QR con la sua fotocamera
         o scrivi lì il codice (<i>Hai già un profilo? Recuperalo</i>). <b>Non condividerlo:</b> chi lo ha può usare il tuo profilo.</p>
@@ -82,15 +87,12 @@
       <div class="code-box"><span id="pcode" class="masked">${esc(r.code)}</span>
         <button class="btn small" data-act="toggleCode">Mostra</button><button class="btn small" data-act="copyCode" data-code="${esc(r.code)}">Copia</button></div>
       <button class="btn small ghost dark" style="margin-top:6px" data-act="regenCode">Genera un nuovo codice (il vecchio smette di funzionare)</button>
-      <h4>Password ${r.hasPassword ? '(impostata ✓)' : '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> (da impostare)'}</h4>
-      <p class="muted small">Con nickname e password entri nel tuo profilo da qualsiasi dispositivo.</p>
-      <form id="pwform" class="row"><input id="pwin" type="password" class="grow" minlength="6" autocomplete="new-password" placeholder="${r.hasPassword ? 'Nuova password' : 'Almeno 6 caratteri'}"><button class="btn">${r.hasPassword ? 'Cambia' : 'Imposta'}</button></form>
-      <h4>Altro profilo</h4>
+      </details><details class="menu-details"><summary>${t('Gestione account')}</summary><h4>Altro profilo</h4>
       <button class="btn small" data-act="recover">Usa un altro profilo su questo dispositivo</button>
       <h4>Elimina profilo</h4>
       <button class="btn small danger" data-act="deleteProfile">Elimina il mio profilo</button>
       <p class="muted small">Libera il nickname e cancella codice, password, amicizie e classifica. Le statistiche su questo dispositivo restano.
-        <a href="privacy.html">Leggi l'informativa privacy</a> · <a href="regole.html">Regole di comportamento</a></p>`);
+        <a href="privacy.html">Leggi l'informativa privacy</a> · <a href="regole.html">Regole di comportamento</a></p></details></section>`);
   }
 
   /** Subito dopo la creazione del profilo: il codice di recupero da conservare */

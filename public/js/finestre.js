@@ -184,20 +184,22 @@
 
   /** menu ☰ del tavolo: le funzioni meno usate, con nomi scritti per intero */
   function tableMenuModal() {
-    const r = S.room || {}, g = S.game;
-    const item = (act, icon, label) => `<button class="menuitem" data-act="${act}"><span>${uiLabel(icon)}</span>${label}</button>`;
-    if (r.campaign) {
-      openModal('tableMenu', `<h2>Il tuo viaggio</h2><div class="menulist">${item('campaignContinue','▶','Riprendi')}${item('campaignObjectives','🎯','Obiettivi del livello')}${item('campaignShop','🎒','Bottega degli aiuti')}${item('gameRules','📜','Regole del gioco')}${item('settings','⚙️','Aspetto e suoni')}${item('campaignMute','🔇','Disattiva la voce')}${item('campaignMap','🗺️','Metti in pausa e torna alla mappa')}</div>`);
-      return;
-    }
-    openModal('tableMenu', `<h2>☰ Menu</h2><div class="menulist">
-      ${item('scores', '🏆', 'Punteggi')}
-      ${item('moveHelp', uiIcon('help'), t('Aiuto per questa mossa'))}
-      ${item('report', uiIcon('report'), t('Segnala un problema'))}
-      ${item('gameRules', '📜', 'Regole del gioco')}
-      ${OFFLINE ? '' : item('music', '🎵', `Musica del tavolo${r.music ? ' (attiva)' : ''}`)}
-      ${item('settings', '⚙️', 'Impostazioni')}
-      ${item('leave', '🚪', 'Esci dalla partita')}</div>`);
+    const r=S.room||{},g=S.game;
+    if(r.campaign){openModal('tableMenu',menuCardsHTML('Il tuo viaggio',[
+      {act:'campaignContinue',icon:'play',name:'Riprendi'},{act:'campaignObjectives',icon:'trophy',name:'Obiettivi del livello'},{act:'campaignShop',icon:'cards',name:'Bottega degli aiuti'},{act:'gameRules',icon:'book',name:'Regole del gioco'},{act:'settings',icon:'settings',name:'Impostazioni'},{act:'campaignMute',icon:'music',name:'Disattiva la voce'},{act:'campaignMap',icon:'home',name:'Torna alla mappa'}],''));return;}
+    const html=menuCardsHTML('Menu della partita',[
+      {act:'closeModal',icon:'play',name:'Riprendi'},{act:'scores',icon:'trophy',name:'Punteggi'},
+      {act:'moveHelp',icon:'help',name:'Aiuto per questa mossa'},
+      {act:'settings',icon:'settings',name:'Impostazioni'},
+      ...(r.isHost?[{act:'settingsTable',icon:'cards',name:'Impostazioni del tavolo'}]:[]),
+      {act:'leave',icon:'exit',name:'Esci dalla partita'}],'');
+    openModal('tableMenu',html.replace('</section>',`<details class="menu-details"><summary>${t('Altre opzioni')}</summary><div class="menulist"><button class="menuitem" data-act="gameRules">${uiIcon('book')}${t('Regole del gioco')}</button>${!OFFLINE?`<button class="menuitem" data-act="music">${uiIcon('music')}${t('Musica del tavolo')}</button>`:''}<button class="menuitem" data-act="report">${uiIcon('report')}${t('Segnala un problema')}</button></div>      ${S.room && S.room.slow && S.game && !S.game.over && S.game.you >= 0 ? '<h4>Partita con calma</h4><button class="btn small danger" data-act="abandon"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Abbandona la partita</button>' : ''}
+      ${S.game && !S.game.over && S.game.you >= 0 ? `<h4>Fine della partita</h4><div class="row">
+        <button class="btn small danger" data-act="surrender"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> ${partnerIsHuman() ? 'Proponi la resa al compagno' : 'Arrenditi'}</button>
+        ${S.room.isHost && !S.room.daily ? '<button class="btn small" data-act="endGame"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Termina la partita</button>' : ''}
+        ${S.room.isHost ? '<button class="btn small" data-act="closeTable"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Chiudi il tavolo</button>' : ''}</div>
+        <p class="muted small">Arrendersi fa vincere gli avversari. «Termina» chiude la partita senza vincitori e riporta tutti in sala d'attesa; «Chiudi il tavolo» manda tutti alla schermata iniziale.</p>` : ''}
+</details></section>`));
   }
 
   /** ❓ al tavolo: cosa fare adesso (passi del turno e suggerimento), in una nuvoletta che sparisce da sola */

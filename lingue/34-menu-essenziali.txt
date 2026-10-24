@@ -1,0 +1,27 @@
+Menu principale ‖ Main menu ‖ Menú principal ‖ Menu principal
+Menu ‖ Menu ‖ Menú ‖ Menu
+Scegli il gioco e comincia ‖ Choose a game and start ‖ Elige un juego y empieza ‖ Escolha um jogo e comece
+Gioca online ‖ Play online ‖ Juega en línea ‖ Jogue online
+Trova altri giocatori ‖ Find other players ‖ Encuentra otros jugadores ‖ Encontre outros jogadores
+Gioca per salire di grado ‖ Play to climb the ranks ‖ Juega para subir de rango ‖ Jogue para subir de nível
+Attività ‖ Activities ‖ Actividades ‖ Atividades
+Classifica, sfide e tornei ‖ Rankings, challenges and tournaments ‖ Clasificación, desafíos y torneos ‖ Classificação, desafios e torneios
+Suoni, aspetto e leggibilità ‖ Sound, appearance and readability ‖ Sonido, aspecto y legibilidad ‖ Sons, aparência e legibilidade
+Aiuto ‖ Help ‖ Ayuda ‖ Ajuda
+Impara e consulta le regole ‖ Learn and read the rules ‖ Aprende y consulta las reglas ‖ Aprenda e consulte as regras
+Accedi al tuo profilo ‖ Sign in to your profile ‖ Accede a tu perfil ‖ Entre no seu perfil
+Come si usa l’app ‖ How to use the app ‖ Cómo usar la aplicación ‖ Como usar o aplicativo
+Informazioni ‖ Information ‖ Información ‖ Informações
+Versione app ‖ App version ‖ Versión de la aplicación ‖ Versão do aplicativo
+Suoni e musica ‖ Sound and music ‖ Sonido y música ‖ Sons e música
+Aspetto ‖ Appearance ‖ Aspecto ‖ Aparência
+Notifiche ‖ Notifications ‖ Notificaciones ‖ Notificações
+Lingua ‖ Language ‖ Idioma ‖ Idioma
+Scegli cosa vuoi cambiare. ‖ Choose what you want to change. ‖ Elige qué quieres cambiar. ‖ Escolha o que quer mudar.
+Carte e tavolo ‖ Cards and table ‖ Cartas y mesa ‖ Cartas e mesa
+Avvisi sulle partite e sugli amici. Servono le notifiche attive. ‖ Game and friend alerts. Notifications must be enabled. ‖ Avisos de partidas y amigos. Las notificaciones deben estar activadas. ‖ Avisos de partidas e amigos. As notificações devem estar ativadas.
+Menu della partita ‖ Game menu ‖ Menú de la partida ‖ Menu da partida
+Nome del profilo ‖ Profile name ‖ Nombre del perfil ‖ Nome do perfil
+Accesso e sicurezza ‖ Sign-in and security ‖ Acceso y seguridad ‖ Acesso e segurança
+Recupero del profilo ‖ Profile recovery ‖ Recuperación del perfil ‖ Recuperação do perfil
+Gestione account ‖ Account management ‖ Gestión de la cuenta ‖ Gerenciamento da conta

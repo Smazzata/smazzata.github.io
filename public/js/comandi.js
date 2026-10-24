@@ -379,6 +379,8 @@
   function mobileBack() {
     if (document.activeElement?.matches('input, textarea')) { document.activeElement.blur(); return true; }
     if (S.chestBusy || S.collectionBusy) return true;
+    if(S.modalKind==='settings'&&S.settingsSection){handlers.settingsBack();return true;}
+    if(['activities','helpMenu'].includes(S.modalKind)){handlers.more();return true;}
     if (S.modalKind === 'collectionTable') { handlers.collectionPreviewBack(); return true; }
     if (S.modalKind === 'collectionLook') { renderCollection(); return true; }
     if (S.modalKind === 'cosmetics' && S.collectionInspect) { handlers.collectionBack(); return true; }

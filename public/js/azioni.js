@@ -106,6 +106,8 @@
     playBots() { applyHomeGame(); S.playMode = 'bots'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
     playFriends() { if (!requireName()) return; applyHomeGame(); S.playMode = 'friends'; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
     more() { moreModal(); },
+    activities:activitiesModal,
+    helpMenu:helpMenuModal,
     homeGameMenu,
     firstRun() { firstRunModal(); },
     introChoose(el) { handlers.homeGameChoose(el); firstRunModal(1); },
@@ -144,6 +146,9 @@
       if (!p || !AvailableGames.enabled(p.rules)) return; rulesModal(p.rules, p.name); },
     howto() { openModal('rules', `<div class="rules-text">${HOW_TO}${R.OTHER_VARIANTS}</div>`); },
     settings: settingsModal,
+    settingsSection(el){settingsModal(el.dataset.section||'');},
+    settingsTable(){settingsModal('table');},
+    settingsBack(){if(S.settingsSection==='table')tableMenuModal();else settingsModal('');},
     async pref(el) {
       const key = el.dataset.key;
       let val = el.dataset.val;

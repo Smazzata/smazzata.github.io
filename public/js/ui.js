@@ -234,29 +234,22 @@
     return !!(team && team.members.some((x) => x !== g.you && r.seats[x] && !r.seats[x].isBot));
   }
 
-  function settingsModal() {
-    const opt = (key, val, label, extra = '') => `<button class="swatch ${S.prefs[key] === val ? 'on' : ''}" data-act="pref" data-key="${key}" data-val="${val}" ${extra}>${uiLabel(label)}</button>`;
-    openModal('settings', `<h2>Impostazioni</h2>
-      <h4>Schermate</h4>
-      <div class="row">${opt('ui', 'semplice', '🙂 Semplici')}${opt('ui', 'completa', '🧩 Complete (tutte le opzioni)')}</div>
-      <h4>Leggibilità</h4>
-      <div class="row">${opt('text', 'normale', 'Testo normale')}${opt('text', 'grande', 'Testo grande')}${opt('text', 'enorme', 'Testo molto grande')}</div>
-      <div class="row" style="margin-top:6px">${opt('contrast', false, 'Contrasto normale')}${opt('contrast', true, '◐ Alto contrasto')}</div>
-      <div class="row" style="margin-top:6px">${opt('anim', true, '✨ Animazioni')}${opt('anim', false, 'Senza animazioni')}</div>
-      ${'speechSynthesis' in window ? `<div class="row" style="margin-top:6px">${opt('speak', false, '🔈 Mosse in silenzio')}${opt('speak', true, '🗣️ Leggi le mosse ad alta voce')}</div>` : ''}
+  function settingsModal(section) {
+    const previous=S.settingsSection,wasSettings=S.modalKind==='settings',expanded=wasSettings?[...document.querySelectorAll('.settings-page .menu-details')].map((el,i)=>el.open?i:-1):[];
+    const opt = (key, val, label, extra = '') => `<button class="swatch ${S.prefs[key] === val ? 'on' : ''}" data-act="pref" data-key="${key}" data-val="${val}" aria-pressed="${S.prefs[key]===val}" ${extra}>${uiLabel(label)}</button>`;
+    const choices=[{id:'audio',name:'Suoni e musica',icon:'music'},{id:'appearance',name:'Aspetto',icon:'cards'},{id:'readability',name:'Leggibilità',icon:'eye'},...(!OFFLINE?[{id:'notifications',name:'Notifiche',icon:'mail'}]:[]),{id:'language',name:'Lingua',icon:'chat'},...(S.room?.isHost?[{id:'table',name:'Impostazioni del tavolo',icon:'settings'}]:[])];
+    const requested=typeof section==='string'?section:S.modalKind==='settings'?S.settingsSection||'':'';
+    const selected=choices.find(x=>x.id===requested);S.settingsSection=selected?.id||'';
+    const sections={
+      audio:`      <h4>${t('Musica di sottofondo')}</h4><div class="row">${opt('music', true, 'Attiva musica')}${opt('music', false, 'Disattiva musica')}</div><label class="music-volume" for="musicVolume"><span>${t('Volume musica')} <output id="musicVolumeValue" for="musicVolume">${Music.volume()}%</output></span><input id="musicVolume" type="range" min="0" max="100" step="5" value="${Music.volume()}" aria-label="${t('Volume musica')}"></label>
+      <h4>Suoni</h4>
+      <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
       ${navigator.vibrate ? `<h4>Vibrazioni</h4>
       <div class="row">${opt('haptic', true, '📳 Sì')}${opt('haptic', false, 'No')}</div>` : ''}
-      <h4>Bravura del computer nelle nuove partite</h4>
-      <div class="row">${opt('botLevel', 'auto', '✨ Automatica')}${opt('botLevel', 'facile', '🙂 Facile')}${opt('botLevel', 'normale', 'Normale')}${opt('botLevel', 'difficile', '🧠 Difficile')}${opt('botLevel', 'esperto', '🎓 Esperto')}</div>
-      <p class="muted small">Automatica: il computer si adatta a come giochi, per ogni gioco (più bravo se vinci spesso, più facile se perdi).</p>
-      ${OFFLINE ? '' : `<h4>Promemoria</h4>
-      <div class="row">${opt('remind', true, '🔔 Sì, ricordamelo')}${opt('remind', false, '🔕 No')}</div>
-      <p class="muted small">Una notifica gentile se la tua serie di giorni sta per finire, se non giochi da qualche giorno o se i tuoi amici iniziano una partita. Servono le notifiche attive.</p>`}
-      <h4>Lingua · Language</h4>
-      <div class="row">${opt('lang', 'auto', '🌐 Automatica')}${Object.entries(LANGS).map(([id, name]) => opt('lang', id, name)).join('')}</div>
-      <h4>Tema</h4>
+`,
+      appearance:`      <h4>Tema</h4>
       <div class="row">${opt('theme', 'chiaro', '☀️ Chiaro')}${opt('theme', 'scuro', '🌙 Scuro')}</div>
-      <h4>Colore del tavolo</h4>
+<details class="menu-details"><summary>${t('Carte e tavolo')}</summary>      <h4>Colore del tavolo</h4>
       <div class="row">${opt('felt', 'verde', '<i class="sw felt-verde"></i>Verde')}${opt('felt', 'blu', '<i class="sw felt-blu"></i>Blu')}${opt('felt', 'bordeaux', '<i class="sw felt-bordeaux"></i>Bordeaux')}${opt('felt', 'antracite', '<i class="sw felt-antracite"></i>Antracite')}</div>
       <h4>Dorso delle carte</h4>
       <div class="row">${opt('back', 'rosso', '<i class="sw back-rosso"></i>Rosso')}${opt('back', 'blu', '<i class="sw back-blu"></i>Blu')}${opt('back', 'verde', '<i class="sw back-verde"></i>Verde')}${opt('back', 'nero', '<i class="sw back-nero"></i>Nero')}${[['oro', 'b_oro', 'Oro'], ['notte', 'b_notte', 'Notte stellata'], ['smeraldo', 'b_smeraldo', 'Smeraldo']].map(([id, pid, label]) => {
@@ -271,29 +264,36 @@
       <h4>Giochi calati sul tavolo</h4>
       <div class="row">${opt('melds', 'colonna', '⬇️ In colonna')}${opt('melds', 'fila', '➡️ In fila')}</div>
       <p class="muted small">In colonna le carte stanno una sotto l'altra: sul telefono restano più grandi anche con tanti giochi.</p>
-      <h4>Notifiche "tocca a te"</h4>
+</details><details class="menu-details"><summary>${t('Altre opzioni')}</summary>      <h4>Schermate</h4>
+      <div class="row">${opt('ui', 'semplice', '🙂 Semplici')}${opt('ui', 'completa', '🧩 Complete (tutte le opzioni)')}</div>
+</details>`,
+      readability:`      <h4>Leggibilità</h4>
+      <div class="row">${opt('text', 'normale', 'Testo normale')}${opt('text', 'grande', 'Testo grande')}${opt('text', 'enorme', 'Testo molto grande')}</div>
+      <div class="row" style="margin-top:6px">${opt('contrast', false, 'Contrasto normale')}${opt('contrast', true, '◐ Alto contrasto')}</div>
+      <div class="row" style="margin-top:6px">${opt('anim', true, '✨ Animazioni')}${opt('anim', false, 'Senza animazioni')}</div>
+      ${'speechSynthesis' in window ? `<div class="row" style="margin-top:6px">${opt('speak', false, '🔈 Mosse in silenzio')}${opt('speak', true, '🗣️ Leggi le mosse ad alta voce')}</div>` : ''}
+`,
+      notifications:`      <h4>Notifiche "tocca a te"</h4>
       ${canNotify ? `<div class="row">${opt('notify', true, '🔔 Attive')}${opt('notify', false, '🔕 Disattivate')}</div>
         <p class="muted small">Arrivano quando il gioco è aperto in secondo piano.${typeof Notification !== 'undefined' && Notification.permission === 'denied' ? ' <b>Il browser le ha bloccate: riattivale dalle impostazioni del sito.</b>' : ''}</p>`
         : '<p class="muted small">Su questo dispositivo o browser le notifiche non sono disponibili.</p>'}
-      <h4>${t('Musica di sottofondo')}</h4><div class="row">${opt('music', true, 'Attiva musica')}${opt('music', false, 'Disattiva musica')}</div><label class="music-volume" for="musicVolume"><span>${t('Volume musica')} <output id="musicVolumeValue" for="musicVolume">${Music.volume()}%</output></span><input id="musicVolume" type="range" min="0" max="100" step="5" value="${Music.volume()}" aria-label="${t('Volume musica')}"></label><p class="muted small">${t('Temi dedicati a menu, giochi e ricompense. La scelta resta salvata su questo dispositivo; gli effetti sonori sono indipendenti.')}</p>
-      <h4>Suoni</h4>
-      <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
-      ${S.room && S.room.slow && S.game && !S.game.over && S.game.you >= 0 ? '<h4>Partita con calma</h4><button class="btn small danger" data-act="abandon"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Abbandona la partita</button>' : ''}
-      ${S.game && !S.game.over && S.game.you >= 0 ? `<h4>Fine della partita</h4><div class="row">
-        <button class="btn small danger" data-act="surrender"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> ${partnerIsHuman() ? 'Proponi la resa al compagno' : 'Arrenditi'}</button>
-        ${S.room.isHost && !S.room.daily ? '<button class="btn small" data-act="endGame"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Termina la partita</button>' : ''}
-        ${S.room.isHost ? '<button class="btn small" data-act="closeTable"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Chiudi il tavolo</button>' : ''}</div>
-        <p class="muted small">Arrendersi fa vincere gli avversari. «Termina» chiude la partita senza vincitori e riporta tutti in sala d'attesa; «Chiudi il tavolo» manda tutti alla schermata iniziale.</p>` : ''}
-      ${IN_APP ? `<h4>App</h4><p class="muted small">Versione ${APP_VERSION || 'vecchia'}${S.appUpdate ? ` · <b>disponibile la ${S.appUpdate.n}</b>` : ' · aggiornata'}</p>
-        ${S.appUpdate ? `<a class="btn small primary" href="${APK_URL}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-home /></svg> Scarica l'aggiornamento</a>` : ''}` : ''}
-      <h4>Qualcosa non va?</h4><button class="btn small" data-act="report"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Segnala un problema</button>
-      ${S.room && S.room.isHost && (!S.game || S.game.over) ? `<h4>Torneo (si imposta tra una partita e l'altra)</h4>${seriesPickHTML(S.room.series && S.room.series.bestOf)}` : ''}
+      ${OFFLINE ? '' : `<h4>Promemoria</h4>
+      <div class="row">${opt('remind', true, '🔔 Sì, ricordamelo')}${opt('remind', false, '🔕 No')}</div>
+      <p class="muted small">Avvisi sulle partite e sugli amici. Servono le notifiche attive.</p>`}
+`,
+      language:`      <h4>Lingua · Language</h4>
+      <div class="row">${opt('lang', 'auto', '🌐 Automatica')}${Object.entries(LANGS).map(([id, name]) => opt('lang', id, name)).join('')}</div>
+`,
+      table:`      ${S.room && S.room.isHost && (!S.game || S.game.over) ? `<h4>Torneo (si imposta tra una partita e l'altra)</h4>${seriesPickHTML(S.room.series && S.room.series.bestOf)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Aiuto: dove attaccare le carte</h4>${aidsHTML(S.room.aids !== false)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Tempo per turno</h4>${turnTimeHTML(S.room.turnTime)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Bravura del computer</h4>${botLevelHTML(S.room.botLevel)}` : ''}
       ${S.room && S.room.isHost ? `<h4>Velocità del computer</h4>${botSpeedHTML(S.room.botSpeed)}` : ''}
       ${S.room && S.room.isHost && S.room.humans <= 1 ? `<h4>Suggerimenti <svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-help /></svg> (solo contro il computer)</h4>
-        <div class="row"><button class="swatch ${S.room.hints ? 'on' : ''}" data-act="setHints" data-val="1">Attivi</button><button class="swatch ${S.room.hints ? '' : 'on'}" data-act="setHints" data-val="0">Disattivati</button></div>` : ''}`);
+        <div class="row"><button class="swatch ${S.room.hints ? 'on' : ''}" data-act="setHints" data-val="1">Attivi</button><button class="swatch ${S.room.hints ? '' : 'on'}" data-act="setHints" data-val="0">Disattivati</button></div>` : ''}`
+    };
+    openModal('settings',`<section class="simple-menu settings-page">${selected?`<button class="menu-back" data-act="settingsBack">← ${t(selected.id==='table'?'Menu della partita':'Impostazioni')}</button><h2>${uiIcon(selected.icon)}${t(selected.name)}</h2>${sections[selected.id]}`:`<button class="menu-back" data-act="${S.screen==='game'?'tableMenu':'more'}">← ${t('Menu')}</button><h2>${uiIcon('settings')}${t('Impostazioni')}</h2><p class="menu-intro">${t('Scegli cosa vuoi cambiare.')}</p><div class="menu-cards">${choices.filter(x=>x.id!=='table').map(x=>`<button class="menu-card" data-act="settingsSection" data-section="${x.id}">${uiIcon(x.icon)}<b>${t(x.name)}</b><span aria-hidden="true">›</span></button>`).join('')}</div>`}</section>`);
+    if(wasSettings&&S.settingsSection===previous)document.querySelectorAll('.settings-page .menu-details').forEach((el,i)=>el.open=expanded.includes(i));
   }
 
   function aidsHTML(on) {
