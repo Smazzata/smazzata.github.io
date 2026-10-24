@@ -39,3 +39,15 @@ test('Il profilo nasconde avatar non posseduti e titoli non sbloccati',async()=>
   context.S.progress.unlocks.push('t_maestro');
   assert(vm.runInContext('lookHTML({})',context).includes('data-id="t_maestro"'));
 });
+
+test('I comuni assegnati in blocco dalla vecchia versione non diventano sblocchi',()=>{
+  const old={avatar:{id:'orso'},avatarOwned:A.LIST.filter(a=>a.rarity==='common').map(a=>a.id)};
+  const owned=A.ownedIds(old);
+  assert.deepEqual(owned,[...A.STARTER_IDS,'orso']);
+  assert(!owned.includes('coniglio-gentile'));
+  // Al primo cambio il server salva solo l'inventario migrato e la sua versione.
+  const migrated={avatar:{id:'fante-quadri'},avatarOwned:owned,avatarInventoryVersion:1};
+  assert.deepEqual(A.ownedIds(migrated),owned);
+  assert(A.ownedIds({avatarOwned:['coniglio-gentile'],avatarInventoryVersion:1}).includes('coniglio-gentile'));
+  assert(A.ownedIds({avatarOwned:[...old.avatarOwned,'drago-imperatore']}).includes('drago-imperatore'));
+});

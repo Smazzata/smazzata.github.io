@@ -22,6 +22,14 @@ Proposta: doppioni convertiti in frammenti (comune 5, raro 15, epico 50, leggend
 
 Proposta di garanzia: dopo 19 aperture consecutive senza epico o leggendario, la ventesima dà almeno un epico; dopo 49 senza leggendario, la cinquantesima dà un leggendario. La garanzia leggendaria prevale. I contatori sono persistenti e visibili. Le probabilità effettive con le garanzie richiedono simulazione prima dell'attivazione.
 
+## Flusso proposto nell'app
+
+Nel profilo, sotto gli avatar posseduti, un accesso «Le tue chest» con il numero di aperture disponibili e il progresso verso la prossima (0/3, 1/3, 2/3). Al raggiungimento del limite giornaliero, indicare chiaramente quando il conteggio riprende. Nessun timer per aprire una chest già guadagnata e nessuna scadenza che obblighi a collegarsi.
+
+Prima dell'apertura mostrare probabilità, contatori di garanzia e regole dei doppioni. Il server conferma il premio, poi parte una breve animazione saltabile, diversa per rarità e rispettosa del movimento ridotto. Infine: nome, ritratto e azioni «Usa avatar» oppure «Continua». Le nuove acquisizioni compaiono subito nella collezione; gli avatar mancanti restano nascosti.
+
+Priorità proposta: prima un solo tipo di chest gratuita con queste regole; eventi, chest speciali, acquisti e valute a pagamento restano fuori dalla prima versione. Va approvato il bilanciamento prima dell'attivazione.
+
 ## Persistenza e controlli da implementare
 
 - Inventario e casualità soltanto sul server; mai fidarsi di premi o rarità inviati dal client.

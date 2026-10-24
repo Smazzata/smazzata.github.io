@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-24T05:06:57.536Z",
+  "at": "2026-10-24T06:51:14.498Z",
   "method": "Chrome da file locali; risposte social vuote simulate, motore locale reale",
   "checks": [
     "320/375/768 px",
@@ -11,10 +11,10 @@
     "bozza amico con emoji conservata",
     "allenamento senza progressi"
   ],
-  "sourceBase": "7ec4bfbecf44fb0801f64609750e04df08411ec9 + modifiche prerilascio del 24 ottobre",
+  "sourceBase": "f613c9ff77742388d675b588a14ee9a4bbe5c00d + sorgenti identificate dagli hash",
   "sourceHashes": {
     "public/index.html": "ae39bb43206e27b4279d08e81afbe8788b3f72cd7e900af597090cb8500ed017",
-    "shared/avatars.js": "36ea6f1f221086fc6f96d76529cd73d4b3ee680e0bda34f1accd66b35a15316e",
+    "shared/avatars.js": "6b2f8ab09d6e71a3af8f736bffd7c0450b8c7543c0f0de4d91dc8a5d7b6c6085",
     "public/art/avatars/fante-quadri.webp": "c23692874c24bc0e5d3df4dd1a9078c513d31675244c1014ea4e74b24caaca69",
     "public/art/avatars/dama-fiori.webp": "904448aeff27c498a6d2713078c03515287761d2eb91f5d58b4f27a411a23cbe",
     "public/art/avatars/mazziere.webp": "7c15dfd1a44596a54a05e876437b0c7062eeb99c28c3b2684408aca40006c815",
@@ -66,8 +66,8 @@
     "public/art/avatars/drago-imperatore.webp": "76db01140a5c3acf87cfa5396e8e0ac50292765c0ecc8b26473c63e7d60a0a5a",
     "public/art/avatars/volpe-nove-code.webp": "1873b7abbc4ad94d3ec3abf74330a7d35fd1fb7978b6d61e5e1ff5c9e40a4289",
     "public/style.css": "9b36b61a52c02492a02ae5b21e72c419ef82695198d172c1c605e3e2c1f1a7f1",
-    "public/sw.js": "1d83c8096789a654087e2c2031a1784dc2cdd114adaaf4c0c5f7e493c43a1edb",
-    "launcher/sw.js": "8aae1c9ba7e82703ac585df55e8fc77bfbe1a725019c8983f142df49cf7b1291",
+    "public/sw.js": "72e3787b3ed8496bf9ef605ba2a6a3f94ed4befd574719a66b69927d6c636b38",
+    "launcher/sw.js": "597313d3a25698120950bfc2def9d12943b40734560ea2d99fb23fd2252b9be0",
     "public/js/animazioni.js": "ba8f2444d9503c5cb7ffd5f7b21699ce4343d7148fe64db270f131628ed3b970",
     "public/js/avatars.js": "5ff457259d67be24575287caf460ac2e9c1b2b457f0b71bc0cbe74100fc239c7",
     "public/js/azioni.js": "c2a66f0bcfe8e7470d793765166f8a08a367f8b652aaafc0dfbb4ce18a180923",

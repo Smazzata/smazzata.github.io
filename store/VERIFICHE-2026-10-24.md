@@ -23,6 +23,12 @@ Base: `7ec4bfb`, coincidente con `origin/main` al controllo prima del commit. Il
 - Sintassi dei JavaScript modificati, 2642 testi tradotti e `git diff --check`: passati.
 - Diff e file non tracciati controllati: sorgenti, documentazione, traduzioni e prove intenzionali; nessuna credenziale riconosciuta, chiave privata, database, backup o file temporaneo aggiunto. Nessun file ignorato forzato nella pubblicazione. Dati degli screenshot dimostrativi.
 
+## Correzione dei possessi pregressi
+
+Il server pubblico espone già il catalogo con quattro avatar iniziali. Individuata una causa distinta nel codice: il vecchio `setAvatar` salvava i 24 comuni in `avatarOwned`. Senza versione inventario, quei comuni erano ancora considerati sblocchi effettivi. Ora si escludono i comuni attribuiti dalla versione precedente, conservando l'avatar equipaggiato e le rarità superiori già salvate. Al primo cambio il server persiste l'inventario ripulito con `avatarInventoryVersion: 1`; un avatar comune esplicitamente sbloccato nel futuro inventario versionato resta posseduto. Nessuna lettura di account reali o modifica diretta al database pubblico.
+
+Passati dieci test mirati, inclusa la regressione del vecchio inventario completo e la persistenza della scelta pregressa dopo il cambio. Passati `test:rapido`, `e2e` (anche rifiuto di un comune non posseduto e dell'autoassegnazione della versione inventario), `uitest --polish` e rigenerazione store (24 acquisizioni, 78 hash verificati); entrambe le cache aggiornate. La proposta chest è stata dettagliata nel documento di progetto e rimane inattiva.
+
 ## Limiti
 
 Le verifiche in browser non sostituiscono Android fisico, cambi di rete reali e background prolungato. L'aggiornamento del server pubblico dipende dal workflow Prove del commit pubblicato; gli esiti locali non attestano la distribuzione online. Nessuna pubblicazione Play Console, contratto, comunicazione a terzi o cancellazione di backup/rami remoti.

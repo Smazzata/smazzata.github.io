@@ -143,7 +143,12 @@
   // Il server è l'autorità: nessun possesso proviene da parametri della richiesta.
   function ownedIds(profile={}) {
     const ids=new Set(STARTER_IDS);
-    for(const id of Array.isArray(profile.avatarOwned)?profile.avatarOwned:[]) if(byId.has(id)) ids.add(byId.get(id).id);
+    // La vecchia versione salvava tutti i comuni come posseduti a ogni cambio avatar.
+    // Prima dell'inventario versionato non esistevano sblocchi espliciti dei comuni.
+    for(const id of Array.isArray(profile.avatarOwned)?profile.avatarOwned:[]) {
+      const entry=byId.get(id);
+      if(entry && (profile.avatarInventoryVersion === 1 || entry.rarity !== 'common')) ids.add(entry.id);
+    }
     const current=profile.avatar;
     if(current && (current.id || current.e)) ids.add(resolve(current.id || current.e,profile.nick).id);
     return [...ids];

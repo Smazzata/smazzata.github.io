@@ -367,6 +367,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       const owned = Avatars.ownedIds(s);
       if (!owned.includes(avatar.id)) fail('Questo avatar non è ancora disponibile');
       s.avatarOwned = owned;
+      s.avatarInventoryVersion = 1;
       // e è la rappresentazione di compatibilità per i client precedenti; id identifica l'illustrazione.
       s.avatar = { ...(s.avatar || {}), id:avatar.id, e:avatar.e, c };
       renamePlayer(token, null);
