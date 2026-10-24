@@ -27,3 +27,7 @@ Fonti dei file aggiunti:
 - https://raw.githubusercontent.com/martinthomson/encrypted-content-encoding/master/LICENSE
 
 L'inventario di software non equivale a verifica del marchio «Smazzata» nei registri né a garanzia di assenza di diritti di terzi su ogni contributo storico. Queste verifiche rimangono al titolare prima del lancio commerciale.
+
+## Cosmetici delle chest — 24 ottobre 2026
+
+Sessanta illustrazioni originali (20 dorsi, 20 tessuti/tappetini, 20 reazioni) generate con lo strumento immagini integrato, usando il personaggio originale Barone soltanto come riferimento di stile. Prompt in `cosmetics-art-prompts.json`. Nessun marchio o personaggio di terzi richiesto. I WebP finali sono in `public/art/cosmetics/`. Le 20 cornici SVG e le 20 animazioni canvas sono disegni procedurali originali del progetto.

@@ -20,7 +20,7 @@ window.io=()=>{
  const callbacks={},on=sock.on; sock.on=(ev,fn)=>{(callbacks[ev] ||= []).push(fn);return on.call(sock,ev,fn);};sock.listeners=ev=>callbacks[ev]||[];
  const profile={ok:true,nick:'Tu',avatar:{id:'fante-quadri',e:'🦊',c:'#81c784'},colors:['#81c784','#64b5f6','#f2c14e'],emoji:[],code:'DEMO-NON-VALIDO',hasPassword:true,mail:false};
  sock.emit=(ev,data,cb)=>{
-  const fixtures={profile, tournaments:{ok:true,list:[]},leagues:{ok:true,list:[]},rankedProfile:{ok:true,ranks:{},currentSeason:0,ends:Date.now()+86400000*7}};
+  const fixtures={profile,cosmetics:{ok:true,cosmetics:{ownedIds:[],loadout:{}}}, tournaments:{ok:true,list:[]},leagues:{ok:true,list:[]},rankedProfile:{ok:true,ranks:{},currentSeason:0,ends:Date.now()+86400000*7}};
   if(ev==='setAvatar'){
    if(!SmazzataAvatars.isSelectable(data.id))return cb?.({ok:false,error:'Non ancora disponibile'});
    const a=SmazzataAvatars.resolve(data.id);profile.avatar={...profile.avatar,id:a.id,e:a.e,c:data.c};return cb?.({ok:true,avatar:profile.avatar});
@@ -38,7 +38,7 @@ browser.stdio[4].on('data',data=>{buffer+=data.toString();let end;while((end=buf
 const send=(method,params={})=>new Promise((resolve,reject)=>{const n=++id;pending.set(n,{resolve,reject});browser.stdio[3].write(JSON.stringify({id:n,method,params,...(sessionId?{sessionId}:{})})+'\0');});
 const run=async code=>{const r=await send('Runtime.evaluate',{expression:'(async()=>{'+code+'})()',awaitPromise:true,returnByValue:true,timeout:60000});if(r.exceptionDetails)throw Error(r.exceptionDetails.exception?.description||r.exceptionDetails.text);return r.result.value;};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
-const sourceHashes=Object.fromEntries(['public/index.html','public/privacy.html','public/regole.html',...fs.readdirSync(path.join(root,'public/art/chests')).filter(f=>f.endsWith('.webp')).map(f=>'public/art/chests/'+f),'shared/avatars.js',...require('../shared/avatars').LIST.map(a=>'public/'+a.art),'public/style.css','public/sw.js','launcher/sw.js',...fs.readdirSync(path.join(root,'public/js')).filter(f=>f.endsWith('.js')).map(f=>'public/js/'+f),...['en','es','pt'].map(l=>'public/lingue/'+l+'.js')].map(f=>[f,crypto.createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex')]));
+const sourceHashes=Object.fromEntries(['public/index.html','public/privacy.html','public/regole.html',...fs.readdirSync(path.join(root,'public/art/chests')).filter(f=>f.endsWith('.webp')).map(f=>'public/art/chests/'+f),'shared/cosmetics.js','public/cosmetics.css',...require('../shared/cosmetics').LIST.filter(x=>x.art).map(x=>'public/'+x.art),'shared/avatars.js',...require('../shared/avatars').LIST.map(a=>'public/'+a.art),'public/style.css','public/sw.js','launcher/sw.js',...fs.readdirSync(path.join(root,'public/js')).filter(f=>f.endsWith('.js')).map(f=>'public/js/'+f),...['en','es','pt'].map(l=>'public/lingue/'+l+'.js')].map(f=>[f,crypto.createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex')]));
 const shots=[];
 const qaOut=path.join(root,'test-output/rilascio');fs.mkdirSync(qaOut,{recursive:true});
 const E=require('./engine'),Bot=require('./bot'),rules=require('../shared/rules').normalize({players:2,target:505});

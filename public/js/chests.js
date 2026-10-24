@@ -28,23 +28,24 @@ async function chestsModal() {
     <p class="muted small">${t('Allenamento, partite annullate e abbandoni non contano. Il limite si rinnova a mezzanotte, ora italiana.')}</p>
     ${data.earnedToday>=2?`<p class="chest-notice">${t('Limite giornaliero raggiunto. Riprendi domani; le tue chest non scadono.')}</p>`:''}
     <details class="chest-rules"><summary>${t('Quale chest puoi trovare')}</summary><div class="chest-types">${rarities.map(r=>`<div data-chest-type="${r.id}"><div class="chest-sprite" aria-hidden="true"></div><b>${t(rules.types[r.id].name)}</b><span>${rules.chestRates[r.id]}%</span><small>${t('Disponibili')}: ${data.pending.filter(x=>x.type===r.id).length}</small><p>${rarities.map(a=>t(a.name)+' '+rules.types[r.id].rates[a.id]+'%').join(' · ')}</p></div>`).join('')}</div>
-    <p class="muted small">${t('La rarità viene decisa quando ottieni la chest. La chest leggendaria contiene sempre un avatar leggendario.')}</p>
-    <p class="muted small">${t('Prima viene estratta la rarità, poi un avatar uniforme di quella rarità, esclusi i quattro iniziali. I doppioni diventano frammenti.')}</p>
+    <p class="muted small">${t('Una chest contiene un solo oggetto. La chest leggendaria contiene sempre un oggetto leggendario.')}</p>
+    <p class="muted small">${t('Prima si estrae la rarità, poi un oggetto con la stessa probabilità degli altri di quella rarità. I quattro avatar iniziali sono esclusi. I doppioni diventano frammenti.')}</p>
+    ${data.pools?`<table class="cx-pool-table"><caption>${t('Oggetti disponibili per tipo e rarità')}</caption><thead><tr><th>${t('Tipo di oggetto')}</th>${rarities.map(r=>`<th scope="col">${t(r.name)}</th>`).join('')}</tr></thead><tbody>${[{id:'avatar',name:'Avatar'},...window.SmazzataCosmetics.KINDS].map(k=>`<tr><th scope="row">${t(k.name)}</th>${rarities.map(r=>`<td>${data.pools[r.id][k.id]}</td>`).join('')}</tr>`).join('')}</tbody></table><p class="muted small">${t('Le probabilità dei tipi sono proporzionali al numero di oggetti nella rarità estratta, anche se li possiedi già.')}</p>`:''}
     </details>
-    <h3>${t('Scambia frammenti')}</h3><p class="muted small">${t('Ricevi un avatar casuale non posseduto della rarità scelta. Lo scambio non modifica le garanzie delle chest.')}</p>
+    <h3>${t('Scambia frammenti')}</h3><p class="muted small">${t('Ricevi un oggetto casuale non posseduto della rarità scelta. Lo scambio non modifica le garanzie delle chest.')}</p>
     <div class="chest-exchanges">${rarities.map(r=>`<div><span><b>${t(r.name)}</b><small>${t('Doppione')}: +${rules.fragments[r.id]} ${t('frammenti')}</small></span><button class="btn small" data-act="chestExchange" data-rarity="${r.id}" ${disabled||!data.missing[r.id]||data.fragments<rules.costs[r.id]?'disabled':''}>${!data.missing[r.id]?t('Tutti ottenuti'):t('Scambia')+' · '+rules.costs[r.id]}</button></div>`).join('')}</div>
-    ${data.recent.length?`<h3>${t('Ultime aperture')}</h3><div class="chest-history">${data.recent.map(x=>{const a=window.SmazzataAvatars.resolve(x.avatarId);return `<div>${window.SmazzataAvatars.svg(a.id)}<span>${esc(t(a.name))}<small>${x.duplicate?'+'+x.fragments+' '+t('frammenti'):t('Nuovo avatar')}</small></span></div>`;}).join('')}</div>`:''}
+    ${data.recent.length?`<h3>${t('Ultime aperture')}</h3><div class="chest-history">${data.recent.map(x=>{const a=chestPrize(x);return `<div>${a.html}<span>${esc(t(a.name))}<small>${x.duplicate?'+'+x.fragments+' '+t('frammenti'):t('Nuovo oggetto')}</small></span></div>`;}).join('')}</div>`:''}
   </section>`);
   $('#modal .modal-box').scrollTop=0;
 }
 function chestReveal(reward) {
-  const a=window.SmazzataAvatars.resolve(reward.avatarId),rarity=window.SmazzataAvatars.RARITIES.find(r=>r.id===reward.rarity);
+  const a=chestPrize(reward),rarity=window.SmazzataAvatars.RARITIES.find(r=>r.id===reward.rarity);
   const reduce=S.prefs.anim===false || matchMedia('(prefers-reduced-motion: reduce)').matches;
   clearTimeout(S.chestRevealTimer);
   openModal('chestReward',`<section class="chest-reveal ${reduce?'':'is-opening'}" data-rarity="${rarity.id}">
     <h2>${t('Il tuo premio')}</h2><div class="chest-stage" data-chest-type="${reward.chestType || reward.rarity}" aria-hidden="true"><div class="chest-burst"></div><div class="chest-sprite"></div>${Array.from({length:8},(_,i)=>`<i class="chest-spark" style="--spark:${i}"></i>`).join('')}</div>
     <button class="btn small chest-skip" data-act="chestSkip">${t('Salta animazione')}</button>
-    <div class="chest-prize" hidden role="status"><div class="chest-prize-art">${window.SmazzataAvatars.svg(a.id)}</div><span class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</span><h3>${esc(t(a.name))}</h3><p>${reward.duplicate?t('Doppione')+' · +'+reward.fragments+' '+t('frammenti'):t('Nuovo avatar nella tua collezione')}</p><div class="row"><button class="btn primary" data-act="chestEquip" data-avatar-id="${a.id}">${t('Usa avatar')}</button><button class="btn" data-act="chests">${t('Continua')}</button></div></div></section>`);
+    <div class="chest-prize" hidden role="status"><div class="chest-prize-art">${a.html}</div><span class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</span><h3>${esc(t(a.name))}</h3><p>${reward.duplicate?t('Doppione')+' · +'+reward.fragments+' '+t('frammenti'):t('Nuovo oggetto nella tua collezione')}</p><div class="row"><button class="btn primary" data-act="chestEquip" data-kind="${a.kind}" data-item-id="${a.id}">${a.kind==='avatar'?t('Usa avatar'):t('Usa questo stile')}</button><button class="btn" data-act="chests">${t('Continua')}</button></div></div></section>`);
   $('#modal .modal-box').scrollTop=0;
   if(reduce)handlers.chestSkip();else S.chestRevealTimer=setTimeout(()=>{if(S.modalKind==='chestReward')handlers.chestSkip();},1900);
 }
@@ -77,8 +78,9 @@ Object.assign(handlers,{
     root.querySelector('.chest-prize [data-act=chestEquip]')?.focus({preventScroll:true});
   },
   async chestEquip(el){
+    if(el.dataset.kind!=='avatar'){if(await equipCosmetic(el.dataset.kind,el.dataset.itemId)){S.cosmeticOnline=true;await cosmeticsModal(el.dataset.kind);}return;}
     const p=await emit('profile');if(!p.ok)return;
-    const r=await emit('setAvatar',{id:el.dataset.avatarId,c:p.avatar?.c||p.colors[0]});
+    const r=await emit('setAvatar',{id:el.dataset.itemId,c:p.avatar?.c||p.colors[0]});
     if(r.ok)await profileModal();
   }
 });

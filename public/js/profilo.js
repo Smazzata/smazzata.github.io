@@ -57,6 +57,7 @@
     if (!r.ok) return;
     if (!r.nick) { closeModal(); toast('Scegli prima il tuo nickname'); return; }
     if(r.chests && typeof cacheChestState==='function')cacheChestState(r.chests);
+    if(r.cosmetics && typeof cacheCosmetics==='function')cacheCosmetics(r.cosmetics);
     const link = transferLink(r.code);
     const qr = qrDataUrl(link);
     const avatars = window.SmazzataAvatars;
@@ -72,6 +73,7 @@
         <div id="avatar-grid" class="avgrid" role="group" aria-label="${t('Scegli il tuo avatar')}">${!shown.length?`<p class="av-empty">${t('Nessun avatar posseduto in questa rarità.')}</p>`:''}${shown.map((a) => `<button type="button" class="avopt ${a.id === selected.id ? 'on' : ''}" aria-haspopup="dialog" data-act="previewAvatar" data-avatar-id="${a.id}" data-rarity="${a.rarity}" data-c="${av.c}" aria-pressed="${a.id === selected.id}" aria-label="${esc(t(a.name))}, ${t(avatars.RARITIES.find(r=>r.id===a.rarity).name)}${owned.has(a.id)?'':', '+t('Non ancora disponibile')}" title="${esc(t(a.name))}" >${avatars.svg(a.id)}<span>${esc(t(a.name))}</span><small class="avatar-rarity" data-rarity="${a.rarity}">${owned.has(a.id)?'':'<svg class="avlock" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7V4a4 4 0 0 1 8 0v3"/><rect x="2" y="7" width="12" height="8" rx="2"/><path d="M8 10v2"/></svg>'}${t(avatars.RARITIES.find(r=>r.id===a.rarity).name)}</small></button>`).join('')}</div>
         <span class="avcolor-label">Colore del bordo</span><div class="avcolors">${r.colors.map((c) => `<button type="button" class="avcol ${c === av.c ? 'on' : ''}" style="background:${c}" data-act="pickAvatar" data-avatar-id="${av.id}" data-c="${c}" aria-label="${t('Colore del bordo')}: ${c}" aria-pressed="${c === av.c}"></button>`).join('')}</div></div>
       <button class="chest-entry" data-act="chests"><span class="chest-thumb" aria-hidden="true"></span><span><b>${t('Le tue chest')}</b><small>${t('Chest disponibili')}: ${r.chests?.pending?.length || 0}</small></span>${uiIcon('play')}</button>
+      <button class="btn" data-act="cosmetics">${t('Dorsi, cornici e altri stili')}</button>
       ${lookHTML(av)}
       <h4>Cambia nickname</h4>
       <form id="nickform" class="row"><input id="nickEdit" class="grow" maxlength="16" autocomplete="off" value="${esc(r.nick)}"><button class="btn primary">Salva</button></form>

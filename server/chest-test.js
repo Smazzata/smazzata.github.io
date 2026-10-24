@@ -61,9 +61,9 @@ test('Probabilità frazionarie precise e migrazione delle chest chiuse senza cam
   assert.equal(C.open(profile(type),'1',noop,roll(threshold)).reward.rarity,'legendary');
  }
  const s=profile();s.chests.version=1;s.chests.items[0].version=1;
- assert.equal(C.view(s).version,2);assert.equal(C.view(s).pending[0].version,2);
+ assert.equal(C.view(s).version,3);assert.equal(C.view(s).pending[0].version,3);
  const reward=C.open(s,'1',noop,roll(0)).reward;
- assert.equal(s.chests.version,2);assert.equal(s.chests.items[0].version,2);
+ assert.equal(s.chests.version,3);assert.equal(s.chests.items[0].version,3);
  s.chests.version=1;s.chests.items[0].version=1;
  assert.deepEqual(C.open(s,'1',()=>assert.fail(),()=>assert.fail()).reward,reward);
  assert.equal(s.chests.items[0].version,1);
@@ -85,6 +85,7 @@ test('Scambio: costo corretto, solo avatar mancanti e stessa richiesta senza sec
  assert.throws(()=>C.exchange(s,'legendary','request-0987654321',noop));
  assert.throws(()=>C.exchange(s,'epic',id,noop));
  s.avatarOwned=A.LIST.map(a=>a.id);s.avatarInventoryVersion=1;
+ s.cosmeticOwned=require('../shared/cosmetics').LIST.map(a=>a.id);
  assert.throws(()=>C.exchange(s,'common','request-2345678901',noop));
 });
 test('Errore su disco: nessuna chest consumata, nessun premio o costo applicato',()=>{

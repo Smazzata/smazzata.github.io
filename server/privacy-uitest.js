@@ -61,14 +61,14 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     `);
     assert(!requests.some((r) => /https:\/\/[^/]*spotify/.test(r)), 'nessun invio a Spotify aprendo la finestra musicale');
     const oldKey = await cdp.run(`
-      const key=store.get('bur_token');localStorage.setItem('bur_stats',JSON.stringify({test:true}));localStorage.setItem('smazzata_campaign_privacytest','1');localStorage.setItem('bur_chest_cache','{}');localStorage.setItem('bur_chest_request','{}');
+      const key=store.get('bur_token');localStorage.setItem('bur_stats',JSON.stringify({test:true}));localStorage.setItem('smazzata_campaign_privacytest','1');localStorage.setItem('bur_chest_cache','{}');localStorage.setItem('bur_cosmetic_cache','{}');localStorage.setItem('bur_chest_request','{}');
       closeModal();await handlers.deleteProfile();return key;
     `);
     let cleared = false;
     for (let i = 0; i < 60; i++) {
       await wait(100);
       try {
-        cleared = await cdp.run(`return !localStorage.getItem('bur_stats')&&!localStorage.getItem('bur_chest_cache')&&!localStorage.getItem('bur_chest_request')&&!localStorage.getItem('smazzata_campaign_privacytest')&&document.querySelector('#nick')!==null&&JSON.parse(localStorage.getItem('bur_token')||'null')!==${JSON.stringify(oldKey)};`);
+        cleared = await cdp.run(`return !localStorage.getItem('bur_stats')&&!localStorage.getItem('bur_chest_cache')&&!localStorage.getItem('bur_cosmetic_cache')&&!localStorage.getItem('bur_chest_request')&&!localStorage.getItem('smazzata_campaign_privacytest')&&document.querySelector('#nick')!==null&&JSON.parse(localStorage.getItem('bur_token')||'null')!==${JSON.stringify(oldKey)};`);
         if (cleared) break;
       } catch (e) { /* cambio documento dopo il logout */ }
     }

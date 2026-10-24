@@ -2,11 +2,11 @@
 // Inventario dimostrativo solo nel DATA_DIR temporaneo: nessuna API di assegnazione nel gioco.
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
 const {spawn}=require('node:child_process'),assert=require('node:assert/strict');
-const {findBrowser,connect}=require('./cdp'),C=require('./chests');
+const {findBrowser,connect}=require('./cdp'),C=require('./chests'),Cosmetics=require('../shared/cosmetics');
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'smazzata-chest-ui-')),dir=path.join(root,'data');fs.mkdirSync(dir);
- const key=crypto.randomBytes(18).toString('hex'),s={nick:'Collezionista',name:'Collezionista',devices:[{h:crypto.createHash('sha256').update(key).digest('hex'),at:Date.now()}]};
+ const key=crypto.randomBytes(18).toString('hex'),s={nick:'Collezionista',name:'Collezionista',cosmeticOwned:Cosmetics.LIST.map(x=>x.id),devices:[{h:crypto.createHash('sha256').update(key).digest('hex'),at:Date.now()}]};
  const p=new Map([['demo',s],['other',{nick:'Altro'}]]);
  for(let i=0;i<3;i++)C.recordGame({chestGameId:String(i),seats:[{token:'demo'},{token:'other'}],progressEligible:true,game:{over:true,handResult:{reason:'close'}}},p,()=>{});
  s.chests.items=['common','rare','epic','legendary'].map((type,i)=>({id:String(i+1),type,version:1,at:Date.now()}));s.chests.issued=4;s.chests.fragments=2000;
@@ -45,14 +45,38 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
    await shot('apertura-'+i);
   }
   assert.equal(new Set(positions).size,4);
-  await cdp.run(`await new Promise(r=>setTimeout(r,2000));if(document.querySelector('.chest-prize').hidden)throw Error('premio non rivelato automaticamente');handlers.chestSkip();const p=await emit('profile');const a=S.chestState.recent[0].avatarId;if(!p.ownedAvatarIds.includes(a))throw Error('premio non posseduto');await handlers.chestEquip({dataset:{avatarId:a}});if((await emit('profile')).avatar.id!==a)throw Error('premio non equipaggiato');`);
+  await cdp.run(`await new Promise(r=>setTimeout(r,2000));if(document.querySelector('.chest-prize').hidden)throw Error('premio non rivelato automaticamente');handlers.chestSkip();const p=await emit('profile'),a=S.chestState.recent[0];if(!(a.kind==='avatar'?p.ownedAvatarIds:p.cosmetics.ownedIds).includes(a.itemId))throw Error('premio non posseduto');await handlers.chestEquip({dataset:{kind:a.kind,itemId:a.itemId}});const equipped=await emit('profile');if((a.kind==='avatar'?equipped.avatar.id:equipped.cosmetics.loadout[a.kind])!==a.itemId)throw Error('premio non equipaggiato');`);
   for(const id of ['2','3','4']){
    await cdp.run(`await chestsModal();S.prefs.anim=false;applyPrefs();await handlers.chestOpen({dataset:{id:'${id}'}});if(!document.querySelector('.is-revealed')||document.querySelector('.chest-prize').hidden)throw Error('movimento ridotto');${id==='4'?"if(document.querySelector('.chest-reveal').dataset.rarity!=='legendary')throw Error('premio leggendario non garantito');":''}`);
    await shot('premio-'+id);
   }
-  await cdp.run(`const requestId='ui-recovery-1234567890';const r=await emit('exchangeChestFragments',{rarity:'epic',requestId});if(!r.ok)throw Error('scambio fallito');store.set('bur_chest_request',{owner:S.token,type:'exchange',rarity:'epic',requestId});await chestsModal();if(!document.querySelector('[data-act=chestRetry]'))throw Error('recupero assente');await handlers.chestRetry();if(S.chestState.fragments!==1500)throw Error('doppio costo');await chestsModal();S.connected=false;await chestsModal();if(!document.querySelector('[data-act=chestOpen]').disabled)throw Error('apertura offline permessa');if([...document.querySelectorAll('[data-act=chestExchange]')].some(b=>!b.disabled))throw Error('scambio offline permesso');S.connected=true;`);
+  await cdp.run(`const requestId='ui-recovery-1234567890';const r=await emit('exchangeChestFragments',{rarity:'epic',requestId});if(!r.ok)throw Error('scambio fallito');store.set('bur_chest_request',{owner:S.token,type:'exchange',rarity:'epic',requestId});await chestsModal();if(!document.querySelector('[data-act=chestRetry]'))throw Error('recupero assente');await handlers.chestRetry();if(S.chestState.fragments!==r.chests.fragments)throw Error('doppio costo');await chestsModal();S.connected=false;await chestsModal();if(!document.querySelector('[data-act=chestOpen]').disabled)throw Error('apertura offline permessa');if([...document.querySelectorAll('[data-act=chestExchange]')].some(b=>!b.disabled))throw Error('scambio offline permesso');S.connected=true;`);
   await shot('offline');
   await cdp.run(`await profileModal();const last=document.querySelector('.avopt:last-child'),box=document.querySelector('.modal-box');last.scrollIntoView({block:'end'});if(last.getBoundingClientRect().bottom>box.getBoundingClientRect().bottom+1)throw Error('ultima riga avatar tagliata');`);
+  for(const kind of Cosmetics.KINDS){
+   for(const width of [320,375])for(const theme of ['chiaro','scuro']){
+    await cdp.send('Emulation.setDeviceMetricsOverride',{width,height:812,deviceScaleFactor:1,mobile:true});
+    await cdp.run(`S.prefs.theme='${theme}';S.prefs.text='enorme';applyPrefs();await cosmeticsModal('${kind.id}');if(document.querySelectorAll('.cx-item').length!==20)throw Error('inventario cosmetici incompleto');const box=document.querySelector('.modal-box');if(box.scrollWidth>box.clientWidth+1)throw Error('collezione fuori schermo');document.querySelector('.cx-item:last-child').scrollIntoView({block:'end'});if(document.querySelector('.cx-item:last-child').getBoundingClientRect().bottom>box.getBoundingClientRect().bottom+1)throw Error('ultima riga cosmetici tagliata');`);
+    await shot('collezione-'+kind.id+'-'+width+'-'+theme);
+   }
+   await cdp.send('Emulation.setDeviceMetricsOverride',{width:1000,height:1300,deviceScaleFactor:1,mobile:false});
+   await cdp.run(`S.prefs.text='normale';S.prefs.theme='chiaro';applyPrefs();await cosmeticsModal('${kind.id}');document.querySelector('.modal-box').style.maxWidth='940px';document.querySelector('.cx-grid').style.gridTemplateColumns='repeat(5,minmax(0,1fr))';await Promise.all([...document.images].map(img=>{img.loading='eager';return img.decode().catch(()=>{});}));`);await shot('catalogo-'+kind.id);
+   await cdp.run(`document.querySelector('.modal-box').style.maxWidth='';`);
+   const item=Cosmetics.LIST.find(x=>x.kind===kind.id&&x.rarity==='legendary');
+   await cdp.run(`S.prefs.text='normale';applyPrefs();await cosmeticsModal('${kind.id}');await handlers.cosmeticEquip({dataset:{id:'${item.id}'}});if((await emit('cosmetics')).cosmetics.loadout['${kind.id}']!=='${item.id}')throw Error('stile non applicato');`);
+  }
+  await cdp.run(`const images=window.SmazzataCosmetics.LIST.filter(x=>x.art);await Promise.all(images.map(x=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve();img.onerror=()=>reject(Error('illustrazione mancante '+x.id));img.src=x.art;})));`);
+  await cdp.run(`await profileModal();const p=await emit('profile');if(!avatarHTML(p.nick,0,false,p.avatar).includes('cx-frame'))throw Error('cornice non visibile');if(!document.body.classList.contains('cx-back')||!document.body.classList.contains('cx-felt'))throw Error('materiali non applicati');const ids=[...document.querySelectorAll('.cx-frame [id]')].map(e=>e.id);if(new Set(ids).size!==ids.length)throw Error('ID SVG duplicati');if(cosmeticReactions().length!==20)throw Error('reazioni mancanti');S.prefs.anim=true;const v=cosmeticState().loadout.victory;playCosmeticVictory(v);if(!document.querySelector('.cx-celebration'))throw Error('vittoria non animata');document.querySelector('.cx-celebration-skip').click();if(document.querySelector('.cx-celebration'))throw Error('animazione non interrompibile');S.prefs.anim=false;playCosmeticVictory(v);if(document.querySelector('.cx-celebration'))throw Error('animazione non ridotta');`);
+  await cdp.run(`const avatar=document.querySelector('.avpreview .avatar'),frame=avatar.querySelector('.cx-frame'),a=avatar.getBoundingClientRect(),f=frame.getBoundingClientRect();if(f.width>a.width*1.6||Math.abs(f.x+f.width/2-a.x-a.width/2)>2)throw Error('cornice fuori dal ritratto');`);
+  for(const item of Cosmetics.LIST.filter(x=>x.kind==='victory')){
+   await cdp.run(`S.prefs.anim=true;applyPrefs();playCosmeticVictory('${item.id}');await new Promise(r=>setTimeout(r,100));const cv=document.querySelector('.cx-celebration');if(!cv||getComputedStyle(cv).display==='none'||!cv.getContext('2d').getImageData(0,0,cv.width,cv.height).data.some((v,i)=>i%4===3&&v>0))throw Error('effetto vuoto ${item.id}');`);
+   if([10,17,19].includes(item.index)){await wait(650);await shot('vittoria-'+item.index);}
+   await cdp.run(`${item.index===19?"if(!document.querySelector('.cx-victory-phoenix'))throw Error('fenice leggendaria assente');":''}document.querySelector('.cx-celebration-skip').click();if(document.querySelector('.cx-victory-phoenix'))throw Error('fenice non rimossa');`);
+  }
+  await cdp.run(`const reaction=cosmeticReactions()[0],previous=S.game,target=document.createElement('div');target.className='handwrap';document.body.append(target);S.game={you:0};showSeatBubble(0,'👏',reaction.id);if(!document.querySelector('.reaction.cx-illustrated img'))throw Error('reazione illustrata non mostrata');target.remove();S.game=previous;`);
+  await cdp.run(`S.connected=false;await cosmeticsModal('back');if(!document.querySelector('.chest-notice')||!document.querySelector('[data-act=cosmeticReset]').disabled)throw Error('stile modificabile offline');S.connected=true;`);
+  await cdp.run(`S.connected=false;await handlers.pref({dataset:{key:'back',val:'rosso'}});if(document.body.classList.contains('cx-back'))throw Error('dorso base non disponibile offline');S.connected=true;cacheCosmetics((await emit('cosmetics')).cosmetics);`);
+  await cdp.run(`const c=cosmeticState();store.set('bur_cosmetic_cache',{owner:'altro-profilo',data:c});applyCosmetics();if(cosmeticState().ownedIds.length||document.body.classList.contains('cx-back'))throw Error('inventario visibile ad altro profilo');cacheCosmetics(c);`);
   if(errors.length)throw Error(errors.join('\n'));
   console.log('Chest UI OK: quattro sprite, sei layout, testo enorme, quattro fotogrammi, premi, recupero, scambio, riduzione movimento e offline');
  }finally{if(cdp)cdp.ws.close();if(browser)browser.kill();server.kill();}

@@ -49,3 +49,6 @@ Spotify ora è un collegamento esterno scelto dall'utente: nessun iframe viene c
 5. Confrontare modulo, privacy, cancellazione, AAB e backend della medesima release.
 
 Fonte: [Guida ufficiale Sicurezza dei dati](https://support.google.com/googleplay/android-developer/answer/10787469?hl=it). Non è un'autocertificazione legale né un'esenzione dalle verifiche richieste al titolare.
+
+### Inventario cosmetici (24 ottobre 2026)
+Il profilo conserva anche gli oggetti estetici posseduti e le selezioni per dorso, cornice, tappetino, reazione e vittoria. Restano dati dell’inventario gratuito, eliminati insieme al profilo. Copia locale `bur_cosmetic_cache` separata per proprietario e inclusa nella cancellazione dei dati `bur_`. Nessuna nuova categoria di identificativi, acquisto o tracciamento.

@@ -1,6 +1,6 @@
 # Screenshot della versione rifinita
 
-Rigenerati il 23 ottobre 2026 in `schermate-rilascio/`. I nove PNG numerati sono **1080×1920**. L'interfaccia, le illustrazioni e il motore sono quelli della copia locale finale; i dati social sono risposte vuote simulate per il rendering. Non sono screenshot di una release già distribuita o una prova del multiplayer.
+Rigenerati il 24 ottobre 2026 in `schermate-rilascio/`. I nove PNG numerati sono **1080×1920**. L'interfaccia, le illustrazioni e il motore sono quelli della copia locale finale; i dati social sono risposte vuote simulate per il rendering. Non sono screenshot di una release già distribuita o una prova del multiplayer.
 
 Selezione consigliata per la scheda italiana, in ordine:
 

@@ -144,11 +144,15 @@
       if (!p || !AvailableGames.enabled(p.rules)) return; rulesModal(p.rules, p.name); },
     howto() { openModal('rules', `<div class="rules-text">${HOW_TO}${R.OTHER_VARIANTS}</div>`); },
     settings: settingsModal,
-    pref(el) {
+    async pref(el) {
       const key = el.dataset.key;
       let val = el.dataset.val;
       if (val === 'true') val = true; else if (val === 'false') val = false;
       S.prefs[key] = val;
+      if(['felt','back'].includes(key)&&typeof equipCosmetic==='function'&&cosmeticState().loadout[key]){
+        if(!OFFLINE&&S.connected)await equipCosmetic(key,null);
+        else {const local=cosmeticState();delete local.loadout[key];cacheCosmetics(local);}
+      }
       applyPrefs();
       if (key === 'lang') { location.reload(); return; } // la lingua si applica ricaricando la pagina
       settingsModal();
@@ -556,7 +560,7 @@
     async react(el) {
       S.reactOpen = false;
       render();
-      await emit('react', { emoji: el.dataset.e });
+      await emit('react', el.dataset.cosmeticId?{cosmeticId:el.dataset.cosmeticId}:{emoji:el.dataset.e});
     },
     async deleteProfile() {
       if (!confirm('Eliminare definitivamente il profilo? Nickname, amici e classifica andranno persi.')) return;

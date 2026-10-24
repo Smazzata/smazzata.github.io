@@ -5,7 +5,8 @@ const {spawn}=require('node:child_process');const {io}=require('socket.io-client
 test('Chest via socket: concorrenza, isolamento, scambio e riavvio del server',{timeout:60000},async()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'smazzata-chest-'));
  const key=crypto.randomBytes(18).toString('hex'),C=require('./chests');
- const s={nick:'Chest_Prova',name:'Chest_Prova',devices:[{h:crypto.createHash('sha256').update(key).digest('hex'),at:Date.now()}]};
+ const Cosmetics=require('../shared/cosmetics'),samples=Cosmetics.KINDS.map(k=>Cosmetics.LIST.find(x=>x.kind===k.id));
+ const s={nick:'Chest_Prova',name:'Chest_Prova',cosmeticOwned:samples.map(x=>x.id),devices:[{h:crypto.createHash('sha256').update(key).digest('hex'),at:Date.now()}]};
  const profiles=new Map([['test',s],['other',{nick:'Altro'}]]);
  for(let i=0;i<3;i++)C.recordGame({chestGameId:String(i),seats:[{token:'test'},{token:'other'}],progressEligible:true,game:{over:true,handResult:{reason:'close'}}},profiles,()=>{});
  s.chests.items[0].type='legendary';s.chests.fragments=2000;
@@ -34,10 +35,26 @@ test('Chest via socket: concorrenza, isolamento, scambio e riavvio del server',{
   const requestId=crypto.randomUUID();
   const [e1,e2]=await Promise.all([a('exchangeChestFragments',{rarity:'epic',requestId}),b('exchangeChestFragments',{rarity:'epic',requestId})]);
   assert.deepEqual(e1.reward,e2.reward);assert.equal(e1.chests.fragments,1500);
-  assert((await a('profile')).ownedAvatarIds.includes(e1.reward.avatarId));
-  assert((await a('setAvatar',{id:e1.reward.avatarId,c:'#64b5f6'})).ok);
+  const profile=await a('profile'),award=e1.reward;
+  assert((award.kind==='avatar'?profile.ownedAvatarIds:profile.cosmetics.ownedIds).includes(award.itemId));
+  assert((award.kind==='avatar'?await a('setAvatar',{id:award.itemId,c:'#64b5f6'}):await a('setCosmetic',{kind:award.kind,id:award.itemId})).ok);
+  for(const item of samples){const equipped=await a('setCosmetic',{kind:item.kind,id:item.id});assert(equipped.ok);assert.equal(equipped.cosmetics.loadout[item.kind],item.id);}
+  assert.equal((await b('profile')).avatar.cf,samples.find(x=>x.kind==='frame').id);
+  const current=(await a('profile')).cosmetics.ownedIds,locked=Cosmetics.LIST.find(x=>x.kind==='back'&&!current.includes(x.id));
+  assert.equal((await guest('setCosmetic',{kind:'back',id:samples[0].id})).ok,false);
+  assert.equal((await a('setCosmetic',{kind:'back',id:locked.id})).ok,false);
+  assert.equal((await a('setCosmetic',{kind:'frame',id:samples[0].id})).ok,false);
+  assert((await a('setCosmetic',{kind:'back',id:null})).ok);
+  assert.equal((await b('cosmetics')).cosmetics.loadout.back,undefined);
   for(const sock of sockets)sock.disconnect();await stop();await start();
   const again=await client(key);
+  assert.equal((await again('cosmetics')).cosmetics.loadout.frame,samples.find(x=>x.kind==='frame').id);
+  assert((await again('createRoom',{rules:{players:2}})).ok);
+  const reaction=samples.find(x=>x.kind==='reaction'),lockedReaction=Cosmetics.LIST.find(x=>x.kind==='reaction'&&!s.cosmeticOwned.includes(x.id)&&x.rarity==='common');
+  assert.equal((await again('react',{cosmeticId:lockedReaction.id})).ok,false);
+  assert.equal((await again('react',{cosmeticId:samples[0].id})).ok,false);
+  assert((await again('react',{cosmeticId:reaction.id})).ok);
+  assert.equal((await again('react',{cosmeticId:reaction.id})).ok,false);
   assert.deepEqual((await again('openChest',{id:'1'})).reward,r1.reward);
   assert.equal((await again('exchangeChestFragments',{rarity:'epic',requestId})).chests.fragments,1500);
   assert.equal((await again('openChest',{id:'not-owned'})).ok,false);

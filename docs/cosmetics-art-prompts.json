@@ -1,0 +1,308 @@
+{
+  "tool": "image_gen integrato",
+  "date": "2026-10-24",
+  "reference": "public/art/campaign/barone.webp (solo stile; alcune reazioni senza riferimento)",
+  "assets": [
+    {
+      "id": "cx-back-trama-rubino",
+      "art": "art/cosmetics/back/trama-rubino.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Trama rubino. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Elegant restrained fabric engraving, no gemstones. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-filo-di-rame",
+      "art": "art/cosmetics/back/filo-di-rame.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Filo di rame. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Elegant restrained fabric engraving, no gemstones. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-picche-del-bosco",
+      "art": "art/cosmetics/back/picche-del-bosco.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Picche del bosco. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Elegant restrained fabric engraving, no gemstones. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-fiordaliso",
+      "art": "art/cosmetics/back/fiordaliso.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Fiordaliso. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Elegant restrained fabric engraving, no gemstones. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-vento-marino",
+      "art": "art/cosmetics/back/vento-marino.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Vento marino. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Elegant restrained fabric engraving, no gemstones. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-lavanda",
+      "art": "art/cosmetics/back/lavanda.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Lavanda. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Elegant restrained fabric engraving, no gemstones. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-geometrie-salvia",
+      "art": "art/cosmetics/back/geometrie-salvia.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Geometrie salvia. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Elegant restrained fabric engraving, no gemstones. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-righe-del-mazziere",
+      "art": "art/cosmetics/back/righe-del-mazziere.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Righe del mazziere. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Elegant restrained fabric engraving, no gemstones. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-mosaico-terracotta",
+      "art": "art/cosmetics/back/mosaico-terracotta.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Mosaico terracotta. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Elegant restrained fabric engraving, no gemstones. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-rosa-dei-venti",
+      "art": "art/cosmetics/back/rosa-dei-venti.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Rosa dei venti. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Rich silver and enamel intricate relief ornament. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-piuma-di-pavone",
+      "art": "art/cosmetics/back/piuma-di-pavone.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Piuma di pavone. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Rich silver and enamel intricate relief ornament. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-vetri-di-murano",
+      "art": "art/cosmetics/back/vetri-di-murano.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Vetri di Murano. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Rich silver and enamel intricate relief ornament. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-foglie-d-autunno",
+      "art": "art/cosmetics/back/foglie-d-autunno.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Foglie d’autunno. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Elegant restrained fabric engraving, no gemstones. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-orologio-lunare",
+      "art": "art/cosmetics/back/orologio-lunare.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Orologio lunare. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Rich silver and enamel intricate relief ornament. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-giardino-d-inverno",
+      "art": "art/cosmetics/back/giardino-d-inverno.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Giardino d’inverno. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Rich silver and enamel intricate relief ornament. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-cometa-di-cristallo",
+      "art": "art/cosmetics/back/cometa-di-cristallo.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Cometa di cristallo. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Exceptional sculpted magical jewel centerpiece, elaborate luminous filigree. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-scaglie-d-ambra",
+      "art": "art/cosmetics/back/scaglie-d-ambra.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Scaglie d’ambra. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Rich silver and enamel intricate relief ornament. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-drago-d-ossidiana",
+      "art": "art/cosmetics/back/drago-d-ossidiana.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Drago d’ossidiana. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Exceptional sculpted magical jewel centerpiece, elaborate luminous filigree. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-biblioteca-arcana",
+      "art": "art/cosmetics/back/biblioteca-arcana.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Biblioteca arcana. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Exceptional sculpted magical jewel centerpiece, elaborate luminous filigree. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-back-sigillo-dell-aurora",
+      "art": "art/cosmetics/back/sigillo-dell-aurora.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single playing-card BACK artwork, portrait 2:3 edge-to-edge flat frontal design, no perspective, no card face, no white margin. Theme Sigillo dell’aurora. Two-way rotational symmetry; sophisticated ornamentation and handcrafted materials. Masterpiece of golden celestial aurora, astonishing opalescent relief, finest elaborate ornamentation. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-panno-foresta",
+      "art": "art/cosmetics/felt/panno-foresta.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Panno foresta. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Fine woven material with subtle stitching and quiet colors. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-velluto-blu-notte",
+      "art": "art/cosmetics/felt/velluto-blu-notte.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Velluto blu notte. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Fine woven material with subtle stitching and quiet colors. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-tessuto-petrolio",
+      "art": "art/cosmetics/felt/tessuto-petrolio.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Tessuto petrolio. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Fine woven material with subtle stitching and quiet colors. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-cotone-bordeaux",
+      "art": "art/cosmetics/felt/cotone-bordeaux.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Cotone bordeaux. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Fine woven material with subtle stitching and quiet colors. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-ardesia-soffice",
+      "art": "art/cosmetics/felt/ardesia-soffice.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Ardesia soffice. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Fine woven material with subtle stitching and quiet colors. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-zaffiro-fume",
+      "art": "art/cosmetics/felt/zaffiro-fume.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Zaffiro fumé. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Fine woven material with subtle stitching and quiet colors. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-muschio",
+      "art": "art/cosmetics/felt/muschio.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Muschio. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Fine woven material with subtle stitching and quiet colors. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-crepuscolo-viola",
+      "art": "art/cosmetics/felt/crepuscolo-viola.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Crepuscolo viola. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Fine woven material with subtle stitching and quiet colors. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-sabbia-d-ulivo",
+      "art": "art/cosmetics/felt/sabbia-d-ulivo.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Sabbia d’ulivo. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Fine woven material with subtle stitching and quiet colors. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-serra-al-tramonto",
+      "art": "art/cosmetics/felt/serra-al-tramonto.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Serra al tramonto. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Beautiful luxurious thematic carved rim and embroidered corners. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-terracotta-scura",
+      "art": "art/cosmetics/felt/terracotta-scura.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Terracotta scura. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Fine woven material with subtle stitching and quiet colors. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-salone-d-ambra",
+      "art": "art/cosmetics/felt/salone-d-ambra.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Salone d’ambra. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Beautiful luxurious thematic carved rim and embroidered corners. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-salotto-veneziano",
+      "art": "art/cosmetics/felt/salotto-veneziano.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Salotto veneziano. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Beautiful luxurious thematic carved rim and embroidered corners. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-osservatorio",
+      "art": "art/cosmetics/felt/osservatorio.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Osservatorio. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Beautiful luxurious thematic carved rim and embroidered corners. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-riva-notturna",
+      "art": "art/cosmetics/felt/riva-notturna.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Riva notturna. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Beautiful luxurious thematic carved rim and embroidered corners. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-biblioteca-di-noce",
+      "art": "art/cosmetics/felt/biblioteca-di-noce.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Biblioteca di noce. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Beautiful luxurious thematic carved rim and embroidered corners. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-palazzo-delle-nuvole",
+      "art": "art/cosmetics/felt/palazzo-delle-nuvole.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Palazzo delle nuvole. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Extraordinary fantasy architecture confined to the edges, subtle luminous engraved trim. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-santuario-di-giada",
+      "art": "art/cosmetics/felt/santuario-di-giada.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Santuario di giada. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Extraordinary fantasy architecture confined to the edges, subtle luminous engraved trim. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-forgia-celeste",
+      "art": "art/cosmetics/felt/forgia-celeste.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Forgia celeste. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Extraordinary fantasy architecture confined to the edges, subtle luminous engraved trim. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-felt-giardino-dell-eternita",
+      "art": "art/cosmetics/felt/giardino-dell-eternita.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. Single square top-down gaming table surface texture, theme Giardino dell’eternità. Edge-to-edge, very dark subdued uncluttered matte cloth covering CENTRAL 80% for readable playing cards; decorative details ONLY thin peripheral rim and corners. No table perspective, no objects in center. Magnificent enchanted eternal garden rim in gold and jade, tiny jewels only on outer border. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-orso-applaude",
+      "art": "art/cosmetics/reaction/orso-applaude.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Orso applaude. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Charming friendly animal, simple lovely cloth outfit, warm detailed fur. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-volpe-saluta",
+      "art": "art/cosmetics/reaction/volpe-saluta.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Volpe saluta. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Charming friendly animal, simple lovely cloth outfit, warm detailed fur. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-coniglio-sorpreso",
+      "art": "art/cosmetics/reaction/coniglio-sorpreso.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Coniglio sorpreso. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Charming friendly animal, simple lovely cloth outfit, warm detailed fur. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-gatto-ringrazia",
+      "art": "art/cosmetics/reaction/gatto-ringrazia.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Gatto ringrazia. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Charming friendly animal, simple lovely cloth outfit, warm detailed fur. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-gufo-riflette",
+      "art": "art/cosmetics/reaction/gufo-riflette.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Gufo riflette. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Charming friendly animal, simple lovely cloth outfit, warm detailed fur. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-lontra-ride",
+      "art": "art/cosmetics/reaction/lontra-ride.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Lontra ride. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Charming friendly animal, simple lovely cloth outfit, warm detailed fur. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-riccio-incoraggia",
+      "art": "art/cosmetics/reaction/riccio-incoraggia.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Riccio incoraggia. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Charming friendly animal, simple lovely cloth outfit, warm detailed fur. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-panda-rosso-abbraccia",
+      "art": "art/cosmetics/reaction/panda-rosso-abbraccia.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Panda rosso abbraccia. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Charming friendly animal, simple lovely cloth outfit, warm detailed fur. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-pinguino-approva",
+      "art": "art/cosmetics/reaction/pinguino-approva.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Pinguino approva. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Charming friendly animal, simple lovely cloth outfit, warm detailed fur. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-tartaruga-aspetta",
+      "art": "art/cosmetics/reaction/tartaruga-aspetta.webp",
+      "prompt": "Create one original friendly tortoise character sticker for an Italian family card game. A patient smiling tortoise in a neat green cardigan, looking at a wristwatch with a gentle amused expression. Upper body, both hands visible, attractive polished 3D storybook illustration with detailed shell and warm studio light. Single character centered in square, transparent background, no letters, no text, no cards, no frame."
+    },
+    {
+      "id": "cx-reaction-leone-si-inchina",
+      "art": "art/cosmetics/reaction/leone-si-inchina.webp",
+      "prompt": "Turn this original illustrated lion king into a friendly game reaction sticker: the SAME LION character with golden mane and lion face, making a gracious small bow with one paw over his chest and the other extended to welcome the other players. Preserve his beautiful red velvet costume and crown. Remove the playing card and the background. One single upper-body lion, centered with padding on all sides. Polished 3D storybook illustration, transparent background, no text.",
+      "reference": "public/art/avatars/leone.webp"
+    },
+    {
+      "id": "cx-reaction-prestigiatore-festeggia",
+      "art": "art/cosmetics/reaction/prestigiatore-festeggia.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Prestigiatore festeggia. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Delightful richly dressed character with embroidered costume, expressive theatrical gesture. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-lupo-ammicca",
+      "art": "art/cosmetics/reaction/lupo-ammicca.webp",
+      "prompt": "A single charming polished 3D storybook game sticker. Friendly cartoon silver-grey wolf with a long furry snout and pointed ears, winking playfully in a teal jacket. Detailed soft fur or feathers, warm soft light, expressive appealing face, upper body centered with generous padding. Transparent background. No lettering, no playing cards."
+    },
+    {
+      "id": "cx-reaction-gufo-meravigliato",
+      "art": "art/cosmetics/reaction/gufo-meravigliato.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Gufo meravigliato. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Delightful richly dressed character with embroidered costume, expressive theatrical gesture. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-pavone-elegante",
+      "art": "art/cosmetics/reaction/pavone-elegante.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Pavone elegante. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Delightful richly dressed character with embroidered costume, expressive theatrical gesture. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-grifone-esulta",
+      "art": "art/cosmetics/reaction/grifone-esulta.webp",
+      "prompt": "A single charming polished 3D storybook game sticker. Friendly fantasy gryphon with an eagle head, curved gold beak, white feather ruff and tawny lion body, raising both wings in celebration. Violet and gold decorative collar. Detailed soft fur or feathers, warm soft light, expressive appealing face, upper body centered with generous padding. Transparent background. No lettering, no playing cards."
+    },
+    {
+      "id": "cx-reaction-alchimista-brillante",
+      "art": "art/cosmetics/reaction/alchimista-brillante.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Alchimista brillante. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Delightful richly dressed character with embroidered costume, expressive theatrical gesture. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-unicorno-incanta",
+      "art": "art/cosmetics/reaction/unicorno-incanta.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Unicorno incanta. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Magnificent mystical character, beautiful costume, tasteful wisps of magic. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-gatto-stregone-trionfa",
+      "art": "art/cosmetics/reaction/gatto-stregone-trionfa.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Gatto stregone trionfa. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Magnificent mystical character, beautiful costume, tasteful wisps of magic. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    },
+    {
+      "id": "cx-reaction-fenice-celebra",
+      "art": "art/cosmetics/reaction/fenice-celebra.webp",
+      "prompt": "Premium polished stylized 3D storybook game art, tactile crafted materials, rich soft lighting and charming art direction, matching the reference quality. Original design, no text, no letters, no numbers, no watermark. One single expressive upper-body character reaction sticker: Fenice celebra. Clearly communicate the named gesture or emotion through the face and hands/wings. Full silhouette fits square with padding. Transparent background, no circular frame, no text, no cards or hand-held objects. Spectacular golden phoenix celebrating, magnificent layered fiery feathers and a small radiant halo, unmistakable legendary prestige. Reference image is STYLE reference only; do not copy its character, layout or cards."
+    }
+  ]
+}

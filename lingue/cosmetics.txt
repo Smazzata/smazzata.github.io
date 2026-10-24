@@ -1,0 +1,125 @@
+Dorsi ‖ Card backs ‖ Reversos ‖ Versos
+Oggetto non valido ‖ Invalid item ‖ Objeto no válido ‖ Objeto inválido
+Oggetto non posseduto ‖ Item not owned ‖ No tienes este objeto ‖ Objeto não possuído
+Reazione non posseduta ‖ Reaction not owned ‖ No tienes esta reacción ‖ Reação não possuída
+Hai già tutti gli oggetti di questa rarità ‖ You already own every item of this rarity ‖ Ya tienes todos los objetos de esta rareza ‖ Você já possui todos os objetos desta raridade
+Cornici ‖ Frames ‖ Marcos ‖ Molduras
+Tappetini ‖ Table mats ‖ Tapetes ‖ Tapetes
+Reazioni ‖ Reactions ‖ Reacciones ‖ Reações
+Vittorie ‖ Victories ‖ Victorias ‖ Vitórias
+Dorsi, cornici e altri stili ‖ Card backs, frames and other styles ‖ Reversos, marcos y otros estilos ‖ Versos, molduras e outros estilos
+Stili ottenuti nelle chest, da usare come preferisci. ‖ Styles found in chests, to use as you like. ‖ Estilos obtenidos en cofres, para usarlos como prefieras. ‖ Estilos obtidos nos baús, para usar como preferir.
+Tipo di oggetto ‖ Item type ‖ Tipo de objeto ‖ Tipo de objeto
+Copia offline: collegati per cambiare stile. ‖ Offline copy: connect to change your style. ‖ Copia sin conexión: conéctate para cambiar de estilo. ‖ Cópia offline: conecte-se para mudar de estilo.
+Ripristina stile base ‖ Restore base style ‖ Restaurar estilo básico ‖ Restaurar estilo básico
+Qui compariranno gli oggetti che trovi nelle chest. Gli stili base restano sempre disponibili. ‖ Items you find in chests will appear here. Base styles are always available. ‖ Aquí aparecerán los objetos que encuentres en los cofres. Los estilos básicos siempre están disponibles. ‖ Os objetos que encontrar nos baús aparecerão aqui. Os estilos básicos estão sempre disponíveis.
+In uso ‖ Equipped ‖ En uso ‖ Em uso
+Prova animazione ‖ Preview animation ‖ Probar animación ‖ Testar animação
+Usa questo stile ‖ Use this style ‖ Usar este estilo ‖ Usar este estilo
+Nuovo oggetto ‖ New item ‖ Objeto nuevo ‖ Novo objeto
+Nuovo oggetto nella tua collezione ‖ New item in your collection ‖ Nuevo objeto en tu colección ‖ Novo objeto na sua coleção
+Una chest contiene un solo oggetto. La chest leggendaria contiene sempre un oggetto leggendario. ‖ A chest contains exactly one item. A legendary chest always contains a legendary item. ‖ Un cofre contiene un solo objeto. El cofre legendario siempre contiene un objeto legendario. ‖ Um baú contém um único objeto. O baú lendário contém sempre um objeto lendário.
+Prima si estrae la rarità, poi un oggetto con la stessa probabilità degli altri di quella rarità. I quattro avatar iniziali sono esclusi. I doppioni diventano frammenti. ‖ Rarity is drawn first, then each item of that rarity has an equal chance. The four starter avatars are excluded. Duplicates become fragments. ‖ Primero se sortea la rareza y luego un objeto con la misma probabilidad que los demás de esa rareza. Se excluyen los cuatro avatares iniciales. Los duplicados se convierten en fragmentos. ‖ Primeiro sorteia-se a raridade, depois cada objeto dessa raridade tem a mesma chance. Os quatro avatares iniciais são excluídos. Os repetidos viram fragmentos.
+Oggetti disponibili per tipo e rarità ‖ Items available by type and rarity ‖ Objetos disponibles por tipo y rareza ‖ Objetos disponíveis por tipo e raridade
+Le probabilità dei tipi sono proporzionali al numero di oggetti nella rarità estratta, anche se li possiedi già. ‖ Type odds are proportional to the number of items in the drawn rarity, even if you already own them. ‖ Las probabilidades de cada tipo son proporcionales al número de objetos de la rareza sorteada, aunque ya los tengas. ‖ As chances dos tipos são proporcionais ao número de objetos da raridade sorteada, mesmo se já os possuir.
+Ricevi un oggetto casuale non posseduto della rarità scelta. Lo scambio non modifica le garanzie delle chest. ‖ Receive a random unowned item of the chosen rarity. Exchanges do not affect chest guarantees. ‖ Recibes un objeto aleatorio que no tienes de la rareza elegida. El intercambio no cambia las garantías de los cofres. ‖ Receba um objeto aleatório que ainda não possui da raridade escolhida. A troca não altera as garantias dos baús.
+Trama rubino ‖ Ruby weave ‖ Tejido rubí ‖ Trama rubi
+Picche del bosco ‖ Woodland spades ‖ Picas del bosque ‖ Espadas do bosque
+Fiordaliso ‖ Cornflower ‖ Aciano ‖ Centáurea
+Filo di rame ‖ Copper thread ‖ Hilo de cobre ‖ Fio de cobre
+Vento marino ‖ Sea breeze ‖ Brisa marina ‖ Brisa marinha
+Lavanda ‖ Lavender ‖ Lavanda ‖ Lavanda
+Geometrie salvia ‖ Sage geometry ‖ Geometría salvia ‖ Geometria sálvia
+Righe del mazziere ‖ Dealer's stripes ‖ Rayas del crupier ‖ Listras do carteador
+Mosaico terracotta ‖ Terracotta mosaic ‖ Mosaico terracota ‖ Mosaico terracota
+Foglie d’autunno ‖ Autumn leaves ‖ Hojas de otoño ‖ Folhas de outono
+Rosa dei venti ‖ Compass rose ‖ Rosa de los vientos ‖ Rosa dos ventos
+Vetri di Murano ‖ Murano glass ‖ Cristal de Murano ‖ Vidro de Murano
+Piuma di pavone ‖ Peacock feather ‖ Pluma de pavo real ‖ Pena de pavão
+Orologio lunare ‖ Lunar clock ‖ Reloj lunar ‖ Relógio lunar
+Giardino d’inverno ‖ Winter garden ‖ Jardín de invierno ‖ Jardim de inverno
+Scaglie d’ambra ‖ Amber scales ‖ Escamas de ámbar ‖ Escamas de âmbar
+Biblioteca arcana ‖ Arcane library ‖ Biblioteca arcana ‖ Biblioteca arcana
+Cometa di cristallo ‖ Crystal comet ‖ Cometa de cristal ‖ Cometa de cristal
+Drago d’ossidiana ‖ Obsidian dragon ‖ Dragón de obsidiana ‖ Dragão de obsidiana
+Sigillo dell’aurora ‖ Aurora seal ‖ Sello de la aurora ‖ Selo da aurora
+Cordoncino ‖ Braided cord ‖ Cordón ‖ Cordão
+Intreccio di lino ‖ Woven linen ‖ Lino trenzado ‖ Linho trançado
+Vimini miele ‖ Honey wicker ‖ Mimbre miel ‖ Vime mel
+Rametti di olivo ‖ Olive sprigs ‖ Ramitas de olivo ‖ Ramos de oliveira
+Rame martellato ‖ Hammered copper ‖ Cobre martillado ‖ Cobre martelado
+Argento satinato ‖ Brushed silver ‖ Plata satinada ‖ Prata acetinada
+Fiore di salvia ‖ Sage blossom ‖ Flor de salvia ‖ Flor de sálvia
+Corallo tenue ‖ Soft coral ‖ Coral suave ‖ Coral suave
+Piumette ‖ Little feathers ‖ Plumitas ‖ Peninhas
+Alloro giovane ‖ Young laurel ‖ Laurel joven ‖ Louro jovem
+Cammeo antico ‖ Antique cameo ‖ Camafeo antiguo ‖ Camafeu antigo
+Roseto d’argento ‖ Silver rose garden ‖ Rosal de plata ‖ Roseiral de prata
+Onda perlacea ‖ Pearly wave ‖ Ola perlada ‖ Onda perolada
+Incisione celtica ‖ Celtic engraving ‖ Grabado celta ‖ Gravura celta
+Gemme turchesi ‖ Turquoise gems ‖ Gemas turquesas ‖ Gemas turquesa
+Seta imperiale ‖ Imperial silk ‖ Seda imperial ‖ Seda imperial
+Corona delle stelle ‖ Crown of stars ‖ Corona de estrellas ‖ Coroa das estrelas
+Eclisse ametista ‖ Amethyst eclipse ‖ Eclipse amatista ‖ Eclipse ametista
+Ali del grifone ‖ Gryphon wings ‖ Alas del grifo ‖ Asas do grifo
+Corona del firmamento ‖ Crown of the firmament ‖ Corona del firmamento ‖ Coroa do firmamento
+Panno foresta ‖ Forest cloth ‖ Paño del bosque ‖ Pano da floresta
+Velluto blu notte ‖ Midnight velvet ‖ Terciopelo azul noche ‖ Veludo azul-noite
+Cotone bordeaux ‖ Burgundy cotton ‖ Algodón burdeos ‖ Algodão bordô
+Ardesia soffice ‖ Soft slate ‖ Pizarra suave ‖ Ardósia suave
+Tessuto petrolio ‖ Deep teal fabric ‖ Tejido petróleo ‖ Tecido petróleo
+Muschio ‖ Moss ‖ Musgo ‖ Musgo
+Zaffiro fumé ‖ Smoky sapphire ‖ Zafiro ahumado ‖ Safira fumê
+Crepuscolo viola ‖ Violet dusk ‖ Crepúsculo violeta ‖ Crepúsculo violeta
+Sabbia d’ulivo ‖ Olive sand ‖ Arena de olivo ‖ Areia de oliveira
+Terracotta scura ‖ Dark terracotta ‖ Terracota oscura ‖ Terracota escura
+Salotto veneziano ‖ Venetian parlour ‖ Salón veneciano ‖ Salão veneziano
+Serra al tramonto ‖ Sunset conservatory ‖ Invernadero al atardecer ‖ Estufa ao pôr do sol
+Salone d’ambra ‖ Amber hall ‖ Salón de ámbar ‖ Salão de âmbar
+Osservatorio ‖ Observatory ‖ Observatorio ‖ Observatório
+Riva notturna ‖ Night shore ‖ Orilla nocturna ‖ Margem noturna
+Biblioteca di noce ‖ Walnut library ‖ Biblioteca de nogal ‖ Biblioteca de nogueira
+Santuario di giada ‖ Jade sanctuary ‖ Santuario de jade ‖ Santuário de jade
+Palazzo delle nuvole ‖ Cloud palace ‖ Palacio de las nubes ‖ Palácio das nuvens
+Forgia celeste ‖ Celestial forge ‖ Forja celeste ‖ Forja celeste
+Giardino dell’eternità ‖ Garden of eternity ‖ Jardín de la eternidad ‖ Jardim da eternidade
+Orso applaude ‖ Clapping bear ‖ Oso aplaudiendo ‖ Urso aplaudindo
+Volpe saluta ‖ Waving fox ‖ Zorro saludando ‖ Raposa acenando
+Gatto ringrazia ‖ Thankful cat ‖ Gato agradecido ‖ Gato agradecido
+Coniglio sorpreso ‖ Surprised rabbit ‖ Conejo sorprendido ‖ Coelho surpreso
+Gufo riflette ‖ Thoughtful owl ‖ Búho pensativo ‖ Coruja pensativa
+Lontra ride ‖ Laughing otter ‖ Nutria riendo ‖ Lontra rindo
+Riccio incoraggia ‖ Encouraging hedgehog ‖ Erizo animando ‖ Ouriço incentivando
+Pinguino approva ‖ Approving penguin ‖ Pingüino aprobando ‖ Pinguim aprovando
+Panda rosso abbraccia ‖ Hugging red panda ‖ Panda rojo abrazando ‖ Panda-vermelho abraçando
+Tartaruga aspetta ‖ Waiting tortoise ‖ Tortuga esperando ‖ Tartaruga esperando
+Leone si inchina ‖ Bowing lion ‖ León haciendo una reverencia ‖ Leão se curvando
+Prestigiatore festeggia ‖ Celebrating magician ‖ Mago celebrando ‖ Mágico celebrando
+Gufo meravigliato ‖ Amazed owl ‖ Búho maravillado ‖ Coruja maravilhada
+Lupo ammicca ‖ Winking wolf ‖ Lobo guiñando ‖ Lobo piscando
+Pavone elegante ‖ Elegant peacock ‖ Pavo real elegante ‖ Pavão elegante
+Alchimista brillante ‖ Brilliant alchemist ‖ Alquimista brillante ‖ Alquimista brilhante
+Grifone esulta ‖ Cheering gryphon ‖ Grifo celebrando ‖ Grifo comemorando
+Unicorno incanta ‖ Enchanting unicorn ‖ Unicornio encantando ‖ Unicórnio encantando
+Gatto stregone trionfa ‖ Triumphant wizard cat ‖ Gato hechicero triunfante ‖ Gato feiticeiro triunfante
+Fenice celebra ‖ Celebrating phoenix ‖ Fénix celebrando ‖ Fênix celebrando
+Pioggia di coriandoli ‖ Confetti shower ‖ Lluvia de confeti ‖ Chuva de confete
+Danza di cuori ‖ Dancing hearts ‖ Danza de corazones ‖ Dança de copas
+Giro di fiori ‖ Club carousel ‖ Ronda de tréboles ‖ Roda de paus
+Ventaglio di quadri ‖ Diamond fan ‖ Abanico de diamantes ‖ Leque de ouros
+Picche in festa ‖ Spades celebration ‖ Fiesta de picas ‖ Festa de espadas
+Gocce di luce ‖ Drops of light ‖ Gotas de luz ‖ Gotas de luz
+Nastri colorati ‖ Colourful ribbons ‖ Cintas de colores ‖ Fitas coloridas
+Foglie al vento ‖ Leaves in the wind ‖ Hojas al viento ‖ Folhas ao vento
+Stelle di carta ‖ Paper stars ‖ Estrellas de papel ‖ Estrelas de papel
+Bollicine dorate ‖ Golden bubbles ‖ Burbujas doradas ‖ Bolhas douradas
+Fontana di zaffiri ‖ Sapphire fountain ‖ Fuente de zafiros ‖ Fonte de safiras
+Petali d’argento ‖ Silver petals ‖ Pétalos de plata ‖ Pétalas de prata
+Ruota del pavone ‖ Peacock fan ‖ Abanico de pavo real ‖ Leque do pavão
+Lampi d’ambra ‖ Amber flashes ‖ Destellos de ámbar ‖ Clarões de âmbar
+Aurora di seta ‖ Silken aurora ‖ Aurora de seda ‖ Aurora de seda
+Comete gemelle ‖ Twin comets ‖ Cometas gemelos ‖ Cometas gêmeos
+Volo del drago ‖ Dragon flight ‖ Vuelo del dragón ‖ Voo do dragão
+Galassia di cristallo ‖ Crystal galaxy ‖ Galaxia de cristal ‖ Galáxia de cristal
+Ali dell’alba ‖ Wings of dawn ‖ Alas del alba ‖ Asas da alvorada
+Trionfo della fenice ‖ Phoenix triumph ‖ Triunfo del fénix ‖ Triunfo da fênix

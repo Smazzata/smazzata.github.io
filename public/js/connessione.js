@@ -164,9 +164,9 @@
     const min = el.classList.contains('cont') ? 400 : 1700;
     setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 500); }, Math.max(0, min - (Date.now() - INTRO_AT)));
   }
-  socket.on('reaction', ({ seat, emoji }) => showSeatBubble(seat, emoji));
+  socket.on('reaction', ({ seat, emoji, cosmeticId }) => showSeatBubble(seat, emoji, cosmeticId));
   /** Una nuvoletta (reazione) sopra il posto di un giocatore */
-  function showSeatBubble(seat, emoji) {
+  function showSeatBubble(seat, emoji, cosmeticId) {
     const g = S.game;
     if (!g) return;
     const target = seat === g.you ? $('.handwrap') : $(`.seatchip[data-seat="${seat}"]`);
@@ -174,7 +174,8 @@
     const r = target.getBoundingClientRect();
     const b = document.createElement('div');
     b.className = 'reaction';
-    b.textContent = emoji;
+    const illustration=window.SmazzataCosmetics?.byId.get(cosmeticId);
+    if(illustration?.kind==='reaction'){b.classList.add('cx-illustrated');const img=document.createElement('img');img.src=illustration.art;img.alt=t(illustration.name);b.append(img);}else b.textContent = emoji;
     b.style.left = `${r.left + r.width / 2}px`;
     b.style.top = `${r.top + (seat === g.you ? 0 : r.height / 2)}px`;
     document.body.appendChild(b);
@@ -427,7 +428,7 @@
         const mine = game.handResult && game.handResult.teams.find((t) => t.members.includes(game.you));
         const best = game.handResult && Math.max(...game.handResult.teams.map((t) => t.total));
         if (mine && mine.total === best) setTimeout(() => Sound.play('win'), 500);
-        if (game.over && game.winners && game.winners.includes(game.you)) setTimeout(() => confetti(), 700);
+        if (game.over && game.winners && game.winners.includes(game.you)) setTimeout(() => {if(typeof equippedVictory!=='function'||!equippedVictory())confetti();}, 700);
         if (game.over && room.series && room.series.champion && room.series.champion.includes(game.you)) setTimeout(() => confetti(260, 4500), 1500);
       } else if (game.phase !== 'handEnd' && S.modalKind === 'result') closeModal();
       else if (S.modalKind === 'result') showResult();

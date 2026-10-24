@@ -218,7 +218,7 @@
         case 'setHints': requireRoom().hints = !!d.on; broadcast(); return {};
         case 'setAids': requireRoom().aids = !!d.on; broadcast(); return {};
         case 'setTurnTime': return {};
-        case 'react': fire('reaction', { seat: 0, emoji: d.emoji }); return {};
+        case 'react': fire('reaction', { seat: 0, emoji: d.emoji || '👏', cosmeticId: self.SmazzataCosmetics?.byId.get(d.cosmeticId)?.kind==='reaction'?d.cosmeticId:undefined }); return {};
         case 'chat': fire('chat', { seat: 0, name: me, text: String(d.text || '').slice(0, 140) }); return {};
         case 'setName': case 'checkNick': return { available: true };
         default:

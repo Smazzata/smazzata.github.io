@@ -423,15 +423,19 @@ module.exports.register = function register(socket, handler) {
 
   // Reazioni rapide al tavolo (con un limite per evitare raffiche)
   const REACTIONS = ['👏', '😂', '😱', '🔥', '👍', '😡', '🙏', '😍'];
-  socket.on('react', handler(({ emoji }) => {
+  socket.on('react', handler(({ emoji, cosmeticId }) => {
     const room = getRoom(socket);
     const seat = seatOfToken(room, socket.data.token);
     if (seat < 0) throw new E.GameError('Solo chi è seduto al tavolo può reagire');
-    if (!REACTIONS.includes(emoji)) throw new E.GameError('Reazione non valida');
+    if(cosmeticId){
+      const C=require('../shared/cosmetics'),s=sessions.get(socket.data.token);
+      if(C.byId.get(cosmeticId)?.kind!=='reaction'||!C.ownedIds(s).includes(cosmeticId))throw new E.GameError('Reazione non posseduta');
+      emoji='👏';
+    }else if (!REACTIONS.includes(emoji)) throw new E.GameError('Reazione non valida');
     const now = Date.now();
     if (socket.data.lastReact && now - socket.data.lastReact < 1000) throw new E.GameError('Piano con le reazioni 🙂');
     socket.data.lastReact = now;
-    io.to(room.code).emit('reaction', { seat, emoji });
+    io.to(room.code).emit('reaction', { seat, emoji, ...(cosmeticId?{cosmeticId}:{}) });
   }));
 
   socket.on('chat', handler(({ text }) => {

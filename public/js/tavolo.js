@@ -397,7 +397,7 @@
       ${r.campaign ? campaignCoachHTML() : r.tutorial && !S.coachOff ? `<div class="coach"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-book /></svg> ${uiLabel(coachTip(g))} <button class="ico" data-act="coachOff" title="Nascondi">✕</button></div>` : ''}
       <div class="sr-only" id="turnmsg" aria-live="polite">${statusText(g).replace(/<[^>]+>/g, '')}</div>
       <div class="floatbar"><span class="fl">${left}</span><span class="fr">${actions}</span></div>
-      ${S.reactOpen ? `<div class="reactbar">${['👏', '😂', '😱', '🔥', '👍', '😡', '🙏', '😍'].map((e) => `<button data-act="react" data-e="${e}">${e}</button>`).join('')}</div>` : ''}
+      ${S.reactOpen ? `<div class="reactbar">${typeof cosmeticReactionButtons==='function'?cosmeticReactionButtons():''}${['👏', '😂', '😱', '🔥', '👍', '😡', '🙏', '😍'].map((e) => `<button data-act="react" data-e="${e}">${e}</button>`).join('')}</div>` : ''}
       ${g.you < 0 ? `<div class="watching"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-eye /></svg> Stai guardando la partita · le carte in mano non sono visibili <button class="btn small" data-act="leave">Esci</button></div>`
         : `<div class="handwrap" data-drop="hand"><div class="hand" id="hand">${handHTML(g)}</div></div>`}
     </div>`;

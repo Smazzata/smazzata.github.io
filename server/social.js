@@ -16,6 +16,7 @@ const Posta = require('./posta');
 const Parole = require('../shared/parole');
 const Avatars = require('../shared/avatars');
 const Chests = require('./chests');
+const Cosmetics = require('../shared/cosmetics');
 
 const NICK_RE = /^[A-Za-z0-9_.-]{3,16}$/;
 const CODE_ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -379,6 +380,20 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
 
     // Il mio stile: titolo sotto il nome e cornice dell'avatar, tra i premi sbloccati giocando
     socket.on('chests', handler(() => ({chests:Chests.view(sess(me()))})));
+    socket.on('cosmetics', handler(() => ({cosmetics:Chests.collection(sess(me()))})));
+    socket.on('setCosmetic', handler(({kind,id}) => {
+      const token=me(),s=sess(token);
+      if(!s.nick)fail('Scegli prima il tuo nickname');
+      if(!Cosmetics.KINDS.some(k=>k.id===kind))fail('Oggetto non valido');
+      if(id!==null && (!Cosmetics.ownedIds(s).includes(id)||Cosmetics.byId.get(id)?.kind!==kind))fail('Oggetto non posseduto');
+      const before=s.cosmeticLoadout,avatar=s.avatar;
+      s.cosmeticLoadout={...Cosmetics.equipped(s)};
+      if(id===null)delete s.cosmeticLoadout[kind];else s.cosmeticLoadout[kind]=id;
+      if(kind==='frame'){s.avatar={...(s.avatar||{})};if(id===null)delete s.avatar.cf;else s.avatar.cf=id;}
+      try{require('./contesto').saveNow(true,false);}catch(e){if(before===undefined)delete s.cosmeticLoadout;else s.cosmeticLoadout=before;if(avatar===undefined)delete s.avatar;else s.avatar=avatar;throw e;}
+      if(kind==='frame'){renamePlayer(token,null);push(token);pushFriends(token);}
+      return {cosmetics:Chests.collection(s),avatar:s.avatar};
+    }));
     socket.on('openChest', handler(({id}) => {
       const s=sess(me());if(!s.nick)fail('Scegli prima il tuo nickname');
       return Chests.open(s,String(id||''),()=>require('./contesto').saveNow(true,false));
@@ -399,7 +414,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if (frame !== undefined && frame !== null && !ok(frame, 'frame')) fail('Cornice non ancora sbloccata');
       const av = { ...(s.avatar || { e: s.nick.charAt(0).toUpperCase(), c: '#f2c14e' }) };
       if (title !== undefined) { if (title && title !== 't_principiante') av.t = Premi.BY_ID[title].name; else delete av.t; av.tid = title || undefined; }
-      if (frame !== undefined) { if (frame && frame !== 'f_nessuna') av.f = frame.slice(2); else delete av.f; }
+      if (frame !== undefined) { if (frame && frame !== 'f_nessuna') av.f = frame.slice(2); else delete av.f; delete av.cf; s.cosmeticLoadout={...Cosmetics.equipped(s)};delete s.cosmeticLoadout.frame; }
       s.avatar = av;
       renamePlayer(token, null);
       push(token);
@@ -410,7 +425,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     socket.on('profile', handler(() => {
       const token = me();
       const s = sess(token);
-      return { nick: s.nick || null, code: s.nick ? ensureCode(token) : null, hasPassword: !!s.pw, email: s.email || null, emailPending: s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null, emailLast: s.emailCode ? s.emailCode.email : null, mail: Posta.enabled(), avatar: s.avatar || null, ownedAvatarIds: Avatars.ownedIds(s), chests:Chests.view(s), emoji: AVATAR_EMOJI, colors: AVATAR_COLORS };
+      return { nick: s.nick || null, code: s.nick ? ensureCode(token) : null, hasPassword: !!s.pw, email: s.email || null, emailPending: s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null, emailLast: s.emailCode ? s.emailCode.email : null, mail: Posta.enabled(), avatar: s.avatar || null, ownedAvatarIds: Avatars.ownedIds(s), chests:Chests.view(s), cosmetics:Chests.collection(s), emoji: AVATAR_EMOJI, colors: AVATAR_COLORS };
     }));
 
     socket.on('regenCode', handler(() => {
