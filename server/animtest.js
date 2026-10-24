@@ -132,6 +132,10 @@ const GAMES = [
     cdp = await connect(target.webSocketDebuggerUrl);
     await cdp.send('Runtime.enable');
     await cdp.send('Page.enable');
+    // Riproduce i dispositivi lenti anche nella sequenza completa di mosse reali.
+    const cpuRate = Number(process.env.ANIM_CPU_RATE || 1);
+    if (!Number.isFinite(cpuRate) || cpuRate < 1 || cpuRate > 12) throw new Error('ANIM_CPU_RATE deve essere compreso tra 1 e 12');
+    await cdp.send('Emulation.setCPUThrottlingRate', { rate: cpuRate });
     await cdp.send('Emulation.setDeviceMetricsOverride', { width: VW, height: VH, deviceScaleFactor: DPR, mobile: true });
     cdp.on((m) => {
       if (m.method === 'Runtime.exceptionThrown') errors.push(m.params.exceptionDetails.exception ? m.params.exceptionDetails.exception.description : m.params.exceptionDetails.text);
@@ -247,4 +251,12 @@ const GAMES = [
     fs.rmSync(dataDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
     try { fs.rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); } catch (e) { /* il browser può tenere aperti dei file */ }
   }
-})().catch((e) => { console.error('✗', e.message); process.exitCode = 1; setTimeout(() => process.exit(1), 300); });
+})().catch((e) => {
+  console.error('✗', e.message);
+  fs.mkdirSync(OUT, { recursive: true });
+  fs.writeFileSync(path.join(OUT, 'errore.json'), JSON.stringify({message:e.message,stack:e.stack},null,2));
+  // Le annotazioni restano leggibili anche senza accesso ai log privati di Actions.
+  if(process.env.GITHUB_ACTIONS)console.log('::error file=server/animtest.js::'+String(e.message).replace(/%/g,'%25').replace(/\r/g,'%0D').replace(/\n/g,'%0A'));
+  process.exitCode = 1;
+  setTimeout(() => process.exit(1), 300);
+});

@@ -73,6 +73,7 @@ Computer: 3 livelli + apertura da vulnerabile con più combinazioni + pianificat
 
 ## Verifiche prima di pubblicare
 - `npm run test:rapido` — versione veloce di `npm test` (meno partite simulate, ~1 minuto): usala durante il lavoro.
+- `npm run test:stress` — scenari riproducibili: inventari e rollback attraverso più settimane, 40.000 esiti base delle chest, 96 smazzate con ripristini e mani private. Inclusi nel workflow Prove. `ANIM_CPU_RATE=4 npm run anim` rallenta anche la sequenza completa di mosse; gli errori emettono annotazioni GitHub leggibili senza i log completi.
 - `npm test` — test del motore e partite simulate tra bot con tutti i preset e regole casuali.
 - `npm run e2e` — prova multigiocatore end-to-end su un server di prova (porta 3999).
 - `npm run bench` — forza relativa dei livelli del computer.
