@@ -3,18 +3,25 @@
 const crypto=require('node:crypto');
 const A=require('../shared/avatars');
 const {GameError}=require('./engine');
-const RULES={version:1,matches:3,dailyLimit:2,epicPity:20,legendaryPity:50,
+const RULES={version:2,matches:3,dailyLimit:2,epicPity:20,legendaryPity:50,
   chestRates:{common:75,rare:20,epic:4,legendary:1},
   types:{
-    common:{name:'Chest comune',rates:{common:65,rare:25,epic:8,legendary:2}},
-    rare:{name:'Chest rara',rates:{common:20,rare:60,epic:17,legendary:3}},
-    epic:{name:'Chest epica',rates:{common:0,rare:20,epic:70,legendary:10}},
+    common:{name:'Chest comune',rates:{common:66.5,rare:25,epic:8,legendary:0.5}},
+    rare:{name:'Chest rara',rates:{common:20,rare:61.5,epic:17,legendary:1.5}},
+    epic:{name:'Chest epica',rates:{common:0,rare:20,epic:77,legendary:3}},
     legendary:{name:'Chest leggendaria',rates:{common:0,rare:0,epic:0,legendary:100}},
   },
   fragments:{common:5,rare:15,epic:50,legendary:150},costs:{common:50,rare:150,epic:500,legendary:1500}};
 const dayOf=now=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Rome',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
-const empty=()=>({version:1,progress:0,day:'',earnedToday:0,fragments:0,epicMisses:0,legendaryMisses:0,issued:0,items:[],exchanges:{}});
-const inventory=s=>s.chests ? structuredClone(s.chests) : empty();
+const empty=()=>({version:2,progress:0,day:'',earnedToday:0,fragments:0,epicMisses:0,legendaryMisses:0,issued:0,items:[],exchanges:{}});
+const inventory=s=>{
+  const b=s.chests ? structuredClone(s.chests) : empty();
+  // Ribilanciamento autorizzato: nuove tabelle anche per le chest ancora chiuse.
+  // Le ricevute già aperte restano immutabili e recuperabili.
+  if(b.version===1)b.version=2;
+  for(const item of b.items)if(!item.reward&&item.version===1)item.version=2;
+  return b;
+};
 const fail=text=>{throw new GameError(text);};
 const typeOf=item=>item?.type || 'common';
 function odds(b,type) {
@@ -24,8 +31,8 @@ function odds(b,type) {
   return rates;
 }
 function draw(weights,randomInt) {
-  let roll=randomInt(100);
-  for(const [key,weight] of Object.entries(weights)){if(roll<weight)return key;roll-=weight;}
+  let roll=randomInt(10000);
+  for(const [key,weight] of Object.entries(weights)){const units=Math.round(weight*100);if(roll<units)return key;roll-=units;}
   throw new Error('Tabella probabilità non valida');
 }
 function view(s,now=Date.now()) {

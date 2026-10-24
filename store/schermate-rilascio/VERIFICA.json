@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-24T08:11:38.185Z",
+  "at": "2026-10-24T08:24:06.594Z",
   "method": "Chrome da file locali; risposte social vuote simulate, motore locale reale",
   "checks": [
     "320/375/768 px",
@@ -11,7 +11,7 @@
     "bozza amico con emoji conservata",
     "allenamento senza progressi"
   ],
-  "sourceBase": "460b63e5f9cdb41de35633f8756d8293174b0a3a + sorgenti identificate dagli hash",
+  "sourceBase": "304771bdfa8185085f325f42fd89648bffd80d7e + sorgenti identificate dagli hash",
   "sourceHashes": {
     "public/index.html": "1cdb623acbf399b5b9164697c8ad02e06fea912fd903298e43290a03f2a7a8d6",
     "public/privacy.html": "a200bfc20e3f1e6881bacfabc477c88b983aef50cd0f478313171b2f21b08357",
@@ -72,8 +72,8 @@
     "public/art/avatars/drago-imperatore.webp": "76db01140a5c3acf87cfa5396e8e0ac50292765c0ecc8b26473c63e7d60a0a5a",
     "public/art/avatars/volpe-nove-code.webp": "1873b7abbc4ad94d3ec3abf74330a7d35fd1fb7978b6d61e5e1ff5c9e40a4289",
     "public/style.css": "71bb9dbe2a76c1c59413323ed57cfeba3bc7c4d1b14a84f6390e8b18e879c897",
-    "public/sw.js": "f09cc297c93c3f6a59419126f1bf82d75a2ce566f4d5f0e0036d26400e68b703",
-    "launcher/sw.js": "41c38b0b7f6884aebbdc2be2b95a4ce99a73a315a676f0f62431b8dd0e4fc56e",
+    "public/sw.js": "7a207c10e3d34d58539daf0a52547ca5e914bf3c27f6998051b0036355e50608",
+    "launcher/sw.js": "cce69f826f855d08aaead2b170c07aaf1b46e5c27c4b998d171f8cc210392714",
     "public/js/animazioni.js": "ba8f2444d9503c5cb7ffd5f7b21699ce4343d7148fe64db270f131628ed3b970",
     "public/js/avatars.js": "5ff457259d67be24575287caf460ac2e9c1b2b457f0b71bc0cbe74100fc239c7",
     "public/js/azioni.js": "c2a66f0bcfe8e7470d793765166f8a08a367f8b652aaafc0dfbb4ce18a180923",

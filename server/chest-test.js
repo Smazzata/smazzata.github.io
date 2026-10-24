@@ -31,7 +31,7 @@ test('Niente chest da bot, tutorial, offline, abbandoni, vecchie partite o ident
 test('Le chest vengono assegnate al 75/20/4/1 e il tipo resta persistito',()=>{
  const expected={common:0,rare:0,epic:0,legendary:0};
  for(let roll=0;roll<100;roll++){
-  const p=players();earn(p,3,DAY,()=>roll);const s=JSON.parse(JSON.stringify(p.get('a')));
+  const p=players();earn(p,3,DAY,()=>roll*100);const s=JSON.parse(JSON.stringify(p.get('a')));
   expected[C.view(s,DAY).pending[0].type]++;
  }
  assert.deepEqual(expected,C.RULES.chestRates);
@@ -39,11 +39,11 @@ test('Le chest vengono assegnate al 75/20/4/1 e il tipo resta persistito',()=>{
 test('Ogni tipo usa la sua tabella avatar; la leggendaria garantisce un leggendario',()=>{
  for(const type of Object.keys(C.RULES.types)){
   const counts={common:0,rare:0,epic:0,legendary:0};
-  for(let i=0;i<100;i++){
-   const s=profile(type),r=C.open(s,'1',noop,roll(i),DAY).reward;
+  for(let i=0;i<200;i++){
+   const s=profile(type),r=C.open(s,'1',noop,roll(i*50),DAY).reward;
    counts[r.rarity]++;assert.equal(A.resolve(r.avatarId).rarity,r.rarity);assert(!A.STARTER_IDS.includes(r.avatarId));
   }
-  assert.deepEqual(counts,C.RULES.types[type].rates);
+  assert.deepEqual(Object.fromEntries(Object.entries(counts).map(([k,n])=>[k,n/2])),C.RULES.types[type].rates);
  }
 });
 test('Garanzie globali a 20 e 50 aperture, probabilità effettive mostrate prima di aprire',()=>{
@@ -52,7 +52,21 @@ test('Garanzie globali a 20 e 50 aperture, probabilità effettive mostrate prima
  assert.equal(C.open(s,'1',noop,roll(0)).reward.rarity,'legendary');
  assert.equal(s.chests.epicMisses,0);assert.equal(s.chests.legendaryMisses,0);
  const e=profile('rare');e.chests.epicMisses=19;
- assert.equal(C.view(e).odds.epic,97);assert.equal(C.open(e,'1',noop,roll(0)).reward.rarity,'epic');
+ assert.equal(C.view(e).odds.epic,98.5);assert.equal(C.open(e,'1',noop,roll(0)).reward.rarity,'epic');
+});
+
+test('Probabilità frazionarie precise e migrazione delle chest chiuse senza cambiare premi aperti',()=>{
+ for(const [type,threshold] of [['common',9950],['rare',9850],['epic',9700]]){
+  assert.notEqual(C.open(profile(type),'1',noop,roll(threshold-1)).reward.rarity,'legendary');
+  assert.equal(C.open(profile(type),'1',noop,roll(threshold)).reward.rarity,'legendary');
+ }
+ const s=profile();s.chests.version=1;s.chests.items[0].version=1;
+ assert.equal(C.view(s).version,2);assert.equal(C.view(s).pending[0].version,2);
+ const reward=C.open(s,'1',noop,roll(0)).reward;
+ assert.equal(s.chests.version,2);assert.equal(s.chests.items[0].version,2);
+ s.chests.version=1;s.chests.items[0].version=1;
+ assert.deepEqual(C.open(s,'1',()=>assert.fail(),()=>assert.fail()).reward,reward);
+ assert.equal(s.chests.items[0].version,1);
 });
 test('Apertura idempotente, doppioni in frammenti e inventario autorevole',async()=>{
  const s=profile();s.avatarOwned=A.LIST.map(a=>a.id);s.avatarInventoryVersion=1;

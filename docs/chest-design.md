@@ -1,4 +1,4 @@
-# Premi e chest — versione 1
+# Premi e chest — versione 2
 
 Implementazione autorizzata il 24 ottobre 2026. Quattro chest gratuite, nessun acquisto. Regole in `server/chests.js`; immagini originali in `public/art/chests/`, istruzioni di generazione in `chest-art-prompts.json` e `chest-art-variants.json`.
 
@@ -16,10 +16,12 @@ La rarità della chest viene estratta e salvata quando la si ottiene: comune **7
 
 | Chest | Avatar comune | Raro | Epico | Leggendario |
 |---|---:|---:|---:|---:|
-| Comune | 65% | 25% | 8% | 2% |
-| Rara | 20% | 60% | 17% | 3% |
-| Epica | 0% | 20% | 70% | 10% |
+| Comune | 66,5% | 25% | 8% | 0,5% |
+| Rara | 20% | 61,5% | 17% | 1,5% |
+| Epica | 0% | 20% | 77% | 3% |
 | Leggendaria | 0% | 0% | 0% | **100%** |
+
+Versione 2, ribilanciamento richiesto dal titolare: probabilità leggendario 0,5% / 1,5% / 3% nelle chest comuni / rare / epiche. La differenza torna alla rarità principale della chest. Le nuove tabelle valgono anche per le chest ancora chiuse della versione 1; le ricevute dei premi già aperti restano immutate. Estrazione su 10000 valori interi per rappresentare esattamente le frazioni percentuali.
 
 Prima si estrae la rarità dell'avatar, poi un avatar uniforme di quella rarità, esclusi i quattro iniziali. Un avatar già posseduto è un doppione; anche un premio leggendario può essere un doppione. L'interfaccia mostra la tabella base di ogni chest e le probabilità effettive della prossima apertura, comprensive delle garanzie.
 
@@ -29,7 +31,7 @@ Il premio resta estetico: nessun effetto su carte, matchmaking, LP o abilità de
 
 I doppioni diventano frammenti: comune 5, raro 15, epico 50, leggendario 150. Un unico saldo gratuito; nessuna conversione in denaro. Lo scambio costa 50/150/500/1500 frammenti e assegna un avatar casuale **mancante** della rarità scelta. Se il gruppo è completo, lo scambio è disabilitato. Gli avatar non posseduti restano nascosti.
 
-Dopo 19 aperture consecutive senza epico o leggendario, la ventesima dà almeno un epico; dopo 49 senza leggendario, la cinquantesima dà un leggendario. Contatori globali per tutti i tipi di chest, persistenti e visibili; si azzerano anche con un premio doppione della rarità garantita. La garanzia leggendaria prevale. La garanzia epica trasferisce la probabilità dei comuni/rari agli epici, conservando quella leggendaria della chest. Gli scambi non avanzano e non azzerano i contatori. Simulazione deterministica di 10000 chest comuni con garanzie: 6357 comuni, 2387 rari, 955 epici, 301 leggendari; non sono le percentuali base promesse per ogni singola apertura.
+Dopo 19 aperture consecutive senza epico o leggendario, la ventesima dà almeno un epico; dopo 49 senza leggendario, la cinquantesima dà un leggendario. Contatori globali per tutti i tipi di chest, persistenti e visibili; si azzerano anche con un premio doppione della rarità garantita. La garanzia leggendaria prevale. La garanzia epica trasferisce la probabilità dei comuni/rari agli epici, conservando quella leggendaria della chest. Gli scambi non avanzano e non azzerano i contatori. Simulazione deterministica di 10000 chest comuni con garanzie: 6453 comuni, 2384 rari, 942 epici, 221 leggendari; non sono le percentuali base promesse per ogni singola apertura.
 
 ## Flusso nell'app
 
