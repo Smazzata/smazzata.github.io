@@ -4,13 +4,30 @@ const C=require('./chests'),W=require('./weekly-rewards'),D=require('./deliverie
 const monday=Date.parse('2026-10-19T12:00:00Z');
 const players=()=>new Map([['a',{nick:'Anna'}],['b',{nick:'Bruno'}]]);
 const room=(id,game='burraco')=>({chestGameId:id,progressEligible:true,rules:{game},seats:[{token:'a'},{token:'b'}],game:{over:true,handResult:{reason:'close'}}});
+test('Obiettivo amici: reciprocità, limite, ripristino e nessun premio retroattivo',()=>{
+ const p=players(),mission=(token,at=monday)=>C.view(p.get(token),at).weekly.missions.find(m=>m.id==='friends');
+ p.get('a').friends=['b'];
+ C.recordGame(room('one-way'),p,()=>{},monday);assert.equal(mission('a').progress,0);
+ p.get('b').friends=['a'];
+ for(let i=0;i<2;i++)C.recordGame(room('friend-'+i),p,()=>{},monday);
+ assert.equal(mission('a').progress,2);assert.equal(mission('b').progress,2);
+ const before=structuredClone(p),third=room('friend-final');
+ assert.throws(()=>C.recordGame(third,p,()=>{throw Error('disco pieno');},monday));assert.deepEqual(p,before);
+ C.recordGame(third,p,()=>{},monday);C.recordGame(third,p,()=>assert.fail('doppio salvataggio'),monday);
+ for(let i=0;i<5;i++)C.recordGame(room('extra-'+i),p,()=>{},monday);
+ for(const s of p.values()){const awards=s.chests.items.filter(x=>x.mission==='friends');assert.equal(awards.length,1);assert.equal(awards[0].type,'rare');}
+ const restored=new Map(JSON.parse(JSON.stringify([...p])));C.recordGame(room('restored'),restored,()=>{},monday);
+ assert.equal(restored.get('a').chests.items.filter(x=>x.mission==='friends').length,1);
+ assert.equal(mission('a',monday+7*86400000).progress,0);
+ p.get('b').friends=[];C.recordGame(room('not-friends-anymore'),p,()=>{},monday+7*86400000);assert.equal(mission('a',monday+7*86400000).progress,0);
+});
 test('Settimana italiana: tre obiettivi, tre soli premi aggiuntivi e nessun doppio accredito',()=>{
  const p=players();let saves=0;
  for(let i=0;i<3;i++){const r=room('weekly-'+i,i===1?'scala40':'burraco');C.recordGame(r,p,()=>saves++,monday+i*86400000);C.recordGame(r,p,()=>assert.fail('salvataggio duplicato'),monday+i*86400000);}
  for(const s of p.values()){
   const b=C.view(s,monday+2*86400000),weekly=b.pending.filter(x=>x.source==='weekly');
   assert.equal(weekly.length,3);assert.deepEqual(weekly.map(x=>x.type).sort(),['common','common','rare']);
-  assert(b.weekly.missions.every(x=>x.awarded));assert.equal(b.progress,0);assert.equal(b.pending.filter(x=>x.source==='game').length,1);
+  assert(b.weekly.missions.filter(x=>x.id!=='friends').every(x=>x.awarded));assert.equal(b.progress,0);assert.equal(b.pending.filter(x=>x.source==='game').length,1);
  }
  assert.equal(saves,3);
  for(let i=3;i<12;i++)C.recordGame(room('weekly-'+i),p,()=>{},monday+2*86400000);

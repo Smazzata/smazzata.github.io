@@ -106,7 +106,7 @@
     openModal('result', `<div class="result ${firstShow ? 'anim' : ''}">
       <header class="result-heading"><p>${t(mode)} · ${t('Smazzata')} ${g.handNo}</p>${uiIcon(outcome === 'Vittoria' ? 'trophy' : 'cards')}<h2>${t(outcome)}</h2></header><p>${reason}</p>
       <div class="rsum">${summary}</div>
-      ${progressHTML}
+      ${progressHTML}${typeof resultLootHTML==='function'?resultLootHTML():''}
       <div class="result-actions">${footer}</div>
       <details class="result-details"><summary>${t('Dettaglio del punteggio')}</summary>
       <table><tr><th></th>${cols}</tr>

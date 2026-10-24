@@ -41,6 +41,9 @@ jobs:
           sed -i 's/"appendUserAgent": "BurracoApp /"appendUserAgent": "BurracoApp\/${{ github.run_number }} /' capacitor.config.json
           grep 'BurracoApp/${{ github.run_number }} SmazzataLocale' capacitor.config.json
           npx cap add android
+          # Il pulsante/gesto Indietro passa prima alla navigazione interna del gioco.
+          cp native/MainActivity.java android/app/src/main/java/it/smazzata/app/MainActivity.java
+          grep smazzataBack android/app/src/main/java/it/smazzata/app/MainActivity.java
           # il Play Store accetta solo app per Android 16 (API 36) o più recenti
           grep -E 'targetSdkVersion = (3[6-9]|[4-9][0-9])' android/variables.gradle
           # vibrazione per il feedback tattile (niente microfono: i messaggi vocali sono stati tolti)

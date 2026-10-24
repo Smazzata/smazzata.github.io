@@ -99,13 +99,14 @@ La notifica esterna è facoltativa, solo per dispositivi già abilitati, dopo il
 
 ## Premi settimanali e campagne con codice
 
-Tre obiettivi settimanali, basati esclusivamente sulle stesse partite online umane idonee alle chest ordinarie:
+Quattro obiettivi settimanali, basati esclusivamente sulle stesse partite online umane idonee alle chest ordinarie:
 
 | Obiettivo | Premio |
 |---|---|
 | Completa 3 partite online | Una chest comune |
 | Completa partite a 2 giochi diversi | Una chest rara |
 | Completa partite in 2 giorni diversi | Una chest comune |
+| Completa 3 partite con almeno un amico reciproco al tavolo | Una chest rara |
 
 I premi settimanali sono aggiuntivi: non consumano il limite giornaliero delle chest ordinarie. Un solo accredito per obiettivo e profilo nella settimana; reset il lunedì a mezzanotte, fuso Europe/Rome. Le chest guadagnate non scadono. Nessun recupero retroattivo di partite concluse prima dell'introduzione. L'apertura usa le stesse percentuali, un oggetto per chest e i contatori globali delle garanzie. Il salvataggio atomico include contatori, marcatori della partita e premi: gli errori annullano tutto l'accredito.
 
@@ -114,3 +115,5 @@ Un codice campagna facoltativo collega invii amministrativi diversi allo stesso 
 Le bozze salvate sono private al gestore e non inviano messaggi; massimo 30, da eliminare esplicitamente quando non servono. Il benvenuto automatico è un'opzione separata, inizialmente disattivata, con anteprima e conferma della configurazione. Alla creazione e alla riconnessione di un nuovo profilo idoneo assegna una volta il regalo impostato; non assegna regali ai profili già iscritti prima dell'attivazione e non invia notifiche esterne automatiche. Il gestore può disattivarlo dalla stessa pagina. Questa aggiunta sostituisce il precedente limite documentato che escludeva qualsiasi campagna automatica futura.
 
 Le novità della Collezione sono ricavate dalle ricevute di aperture, scambi e regali. Un oggetto già posseduto convertito in frammenti non diventa una nuova acquisizione. Visualizzare un oggetto aggiorna un marcatore del solo profilo, senza cambiare possesso o premi. La copia dei metadati resta nel cache privato dell'inventario già previsto; gli stili pubblici condivisi al tavolo non includono l'inventario o le ricevute.
+
+Per l’obiettivo amici basta un’amicizia accettata da entrambi al termine della partita, anche da avversari. Una partita conta una sola volta anche con più amici; nessun recupero retroattivo. Il contatore non salva identificativi degli amici. Un quarto premio settimanale fuori dal limite giornaliero, con le stesse probabilità delle altre chest rare.

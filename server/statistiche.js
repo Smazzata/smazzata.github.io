@@ -178,7 +178,7 @@ function recordLeaderboard(room) {
   if (g.over) room.recordedGame = room.gameSeq;
   if (g.over) {
     const recipients=require('./chests').recordGame(room, sessions, () => ctx.saveNow(true,false));
-    for(const {token,earned,weeklyEarned} of recipients || [])for(const sock of io.sockets.sockets.values())if(sock.data.token===token)sock.emit('chests',{...require('./chests').view(sessions.get(token)),justEarned:earned,weeklyEarned});
+    for(const {token,earned,weeklyEarned} of recipients || [])for(const sock of io.sockets.sockets.values())if(sock.data.token===token)sock.emit('chests',{...require('./chests').view(sessions.get(token)),justEarned:earned,weeklyEarned,roomCode:room.code,gameSeq:room.gameSeq});
   }
 }
 

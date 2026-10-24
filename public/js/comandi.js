@@ -374,6 +374,11 @@
 
   function mobileBack() {
     if (document.activeElement?.matches('input, textarea')) { document.activeElement.blur(); return true; }
+    if (S.chestBusy || S.collectionBusy) return true;
+    if (S.modalKind === 'collectionTable') { handlers.collectionPreviewBack(); return true; }
+    if (S.modalKind === 'collectionLook') { renderCollection(); return true; }
+    if (S.modalKind === 'cosmetics' && S.collectionInspect) { handlers.collectionBack(); return true; }
+    if (['firstChest','chestReward'].includes(S.modalKind)) { handlers.chests(); return true; }
     if (S.modalKind === 'avatarDetail') { handlers.avatarCatalog(); return true; }
     if (S.modalKind) { closeModal(); return true; }
     if (S.screen === 'rankedLobby') { handlers.goHome(); return true; }
@@ -381,6 +386,9 @@
     if (S.screen !== 'home') { handlers.leagueBack(); return true; }
     return false;
   }
+  // Chiamato dal guscio Android anche quando il gioco arriva dal server remoto.
+  // Non tocca la cronologia: il percorso popstate resta riservato al browser.
+  window.smazzataBack = mobileBack;
   // Un solo gradino nella cronologia: Indietro chiude prima il pannello, poi torna alla home.
   // Alla home il secondo Indietro mantiene il comportamento del browser/Android.
   try { history.pushState({smazzata:true}, '', location.href); } catch (e) { /* WebView senza cronologia */ }

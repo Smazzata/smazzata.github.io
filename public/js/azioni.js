@@ -157,6 +157,7 @@
       if (key === 'lang') { location.reload(); return; } // la lingua si applica ricaricando la pagina
       settingsModal();
       if (S.screen === 'game') render();
+      if(key==='music')Music.sync(true);
       if (key === 'sound' && val) { Sound.unlock(); Sound.play('turn'); }
       if (key === 'remind') emit('setRemind', { on: val });
       if (key === 'notify' && val && canNotify && Notification.permission !== 'granted') {

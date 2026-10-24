@@ -119,7 +119,7 @@ function recordGame(room,sessions,persist,now=Date.now(),randomInt=crypto.random
       b.progress=0;b.earnedToday++;b.items.push({id:String(++b.issued),type:draw(RULES.chestRates,randomInt),version:RULES.version,at:now});
       awarded.add(token);
     }
-    const weeklyCount=Weekly.record(b,room,now,day,(type,at,mission)=>b.items.push({id:String(++b.issued),type,version:RULES.version,at,source:'weekly',mission}));
+    const weeklyCount=Weekly.record(b,room,now,day,(type,at,mission)=>b.items.push({id:String(++b.issued),type,version:RULES.version,at,source:'weekly',mission}),tokens.some(other=>other!==token&&s.friends?.includes(other)&&sessions.get(other)?.friends?.includes(token)));
     weeklyAwarded.set(token,weeklyCount);s.chests=b;
   }
   room.chestRecordedGame=room.chestGameId;

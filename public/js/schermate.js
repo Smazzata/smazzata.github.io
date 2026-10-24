@@ -5,6 +5,7 @@
 
   /* ================= Schermate ================= */
   function render() {
+    Music.sync();
     if (S.drag && S.drag.started) { S.pendingRender = true; return; }
     S.pendingRender = false;
     const app = $('#app');

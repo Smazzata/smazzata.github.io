@@ -1,0 +1,19 @@
+Completa 3 partite con un amico ‖ Complete 3 matches with a friend ‖ Completa 3 partidas con un amigo ‖ Complete 3 partidas com um amigo
+Con un amico: completate tre partite online dopo aver accettato l’amicizia, anche da avversari. ‖ With a friend: complete three online matches after accepting the friendship, including as opponents. ‖ Con un amigo: completad tres partidas online tras aceptar la amistad, incluso como rivales. ‖ Com um amigo: completem três partidas online após aceitar a amizade, inclusive como adversários.
+Quattro obiettivi, fino a quattro chest aggiuntive. Si riparte ogni lunedì, ora italiana. ‖ Four goals, up to four extra chests. Resets every Monday, Italian time. ‖ Cuatro objetivos, hasta cuatro cofres extra. Se reinicia cada lunes, hora italiana. ‖ Quatro objetivos, até quatro baús extras. Reinicia toda segunda-feira, horário italiano.
+La tua prima chest ‖ Your first chest ‖ Tu primer cofre ‖ Seu primeiro baú
+Ogni chest contiene un solo oggetto. Prima di aprirla puoi vedere le probabilità di ogni rarità. ‖ Each chest contains one item. You can check each rarity's odds before opening it. ‖ Cada cofre contiene un objeto. Puedes consultar las probabilidades de cada rareza antes de abrirlo. ‖ Cada baú contém um item. Você pode consultar as chances de cada raridade antes de abri-lo.
+Un doppione diventa frammenti: accumulali per ottenere un oggetto che ti manca. Dopo l’apertura puoi equipaggiare subito il premio. ‖ Duplicates become fragments: save them for an item you don't own. You can equip your reward right after opening. ‖ Los duplicados se convierten en fragmentos: ahórralos para un objeto que te falte. Puedes equipar el premio justo después de abrir. ‖ Duplicatas viram fragmentos: junte-os para obter um item que falta. Você pode equipar o prêmio logo após abrir.
+Il premio viene salvato prima dell’animazione: resta tuo anche se perdi la connessione. ‖ Your reward is saved before the animation: it stays yours even if you disconnect. ‖ Tu premio se guarda antes de la animación: sigue siendo tuyo aunque se corte la conexión. ‖ Seu prêmio é salvo antes da animação: continua seu mesmo se a conexão cair.
+Apri la prima chest ‖ Open your first chest ‖ Abre tu primer cofre ‖ Abra seu primeiro baú
+Torna al bottino ‖ Back to loot ‖ Volver al botín ‖ Voltar ao saque
+Le tue ricompense ‖ Your rewards ‖ Tus recompensas ‖ Suas recompensas
+Chest ottenute ‖ Chests earned ‖ Cofres obtenidos ‖ Baús obtidos
+Progressi salvati per la prossima chest ‖ Progress saved towards your next chest ‖ Progreso guardado para tu próximo cofre ‖ Progresso salvo para seu próximo baú
+Prossimo obiettivo ‖ Next goal ‖ Próximo objetivo ‖ Próximo objetivo
+Obiettivi settimanali completati ‖ Weekly goals completed ‖ Objetivos semanales completados ‖ Objetivos semanais concluídos
+Vai al bottino ‖ Go to loot ‖ Ir al botín ‖ Ir ao saque
+Musica di sottofondo ‖ Background music ‖ Música de fondo ‖ Música de fundo
+Attiva musica ‖ Enable music ‖ Activar música ‖ Ativar música
+Disattiva musica ‖ Disable music ‖ Desactivar música ‖ Desativar música
+Temi dedicati a menu, giochi e ricompense. La scelta resta salvata su questo dispositivo; gli effetti sonori sono indipendenti. ‖ Themes for menus, games and rewards. Your choice is saved on this device; sound effects are independent. ‖ Temas para menús, juegos y recompensas. Tu elección se guarda en este dispositivo; los efectos de sonido son independientes. ‖ Temas para menus, jogos e recompensas. Sua escolha fica salva neste dispositivo; os efeitos sonoros são independentes.

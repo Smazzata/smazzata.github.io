@@ -124,6 +124,7 @@
     const already = !m.classList.contains('hidden') && !m.classList.contains('closing');
     clearTimeout(modalTimer);
     S.modalKind = kind;
+    Music.sync();
     $('#modal .modal-content').innerHTML = html;
     m.classList.remove('hidden', 'closing');
     $('#modal .modal-box').style.transform = '';
@@ -132,6 +133,7 @@
   }
   function closeModal() {
     S.modalKind = null;
+    Music.sync();
     const m = $('#modal');
     if (m.classList.contains('hidden')) return;
     m.classList.add('closing');
@@ -267,6 +269,7 @@
       ${canNotify ? `<div class="row">${opt('notify', true, '🔔 Attive')}${opt('notify', false, '🔕 Disattivate')}</div>
         <p class="muted small">Arrivano quando il gioco è aperto in secondo piano.${typeof Notification !== 'undefined' && Notification.permission === 'denied' ? ' <b>Il browser le ha bloccate: riattivale dalle impostazioni del sito.</b>' : ''}</p>`
         : '<p class="muted small">Su questo dispositivo o browser le notifiche non sono disponibili.</p>'}
+      <h4>${t('Musica di sottofondo')}</h4><div class="row">${opt('music', true, 'Attiva musica')}${opt('music', false, 'Disattiva musica')}</div><p class="muted small">${t('Temi dedicati a menu, giochi e ricompense. La scelta resta salvata su questo dispositivo; gli effetti sonori sono indipendenti.')}</p>
       <h4>Suoni</h4>
       <div class="row">${opt('sound', true, '🔊 Attivi')}${opt('sound', false, '🔇 Disattivati')}</div>
       ${S.room && S.room.slow && S.game && !S.game.over && S.game.you >= 0 ? '<h4>Partita con calma</h4><button class="btn small danger" data-act="abandon"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Abbandona la partita</button>' : ''}
