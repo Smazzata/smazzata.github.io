@@ -64,7 +64,7 @@ Dopo 19 aperture consecutive senza epico o leggendario, la ventesima dà almeno 
 
 ## Flusso nell'app
 
-Nel profilo, sotto gli avatar posseduti, un accesso «Le tue chest» con il numero di aperture disponibili e il progresso verso la prossima (0/3, 1/3, 2/3). Al raggiungimento del limite giornaliero, indicare chiaramente quando il conteggio riprende. Nessun timer per aprire una chest già guadagnata e nessuna scadenza che obblighi a collegarsi.
+Nel profilo, sotto gli avatar posseduti, un accesso «Inventario personale» con il numero di aperture disponibili e il progresso verso la prossima (0/3, 1/3, 2/3). Al raggiungimento del limite giornaliero, indicare chiaramente quando il conteggio riprende. Nessun timer per aprire una chest già guadagnata e nessuna scadenza che obblighi a collegarsi.
 
 Prima dell'apertura mostrare probabilità, contatori di garanzia e regole dei doppioni. Il server conferma il premio, poi parte una breve animazione saltabile, diversa per rarità e rispettosa del movimento ridotto. Infine: nome, illustrazione e azioni «Usa avatar»/«Usa questo stile» oppure «Continua». Le nuove acquisizioni compaiono subito nella collezione; gli avatar mancanti restano nascosti.
 
@@ -81,3 +81,18 @@ Quattro illustrazioni con quattro fotogrammi ciascuna (1536×512, trasparenza We
 - Verificare distribuzione con simulazioni, garanzie, collezione completa, doppioni, richieste simultanee, riavvii e migrazione dei profili esistenti.
 
 Le mutazioni sono sincrone nel processo autoritativo, con salvataggio atomico dell'intero stato SQLite/JSON prima della risposta. Gli errori di salvataggio ripristinano inventario e contatori in memoria. Un UUID per partita e un marcatore persistito impediscono accrediti doppi; se il salvataggio fallisce, il recupero deve precedere una nuova partita. Le richieste di scambio hanno un ID conservato dal client fino alla conferma, così una risposta persa non causa un nuovo addebito. Nessun parametro client può impostare premi, frammenti, rarità della chest o possesso. Cancellando il profilo si elimina anche il suo inventario e la copia locale.
+
+
+## Inventario e regali amministrativi — 24 ottobre 2026
+
+L’inventario è accessibile dalla Home, da Altro e dal profilo. Raggruppa le chest chiuse per rarità: si sceglie quale tipo aprire, con probabilità effettive aggiornate dal server per quella chest. Tutti i contatori di garanzia restano globali; ogni chest, anche regalo, contiene un solo oggetto. Nessuna variazione delle percentuali.
+
+La posta personale raccoglie comunicazioni e ricevute dei regali, con stato di lettura e pagine da 20 messaggi. Le chest regalo restano chiuse; gli oggetti specifici vengono assegnati alla consegna. Doppioni specifici in frammenti: 5/15/50/150. La lettura non assegna nuovamente il regalo. I regali non consumano il limite giornaliero delle chest guadagnate giocando e non alterano i contatori di garanzia prima dell’apertura.
+
+Dalla pagina di stato protetta, «Posta, aggiornamenti e regali ai giocatori» apre il compositore: nickname singoli/multipli, tutti gli iscritti attuali oppure un intervallo di iscrizione. Dal giorno incluso / prima del giorno escluso, fuso Europe/Rome. Per i vecchi profili si usa la data documentata di accettazione iniziale (`terms`), se disponibile; non si inventano date mancanti. I profili senza data sono esclusi dai soli filtri cronologici.
+
+Ogni invio richiede un’anteprima con elenco completo dei destinatari, valida 15 minuti, e una conferma. È una consegna agli iscritti selezionati al momento dell’anteprima, non una campagna automatica per utenti futuri. Per un benvenuto periodico si seleziona l’intervallo dei nuovi iscritti. Una nuova anteprima è un nuovo invio intenzionale; ripetere la stessa conferma non duplica i premi.
+
+I messaggi sono salvati insieme ai premi e alla ricevuta globale prima di confermare; un errore di salvataggio annulla tutte le assegnazioni dell’invio. Lo storico persiste in SQLite e JSON e impedisce repliche anche dopo riavvio. Non conserva elenchi di nickname/token; i titoli sono ripuliti dei riferimenti al profilo in caso di cancellazione. L’interfaccia espone i nomi degli oggetti, non identificativi interni o credenziali. L’accesso amministrativo ha controllo della chiave e token anti-CSRF; il testo viene sempre mostrato come testo, mai come HTML.
+
+La notifica esterna è facoltativa, solo per dispositivi già abilitati, dopo il salvataggio. La posta persistente è la fonte della consegna: la richiesta push non certifica la ricezione o la lettura e non viene ripetuta automaticamente dopo un riavvio. Nessuna email viene inviata. La posta non è salvata nella cache locale; offline resta consultabile l’inventario già memorizzato.

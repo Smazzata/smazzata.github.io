@@ -56,6 +56,7 @@ function eraseRelated(ctx, token, dataDir) {
   // Prima di confermare la cancellazione eliminiamo tutte le copie locali precedenti.
   // Se fallisce, la richiesta restituisce un errore e può essere ripetuta.
   cleanCopies(dataDir, { all: true });
+  if(ctx.deliveries) scrub(ctx.deliveries, token, names);
   ctx.leaderboard.delete(token);
   if (ctx.Ranked) ctx.Ranked.cancel(token);
   if (ctx.ranked) {

@@ -44,7 +44,7 @@ function draw(weights,randomInt) {
 function view(s,now=Date.now()) {
   const b=inventory(s),owned=ownedOf(s);
   return {version:b.version,progress:b.progress,earnedToday:b.day===dayOf(now)?b.earnedToday:0,day:dayOf(now),
-    pending:b.items.filter(x=>!x.reward).map(x=>({id:x.id,type:typeOf(x),version:x.version,at:x.at})),
+    pending:b.items.filter(x=>!x.reward).map(x=>({id:x.id,type:typeOf(x),version:x.version,at:x.at,source:x.source||'game',odds:odds(b,typeOf(x))})),
     recent:b.items.filter(x=>x.reward).slice(-10).reverse().map(x=>({id:x.id,...x.reward})),
     fragments:b.fragments,epicIn:RULES.epicPity-b.epicMisses,legendaryIn:RULES.legendaryPity-b.legendaryMisses,
     odds:odds(b,typeOf(b.items.find(x=>!x.reward))),
@@ -115,4 +115,4 @@ function recordGame(room,sessions,persist,now=Date.now(),randomInt=crypto.random
   }
   return tokens.map(token=>({token,earned:awarded.has(token)}));
 }
-module.exports={RULES,POOL,collection,view,open,exchange,recordGame,dayOf};
+module.exports={RULES,POOL,collection,view,open,exchange,recordGame,dayOf,inventory,grant,odds};

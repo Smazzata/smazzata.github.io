@@ -16,6 +16,7 @@ const Posta = require('./posta');
 const Parole = require('../shared/parole');
 const Avatars = require('../shared/avatars');
 const Chests = require('./chests');
+const Deliveries = require('./deliveries');
 const Cosmetics = require('../shared/cosmetics');
 
 const NICK_RE = /^[A-Za-z0-9_.-]{3,16}$/;
@@ -295,6 +296,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     return {
       nick: s.nick || null,
       hasPassword: !!s.pw,
+      unreadMail: (s.inbox||[]).filter(x=>!x.read).length,
       hasEmail: !!s.email,
       emailPending: !s.email && s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null,
       avatar: s.avatar || null,
@@ -339,7 +341,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if (!s.nick && Posta.enabled()) fail("Conferma l'email per creare il profilo");
       if (!s.nick && adult !== true) fail(NO_ETA);
       if (!s.nick || !s.pw) setPw(s, password);
-      if (!s.nick) s.terms = Date.now(); // quando ha dichiarato l'età e accettato le regole
+      if (!s.nick) s.registeredAt = s.terms = Date.now(); // quando ha dichiarato l'età e accettato le regole
       if (s.nick) nickIndex.delete(s.nick.toLowerCase());
       rememberNickname(s);
       s.nick = nick;
@@ -379,6 +381,11 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     }));
 
     // Il mio stile: titolo sotto il nome e cornice dell'avatar, tra i premi sbloccati giocando
+    socket.on('inbox', handler(({offset}) => ({inbox:Deliveries.inbox(sess(me()),offset)})));
+    socket.on('readMail', handler(({id}) => {
+      const token=me(),result=Deliveries.read(sess(token),id,()=>require('./contesto').saveNow(true,false));
+      push(token);return {inbox:result};
+    }));
     socket.on('chests', handler(() => ({chests:Chests.view(sess(me()))})));
     socket.on('cosmetics', handler(() => ({cosmetics:Chests.collection(sess(me()))})));
     socket.on('setCosmetic', handler(({kind,id}) => {
@@ -523,7 +530,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       s.name = su.nick;
       s.pw = su.pw;
       s.email = su.email;
-      s.terms = Date.now(); // quando ha dichiarato l'età e accettato le regole (spunta chiesta da startSignup)
+      s.registeredAt = s.terms = Date.now(); // quando ha dichiarato l'età e accettato le regole (spunta chiesta da startSignup)
       s.signup = null;
       nickIndex.set(s.nick.toLowerCase(), token);
       emailIndex.set(s.email, token);

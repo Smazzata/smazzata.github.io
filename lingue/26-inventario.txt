@@ -1,0 +1,16 @@
+Inventario personale ‖ Personal inventory ‖ Inventario personal ‖ Inventário pessoal
+Posta personale ‖ Personal inbox ‖ Correo personal ‖ Caixa de entrada pessoal
+Le chest ottenute giocando e quelle ricevute in regalo restano qui finché decidi di aprirle. ‖ Chests earned by playing and received as gifts stay here until you decide to open them. ‖ Los cofres ganados jugando y recibidos como regalo permanecen aquí hasta que decidas abrirlos. ‖ Os baús ganhos jogando e recebidos de presente ficam aqui até você decidir abri-los.
+Nessuna chest da aprire. Le prossime ti aspettano qui. ‖ No chests to open. Your next ones will be waiting here. ‖ No hay cofres para abrir. Los próximos te esperan aquí. ‖ Nenhum baú para abrir. Os próximos estarão aqui.
+Scegli la chest da aprire. Le probabilità mostrate includono le garanzie attive. ‖ Choose a chest to open. The odds shown include active guarantees. ‖ Elige un cofre para abrir. Las probabilidades incluyen las garantías activas. ‖ Escolha um baú para abrir. As probabilidades incluem as garantias ativas.
+Collegati per leggere la posta personale ‖ Connect to read your inbox ‖ Conéctate para leer tu correo ‖ Conecte-se para ler suas mensagens
+Messaggi e regali da Smazzata ‖ Messages and gifts from Smazzata ‖ Mensajes y regalos de Smazzata ‖ Mensagens e presentes da Smazzata
+Letto ‖ Read ‖ Leído ‖ Lido
+Da leggere ‖ Unread ‖ Sin leer ‖ Não lido
+Regalo consegnato al tuo inventario ‖ Gift delivered to your inventory ‖ Regalo entregado en tu inventario ‖ Presente entregue no seu inventário
+Segna come letto ‖ Mark as read ‖ Marcar como leído ‖ Marcar como lido
+Non hai ancora ricevuto messaggi. ‖ You haven't received any messages yet. ‖ Aún no has recibido mensajes. ‖ Você ainda não recebeu mensagens.
+Più recenti ‖ Newer ‖ Más recientes ‖ Mais recentes
+Più vecchi ‖ Older ‖ Más antiguos ‖ Mais antigos
+Hai ricevuto posta da Smazzata ‖ You've received mail from Smazzata ‖ Has recibido correo de Smazzata ‖ Você recebeu uma mensagem da Smazzata
+Messaggio non disponibile ‖ Message unavailable ‖ Mensaje no disponible ‖ Mensagem indisponível

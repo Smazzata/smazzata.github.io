@@ -1382,3 +1382,13 @@ body[data-theme="notte"] .chest-entry{background:linear-gradient(120deg,#354334,
 .offline .btn {color:#fff;border-color:currentColor;}
 .game.offline-lock .topbar {pointer-events:auto;}
 @media (pointer:coarse) { .hand .card.sel {filter:drop-shadow(0 0 3px #f3c969);} }
+
+/* Inventario e posta personale: tutti i contenuti scorrono nella modale. */
+.inventory-nav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}.inventory-nav .btn{white-space:normal}
+.inventory-chests{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0}
+.inventory-chest{font:inherit;min-width:0;padding:10px;border:1px solid #b4bdaa;border-radius:18px;background:#fffaf0;color:inherit;cursor:pointer}
+.inventory-chest[aria-pressed=true]{outline:3px solid #b28a38;outline-offset:-3px;background:rgba(218,177,79,.12)}
+.inventory-chest:disabled{opacity:.48;cursor:default}.inventory-chest .chest-sprite{width:72px;margin:auto}.inventory-chest b,.inventory-chest small{display:block;overflow-wrap:anywhere}
+.personal-letter{padding:18px;margin:16px 0;border:1px solid #b4bdaa;border-radius:16px;overflow-wrap:anywhere}.personal-letter.unread{border-left:5px solid #b28a38}.personal-letter h3{margin:8px 0}.letter-body{white-space:pre-wrap;line-height:1.6}.letter-gift{padding:12px;background:rgba(185,153,80,.1);border-radius:12px}.letter-gift .chest-sprite{width:85px}.letter-gift>.avatar,.letter-gift>.cx-art{width:80px;height:80px}.personal-inbox nav{padding-bottom:12px}
+
+body[data-theme="notte"] .inventory-chest{background:#263e32}.letter-gift>.cx-victory-emblem{width:90px;height:100px}

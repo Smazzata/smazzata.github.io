@@ -1,0 +1,35 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
+const {spawn}=require('node:child_process'),{io}=require('socket.io-client');
+test('Pagina di stato: autorizzazione, anteprima, invio, posta privata e persistenza',{timeout:60000},async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'smazzata-deliveries-e2e-')),key=crypto.randomBytes(18).toString('hex'),admin=crypto.randomBytes(18).toString('hex');
+ const profile={nick:'Destinatario',terms:Date.parse('2026-10-01'),devices:[{h:crypto.createHash('sha256').update(key).digest('hex'),at:Date.now()}]};
+ fs.writeFileSync(path.join(dir,'stato.json'),JSON.stringify({accountsEpoch:3,progressEpoch:1,sessions:[['one',profile],['two',{nick:'Escluso'}]],rooms:[]}));
+ let proc;const sockets=[],base='http://127.0.0.1:3993',url=base+'/stato/invii?k='+admin;
+ const start=()=>new Promise((res,rej)=>{proc=spawn(process.execPath,[path.join(__dirname,'index.js')],{env:{...process.env,DATA_DIR:dir,PORT:'3993',ADMIN_KEY:admin},stdio:['ignore','pipe','pipe']});proc.once('error',rej);proc.stdout.on('data',d=>{if(String(d).includes('ascolto'))res();});proc.once('exit',c=>{if(c)rej(Error('server '+c));});});
+ const stop=async()=>{for(const s of sockets)s.disconnect();if(proc&&proc.exitCode===null){const p=new Promise(r=>proc.once('exit',r));proc.kill();await p;}};
+ const post=(body)=>fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(body)});
+ const client=async token=>{const s=io(base,{transports:['websocket'],forceNew:true});sockets.push(s);await new Promise((res,rej)=>{s.once('connect',res);s.once('connect_error',rej);});await new Promise(res=>{s.once('welcome',res);s.emit('hello',{token});});return (event,data={})=>new Promise((res,rej)=>s.timeout(5000).emit(event,data,(err,r)=>err?rej(err):res(r)));};
+ try{
+  await start();assert.equal((await fetch(base+'/stato/invii')).status,403);
+  const html=await(await fetch(url)).text(),csrf=html.match(/name="csrf" value="([^"]+)"/)[1];
+  assert.equal((await post({title:'x'})).status,403);
+  const data={csrf,title:'<script>Avviso</script>',body:'Test riservato',mode:'dates',before:'2026-10-24',gift:'legendary'};
+  const preview=await(await post(data)).text();assert(preview.includes('Anteprima: 1 destinatario'));assert(preview.includes('&lt;script&gt;Avviso&lt;/script&gt;'));
+  const id=preview.match(/name="id" value="([^"]+)"/)[1],a=await client(key),guest=await client();
+  assert.equal((await a('chests')).chests.pending.length,0);
+  assert.equal((await guest('inbox')).inbox.total,0);
+  const delivered=await(await post({csrf,id})).text();assert(delivered.includes('1 consegne salvate'));
+  assert((await(await post({csrf,id})).text()).includes('Nessun regalo duplicato'));
+  assert.equal((await a('chests')).chests.pending[0].type,'legendary');
+  const mail=(await a('inbox')).inbox;assert.equal(mail.unread,1);assert.equal(mail.messages[0].id,id);
+  assert.equal((await guest('readMail',{id})).ok,false);
+  assert((await a('readMail',{id})).ok);assert.equal((await a('inbox')).inbox.unread,0);
+  await stop();await start();const again=await client(key);
+  assert.equal((await again('inbox')).inbox.unread,0);assert.equal((await again('chests')).chests.pending.length,1);
+  const reloaded=await(await fetch(url)).text(),csrf2=reloaded.match(/name="csrf" value="([^"]+)"/)[1];
+  assert((await(await post({csrf:csrf2,id})).text()).includes('Nessun regalo duplicato'));
+  const open=await again('openChest',{id:'1'});assert(open.ok);assert.equal(open.reward.rarity,'legendary');
+  assert.deepEqual((await again('openChest',{id:'1'})).reward,open.reward);
+ }finally{await stop();}
+});

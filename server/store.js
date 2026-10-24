@@ -37,6 +37,7 @@ function toRows(data) {
   for (const t of data.tournaments || []) rows.push(['tournaments', t.id, t]);
   for (const [d, m] of data.daily || []) rows.push(['daily', d, m]);
   rows.push(['meta', 'reports', data.reports || []]);
+  rows.push(['meta', 'deliveries', data.deliveries || []]);
   const ranked = data.ranked || require('./ranked').empty();
   for (const [token, ranks] of Object.entries(ranked.players)) rows.push(['rankedPlayers', token, ranks]);
   for (const [id, match] of Object.entries(ranked.matches)) rows.push(['rankedMatches', id, match]);
@@ -56,6 +57,7 @@ function fromRows(rows) {
     if (coll === 'sessions' || coll === 'leaderboard' || coll === 'daily') data[coll].push([key, v]);
     else if (coll === 'rooms' || coll === 'leagues' || coll === 'tournaments') data[coll].push(v);
     else if (coll === 'meta' && key === 'reports') data.reports = v;
+    else if (coll === 'meta' && key === 'deliveries') data.deliveries = v;
     else if (coll === 'meta' && key === 'ranked') data.ranked = v;
     else if (coll === 'rankedPlayers') data.ranked.players[key] = v;
     else if (coll === 'rankedMatches') data.ranked.matches[key] = v;

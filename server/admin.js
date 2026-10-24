@@ -120,6 +120,7 @@ function statusData() {
 }
 
 function setupStatus(app) {
+  require('./admin-deliveries')(app,ADMIN_KEY);
   app.get('/stato.json', (req, res) => {
     if (req.query.k !== ADMIN_KEY) return res.status(403).json({ errore: 'chiave mancante o sbagliata' });
     res.set('Cache-Control', 'no-store').json(statusData());
@@ -165,7 +166,7 @@ function setupStatus(app) {
   .box{background:rgba(0,0,0,.25);border-radius:12px;padding:12px;margin:10px 0}.k{display:inline-block;margin:4px 14px 4px 0}
   .k b{display:block;font-size:22px;color:#f2c14e}table{width:100%;border-collapse:collapse;font-size:14px}td,th{text-align:left;padding:5px;border-bottom:1px solid rgba(255,255,255,.15)}
   pre{white-space:pre-wrap;font-size:12px;margin:4px 0;color:#ffd7d7}.m{color:#bcd6c8;font-size:12px}</style></head><body>
-  <h1>🃏 Stato del server</h1>
+  <h1>🃏 Stato del server</h1><p><a style="color:#f2c14e" href="/stato/invii?k=${encodeURIComponent(req.query.k)}">Posta, aggiornamenti e regali ai giocatori →</a></p>
   <div class="box"><span class="k">Acceso da<b>${d.acceso_da_min} min</b></span><span class="k">Connessi<b>${d.connessi}</b></span>
   <span class="k">Profili<b>${d.profili}</b></span><span class="k">Tavoli<b>${d.tavoli.length}</b></span><span class="k">Memoria<b>${d.memoria_mb} MB</b></span>
   <span class="k">Versione<b>${esc(d.versione)}</b></span>

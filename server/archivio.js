@@ -35,6 +35,7 @@ function saveNow(throwOnError = false, purgeResiduals = true) {
       sessions: [...sessions],
       leaderboard: [...leaderboard],
       reports: ctx.reports,
+      deliveries: ctx.deliveries || [],
       ranked: ctx.ranked,
       daily: [...daily].map(([d, m]) => [d, m]),
       leagues: [...leagues.values()],
@@ -89,6 +90,7 @@ function loadSaved() {
       leaderboard.set(token, e);
     }
     ctx.reports = data.reports || [];
+    ctx.deliveries = data.deliveries || [];
     ctx.ranked = data.ranked || require('./ranked').empty();
     for (const [d, m] of data.daily || []) daily.set(d, m);
     for (const lg of data.leagues || []) leagues.set(lg.id, lg);
