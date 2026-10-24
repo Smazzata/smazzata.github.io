@@ -331,6 +331,9 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
   }
   function register(socket, handler) {
     const me = () => socket.data.token || fail('Sessione non valida');
+    const inventoryChanged = () => {
+      for(const other of io.sockets.sockets.values())if(other!==socket&&other.data.token===me())other.emit('inventoryChanged');
+    };
     const ip = socket.handshake.address || 'ip';
 
     socket.on('checkNick', handler(({ nick }) => checkNick(nick, socket.data.token)));
@@ -375,13 +378,16 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       // Le scelte già salvate restano utilizzabili; cambiarne lo sfondo non assegna un nuovo avatar.
       const owned = Avatars.ownedIds(s);
       if (!owned.includes(avatar.id)) fail('Questo avatar non è ancora disponibile');
+      const before={avatarOwned:s.avatarOwned,avatarInventoryVersion:s.avatarInventoryVersion,avatar:s.avatar};
       s.avatarOwned = owned;
       s.avatarInventoryVersion = 1;
       // e è la rappresentazione di compatibilità per i client precedenti; id identifica l'illustrazione.
       s.avatar = { ...(s.avatar || {}), id:avatar.id, e:avatar.e, c };
+      try{require('./contesto').saveNow(true,false);}catch(error){for(const [key,value] of Object.entries(before)){if(value===undefined)delete s[key];else s[key]=value;}throw error;}
       renamePlayer(token, null);
       push(token);
       pushFriends(token);
+      inventoryChanged();
       return { avatar: s.avatar };
     }));
 
@@ -406,15 +412,16 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       try{require('./contesto').saveNow(true,false);}catch(e){if(before===undefined)delete s.cosmeticLoadout;else s.cosmeticLoadout=before;if(avatar===undefined)delete s.avatar;else s.avatar=avatar;throw e;}
       if(['frame','felt','back'].includes(kind))renamePlayer(token,null);
       if(kind==='frame'){push(token);pushFriends(token);}
+      inventoryChanged();
       return {cosmetics:Chests.collection(s),avatar:s.avatar};
     }));
     socket.on('openChest', handler(({id}) => {
       const s=sess(me());if(!s.nick)fail('Scegli prima il tuo nickname');
-      return Chests.open(s,String(id||''),()=>require('./contesto').saveNow(true,false));
+      const result=Chests.open(s,String(id||''),()=>require('./contesto').saveNow(true,false));inventoryChanged();return result;
     }));
     socket.on('exchangeChestFragments', handler(({rarity,requestId}) => {
       const s=sess(me());if(!s.nick)fail('Scegli prima il tuo nickname');
-      return Chests.exchange(s,rarity,requestId,()=>require('./contesto').saveNow(true,false));
+      const result=Chests.exchange(s,rarity,requestId,()=>require('./contesto').saveNow(true,false));inventoryChanged();return result;
     }));
 
     socket.on('setLook', handler(({ title, frame }) => {

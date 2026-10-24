@@ -110,12 +110,18 @@
     }
   });
   let toastTimer = null;
-  function toast(msg, error = false) {
+  function toast(msg, error = false, duration = error ? 3200 : 2200) {
     const t = $('#toast');
     t.textContent = msg;
     t.className = 'toast' + (error ? ' error' : '');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.add('hidden'), error ? 3200 : 2200);
+    toastTimer = setTimeout(() => t.classList.add('hidden'), duration);
+  }
+  function confirmEquipped(item) {
+    if(!item){toast(t('Equipaggiato'));return;}
+    toast(t('Ora stai usando')+': '+t(item.name),false,3600);
+    const el=$('#toast');el.classList.add('equip-confirmation');
+    el.innerHTML=`<span aria-hidden="true">${uiIcon('check')}</span><span><b>${t('Ora stai usando')}</b><small>${esc(t(item.name))}</small></span>`;
   }
 
   let modalTimer = null;

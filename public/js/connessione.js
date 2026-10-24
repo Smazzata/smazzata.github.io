@@ -36,8 +36,6 @@
   const pendingRequests = new Set();
   socket.on('connect', () => {
     S.syncPending = !OFFLINE;
-    if (S.lostConnection) toast('✓ Riconnesso');
-    S.lostConnection = false;
     S.connected = true;
     socket.emit('hello', { token: S.token, name: S.name, lang: LANG, remind: S.prefs.remind !== false });
   });
@@ -143,8 +141,27 @@
   socket.on('state', ({ room, game, __local }) => {
     // mentre si gioca sul telefono contro il computer, lo stato del server (es. al ricollegamento) non conta
     if (S.localGame && !__local) { hideIntro(); return; }
+    const wasSyncing=S.syncPending,restored=S.lostConnection&&!__local;
     S.syncPending = false;
+    if(!__local)S.lostConnection=false;
     onState(room, game); hideIntro();
+    if(restored)toast(t('Sei di nuovo collegato.'));
+    // Rileggi l'inventario dopo il ripristino: un altro dispositivo può averlo cambiato.
+    if(wasSyncing&&!__local&&!S.chestBusy&&!S.collectionBusy){
+      if(S.modalKind==='chests')chestsModal(true);
+      else if(S.modalKind==='cosmetics')collectionModal(undefined,true);
+    }
+  });
+  let inventoryRefreshTimer=null;
+  socket.on('inventoryChanged',()=>{
+    clearTimeout(inventoryRefreshTimer);
+    const refresh=()=>{
+      if(!S.connected||S.syncPending)return;
+      if(S.chestBusy||S.collectionBusy){inventoryRefreshTimer=setTimeout(refresh,150);return;}
+      if(S.modalKind==='chests')chestsModal(true);
+      else if(S.modalKind==='cosmetics')collectionModal(undefined,true);
+    };
+    inventoryRefreshTimer=setTimeout(refresh,50);
   });
 
   /* ---------- Intro animata all'apertura ---------- */

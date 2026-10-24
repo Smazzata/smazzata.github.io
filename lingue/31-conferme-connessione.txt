@@ -1,0 +1,4 @@
+Ora stai usando ‖ You are now using ‖ Ahora estás usando ‖ Agora você está usando
+Ti stiamo ricollegando, attendi. ‖ Reconnecting, please wait. ‖ Te estamos reconectando, espera. ‖ Reconectando, aguarde.
+Collegamento in corso, attendi. ‖ Connecting, please wait. ‖ Conectando, espera. ‖ Conectando, aguarde.
+Sei di nuovo collegato. ‖ You are connected again. ‖ Vuelves a estar conectado. ‖ Você está conectado novamente.

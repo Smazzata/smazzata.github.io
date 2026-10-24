@@ -12,13 +12,14 @@ function collectionOwned(){const p=S.collectionData?.owner===S.token?S.collectio
 function collectionEquipped(item){return item.kind==='avatar'?S.collectionData?.owner===S.token&&S.collectionData.profile?.avatar?.id===item.id:cosmeticState().loadout[item.kind]===item.id;}
 function collectionArt(item){return item.kind==='avatar'?window.SmazzataAvatars.svg(item.id):cosmeticArt(item);}
 function collectionNewIds(){return new Set(cosmeticState().meta?.newIds||[]);}
-async function collectionModal(kind){
+async function collectionModal(kind,refreshOnly=false){
   const owner=S.token;
   if(S.collectionOwner!==owner){S.collectionOwner=owner;S.collectionData=null;S.collectionCategory='avatar';S.collectionRarity='all';S.collectionOnlyOwned=true;S.collectionQuery='';S.collectionSelected=null;S.collectionInspect=false;S.collectionSort='recent';S.collectionOnlyNew=false;S.collectionFiltersOpen=false;}
   if(collectionCategories().some(x=>x.id===kind)){S.collectionCategory=kind;S.collectionSelected=null;S.collectionInspect=false;}
   S.collectionOnline=false;
   if(!OFFLINE&&S.connected){const r=await emit('profile');if(owner!==S.token)return;if(r.ok){S.collectionData={owner,profile:r};S.collectionOnline=true;cacheCosmetics(r.cosmetics);cacheChestState(r.chests);S.chestState=r.chests;}}
   if(owner!==S.token)return;
+  if(refreshOnly===true&&S.modalKind!=='cosmetics')return;
   renderCollection();
 }
 function renderCollection(){
@@ -58,7 +59,7 @@ Object.assign(handlers,{
   async collectionEquip(el){
     const item=collectionItems().find(x=>x.id===el.dataset.id);if(!item||!collectionOwned().has(item.id)||!S.collectionOnline||S.collectionBusy)return;
     const owner=S.token;S.collectionBusy=true;el.disabled=true;
-    try{let ok;if(item.kind==='avatar'){const p=S.collectionData.profile,r=await emit('setAvatar',{id:item.id,c:p.avatar?.c||p.colors?.[0]||'#f2c14e'});if(owner!==S.token)return;ok=r.ok;if(ok)p.avatar=r.avatar;}else ok=await equipCosmetic(item.kind,item.id);if(owner===S.token&&ok){S.collectionSelected=item.id;renderCollection();}else if(owner===S.token)el.disabled=false;}finally{S.collectionBusy=false;}
+    try{let ok;if(item.kind==='avatar'){const p=S.collectionData.profile,r=await emit('setAvatar',{id:item.id,c:p.avatar?.c||p.colors?.[0]||'#f2c14e'});if(owner!==S.token)return;ok=r.ok;if(ok)p.avatar=r.avatar;}else ok=await equipCosmetic(item.kind,item.id);if(owner===S.token&&ok){S.collectionSelected=item.id;renderCollection();confirmEquipped(item);}else if(owner===S.token)el.disabled=false;}finally{S.collectionBusy=false;}
   },
   async collectionReset(el){if(await equipCosmetic(el.dataset.kind,null))renderCollection();}
 });

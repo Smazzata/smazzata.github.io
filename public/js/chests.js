@@ -7,11 +7,12 @@ function chestRequest() {
   const r=store.get('bur_chest_request',null);
   return r?.owner===S.token?r:null;
 }
-async function chestsModal() {
+async function chestsModal(refreshOnly=false) {
   const owner=S.token;let data,online=false;
   if(!OFFLINE&&S.connected){const r=await emit('chests');if(owner!==S.token)return;if(r.ok){data=r.chests;online=true;cacheChestState(data);}}
   if(!data){const cached=store.get('bur_chest_cache',null);if(cached?.owner===S.token)data=cached.data;}
   if(owner!==S.token)return;
+  if(refreshOnly===true&&S.modalKind!=='chests')return;
   if(!data){toast(t('Collegati per consultare le tue chest'),true);return;}
   S.chestState=data;S.chestReadOnly=!online;
   const rules=data.rules,request=chestRequest(),disabled=!online||!!request,rarities=window.SmazzataAvatars.RARITIES;
@@ -77,10 +78,11 @@ Object.assign(handlers,{
     root.querySelector('.chest-prize [data-act=chestEquip]')?.focus({preventScroll:true});
   },
   async chestEquip(el){
-    if(el.dataset.kind!=='avatar'){if(await equipCosmetic(el.dataset.kind,el.dataset.itemId)){toast(t('Equipaggiato'));await chestsModal();}return;}
-    const p=await emit('profile');if(!p.ok)return;
+    const owner=S.token,item=collectionItems().find(x=>x.id===el.dataset.itemId);
+    if(el.dataset.kind!=='avatar'){if(await equipCosmetic(el.dataset.kind,el.dataset.itemId)&&owner===S.token){confirmEquipped(item);await chestsModal();}return;}
+    const p=await emit('profile');if(owner!==S.token||!p.ok)return;
     const r=await emit('setAvatar',{id:el.dataset.itemId,c:p.avatar?.c||p.colors[0]});
-    if(r.ok){toast(t('Equipaggiato'));await chestsModal();}
+    if(owner===S.token&&r.ok){confirmEquipped(item);await chestsModal();}
   }
 });
 socket.on('chests',data=>{

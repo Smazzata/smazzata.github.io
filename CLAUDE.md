@@ -117,3 +117,9 @@ Per richiesta esplicita dell'utente non mostrare percentuali, tabelle dei premi 
 Volume musica 0–100 in bur_prefs.musicVolume (predefinito 50), indipendente dagli effetti, regolabile senza riavviare il tema e senza attivare musica spenta. Non trasformarlo in un controllo del volume del telefono.
 
 Scala 40/Ramino: il computer con soli jolly in mano pesca dal tallone anziché prendere un altro jolly dallo scarto. Evita un ciclo infinito di jolly fra due bot. Fixture reale in server/fixtures/scala40-jolly-loop.json e regressione scala40-cycle-test.js. Non sono state cambiate le regole del motore. `npm run test:partite -- 320 242026` simula partite complete dei quattro giochi con casualità dei bot e mazzi riproducibile; verifica carte, viste private e ripristini. Il workflow esegue 40 partite oltre a test:stress.
+
+## Conferme e continuità dell’inventario — 24 ottobre 2026
+
+Equipaggiamento: conferma accessibile «Ora stai usando» con nome oggetto soltanto dopo risposta positiva del server. setAvatar salva prima della conferma e ripristina i campi in caso di errore. Riconnessione: mantenere l’avviso fino allo stato autorevole ricevuto, senza dichiarare riuscito il solo collegamento di trasporto. Il segnale inventoryChanged raggiunge soltanto gli altri dispositivi dello stesso profilo, senza dati nel messaggio; aggiornamento differito durante operazioni e aperture. Gli aggiornamenti automatici non riaprono finestre chiuse.
+
+Prove aggiunte: inventory-year-test.js (365 giorni, 2.190 eventi di fine partita, due chiavi dispositivo, concorrenza, riavvio e ricevute); connection-feedback-test.js; chest-uitest.js --first-use --small (tocchi reali nel browser a 320 px, secondo dispositivo e interruzione della rete). Sono verifiche automatiche, non osservazioni con utenti reali. Incluse nelle Prove. Resoconto in store/CONTINUITA-INVENTARIO-2026-10-24.md.

@@ -37,7 +37,7 @@
       if (field) { field.value = draft.value; field.focus({preventScroll:true}); if (draft.start != null) field.setSelectionRange(draft.start,draft.end); }
     }
     if ((!S.connected || S.syncPending) && !S.localGame && !S.campaignActive && S.screen !== 'campaign') {
-      app.insertAdjacentHTML('afterbegin', `<div class="offline" role="status"><span class="spin"></span>${t(S.syncPending ? "Ripristino del tavolo in corso." : "Connessione al server.")}<button class="btn small" data-act="reconnect">${t("Riprova")}</button></div>`);
+      app.insertAdjacentHTML('afterbegin', `<div class="offline" role="status" aria-live="polite"><span class="spin" aria-hidden="true"></span>${t(S.lostConnection || S.room ? "Ti stiamo ricollegando, attendi." : "Collegamento in corso, attendi.")}<button class="btn small" data-act="reconnect">${t("Riprova")}</button></div>`);
       const gm = $('.game');
       if (gm) gm.classList.add('offline-lock');
     }
