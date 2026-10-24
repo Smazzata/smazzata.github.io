@@ -2,6 +2,16 @@
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 module.exports=async(cdp,shot)=>{
  await cdp.run(`hideIntro();closeModal();S.screen='home';render();`);await wait(650);
+ const savedHome=await cdp.run(`return JSON.stringify({last:store.get('bur_lastroom',''),password:S.social.hasPassword,next:S.social.nextChest})`);
+ for(const [width,height] of [[320,568],[375,812],[360,740],[812,375]]){
+  await cdp.send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:true});
+  for(const text of ['normale','enorme']){
+   await cdp.run(`S.prefs.text='${text}';applyPrefs();S.social.hasPassword=true;store.set('bur_lastroom','TEST');S.social.nextChest={remaining:1,limit:false};render();`);await wait(350);
+   await cdp.run(`const sc=document.querySelector('.home-scroll'),footer=document.querySelector('.home-footer'),nav=document.querySelector('.home-navigation'),progress=document.querySelector('.home-progress progress');if(sc.getBoundingClientRect().bottom>footer.getBoundingClientRect().top+1)throw Error('Navigazione sovrapposta');if(footer.getBoundingClientRect().bottom>innerHeight+1||nav.closest('.panel'))throw Error('Navigazione fuori viewport o nel pannello');if(progress.value!==2||progress.max!==3)throw Error('Avanzamento chest errato');sc.scrollTop=sc.scrollHeight;const last=document.querySelector('[data-act=playBots]').getBoundingClientRect();if(last.bottom>sc.getBoundingClientRect().bottom+1||last.top<sc.getBoundingClientRect().top)throw Error('Allenamento non raggiungibile');if(document.documentElement.scrollHeight>innerHeight+1)throw Error('Scorre tutta la pagina');if(!document.querySelector('[data-act=rejoin]'))throw Error('Ripresa partita assente');`);
+   await shot('home-compatta-'+width+'-'+height+'-'+text);
+  }
+ }
+ await cdp.run(`const saved=${savedHome};store.set('bur_lastroom',saved.last);S.social.hasPassword=saved.password;S.social.nextChest={remaining:3,limit:true};render();if(document.querySelector('.home-progress progress').value!==3)throw Error('Limite giornaliero errato');S.social.nextChest=saved.next;render();`);
  for(const width of [320,375,768])for(const theme of ['chiaro','scuro']){
   await cdp.send('Emulation.setDeviceMetricsOverride',{width,height:812,deviceScaleFactor:1,mobile:true});
   await cdp.run(`S.prefs.theme='${theme}';S.prefs.text='enorme';applyPrefs();closeModal();render();if(document.querySelector('.home-shortcuts')||document.querySelector('.home-tools')||document.querySelector('.home-page .inventory-nav'))throw Error('Home duplicata');if(document.querySelectorAll('.home-navigation>button').length!==3)throw Error('navigazione principale mancante');if(document.documentElement.scrollWidth>innerWidth+1)throw Error('Home fuori schermo');`);await wait(250);await shot('menu-home-'+width+'-'+theme);

@@ -96,6 +96,12 @@
   function homeNavigationHTML(){
     return `<nav class="home-navigation" aria-label="${t('Menu principale')}">${!OFFLINE&&S.social?.nick?`<button data-act="collection">${uiIcon('cards')}<span>${t('Collezione')}</span></button><button data-act="friends">${uiIcon('friends')}<span>${t('Amici')}</span>${S.social.reqIn?.length?'<b>'+S.social.reqIn.length+'</b>':''}</button>`:''}<button data-act="more">${uiIcon('menu')}<span>${t('Menu')}</span></button></nav>`;
   }
+  function homeProgressHTML(){
+    if(OFFLINE||!S.social?.nick)return '';
+    const next=S.social.nextChest,remaining=Math.max(0,Math.min(3,Number(next?.remaining??3)));
+    const label=next?.limit?t('Per oggi hai ottenuto le due chest da partite.'):remaining===1?t('Ancora una partita per la prossima chest'):t('Ancora {0} partite per la prossima chest').replace('{0}',String(remaining));
+    return `<button class="home-journey home-progress" data-act="journey"><span>${label}<progress max="3" value="${next?.limit?3:3-remaining}" aria-label="${t('Progressi verso la prossima chest')}"></progress></span><span aria-hidden="true">›</span></button>`;
+  }
   function menuCardsHTML(title,items,back='more'){
     return `<section class="simple-menu">${back?`<button class="menu-back" data-act="${back}">← ${t('Menu')}</button>`:''}<h2>${t(title)}</h2><div class="menu-cards">${items.map(x=>`<button class="menu-card" data-act="${x.act}">${uiIcon(x.icon)}<span><b>${t(x.name)}</b>${x.note?`<small>${t(x.note)}</small>`:''}</span><span aria-hidden="true">›</span></button>`).join('')}</div></section>`;
   }
@@ -111,7 +117,7 @@
 
   function homeHTML() {
     if (!OFFLINE && S.mailOn && S.social && S.social.nick && S.social.hasEmail === false) return emailGateHTML() + `<div class="panel"><button class="btn" data-act="playBots">${uiIcon('bot')}${t('Prova senza registrarti')}</button></div>`;
-    return `<div class="page home-page">
+    return `<div class="page home-page"><div class="home-scroll">
       <div class="logo"><h1 translate="no">Smazzata</h1>
         <div class="muted">Scegli il gioco e comincia</div></div>
       ${homeToolbarHTML()}
@@ -142,7 +148,7 @@
               <label class="agecheck"><input type="checkbox" id="nickage"${S.ageOk ? ' checked' : ''}><span><span>Ho almeno 14 anni e accetto le regole</span> (<a href="regole.html">Regole</a> · <a href="privacy.html">Privacy</a>)</span></label>
               <div class="row"><button class="btn primary grow" data-act="claimNick">Crea il profilo</button></div>
               <p class="muted small" style="margin:8px 0 0">Il nickname è unico: serve ai tuoi amici per trovarti. Hai già un profilo? <a href="#" data-act="recover">Recuperalo</a></p></details>`}
-        ${homeButtonsHTML()}${homeNavigationHTML()}
+        ${homeButtonsHTML()}
       </div>
       ${!OFFLINE && S.myGames && S.myGames.length ? `<div class="panel"><h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-clock /></svg> Le tue partite con calma</h2>
         ${S.myGames.map((m) => `<button class="slowgame ${m.myTurn ? 'myturn' : ''}" data-act="openSlow" data-code="${esc(m.code)}">
@@ -150,7 +156,7 @@
           <span class="meta">${m.ranked ? `<span class="rankbadge" title="${RANKED_TIP}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-medal /></svg></span> ` : ''}${m.myTurn ? '<b>Tocca a te!</b>' : m.over ? 'Partita finita' : m.started ? `Smazzata ${m.handNo} · ${m.scores.join(' – ')}` : 'In sala d’attesa'}${m.at ? ` · ${agoText(m.at)}` : ''}</span></button>`).join('')}</div>` : ''}
       ${IS_ANDROID && !IN_APP && !OFFLINE ? `<a class="apkbanner" href="${APK_URL}">
         <img src="icons/icon-192.png" alt=""><span><b><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-home /></svg> Scarica l'app per Android</b><br>Installala e gioca a schermo intero</span></a>` : ''}
-    </div>`;
+    </div><footer class="home-footer">${homeProgressHTML()}${homeNavigationHTML()}</footer></div>`;
   }
 
   /** modalità completa (impostazioni): mostra tutte le opzioni come prima, per chi è pratico */
@@ -175,7 +181,7 @@
       <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked">${uiIcon('medal')}<div>Classificata<small>Gioca per salire di grado</small></div></button>`}
       <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots">${uiIcon('bot')}<div>Allenamento<small>Gioca contro il computer</small></div></button>
       ${CAMPAIGN_VISIBLE ? '<button class="btn grow campaign-entry" data-act="campaign"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-book /></svg> Avventura<small>Tre percorsi: Burraco, Scala 40 e Ramino</small></button>' : ''}
-      ${!OFFLINE&&S.social?.nick?`<button class="home-journey home-progress" data-act="journey" aria-label="${t('Il tuo percorso')}"><span>${S.social.nextChest?.limit?t('Il percorso mensile continua ad avanzare.'):S.social.nextChest?.remaining===1?t('Ancora una partita per la prossima chest'):t('Ancora {0} partite per la prossima chest').replace('{0}',String(S.social.nextChest?.remaining||3))}</span><span aria-hidden="true">›</span></button>`:''}
+
 
     </div>`;
   }
