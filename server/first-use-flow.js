@@ -12,13 +12,13 @@ module.exports=async(cdp,shot)=>{
  };
  await wait(`!document.querySelector('#intro')||getComputedStyle(document.querySelector('#intro')).display==='none'||document.querySelector('#intro').classList.contains('out')`);
  await click('#app [data-act=collection]');await wait(`document.querySelector('.collection-card')`);
- await cdp.run(`if(document.querySelector('.collection-filters').open)throw Error('Filtri avanzati aperti');if(document.querySelectorAll('.collection-categories>button').length!==6)throw Error('Categorie mancanti');`);
+ await cdp.run(`if(document.querySelector('.collection-filters'))throw Error('Filtri avanzati aperti');if(document.querySelectorAll('.collection-categories>button').length!==6)throw Error('Categorie mancanti');`);
  await click('.collection-card[data-id="dama-fiori"]');await click('[data-act=collectionEquip]');
  await wait(`document.querySelector('.equip-confirmation')?.textContent.includes('Dama di fiori')`);
  await shot('primo-uso-equipaggiato');
- await click('.collection-mainnav [data-act=chests]');await wait(`document.querySelector('.chest-open-button')`);
+ await click('.collection-mainnav [data-act=chests]');await wait(`document.querySelector('.inventory-chest')`);
  await cdp.run(`if(document.querySelector('.modal-content').textContent.includes('%'))throw Error('Percentuali nel percorso semplice');if([...document.querySelectorAll('.loot-secondary')].some(x=>x.open))throw Error('Dettagli aperti');`);
- await click('.chest-open-button');await wait(`document.querySelector('[data-act=firstChestOpen]')`);await click('[data-act=firstChestOpen]');
+ await click('.inventory-chest[data-chest-type=common]');
  await wait(`document.querySelector('.chest-prize')&&!document.querySelector('.chest-prize').hidden`);
  await click('[data-act=chestEquip]');await wait(`document.querySelector('.simple-loot')&&document.querySelector('.equip-confirmation')`);
  await shot('primo-uso-bottino');

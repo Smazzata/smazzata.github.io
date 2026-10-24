@@ -43,7 +43,7 @@ jobs:
         env:
           CHROME_PATH: /usr/bin/google-chrome
       - name: Prova dell'interfaccia nel browser (Chrome senza finestra)
-        run: node server/chest-uitest.js --journey && node server/chest-uitest.js --first-use && node server/chest-uitest.js && node server/uitest.js --polish && npm run ui && node server/uitest.js --campaign
+        run: node server/chest-uitest.js --simple && node server/chest-uitest.js --journey && node server/chest-uitest.js --first-use && node server/chest-uitest.js && node server/uitest.js --polish && npm run ui && node server/uitest.js --campaign
         env:
           CHROME_PATH: /usr/bin/google-chrome
       - name: Schermate della prova dell'interfaccia
