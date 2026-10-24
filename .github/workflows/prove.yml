@@ -33,7 +33,7 @@ jobs:
       - name: Riconnessione, progressi reali e collezione avatar
         run: npm run test:prerilascio
       - name: Scenari riproducibili di stress e probabilità delle chest
-        run: npm run test:stress
+        run: npm run test:stress && npm run test:partite -- 40
       - name: Ranked (Glicko-2, BO3, Solo/Duo, persistenza e simulazioni)
         run: npm run test:ranked && npm run e2e:ranked && npm run sim:ranked
       - name: Campagna (150 livelli, obiettivi, vite e ricompense)

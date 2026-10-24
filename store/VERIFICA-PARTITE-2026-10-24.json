@@ -1,0 +1,108 @@
+{
+  "base": "da5fa27",
+  "date": "2026-10-24",
+  "baselineBeforeFix": {
+    "seed": 241026,
+    "matches": 320,
+    "hands": 2052,
+    "actions": 143142,
+    "restores": 883,
+    "games": {
+      "burraco": {
+        "matches": 80,
+        "hands": 305,
+        "maxActions": 742
+      },
+      "scala40": {
+        "matches": 80,
+        "hands": 556,
+        "maxActions": 750
+      },
+      "ramino": {
+        "matches": 80,
+        "hands": 730,
+        "maxActions": 857
+      },
+      "canasta": {
+        "matches": 80,
+        "hands": 461,
+        "maxActions": 809
+      }
+    },
+    "failures": [],
+    "seconds": 438
+  },
+  "afterJokerFix": {
+    "seed": 242026,
+    "botRandomSeeded": true,
+    "matches": 320,
+    "hands": 2150,
+    "actions": 149259,
+    "restores": 931,
+    "games": {
+      "burraco": {
+        "matches": 80,
+        "hands": 320,
+        "maxActions": 755
+      },
+      "scala40": {
+        "matches": 80,
+        "hands": 538,
+        "maxActions": 1128
+      },
+      "ramino": {
+        "matches": 80,
+        "hands": 800,
+        "maxActions": 1072
+      },
+      "canasta": {
+        "matches": 80,
+        "hands": 492,
+        "maxActions": 999
+      }
+    },
+    "failures": [],
+    "seconds": 437
+  },
+  "completedMatches": 680,
+  "hands": 4449,
+  "actions": 310284,
+  "restores": 1927,
+  "limitations": [
+    "Simulazioni del motore, non utenti reali o traffico di rete",
+    "Prima serie con mazzi a seme ma scelte dei bot casuali; seconda serie interamente riproducibile",
+    "La prima esecuzione del secondo seme è stata fermata sul ciclo di jolly, poi ripetuta dopo la correzione"
+  ],
+  "ciSmoke": {
+    "seed": 241026,
+    "botRandomSeeded": true,
+    "matches": 40,
+    "hands": 247,
+    "actions": 17883,
+    "restores": 113,
+    "games": {
+      "burraco": {
+        "matches": 10,
+        "hands": 38,
+        "maxActions": 742
+      },
+      "scala40": {
+        "matches": 10,
+        "hands": 63,
+        "maxActions": 408
+      },
+      "ramino": {
+        "matches": 10,
+        "hands": 84,
+        "maxActions": 628
+      },
+      "canasta": {
+        "matches": 10,
+        "hands": 62,
+        "maxActions": 809
+      }
+    },
+    "failures": [],
+    "seconds": 52
+  }
+}

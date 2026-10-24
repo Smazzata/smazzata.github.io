@@ -105,6 +105,9 @@ function nextAction(g, seat, memo = {}) {
   const top = g.discard[g.discard.length - 1];
 
   if (g.phase === 'draw') {
+    // Con soli jolly serve una carta naturale: raccogliere un altro jolly può
+    // farli scambiare all'infinito fra i computer senza consumare il tallone.
+    if (isJ(top) && p.hand.length && p.hand.every(isJ)) return { type: 'draw' };
     if (top) {
       if (!team.opened && cfg.pileNeedsOpen) {
         const op = bestOpening(cfg, p.hand.concat([top]), top.id);
