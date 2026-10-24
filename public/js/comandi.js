@@ -220,6 +220,10 @@
   }, true);
 
   document.addEventListener('input', (e) => {
+    if(e.target.id==='musicVolume'){
+      Music.setVolume(e.target.value);store.set('bur_prefs',S.prefs);
+      const output=$('#musicVolumeValue');if(output)output.textContent=Music.volume()+'%';
+    }
     if (e.target.id === 'reportin') store.set('smazzata_report_draft',e.target.value.slice(0,1000));
     if (e.target.id === 'nick') { S.nickDraft = e.target.value; checkNickLive(e.target.value, '#nickStatus'); }
     if (e.target.id === 'nickpw') S.pwDraft = e.target.value;

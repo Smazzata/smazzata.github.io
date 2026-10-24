@@ -4,7 +4,7 @@
 'use strict';
 
   const R = window.BurracoRules;
-  const CLIENT_BUILD = '2026.10.24.6';
+  const CLIENT_BUILD = '2026.10.24.7';
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -90,7 +90,7 @@
   /** giochi a prese (carte italiane): Scopa e Briscola */
   const isPresaGame = () => !!(S.game && S.game.presa);
 
-  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, music: false, big: false, theme: 'chiaro', deck: 'classiche', melds: 'colonna', lang: 'auto', text: 'normale', contrast: false, anim: true, speak: false, ui: 'semplice', botLevel: 'auto', remind: true, haptic: true };
+  const DEFAULT_PREFS = { felt: 'verde', back: 'rosso', sound: true, music: false, musicVolume: 50, big: false, theme: 'chiaro', deck: 'classiche', melds: 'colonna', lang: 'auto', text: 'normale', contrast: false, anim: true, speak: false, ui: 'semplice', botLevel: 'auto', remind: true, haptic: true };
   const S = {
     token: store.get('bur_token', null),
     name: store.get('bur_name', ''),

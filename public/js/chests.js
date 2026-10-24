@@ -9,41 +9,21 @@ function chestRequest() {
 }
 async function chestsModal() {
   const owner=S.token;let data,online=false;
-  if(!OFFLINE && S.connected){const r=await emit('chests');if(owner!==S.token)return;if(r.ok){data=r.chests;online=true;cacheChestState(data);}}
+  if(!OFFLINE&&S.connected){const r=await emit('chests');if(owner!==S.token)return;if(r.ok){data=r.chests;online=true;cacheChestState(data);}}
   if(!data){const cached=store.get('bur_chest_cache',null);if(cached?.owner===S.token)data=cached.data;}
   if(owner!==S.token)return;
   if(!data){toast(t('Collegati per consultare le tue chest'),true);return;}
   S.chestState=data;S.chestReadOnly=!online;
-  const guide=!data.recent.length;
-  const rules=data.rules,request=chestRequest(),disabled=!online||!!request;
-  const selected=data.pending.find(x=>x.id===S.selectedChestId)||data.pending[0];
-  const rarities=window.SmazzataAvatars.RARITIES,type=selected?.type || 'common',openingOdds=selected?.odds||data.odds;
-  openModal('chests',collectionShell('loot',`<section class="chest-room"><button class="btn small" data-act="profile">${t('Torna al profilo')}</button><h2>${t('Bottino')}</h2>
-    <nav class="inventory-nav" aria-label="${t('Inventario personale')}"><button class="btn small" data-act="inbox">${t('Posta personale')}${S.social?.unreadMail?' · '+S.social.unreadMail:''}</button><button class="btn small" data-act="profile">${t('Avatar')}</button><button class="btn small" data-act="cosmetics">${t('Dorsi, cornici e altri stili')}</button></nav>
-    <p>${t('Le chest ottenute giocando e quelle ricevute in regalo restano qui finché decidi di aprirle.')}</p>
-    ${guide?`<aside class="first-chest-guide"><h3>${t('La tua prima chest')}</h3><p>${t('Ogni chest contiene un solo oggetto. Prima di aprirla puoi vedere le probabilità di ogni rarità.')}</p><p>${t('Un doppione diventa frammenti: accumulali per ottenere un oggetto che ti manca. Dopo l’apertura puoi equipaggiare subito il premio.')}</p></aside>`:''}
-    <div class="inventory-chests">${rarities.map(r=>{const items=data.pending.filter(x=>x.type===r.id),first=items[0];return `<button class="inventory-chest" data-act="chestSelect" data-id="${esc(first?.id||'')}" data-chest-type="${r.id}" aria-pressed="${!!first&&type===r.id}" ${!first?'disabled':''}><span class="chest-sprite" aria-hidden="true"></span><b>${t(rules.types[r.id].name)}</b><small>${t('Disponibili')}: ${items.length}</small></button>`;}).join('')}</div>
-    ${!data.pending.length?`<p class="chest-notice">${t('Nessuna chest da aprire. Le prossime ti aspettano qui.')}</p>`:''}
+  const rules=data.rules,request=chestRequest(),disabled=!online||!!request,rarities=window.SmazzataAvatars.RARITIES;
+  const selected=data.pending.find(x=>x.id===S.selectedChestId)||data.pending[0],type=selected?.type||'common';
+  openModal('chests',collectionShell('loot',`<section class="chest-room simple-loot"><h2>${t('Le tue chest')}</h2><p>${t('Apri una chest e scopri il tuo premio.')}</p>
     ${!online?`<p class="chest-notice" role="status">${t('Copia offline: collegati per aprire o scambiare.')}</p>`:''}
-    <div class="chest-hero" data-chest-type="${type}"><div class="chest-sprite" role="img" aria-label="${t(rules.types[type].name)}"></div><div><h3>${t(rules.types[type].name)}</h3><p>${t('Chest disponibili')}: <b>${data.pending.length}</b></p><p>${t('Frammenti')}: <b>${data.fragments}</b></p></div></div>
-    <h3>${t('Probabilità di questa apertura')}</h3><div class="chest-odds">${rarities.map(r=>`<div data-rarity="${r.id}"><b>${t(r.name)}</b><span>${openingOdds[r.id]}%</span></div>`).join('')}</div>
-    <p class="muted small">${t('Scegli la chest da aprire. Le probabilità mostrate includono le garanzie attive.')}</p>
-    ${request?`<p role="status">${t('Un risultato è in attesa di conferma. Recuperalo prima di continuare.')}</p><button class="btn primary" data-act="chestRetry" ${!online?'disabled':''}>${t('Recupera risultato')}</button>`:
-      `<button class="btn primary chest-open-button" data-act="chestOpen" data-id="${esc(selected?.id || '')}" ${disabled||!data.pending.length?'disabled':''}>${t('Apri una chest')}</button>`}
-    ${data.weekly?`<section class="weekly-goals"><h3>${t('La tua settimana')}</h3><p class="muted small">${t('Con un amico: completate tre partite online dopo aver accettato l’amicizia, anche da avversari.')}</p><p>${t('Quattro obiettivi, fino a quattro chest aggiuntive. Si riparte ogni lunedì, ora italiana.')}</p>${data.weekly.missions.map(m=>`<div class="weekly-goal ${m.awarded?'is-complete':''}"><span><b>${t(m.name)}</b><small>${t(rules.types[m.type].name)} · ${m.progress}/${m.goal} ${m.awarded?' · '+t('Premio consegnato'):''}</small></span><progress value="${m.progress}" max="${m.goal}" aria-label="${t(m.name)}"></progress></div>`).join('')}</section>`:''}
-    <details class="collection-loot-details"><summary>${t('Progressi, garanzie e frammenti')}</summary><div class="chest-guarantees"><p>${t('Epico o leggendario entro')}: <b>${data.epicIn}</b> ${t('aperture')}</p><p>${t('Leggendario entro')}: <b>${data.legendaryIn}</b> ${t('aperture')}</p></div>
-    <p>${t('Una chest ogni 3 partite online completate con avversari umani. Massimo 2 al giorno.')}</p><progress class="chest-progress" value="${data.progress}" max="3" aria-label="${t('Progressi verso la prossima chest')}"></progress><p class="muted small">${data.progress}/3 · ${t('Chest ottenute oggi')}: ${data.earnedToday}/2</p>
-    <p class="muted small">${t('Allenamento, partite annullate e abbandoni non contano. Il limite si rinnova a mezzanotte, ora italiana.')}</p>
-    ${data.earnedToday>=2?`<p class="chest-notice">${t('Limite giornaliero raggiunto. Riprendi domani; le tue chest non scadono.')}</p>`:''}
-    <details class="chest-rules"><summary>${t('Quale chest puoi trovare')}</summary><div class="chest-types">${rarities.map(r=>`<div data-chest-type="${r.id}"><div class="chest-sprite" aria-hidden="true"></div><b>${t(rules.types[r.id].name)}</b><span>${rules.chestRates[r.id]}%</span><small>${t('Disponibili')}: ${data.pending.filter(x=>x.type===r.id).length}</small><p>${rarities.map(a=>t(a.name)+' '+rules.types[r.id].rates[a.id]+'%').join(' · ')}</p></div>`).join('')}</div>
-    <p class="muted small">${t('Una chest contiene un solo oggetto. La chest leggendaria contiene sempre un oggetto leggendario.')}</p>
-    <p class="muted small">${t('Prima si estrae la rarità, poi un oggetto con la stessa probabilità degli altri di quella rarità. I quattro avatar iniziali sono esclusi. I doppioni diventano frammenti.')}</p>
-    ${data.pools?`<table class="cx-pool-table"><caption>${t('Oggetti disponibili per tipo e rarità')}</caption><thead><tr><th>${t('Tipo di oggetto')}</th>${rarities.map(r=>`<th scope="col">${t(r.name)}</th>`).join('')}</tr></thead><tbody>${[{id:'avatar',name:'Avatar'},...window.SmazzataCosmetics.KINDS].map(k=>`<tr><th scope="row">${t(k.name)}</th>${rarities.map(r=>`<td>${data.pools[r.id][k.id]}</td>`).join('')}</tr>`).join('')}</tbody></table><p class="muted small">${t('Le probabilità dei tipi sono proporzionali al numero di oggetti nella rarità estratta, anche se li possiedi già.')}</p>`:''}
-    </details>
-    <h3>${t('Scambia frammenti')}</h3><p class="muted small">${t('Ricevi un oggetto casuale non posseduto della rarità scelta. Lo scambio non modifica le garanzie delle chest.')}</p>
-    <div class="chest-exchanges">${rarities.map(r=>`<div><span><b>${t(r.name)}</b><small>${t('Doppione')}: +${rules.fragments[r.id]} ${t('frammenti')}</small></span><button class="btn small" data-act="chestExchange" data-rarity="${r.id}" ${disabled||!data.missing[r.id]||data.fragments<rules.costs[r.id]?'disabled':''}>${!data.missing[r.id]?t('Tutti ottenuti'):t('Scambia')+' · '+rules.costs[r.id]}</button></div>`).join('')}</div>
-    </details>
-    ${data.recent.length?`<h3>${t('Ultime aperture')}</h3><div class="chest-history">${data.recent.map(x=>{const a=chestPrize(x);return `<div>${a.html}<span>${esc(t(a.name))}<small>${x.duplicate?'+'+x.fragments+' '+t('frammenti'):t('Nuovo oggetto')}</small></span></div>`;}).join('')}</div>`:''}
+    ${data.pending.length?`<div class="inventory-chests">${rarities.filter(r=>data.pending.some(x=>x.type===r.id)).map(r=>{const items=data.pending.filter(x=>x.type===r.id);return `<button class="inventory-chest" data-act="chestSelect" data-id="${esc(items[0].id)}" data-chest-type="${r.id}" aria-pressed="${type===r.id}"><span class="chest-sprite" aria-hidden="true"></span><b>${t(rules.types[r.id].name)}</b><small>×${items.length}</small></button>`;}).join('')}</div>`:`<p class="chest-notice">${t('Nessuna chest da aprire. Le prossime ti aspettano qui.')}</p>`}
+    ${request?`<p role="status">${t('Un risultato è in attesa di conferma. Recuperalo prima di continuare.')}</p><button class="btn primary" data-act="chestRetry" ${!online?'disabled':''}>${t('Recupera risultato')}</button>`:`<button class="btn primary chest-open-button" data-act="chestOpen" data-id="${esc(selected?.id||'')}" ${disabled||!selected?'disabled':''}>${selected?t('Apri')+' · '+t(rules.types[type].name):t('Apri una chest')}</button>`}
+    <div class="loot-next"><p>${t('Prossima chest')}: <b>${data.progress}/3 ${t('partite')}</b></p><progress class="chest-progress" value="${data.progress}" max="3" aria-label="${t('Progressi verso la prossima chest')}"></progress>${data.earnedToday>=2?`<p class="muted small">${t('Limite giornaliero raggiunto. Riprendi domani; le tue chest non scadono.')}</p>`:''}</div>
+    ${data.weekly?`<details class="loot-secondary weekly-goals"><summary>${t('Come ottenere altre chest')}</summary><p>${t('Una chest ogni 3 partite online completate con avversari umani. Massimo 2 al giorno.')}</p>${data.weekly.missions.map(m=>`<div class="weekly-goal ${m.awarded?'is-complete':''}"><span><b>${t(m.name)}</b><small>${m.progress}/${m.goal}${m.awarded?' · '+t('Premio consegnato'):''}</small></span><progress value="${m.progress}" max="${m.goal}" aria-label="${t(m.name)}"></progress></div>`).join('')}</details>`:''}
+    <details class="loot-secondary collection-loot-details"><summary>${t('Usa frammenti')} · ${data.fragments}</summary><p>${t('I doppioni diventano frammenti. Usali qui per ottenere un oggetto che ti manca.')}</p><div class="chest-exchanges">${rarities.map(r=>`<div><span><b>${t(r.name)}</b><small>${rules.costs[r.id]} ${t('frammenti')}</small></span><button class="btn small" data-act="chestExchange" data-rarity="${r.id}" ${disabled||!data.missing[r.id]||data.fragments<rules.costs[r.id]?'disabled':''}>${t(!data.missing[r.id]?'Tutti ottenuti':'Scambia')}</button></div>`).join('')}</div></details>
+    ${data.recent.length?`<details class="loot-secondary"><summary>${t('Ultime aperture')}</summary><div class="chest-history">${data.recent.map(x=>{const a=chestPrize(x);return `<div>${a.html}<span>${esc(t(a.name))}<small>${x.duplicate?'+'+x.fragments+' '+t('frammenti'):t('Nuovo oggetto')}</small></span></div>`;}).join('')}</div></details>`:''}
   </section>`));
   $('#modal .modal-box').scrollTop=0;
 }
@@ -54,7 +34,7 @@ function chestReveal(reward) {
   openModal('chestReward',collectionShell('loot',`<section class="chest-reveal ${reduce?'':'is-opening'}" data-rarity="${rarity.id}">
     <h2>${t('Il tuo premio')}</h2><div class="chest-stage" data-chest-type="${reward.chestType || reward.rarity}" aria-hidden="true"><div class="chest-burst"></div><div class="chest-sprite"></div>${Array.from({length:8},(_,i)=>`<i class="chest-spark" style="--spark:${i}"></i>`).join('')}</div>
     <button class="btn small chest-skip" data-act="chestSkip">${t('Salta animazione')}</button>
-    <div class="chest-prize" hidden role="status"><div class="chest-prize-art">${a.html}</div><span class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</span><h3>${esc(t(a.name))}</h3><p>${reward.duplicate?t('Doppione')+' · +'+reward.fragments+' '+t('frammenti'):t('Nuovo oggetto nella tua collezione')}</p><div class="row"><button class="btn primary" data-act="chestEquip" data-kind="${a.kind}" data-item-id="${a.id}">${a.kind==='avatar'?t('Usa avatar'):t('Usa questo stile')}</button><button class="btn" data-act="chestShowItem" data-id="${a.id}" data-kind="${a.kind}">${t('Mostra nella collezione')}</button><button class="btn" data-act="chests">${t('Continua')}</button></div></div></section>`));
+    <div class="chest-prize" hidden role="status"><div class="chest-prize-art">${a.html}</div><span class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</span><h3>${esc(t(a.name))}</h3><p>${reward.duplicate?t('Doppione')+' · +'+reward.fragments+' '+t('frammenti'):t('Nuovo oggetto nella tua collezione')}</p><div class="row"><button class="btn primary" data-act="chestEquip" data-kind="${a.kind}" data-item-id="${a.id}">${a.kind==='avatar'?t('Usa avatar'):t('Usa questo stile')}</button><button class="btn" data-act="chests">${t('Continua')}</button></div></div></section>`));
   $('#modal .modal-box').scrollTop=0;
   if(reduce)handlers.chestSkip();else S.chestRevealTimer=setTimeout(()=>{if(S.modalKind==='chestReward')handlers.chestSkip();},1900);
 }
@@ -78,7 +58,7 @@ Object.assign(handlers,{
   chestOpen(el){
     if(!S.chestState?.recent.length){
       S.firstChestId=el.dataset.id;
-      openModal('firstChest',collectionShell('loot',`<section class="first-chest-guide"><h2>${t('La tua prima chest')}</h2><ol><li>${t('Ogni chest contiene un solo oggetto. Prima di aprirla puoi vedere le probabilità di ogni rarità.')}</li><li>${t('Un doppione diventa frammenti: accumulali per ottenere un oggetto che ti manca. Dopo l’apertura puoi equipaggiare subito il premio.')}</li><li>${t('Il premio viene salvato prima dell’animazione: resta tuo anche se perdi la connessione.')}</li></ol><div class="row"><button class="btn primary" data-act="firstChestOpen">${t('Apri la prima chest')}</button><button class="btn" data-act="chests">${t('Torna al bottino')}</button></div></section>`));
+      openModal('firstChest',collectionShell('loot',`<section class="first-chest-guide"><h2>${t('La tua prima chest')}</h2><p>${t('Dentro trovi un oggetto per personalizzare il tuo gioco.')}</p><p>${t('Se lo possiedi già, ricevi frammenti da usare più avanti.')}</p><div class="row"><button class="btn primary" data-act="firstChestOpen">${t('Apri la prima chest')}</button><button class="btn" data-act="chests">${t('Torna al bottino')}</button></div></section>`));
       return;
     }
     return chestSubmit({type:'open',id:el.dataset.id});
@@ -97,10 +77,10 @@ Object.assign(handlers,{
     root.querySelector('.chest-prize [data-act=chestEquip]')?.focus({preventScroll:true});
   },
   async chestEquip(el){
-    if(el.dataset.kind!=='avatar'){if(await equipCosmetic(el.dataset.kind,el.dataset.itemId)){S.cosmeticOnline=true;await cosmeticsModal(el.dataset.kind);}return;}
+    if(el.dataset.kind!=='avatar'){if(await equipCosmetic(el.dataset.kind,el.dataset.itemId)){toast(t('Equipaggiato'));await chestsModal();}return;}
     const p=await emit('profile');if(!p.ok)return;
     const r=await emit('setAvatar',{id:el.dataset.itemId,c:p.avatar?.c||p.colors[0]});
-    if(r.ok)await profileModal();
+    if(r.ok){toast(t('Equipaggiato'));await chestsModal();}
   }
 });
 socket.on('chests',data=>{

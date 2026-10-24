@@ -33,6 +33,16 @@ test('Musica: sospensione in background, rientro, Spotify e dodici contesti dist
  assert.equal(Object.keys(x.music.themes).length,12);assert.equal(new Set(Object.values(x.music.themes).map(JSON.stringify)).size,12);
  x.listeners.pagehide();assert.equal(x.timers.size,0);
 });
+test('Volume musica: valori validi, limite, silenzioso e nessun riavvio del tema',()=>{
+ const x=setup();assert.equal(x.music.volume(),50);
+ x.music.setVolume(25);assert.equal(x.music.volume(),25);assert.equal(x.music.active,null);assert.equal(x.oscillators.length,0);
+ x.S.prefs.music=true;x.music.sync(true);const bus=x.buses[0],notes=x.oscillators.length;
+ let target;bus.gain.setTargetAtTime=v=>{target=v;};
+ x.music.setVolume(100);assert.equal(target,.56);assert.equal(x.music.active,'home');assert.equal(x.oscillators.length,notes);assert.equal(x.timers.size,1);
+ x.music.setVolume(0);assert.equal(target,0);assert.equal(x.S.prefs.music,true);assert.equal(x.S.prefs.sound,false);
+ x.music.setVolume(1000);assert.equal(x.music.volume(),100);x.music.setVolume(-20);assert.equal(x.music.volume(),0);
+ x.music.setVolume(NaN);assert.equal(x.music.volume(),50);x.music.setVolume('75');assert.equal(x.music.volume(),75);
+});
 test('Riepilogo bottino: soltanto premi confermati della propria partita online',()=>{
  const source=fs.readFileSync(require.resolve('../public/js/chests.js'),'utf8').split('function resultLootHTML()')[1];
  const S={token:'io',room:{code:'ABCD',gameSeq:2},game:{over:true,you:0},chestMatch:{owner:'io',roomCode:'ABCD',gameSeq:2,justEarned:true,weeklyEarned:1,progress:0,earnedToday:1,weekly:{missions:[{name:'Amici',progress:2,goal:3,awarded:false}]}}};

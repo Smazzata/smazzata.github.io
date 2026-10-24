@@ -117,3 +117,7 @@ Le bozze salvate sono private al gestore e non inviano messaggi; massimo 30, da 
 Le novità della Collezione sono ricavate dalle ricevute di aperture, scambi e regali. Un oggetto già posseduto convertito in frammenti non diventa una nuova acquisizione. Visualizzare un oggetto aggiorna un marcatore del solo profilo, senza cambiare possesso o premi. La copia dei metadati resta nel cache privato dell'inventario già previsto; gli stili pubblici condivisi al tavolo non includono l'inventario o le ricevute.
 
 Per l’obiettivo amici basta un’amicizia accettata da entrambi al termine della partita, anche da avversari. Una partita conta una sola volta anche con più amici; nessun recupero retroattivo. Il contatore non salva identificativi degli amici. Un quarto premio settimanale fuori dal limite giornaliero, con le stesse probabilità delle altre chest rare.
+
+## Interfaccia semplificata (richiesta del 24 ottobre 2026)
+
+La UI non presenta più percentuali, tabelle delle probabilità o garanzie numeriche. Questi dati rimangono definiti e testati sul server con le stesse tabelle sopra riportate. Il bottino mostra chest disponibili e apertura; progressi, frammenti e storico sono sezioni chiuse. La guida iniziale spiega soltanto premio e doppioni. Questo sostituisce le precedenti descrizioni dell'esposizione delle probabilità prima dell'apertura: non cambia il sistema di estrazione.

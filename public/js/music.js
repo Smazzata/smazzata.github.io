@@ -17,6 +17,11 @@ const Music = (() => {
     defeat:[60,45,[12,10,7,3,5,7,10,7,8,7,5,3,2,3,7,12]]
   };
   let ctx,bus,timer=null,key=null,step=0,next=0,unlocked=false;
+  function volume(){const n=Number(S.prefs.musicVolume??50);return Number.isFinite(n)?Math.max(0,Math.min(100,n)):50;}
+  function setVolume(value){
+    const n=Number(value);S.prefs.musicVolume=Number.isFinite(n)?Math.max(0,Math.min(100,n)):50;
+    if(bus&&ctx)bus.gain.setTargetAtTime(.56*volume()/100,ctx.currentTime,.08);
+  }
   function theme(){
     if(S.modalKind==='chestReward')return 'chest';
     if(['chests','inbox','firstChest'].includes(S.modalKind))return 'loot';
@@ -56,7 +61,7 @@ const Music = (() => {
     if(ctx.state==='suspended')ctx.resume().catch(()=>{});
     const desired=theme();if(key===desired&&timer)return;
     stop();key=desired;step=0;next=ctx.currentTime+.08;
-    bus=ctx.createGain();bus.gain.setValueAtTime(0,ctx.currentTime);bus.gain.linearRampToValueAtTime(.28,ctx.currentTime+.6);bus.connect(ctx.destination);
+    bus=ctx.createGain();bus.gain.setValueAtTime(0,ctx.currentTime);bus.gain.linearRampToValueAtTime(.56*volume()/100,ctx.currentTime+.6);bus.connect(ctx.destination);
     tick();timer=setInterval(tick,100);
   }
   document.addEventListener('pointerdown',()=>sync(true),{passive:true});
@@ -64,5 +69,5 @@ const Music = (() => {
   document.addEventListener('visibilitychange',()=>sync());
   window.addEventListener('pagehide',()=>{stop();ctx?.suspend().catch(()=>{});});
   window.addEventListener('pageshow',()=>sync());
-  return {sync,theme,get active(){return key;},get state(){return ctx?.state||'idle';},themes};
+  return {sync,theme,volume,setVolume,get active(){return key;},get state(){return ctx?.state||'idle';},themes};
 })();
