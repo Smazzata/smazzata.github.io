@@ -26,7 +26,7 @@ function scheduleSave() {
   saveTimer = setTimeout(() => { saveTimer = null; saveNow(); }, 1000);
 }
 
-function saveNow(throwOnError = false) {
+function saveNow(throwOnError = false, purgeResiduals = true) {
   try {
     const data = {
       savedAt: Date.now(),
@@ -40,12 +40,12 @@ function saveNow(throwOnError = false) {
       leagues: [...leagues.values()],
       tournaments: [...tournaments.values()],
       rooms: [...rooms.values()].map((r) => ({
-        code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game, rankedMatch: r.rankedMatch,
+        code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game, rankedMatch: r.rankedMatch, chestGameId:r.chestGameId, chestRecordedGame:r.chestRecordedGame,
         ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, queueMode: r.queueMode, series: r.series, daily: r.daily, seed: r.seed, slow: r.slow, lastActionAt: r.lastActionAt, tournament: r.tournament, rankedGame: r.rankedGame, progressEligible: r.progressEligible,
       })),
     };
     store.save(data);
-    if (throwOnError === true && store.purgeResiduals) store.purgeResiduals();
+    if (throwOnError === true && purgeResiduals && store.purgeResiduals) store.purgeResiduals();
   } catch (e) {
     console.error('Salvataggio non riuscito:', e.message);
     if (throwOnError) throw e;

@@ -15,6 +15,7 @@ const Levels = require('./levels');
 const Posta = require('./posta');
 const Parole = require('../shared/parole');
 const Avatars = require('../shared/avatars');
+const Chests = require('./chests');
 
 const NICK_RE = /^[A-Za-z0-9_.-]{3,16}$/;
 const CODE_ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -377,6 +378,16 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     }));
 
     // Il mio stile: titolo sotto il nome e cornice dell'avatar, tra i premi sbloccati giocando
+    socket.on('chests', handler(() => ({chests:Chests.view(sess(me()))})));
+    socket.on('openChest', handler(({id}) => {
+      const s=sess(me());if(!s.nick)fail('Scegli prima il tuo nickname');
+      return Chests.open(s,String(id||''),()=>require('./contesto').saveNow(true,false));
+    }));
+    socket.on('exchangeChestFragments', handler(({rarity,requestId}) => {
+      const s=sess(me());if(!s.nick)fail('Scegli prima il tuo nickname');
+      return Chests.exchange(s,rarity,requestId,()=>require('./contesto').saveNow(true,false));
+    }));
+
     socket.on('setLook', handler(({ title, frame }) => {
       const token = me();
       const s = sess(token);
@@ -399,7 +410,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     socket.on('profile', handler(() => {
       const token = me();
       const s = sess(token);
-      return { nick: s.nick || null, code: s.nick ? ensureCode(token) : null, hasPassword: !!s.pw, email: s.email || null, emailPending: s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null, emailLast: s.emailCode ? s.emailCode.email : null, mail: Posta.enabled(), avatar: s.avatar || null, ownedAvatarIds: Avatars.ownedIds(s), emoji: AVATAR_EMOJI, colors: AVATAR_COLORS };
+      return { nick: s.nick || null, code: s.nick ? ensureCode(token) : null, hasPassword: !!s.pw, email: s.email || null, emailPending: s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null, emailLast: s.emailCode ? s.emailCode.email : null, mail: Posta.enabled(), avatar: s.avatar || null, ownedAvatarIds: Avatars.ownedIds(s), chests:Chests.view(s), emoji: AVATAR_EMOJI, colors: AVATAR_COLORS };
     }));
 
     socket.on('regenCode', handler(() => {

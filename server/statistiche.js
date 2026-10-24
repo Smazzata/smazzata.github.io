@@ -176,6 +176,10 @@ function recordLeaderboard(room) {
   }
   room.recordedHand = handKey;
   if (g.over) room.recordedGame = room.gameSeq;
+  if (g.over) {
+    const recipients=require('./chests').recordGame(room, sessions, () => ctx.saveNow(true,false));
+    for(const {token,earned} of recipients || [])for(const sock of io.sockets.sockets.values())if(sock.data.token===token)sock.emit('chests',{...require('./chests').view(sessions.get(token)),justEarned:earned});
+  }
 }
 
 /** Sfida del giorno: a fine smazzata si registra il punteggio e la partita finisce */

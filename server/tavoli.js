@@ -341,6 +341,8 @@ function fillBots(room) {
 
 function startGame(room) {
   Games.assertEnabled(room);
+  // Un salvataggio fallito dei premi va recuperato prima di sovrascrivere la partita conclusa.
+  require('./chests').recordGame(room, sessions, () => ctx.saveNow(true,false));
   if (room.rankedMatch && (room.game || ctx.ranked.matches[room.rankedMatch.id])) throw new E.GameError('Rientra in coda per una nuova Ranked');
   if (room.series && room.series.champion) room.series = { ...room.series, wins: Array(room.n).fill(0), games: 0, champion: null };
   clearTimeout(room.botTimer);
@@ -355,6 +357,7 @@ function startGame(room) {
   room.ready = new Set();
   room.botMemo = {};
   room.gameSeq = (room.gameSeq || 0) + 1;
+  room.chestGameId = require('node:crypto').randomUUID();
   room.turnCounter = 0;
   room.botMemoTurn = -1;
   room.lastTurnSeat = room.game.turn;

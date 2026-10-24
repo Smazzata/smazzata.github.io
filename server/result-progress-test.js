@@ -31,3 +31,19 @@ test('Allenamento, tutorial e tavoli con bot non assegnano progressi',()=>{
   assert.equal(ctx.leaderboard.size,0);assert.equal(events.length,0);
  }
 });
+
+test('La fine naturale di tre partite accredita la chest senza duplicarla',()=>{
+ ctx.sessions.clear();ctx.leaderboard.clear();events.length=0;
+ for(const token of ['a','b'])ctx.sessions.set(token,{nick:token});
+ const previousSave=ctx.saveNow;let saves=0;ctx.saveNow=()=>saves++;
+ try{
+  for(let i=0;i<3;i++){
+   const r=room({chestGameId:'chest-integration-'+i});r.game.handResult.reason='close';
+   ctx.recordLeaderboard(r);ctx.recordLeaderboard(r);
+  }
+  assert.equal(saves,3);
+  for(const token of ['a','b'])assert.equal(ctx.sessions.get(token).chests.items.length,1);
+  assert.equal(events.filter(e=>e.event==='chests').length,6);
+  assert.equal(events.filter(e=>e.event==='chests'&&e.payload.justEarned).length,2);
+ }finally{ctx.saveNow=previousSave;ctx.sessions.clear();}
+});

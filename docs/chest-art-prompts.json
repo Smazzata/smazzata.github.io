@@ -1,0 +1,7 @@
+{
+  "tool": "imagegen integrato",
+  "reference": "public/art/campaign/barone.webp (solo stile)",
+  "asset": "public/art/chests/chest-opening.webp",
+  "frames": 4,
+  "prompt": "Production animation sprite sheet for Smazzata, a beautiful mobile card game. Reference is STYLE ONLY: polished luxurious 3D storybook rendering, tactile materials, gold filigree, soft cinematic lighting. Subject ONE original rounded treasure chest made of emerald green velvet and warm walnut wood, ornate brushed gold trim and a large elegant gold four-suit clover crest on front, tiny ruby lock. No character, no text, no coins, no currency. EXACTLY FOUR EQUAL SQUARE PANELS arranged in ONE horizontal row, total aspect ratio 4:1. Each panel contains same chest at identical location, same fixed 3/4 front camera, base perfectly aligned, ample transparent margin above for lid. Panel1 lid fully CLOSED, subtle warm rimlight. Panel2 lid lifted 25 degrees, narrow golden light leaking out. Panel3 lid lifted 65 degrees, interior golden glow and few stars. Panel4 lid fully OPEN 100 degrees, beautiful warm light emanating softly, handful elegant stars and fine sparkles rising; no reward object. Consistent immutable chest shape and crest across panels, hinges on rear. Transparent background in all panels, no floor, no rectangles, no shadows cut off at edges. Chest occupies lower middle of each square, fully visible, nothing crossing panel edges. This is a usable four-frame opening animation asset, not a concept page. Premium detail and charming proportions."
+}
