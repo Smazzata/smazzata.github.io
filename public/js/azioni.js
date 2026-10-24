@@ -267,6 +267,7 @@
       const r = await emit('friendRequest', { nick: el.dataset.nick });
       if (r.ok) { toast(`Richiesta inviata a ${el.dataset.nick}`); closeModal(); }
     },
+    async favoriteFriend(el){const owner=S.token,r=await emit('favoriteFriend',{nick:el.dataset.nick,favorite:el.dataset.favorite==='true'});if(r.ok&&owner===S.token){if(S.modalKind==='playerMenu')playerMenu(el.dataset.nick);toast(t(el.dataset.favorite==='true'?'Amico aggiunto al gruppo abituale':'Amico tolto dal gruppo abituale'));}},
     reportPlayer(el) {
       openModal('reportPlayer', `<h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Segnala ${esc(el.dataset.nick)}</h2>
         <p class="muted small">La segnalazione arriva al gestore insieme agli ultimi messaggi della chat di questo tavolo. Chi segnali non lo saprà.</p>

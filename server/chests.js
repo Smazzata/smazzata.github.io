@@ -4,6 +4,7 @@ const crypto=require('node:crypto');
 const A=require('../shared/avatars');
 const C=require('../shared/cosmetics');
 const Weekly=require('./weekly-rewards');
+const Journey=require('./player-journey');
 const {GameError}=require('./engine');
 const RULES={version:3,matches:3,dailyLimit:2,epicPity:20,legendaryPity:50,
   chestRates:{common:75,rare:20,epic:4,legendary:1},
@@ -61,7 +62,7 @@ function view(s,now=Date.now()) {
     pending:b.items.filter(x=>!x.reward).map(x=>({id:x.id,type:typeOf(x),version:x.version,at:x.at,source:x.source||'game',odds:odds(b,typeOf(x))})),
     recent:b.items.filter(x=>x.reward).slice(-10).reverse().map(x=>({id:x.id,...x.reward})),
     fragments:b.fragments,epicIn:RULES.epicPity-b.epicMisses,legendaryIn:RULES.legendaryPity-b.legendaryMisses,
-    odds:odds(b,typeOf(b.items.find(x=>!x.reward))),weekly:Weekly.view(b,dayOf(now)),
+    odds:odds(b,typeOf(b.items.find(x=>!x.reward))),weekly:Weekly.view(b,dayOf(now)),journey:Journey.view(b,dayOf(now)),
     missing:Object.fromEntries(Object.keys(RULES.types).map(r=>[r,POOL.filter(a=>a.rarity===r&&!owned.has(a.id)).length])),
     pools:Object.fromEntries(Object.keys(RULES.types).map(r=>[r,Object.fromEntries(['avatar',...C.KINDS.map(k=>k.id)].map(k=>[k,POOL.filter(a=>a.rarity===r&&a.kind===k).length]))])),rules:RULES};
 }
@@ -110,7 +111,7 @@ function recordGame(room,sessions,persist,now=Date.now(),randomInt=crypto.random
   const tokens=[...new Set(room.seats.map(x=>x.token))];
   if(tokens.length!==room.seats.length)return;
   const previous=tokens.map(t=>[sessions.get(t),sessions.get(t).chests]);
-  const awarded=new Set(),weeklyAwarded=new Map();
+  const awarded=new Set(),weeklyAwarded=new Map(),journeyAwarded=new Map();
   const marker=room.chestRecordedGame;
   try { for(const token of tokens) {
     const s=sessions.get(token),b=inventory(s),day=dayOf(now);
@@ -119,7 +120,9 @@ function recordGame(room,sessions,persist,now=Date.now(),randomInt=crypto.random
       b.progress=0;b.earnedToday++;b.items.push({id:String(++b.issued),type:draw(RULES.chestRates,randomInt),version:RULES.version,at:now});
       awarded.add(token);
     }
-    const weeklyCount=Weekly.record(b,room,now,day,(type,at,mission)=>b.items.push({id:String(++b.issued),type,version:RULES.version,at,source:'weekly',mission}),tokens.some(other=>other!==token&&s.friends?.includes(other)&&sessions.get(other)?.friends?.includes(token)));
+    const withFriend=tokens.some(other=>other!==token&&s.friends?.includes(other)&&sessions.get(other)?.friends?.includes(token));
+    const weeklyCount=Weekly.record(b,room,now,day,(type,at,mission)=>b.items.push({id:String(++b.issued),type,version:RULES.version,at,source:'weekly',mission}),withFriend);
+    journeyAwarded.set(token,Journey.record(b,room,room.seats.findIndex(x=>x.token===token),now,day,(type,at,source,mission)=>b.items.push({id:String(++b.issued),type,version:RULES.version,at,source,mission}),withFriend));
     weeklyAwarded.set(token,weeklyCount);s.chests=b;
   }
   room.chestRecordedGame=room.chestGameId;
@@ -128,6 +131,6 @@ function recordGame(room,sessions,persist,now=Date.now(),randomInt=crypto.random
     if(marker===undefined)delete room.chestRecordedGame;else room.chestRecordedGame=marker;
     throw e;
   }
-  return tokens.map(token=>({token,earned:awarded.has(token),weeklyEarned:weeklyAwarded.get(token)||0}));
+  return tokens.map(token=>({token,earned:awarded.has(token),weeklyEarned:weeklyAwarded.get(token)||0,journeyEarned:journeyAwarded.get(token)||0}));
 }
 module.exports={RULES,POOL,collection,view,open,exchange,recordGame,dayOf,inventory,grant,odds,seeItem};

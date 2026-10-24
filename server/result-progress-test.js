@@ -42,7 +42,7 @@ test('La fine naturale di tre partite accredita la chest senza duplicarla',()=>{
    ctx.recordLeaderboard(r);ctx.recordLeaderboard(r);
   }
   assert.equal(saves,3);
-  for(const token of ['a','b']){assert.equal(ctx.sessions.get(token).chests.items.filter(x=>x.source!=='weekly').length,1);assert.equal(ctx.sessions.get(token).chests.items.filter(x=>x.source==='weekly').length,1);}
+  for(const token of ['a','b']){assert.equal(ctx.sessions.get(token).chests.items.filter(x=>!x.source).length,1);assert.equal(ctx.sessions.get(token).chests.items.filter(x=>x.source==='weekly').length,1);}
   assert.equal(events.filter(e=>e.event==='chests').length,6);
   for(const e of events.filter(e=>e.event==='chests'))assert.deepEqual([e.payload.roomCode,e.payload.gameSeq],['TEST',7]);
   assert.equal(events.filter(e=>e.event==='chests'&&e.payload.justEarned).length,2);

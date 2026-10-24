@@ -33,7 +33,7 @@ test('Stress inventario: 1800 partite, retry, errori disco, riavvii, giorni e se
   const ids=new Set(),weekly=new Set(),days=new Map();
   for(const item of s.chests?.items||[]){assert(!ids.has(item.id));ids.add(item.id);const day=C.dayOf(item.at);
    if(item.source==='weekly'){const key=W.weekOf(day)+':'+item.mission;assert(!weekly.has(key));weekly.add(key);}
-   else {days.set(day,(days.get(day)||0)+1);assert(days.get(day)<=2);}
+   else if(!item.source||item.source==='game'){days.set(day,(days.get(day)||0)+1);assert(days.get(day)<=2);}
   }
  }
  assert(openings>300);assert(exchanges>0);console.log(JSON.stringify({matches:1800,openings,rollbacks,exchanges,profiles:12}));

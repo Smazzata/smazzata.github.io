@@ -24,7 +24,7 @@ const Music = (() => {
   }
   function theme(){
     if(S.modalKind==='chestReward')return 'chest';
-    if(['chests','inbox','firstChest'].includes(S.modalKind))return 'loot';
+    if(['chests','inbox','firstChest','journey'].includes(S.modalKind))return 'loot';
     if(S.modalKind?.startsWith('collection')||S.modalKind==='cosmetics')return 'collection';
     if(S.modalKind==='result'&&S.game?.over&&S.game.you>=0)return S.game.winners?.includes(S.game.you)?'victory':'defeat';
     if(S.screen==='campaign'||S.room?.campaign)return 'campaign';

@@ -8,9 +8,10 @@ test('Chest via socket: concorrenza, isolamento, scambio e riavvio del server',{
  const Cosmetics=require('../shared/cosmetics'),samples=Cosmetics.KINDS.map(k=>Cosmetics.LIST.find(x=>x.kind===k.id));
  const s={nick:'Chest_Prova',name:'Chest_Prova',cosmeticOwned:samples.map(x=>x.id),devices:[{h:crypto.createHash('sha256').update(key).digest('hex'),at:Date.now()}]};
  const profiles=new Map([['test',s],['other',{nick:'Altro'}]]);
+ s.friends=['other'];profiles.get('other').friends=['test'];
  for(let i=0;i<3;i++)C.recordGame({chestGameId:String(i),seats:[{token:'test'},{token:'other'}],progressEligible:true,game:{over:true,handResult:{reason:'close'}}},profiles,()=>{});
- s.chests.items=s.chests.items.filter(x=>x.source!=='weekly');s.chests.items[0].type='legendary';s.chests.fragments=2000;
- fs.writeFileSync(path.join(dir,'stato.json'),JSON.stringify({accountsEpoch:3,progressEpoch:1,sessions:[['test',s]],leaderboard:[],rooms:[],leagues:[],tournaments:[],daily:[]}));
+ s.chests.items=s.chests.items.filter(x=>!x.source);s.chests.items[0].id='1';s.chests.items[0].type='legendary';s.chests.fragments=2000;
+ fs.writeFileSync(path.join(dir,'stato.json'),JSON.stringify({accountsEpoch:3,progressEpoch:1,sessions:[...profiles],leaderboard:[],rooms:[],leagues:[],tournaments:[],daily:[]}));
  let proc;const sockets=[];
  const start=()=>new Promise((resolve,reject)=>{
   proc=spawn(process.execPath,[path.join(__dirname,'index.js')],{env:{...process.env,PORT:'3994',DATA_DIR:dir},stdio:['ignore','pipe','pipe']});
@@ -26,6 +27,9 @@ test('Chest via socket: concorrenza, isolamento, scambio e riavvio del server',{
  };
  try {
   await start();const a=await client(key),b=await client(key),guest=await client();
+  assert.equal((await guest('favoriteFriend',{nick:'Altro',favorite:true})).ok,false);
+  assert((await a('favoriteFriend',{nick:'Altro',favorite:true})).ok);
+  assert.equal((await b('social')).social.friends.find(x=>x.nick==='Altro').favorite,true);
   assert.equal((await a('chests')).chests.pending[0].type,'legendary');
   assert.equal((await guest('openChest',{id:'1'})).ok,false);
   const [r1,r2]=await Promise.all([a('openChest',{id:'1',type:'common',avatarId:'fante-quadri',fragments:999999}),b('openChest',{id:'1'})]);
@@ -48,6 +52,9 @@ test('Chest via socket: concorrenza, isolamento, scambio e riavvio del server',{
   assert.equal((await b('cosmetics')).cosmetics.loadout.back,undefined);
   for(const sock of sockets)sock.disconnect();await stop();await start();
   const again=await client(key);
+  assert.equal((await again('social')).social.friends.find(x=>x.nick==='Altro').favorite,true);
+  assert((await again('favoriteFriend',{nick:'Altro',favorite:false})).ok);
+  assert.equal((await again('social')).social.friends.find(x=>x.nick==='Altro').favorite,false);
   assert.equal((await again('cosmetics')).cosmetics.loadout.frame,samples.find(x=>x.kind==='frame').id);
   assert((await again('createRoom',{rules:{players:2}})).ok);
   const reaction=samples.find(x=>x.kind==='reaction'),lockedReaction=Cosmetics.LIST.find(x=>x.kind==='reaction'&&!s.cosmeticOwned.includes(x.id)&&x.rarity==='common');

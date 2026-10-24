@@ -108,6 +108,7 @@
       <div class="rsum">${summary}</div>
       ${progressHTML}${typeof resultLootHTML==='function'?resultLootHTML():''}
       <div class="result-actions">${footer}</div>
+      ${g.over&&!training&&g.you>=0&&S.social?.nick?`<section class="result-company"><h3>${t('Una bella compagnia?')}</h3><p>${t('Ritrovatevi per la prossima partita.')}</p><div class="row">${humans.filter(i=>i!==g.you&&!(S.social.blocked||[]).includes(S.room.seats[i].name)).map(i=>`<button class="btn small" data-act="playerMenu" data-nick="${esc(S.room.seats[i].name)}">${uiIcon('friends')}${esc(S.room.seats[i].name)}</button>`).join('')}<button class="btn small" data-act="friends">${t('Il mio gruppo')}</button></div></section>`:''}
       <details class="result-details"><summary>${t('Dettaglio del punteggio')}</summary>
       <table><tr><th></th>${cols}</tr>
       ${hr.rows ? hr.rows.map((rw) => `<tr><td>${esc(rw.label)}</td>${rw.values.map((v, i) => `<td class="${rw.plain ? '' : v > 0 ? 'pos' : ''}">${rw.plain ? v : signed(v)}${rw.notes && rw.notes[i] ? `<br><span class="muted small">${esc(rw.notes[i])}</span>` : ''}</td>`).join('')}</tr>`).join('') : ''}

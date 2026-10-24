@@ -180,6 +180,7 @@
       <button class="btn big grow homebtn" data-act="quickMenu" data-mode="ranked">${uiIcon('medal')}<div>Classificata<small>Scala i gradi, da Bronzo a Leggenda</small></div></button>`}
       <button class="btn ${OFFLINE && !last ? 'primary' : ''} big grow homebtn" data-act="playBots">${uiIcon('bot')}<div>Gioca contro il computer<small>Allenamento · senza progressi o statistiche</small></div></button>
       ${CAMPAIGN_VISIBLE ? '<button class="btn grow campaign-entry" data-act="campaign"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-book /></svg> Avventura<small>Tre percorsi: Burraco, Scala 40 e Ramino</small></button>' : ''}
+      ${!OFFLINE&&S.social?.nick?`<button class="journey-entry home-journey" data-act="journey">${uiIcon('calendar')}<span><b>${t('Il tuo percorso')}</b><small>${S.social.nextChest?.limit?t('Il percorso mensile continua ad avanzare.'):S.social.nextChest?.remaining===1?t('Ancora una partita per la prossima chest'):t('Ancora {0} partite per la prossima chest').replace('{0}',String(S.social.nextChest?.remaining||3))}</small></span><span aria-hidden="true">›</span></button>`:''}
 
     </div>`;
   }

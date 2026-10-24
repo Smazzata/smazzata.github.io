@@ -149,6 +149,7 @@
     // Rileggi l'inventario dopo il ripristino: un altro dispositivo può averlo cambiato.
     if(wasSyncing&&!__local&&!S.chestBusy&&!S.collectionBusy){
       if(S.modalKind==='chests')chestsModal(true);
+      else if(S.modalKind==='journey')journeyModal(true);
       else if(S.modalKind==='cosmetics')collectionModal(undefined,true);
     }
   });
@@ -159,6 +160,7 @@
       if(!S.connected||S.syncPending)return;
       if(S.chestBusy||S.collectionBusy){inventoryRefreshTimer=setTimeout(refresh,150);return;}
       if(S.modalKind==='chests')chestsModal(true);
+      else if(S.modalKind==='journey')journeyModal(true);
       else if(S.modalKind==='cosmetics')collectionModal(undefined,true);
     };
     inventoryRefreshTimer=setTimeout(refresh,50);

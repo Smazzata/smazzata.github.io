@@ -208,6 +208,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       o.reqIn = o.reqIn.filter((x) => x !== token);
       o.reqOut = o.reqOut.filter((x) => x !== token);
       o.blocked = o.blocked.filter((x) => x !== token);
+      if(o.favoriteFriends)o.favoriteFriends=o.favoriteFriends.filter(x=>x!==token);
     }
     if (s.nick) nickIndex.delete(s.nick.toLowerCase());
     if (s.code) codeIndex.delete(s.code);
@@ -291,19 +292,20 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
     if (!s) return null;
     const entry = (t) => {
       const room = roomOfToken(t);
-      return { nick: nickOf(t), avatar: (sessions.get(t) || {}).avatar || null, online: isConnected(t), room: room ? room.code : null, playing: !!(room && room.game) };
+      return { nick: nickOf(t), favorite:(s.favoriteFriends||[]).includes(t), avatar: (sessions.get(t) || {}).avatar || null, online: isConnected(t), room: room ? room.code : null, playing: !!(room && room.game) };
     };
     return {
       nick: s.nick || null,
       hasPassword: !!s.pw,
       unreadMail: (s.inbox||[]).filter(x=>!x.read).length,
+      nextChest:{remaining:3-(s.chests?.progress||0),limit:s.chests?.day===Chests.dayOf(Date.now())&&(s.chests?.earnedToday||0)>=2},
       hasEmail: !!s.email,
       emailPending: !s.email && s.emailCode && s.emailCode.exp > Date.now() ? s.emailCode.email : null,
       avatar: s.avatar || null,
       // moderazione: avviso del gestore da leggere, chat bloccata (fino a quando)
       warn: s.warn && !s.warn.seen ? { renamed: !!s.warn.renamed } : null,
       chatBan: s.chatBan && s.chatBan > Date.now() ? (s.chatBan >= CHAT_BAN_FOREVER ? 'sempre' : s.chatBan) : null,
-      friends: s.friends.filter((t) => nickOf(t)).map(entry).sort((a, b) => b.online - a.online || a.nick.localeCompare(b.nick)),
+      friends: s.friends.filter((t) => nickOf(t)).map(entry).sort((a, b) => Number(b.favorite)-Number(a.favorite)||b.online - a.online || a.nick.localeCompare(b.nick)),
       reqIn: s.reqIn.map(nickOf).filter(Boolean),
       reqOut: s.reqOut.map(nickOf).filter(Boolean),
       blocked: s.blocked.map(nickOf).filter(Boolean),
@@ -631,6 +633,16 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       return {};
     }));
 
+    socket.on('favoriteFriend', handler(({nick,favorite})=>{
+      const token=me(),s=sess(token),other=tokenByNick(nick);
+      if(typeof favorite!=='boolean'||!s.friends.includes(other)||!sess(other).friends.includes(token))fail('Scegli un amico confermato');
+      const before=s.favoriteFriends,next=(before||[]).filter(t=>s.friends.includes(t)&&t!==other);
+      if(favorite){if(next.length>=8)fail('Puoi scegliere fino a 8 amici abituali');next.push(other);}
+      s.favoriteFriends=next;
+      try{require('./contesto').saveNow(true,false);}catch(e){if(before===undefined)delete s.favoriteFriends;else s.favoriteFriends=before;throw e;}
+      push(token);return {};
+    }));
+
     socket.on('friendRequest', handler(({ nick }) => {
       const token = me();
       const s = sess(token);
@@ -671,6 +683,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       const other = tokenByNick(nick);
       const o = sess(other);
       s.friends = s.friends.filter((t) => t !== other); o.friends = o.friends.filter((t) => t !== token);
+      if(s.favoriteFriends)s.favoriteFriends=s.favoriteFriends.filter(t=>t!==other);if(o.favoriteFriends)o.favoriteFriends=o.favoriteFriends.filter(t=>t!==token);
       s.reqOut = s.reqOut.filter((t) => t !== other); o.reqIn = o.reqIn.filter((t) => t !== token);
       push(token); push(other);
       return {};
@@ -684,6 +697,7 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       if (other === token) fail('Non puoi bloccare te stesso');
       const o = sess(other);
       s.friends = s.friends.filter((t) => t !== other); o.friends = o.friends.filter((t) => t !== token);
+      if(s.favoriteFriends)s.favoriteFriends=s.favoriteFriends.filter(t=>t!==other);if(o.favoriteFriends)o.favoriteFriends=o.favoriteFriends.filter(t=>t!==token);
       s.reqIn = s.reqIn.filter((t) => t !== other); s.reqOut = s.reqOut.filter((t) => t !== other);
       o.reqIn = o.reqIn.filter((t) => t !== token); o.reqOut = o.reqOut.filter((t) => t !== token);
       if (!s.blocked.includes(other)) s.blocked.push(other);

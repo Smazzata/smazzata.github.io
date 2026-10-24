@@ -260,6 +260,7 @@
     const pending = so.reqOut.includes(nick);
     const blocked = (so.blocked || []).includes(nick);
     openModal('playerMenu', `<h2>${esc(nick)}</h2><div class="leaveopts">
+      ${isFriend?`<button class="btn" data-act="favoriteFriend" data-nick="${esc(nick)}" data-favorite="${!so.friends.find(f=>f.nick===nick).favorite}">${uiIcon('friends')}${t(so.friends.find(f=>f.nick===nick).favorite?'Togli dagli abituali':'Aggiungi agli abituali')}</button>`:''}
       ${isFriend ? `<button class="btn" data-act="playerCard" data-nick="${esc(nick)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-profile /></svg> Vedi la scheda</button>`
         : pending ? '<p class="muted">Richiesta di amicizia inviata</p>' : `<button class="btn primary" data-act="addFriendNick" data-nick="${esc(nick)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg> Aggiungi agli amici</button>`}
       ${blocked ? `<button class="btn" data-act="unblock" data-nick="${esc(nick)}">Sblocca</button>` : `<button class="btn" data-act="block" data-nick="${esc(nick)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Blocca</button>`}
@@ -275,6 +276,7 @@
       <span class="grow" data-act="playerCard" data-nick="${esc(f.nick)}" style="cursor:pointer"><b>${esc(f.nick)}</b> <span class="muted small">›</span><br><span class="muted small">${f.online ? (f.room ? (f.room === inRoom ? 'al tuo tavolo' : f.playing ? 'sta giocando' : 'in un tavolo') : 'online') : 'offline'}</span></span>
       ${inRoom && f.online && f.room !== inRoom ? `<button class="btn small primary" data-act="invite" data-nick="${esc(f.nick)}">Invita</button>` : ''}
       ${f.playing && f.room && f.room !== inRoom ? `<button class="btn small" data-act="watch" data-code="${esc(f.room)}"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-eye /></svg> Guarda</button>` : ''}
+      <button class="btn small habitual-toggle" data-act="favoriteFriend" data-nick="${esc(f.nick)}" data-favorite="${!f.favorite}" aria-pressed="${!!f.favorite}" aria-label="${t(f.favorite?'Togli dagli abituali':'Aggiungi agli abituali')}">${uiIcon('friends')}</button>
       <button class="btn small ghost dark" data-act="unfriend" data-nick="${esc(f.nick)}" title="Rimuovi">✕</button></div>`;
     openModal('friends', `<h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg> Amici</h2>
       <div class="row" style="margin-bottom:8px"><button class="btn small" data-act="leagues"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Campionati tra amici</button></div>
@@ -282,7 +284,8 @@
       ${so.reqIn.length ? `<h4>Richieste ricevute</h4>${so.reqIn.map((n) => `<div class="friend"><span class="grow"><b>${esc(n)}</b> vuole essere tuo amico</span>
         <button class="btn small primary" data-act="friendYes" data-nick="${esc(n)}">Accetta</button><button class="btn small" data-act="friendNo" data-nick="${esc(n)}">Rifiuta</button><button class="btn small danger" data-act="block" data-nick="${esc(n)}" title="Blocca"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg></button></div>`).join('')}` : ''}
       <h4>I tuoi amici${so.friends.length ? ` (${so.friends.filter((f) => f.online).length} online)` : ''}</h4>
-      ${so.friends.length ? so.friends.map(friend).join('') : emptyStateHTML('friends', 'Un posto per i tuoi amici', 'Cerca il loro nickname per ritrovarvi e giocare allo stesso tavolo.', 'focusField', 'Aggiungi un amico', 'friendin')}
+      ${so.friends.some(f=>f.favorite)?`<h4>${t('Il tuo gruppo abituale')}</h4>${so.friends.filter(f=>f.favorite).map(friend).join('')}<h4>${t('Altri amici')}</h4>`:`<p class="muted small">${t('Segna gli amici abituali per ritrovarli subito qui. Puoi sceglierne fino a 8.')}</p>`}
+      ${so.friends.length ? so.friends.filter(f=>!f.favorite).map(friend).join('') : emptyStateHTML('friends', 'Un posto per i tuoi amici', 'Cerca il loro nickname per ritrovarvi e giocare allo stesso tavolo.', 'focusField', 'Aggiungi un amico', 'friendin')}
       ${!inRoom && so.friends.some((f) => f.online) ? '<p class="muted small">Crea o entra in un tavolo per invitare gli amici online.</p>' : ''}
       ${so.reqOut.length ? `<h4>Richieste inviate</h4>${so.reqOut.map((n) => `<div class="friend"><span class="grow">${esc(n)} <span class="muted small">in attesa</span></span>
         <button class="btn small" data-act="unfriend" data-nick="${esc(n)}">Annulla</button></div>`).join('')}` : ''}

@@ -1,0 +1,50 @@
+Il tuo percorso ‖ Your journey ‖ Tu recorrido ‖ Seu caminho
+Tappe del mese ‖ Monthly milestones ‖ Etapas del mes ‖ Etapas do mês
+Weekend ‖ Weekend ‖ Fin de semana ‖ Fim de semana
+Ancora {0} partite per la prossima chest ‖ {0} more games until your next chest ‖ {0} partidas más para tu próximo cofre ‖ Mais {0} partidas para seu próximo baú
+Ancora una partita per la prossima chest ‖ One more game until your next chest ‖ Una partida más para tu próximo cofre ‖ Mais uma partida para seu próximo baú
+Per oggi hai ottenuto le due chest da partite. ‖ You have earned today's two match chests. ‖ Ya has obtenido los dos cofres de partidas de hoy. ‖ Você já ganhou os dois baús de partidas de hoje.
+Il percorso mensile e gli obiettivi continuano ad avanzare. ‖ Your monthly journey and goals keep progressing. ‖ Tu recorrido mensual y tus objetivos siguen avanzando. ‖ Seu caminho mensal e seus objetivos continuam avançando.
+Il percorso mensile continua ad avanzare. ‖ Your monthly journey keeps progressing. ‖ Tu recorrido mensual sigue avanzando. ‖ Seu caminho mensal continua avançando.
+Collegati per consultare il tuo percorso ‖ Connect to see your journey ‖ Conéctate para ver tu recorrido ‖ Conecte-se para ver seu caminho
+Gioca quando vuoi. I progressi restano per tutto il mese. ‖ Play whenever you like. Progress is kept throughout the month. ‖ Juega cuando quieras. El progreso se conserva durante todo el mes. ‖ Jogue quando quiser. O progresso é mantido durante todo o mês.
+Copia offline: collegati per aggiornare i progressi. ‖ Offline copy: connect to update your progress. ‖ Copia sin conexión: conéctate para actualizar tu progreso. ‖ Cópia offline: conecte-se para atualizar seu progresso.
+Una tappa ogni 3 partite online con persone. Premi gratuiti, consegnati nel Bottino. ‖ One milestone every 3 online games with people. Free rewards delivered to your Loot. ‖ Una etapa cada 3 partidas en línea con personas. Premios gratuitos entregados en tu Botín. ‖ Uma etapa a cada 3 partidas online com pessoas. Prêmios gratuitos entregues no Saque.
+Un tavolo nel weekend ‖ A table for the weekend ‖ Una mesa para el fin de semana ‖ Uma mesa no fim de semana
+Completa 3 partite tra sabato e domenica: ti aspetta una chest rara. ‖ Complete 3 games on Saturday and Sunday: a rare chest awaits. ‖ Completa 3 partidas entre el sábado y el domingo: te espera un cofre raro. ‖ Complete 3 partidas entre sábado e domingo: um baú raro espera por você.
+Ci ritroviamo sabato: 3 partite nel weekend per una chest rara. ‖ See you on Saturday: 3 weekend games for a rare chest. ‖ Nos vemos el sábado: 3 partidas el fin de semana para un cofre raro. ‖ Nos vemos no sábado: 3 partidas no fim de semana para um baú raro.
+Album dei ricordi ‖ Memory album ‖ Álbum de recuerdos ‖ Álbum de memórias
+I tuoi ricordi restano, anche quando cambia il mese. Si parte dalle partite giocate da questo aggiornamento. ‖ Your memories stay, even when the month changes. Counting starts with games played after this update. ‖ Tus recuerdos permanecen, aunque cambie el mes. Se cuentan las partidas jugadas desde esta actualización. ‖ Suas memórias ficam, mesmo quando o mês muda. A contagem começa nas partidas jogadas após esta atualização.
+Premio da scoprire ‖ Reward to discover ‖ Premio por descubrir ‖ Prêmio a descobrir
+Un nuovo premio del percorso ti aspetta nel Bottino. ‖ A new journey reward awaits in your Loot. ‖ Un nuevo premio de tu recorrido te espera en el Botín. ‖ Um novo prêmio do caminho espera no Saque.
+Il primo tavolo ‖ The first table ‖ La primera mesa ‖ A primeira mesa
+Completa una partita online ‖ Complete an online game ‖ Completa una partida en línea ‖ Complete uma partida online
+Un posto abituale ‖ Your regular seat ‖ Tu sitio habitual ‖ Seu lugar de sempre
+Completa 10 partite online ‖ Complete 10 online games ‖ Completa 10 partidas en línea ‖ Complete 10 partidas online
+Tra le carte di casa ‖ At home among the cards ‖ Como en casa entre cartas ‖ Em casa entre as cartas
+Completa 50 partite online ‖ Complete 50 online games ‖ Completa 50 partidas en línea ‖ Complete 50 partidas online
+Cento belle partite ‖ A hundred lovely games ‖ Cien buenas partidas ‖ Cem belas partidas
+Completa 100 partite online ‖ Complete 100 online games ‖ Completa 100 partidas en línea ‖ Complete 100 partidas online
+Quattro tavoli, una passione ‖ Four tables, one passion ‖ Cuatro mesas, una pasión ‖ Quatro mesas, uma paixão
+Gioca ai quattro giochi di Smazzata ‖ Play all four Smazzata games ‖ Juega a los cuatro juegos de Smazzata ‖ Jogue os quatro jogos do Smazzata
+Prima vittoria a Burraco ‖ First Burraco win ‖ Primera victoria en Burraco ‖ Primeira vitória no Burraco
+Prima vittoria a Scala 40 ‖ First Scala 40 win ‖ Primera victoria en Scala 40 ‖ Primeira vitória no Scala 40
+Prima vittoria a Ramino ‖ First Ramino win ‖ Primera victoria en Ramino ‖ Primeira vitória no Ramino
+Prima vittoria a Canasta ‖ First Canasta win ‖ Primera victoria en Canasta ‖ Primeira vitória na Canastra
+Vinci una partita online ‖ Win an online game ‖ Gana una partida en línea ‖ Vença uma partida online
+Mai dire ultima carta ‖ Never say last card ‖ Nunca digas última carta ‖ Nunca diga última carta
+Vinci dopo uno svantaggio di almeno 500 punti ‖ Win after trailing by at least 500 points ‖ Gana tras ir perdiendo por al menos 500 puntos ‖ Vença após estar pelo menos 500 pontos atrás
+In buona compagnia ‖ In good company ‖ En buena compañía ‖ Em boa companhia
+Completa una partita con un amico ‖ Complete a game with a friend ‖ Completa una partida con un amigo ‖ Complete uma partida com um amigo
+Una bella compagnia? ‖ Enjoyed the company? ‖ ¿Buena compañía? ‖ Gostou da companhia?
+Ritrovatevi per la prossima partita. ‖ Meet again for the next game. ‖ Volved a encontraros para la próxima partida. ‖ Encontrem-se de novo na próxima partida.
+Il mio gruppo ‖ My group ‖ Mi grupo ‖ Meu grupo
+Il tuo gruppo abituale ‖ Your regular group ‖ Tu grupo habitual ‖ Seu grupo de sempre
+Altri amici ‖ Other friends ‖ Otros amigos ‖ Outros amigos
+Segna gli amici abituali per ritrovarli subito qui. Puoi sceglierne fino a 8. ‖ Mark your regular friends to find them here quickly. You can choose up to 8. ‖ Marca tus amigos habituales para encontrarlos aquí enseguida. Puedes elegir hasta 8. ‖ Marque seus amigos de sempre para encontrá-los aqui rapidamente. Você pode escolher até 8.
+Togli dagli abituali ‖ Remove from regulars ‖ Quitar de habituales ‖ Remover dos habituais
+Aggiungi agli abituali ‖ Add to regulars ‖ Añadir a habituales ‖ Adicionar aos habituais
+Amico aggiunto al gruppo abituale ‖ Friend added to your regular group ‖ Amigo añadido al grupo habitual ‖ Amigo adicionado ao grupo habitual
+Amico tolto dal gruppo abituale ‖ Friend removed from your regular group ‖ Amigo quitado del grupo habitual ‖ Amigo removido do grupo habitual
+Scegli un amico confermato ‖ Choose a confirmed friend ‖ Elige un amigo confirmado ‖ Escolha um amigo confirmado
+Puoi scegliere fino a 8 amici abituali ‖ You can choose up to 8 regular friends ‖ Puedes elegir hasta 8 amigos habituales ‖ Você pode escolher até 8 amigos habituais

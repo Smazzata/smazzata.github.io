@@ -7,7 +7,7 @@ function players(){return new Map(['a','b'].map(t=>[t,{nick:t}]));}
 function game(id,extra={}){return {chestGameId:id,seats:['a','b'].map(token=>({token})),progressEligible:true,game:{over:true,handResult:{reason:'close'}},...extra};}
 function earn(sessions,n,now=DAY,random=max=>0){for(let i=0;i<n;i++)C.recordGame(game('game-'+i),sessions,noop,now,random);}
 function profile(type='common'){
- const sessions=players();earn(sessions,3);const s=sessions.get('a');s.chests.items[0].type=type;return s;
+ const sessions=players();earn(sessions,3);const s=sessions.get('a');s.chests.items=s.chests.items.filter(x=>!x.source);s.chests.items[0].id='1';s.chests.items[0].type=type;return s;
 }
 function roll(value){let first=true;return max=>{if(first){first=false;return value;}return 0;};}
 
@@ -15,10 +15,10 @@ test('Tre partite umane, due chest al giorno e nessun accredito ripetuto dopo ri
  const p=players();let saves=0;const r=game('unique');
  C.recordGame(r,p,()=>saves++,DAY);C.recordGame(JSON.parse(JSON.stringify(r)),p,()=>saves++,DAY);
  assert.equal(saves,1);assert.equal(C.view(p.get('a'),DAY).progress,1);
- earn(p,8);assert.equal(C.view(p.get('a'),DAY).pending.filter(x=>x.source!=='weekly').length,2);assert.equal(C.view(p.get('a'),DAY).progress,0);
+ earn(p,8);assert.equal(C.view(p.get('a'),DAY).pending.filter(x=>x.source==='game').length,2);assert.equal(C.view(p.get('a'),DAY).progress,0);
  assert.equal(C.view(p.get('a'),DAY).earnedToday,2);
  const next=DAY+86400000;earn(p,2,next);assert.equal(C.view(p.get('a'),next).progress,2);
- earn(p,1,next);assert.equal(C.view(p.get('a'),next).pending.filter(x=>x.source!=='weekly').length,3);
+ earn(p,1,next);assert.equal(C.view(p.get('a'),next).pending.filter(x=>x.source==='game').length,3);
  assert.equal(C.dayOf(Date.parse('2026-10-24T22:05:00Z')),'2026-10-25');
 });
 test('Niente chest da bot, tutorial, offline, abbandoni, vecchie partite o identità duplicate',()=>{
@@ -32,7 +32,7 @@ test('Le chest vengono assegnate al 75/20/4/1 e il tipo resta persistito',()=>{
  const expected={common:0,rare:0,epic:0,legendary:0};
  for(let roll=0;roll<100;roll++){
   const p=players();earn(p,3,DAY,()=>roll*100);const s=JSON.parse(JSON.stringify(p.get('a')));
-  expected[C.view(s,DAY).pending[0].type]++;
+  expected[C.view(s,DAY).pending.find(x=>x.source==='game').type]++;
  }
  assert.deepEqual(expected,C.RULES.chestRates);
 });
