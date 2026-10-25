@@ -3,7 +3,11 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 module.exports=async(cdp,shot)=>{
  await cdp.send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
  await cdp.run(`hideIntro();S.prefs.anim=false;S.prefs.sound=false;S.prefs.haptic=false;applyPrefs();closeModal();handlers.playBots();await handlers.createBots();for(let n=0;n<100&&S.game.turn!==S.game.you;n++)await new Promise(r=>setTimeout(r,100));if(S.game.turn!==S.game.you)throw Error('Turno non disponibile');`);await wait(300);
- const point=()=>cdp.run(`const el=document.querySelector('#hand .card:last-child'),r=el.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};`);
+ await cdp.send('Page.bringToFront');
+ // Aspetta che l'intro abbia davvero liberato il tavolo; un tempo fisso dipende dalla velocità del runner.
+ await cdp.run(`await document.fonts.ready;for(let n=0;n<100&&document.querySelector('#intro');n++)await new Promise(r=>setTimeout(r,50));if(document.querySelector('#intro'))throw Error('Intro ancora davanti al tavolo');layoutHand();`);
+ // Il centro del rettangolo trasformato può essere coperto: premere un punto realmente esposto della carta.
+ const point=()=>cdp.run(`for(let n=0;n<60;n++){const el=document.querySelector('#hand .card:last-child'),r=el?.getBoundingClientRect();if(r)for(const fy of [.5,.3,.7])for(const fx of [.5,.3,.7]){const x=r.x+r.width*fx,y=r.y+r.height*fy;if(x>2&&x<innerWidth-2&&y>2&&y<innerHeight-2&&document.elementFromPoint(x,y)?.closest('#hand .card')===el)return {x,y};}await new Promise(r=>setTimeout(r,50));}throw Error('Nessun punto visibile della carta da premere');`);
  const down=async p=>{await cdp.send('Input.dispatchMouseEvent',{type:'mouseMoved',...p});await cdp.send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...p});};
  const up=p=>cdp.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...p});
  let p=await point();await cdp.run(`window.__beforePeek=JSON.stringify([...S.selected]);window.__handBefore=S.game.hand.map(c=>c.id).join(',');`);await down(p);await wait(620);
