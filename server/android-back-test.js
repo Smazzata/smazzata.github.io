@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),vm=require(
 test('Indietro Android: tastiera, dettagli, pannelli, partita e Home senza navigare fuori',()=>{
  const calls=[],S={screen:'home',modalKind:null},handlers={};let field=false;
  for(const name of ['settingsBack','more','collectionPreviewBack','collectionBack','chests','avatarCatalog','goHome','leave','leagueBack'])handlers[name]=()=>calls.push(name);
- const context=vm.createContext({S,handlers,window:{},document:{activeElement:{matches:()=>field,blur(){field=false;calls.push('blur');}}},closeModal(){calls.push('close');S.modalKind=null;},renderCollection(){calls.push('collection');}});
+ const context=vm.createContext({S,handlers,window:{},document:{querySelector:()=>null,activeElement:{matches:()=>field,blur(){field=false;calls.push('blur');}}},closeModal(){calls.push('close');S.modalKind=null;},renderCollection(){calls.push('collection');}});
  const source=fs.readFileSync(require.resolve('../public/js/comandi.js'),'utf8');
  vm.runInContext(source.slice(source.indexOf('  function mobileBack()'),source.indexOf('  // Un solo gradino')),context);
  const back=context.window.smazzataBack;

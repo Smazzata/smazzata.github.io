@@ -48,6 +48,10 @@ jobs:
         run: node server/chest-uitest.js --menus
         env:
           CHROME_PATH: /usr/bin/google-chrome
+      - name: Lente, tavolo e anteprime
+        run: node server/chest-uitest.js --comfort
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
       - name: Rifiniture e comodità su telefono
         run: node server/chest-uitest.js --qol
         env:

@@ -131,6 +131,7 @@
 
   let modalTimer = null;
   function openModal(kind, html) {
+    if(typeof cancelCardPeek==='function')cancelCardPeek();
     const m = $('#modal');
     const previousKind=S.modalKind;
     const already = !m.classList.contains('hidden') && !m.classList.contains('closing');
@@ -245,7 +246,7 @@
 
   function settingsModal(section) {
     const previous=S.settingsSection,wasSettings=S.modalKind==='settings',expanded=wasSettings?[...document.querySelectorAll('.settings-page .menu-details')].map((el,i)=>el.open?i:-1):[];
-    const opt = (key, val, label, extra = '') => `<button class="swatch ${S.prefs[key] === val ? 'on' : ''}" data-act="pref" data-key="${key}" data-val="${val}" aria-pressed="${S.prefs[key]===val}" ${extra}>${uiLabel(label)}</button>`;
+    const opt = (key, val, label, extra = '') => `<button class="swatch ${S.prefs[key] === val ? 'on' : ''}" data-act="pref" data-key="${key}" data-val="${val}" aria-pressed="${S.prefs[key]===val}" ${extra}>${label.includes('<')?label:uiLabel(label)}</button>`;
     const choices=[{id:'audio',name:'Suoni e musica',icon:'music'},{id:'appearance',name:'Aspetto',icon:'cards'},{id:'readability',name:'Leggibilità',icon:'eye'},...(!OFFLINE?[{id:'notifications',name:'Notifiche',icon:'mail'}]:[]),{id:'language',name:'Lingua',icon:'chat'},...(S.room?.isHost?[{id:'table',name:'Impostazioni del tavolo',icon:'settings'}]:[])];
     const requested=typeof section==='string'?section:S.modalKind==='settings'?S.settingsSection||'':'';
     const selected=choices.find(x=>x.id===requested);S.settingsSection=selected?.id||'';
@@ -269,7 +270,7 @@
       <h4>Stile delle carte</h4>
       <div class="row">${DECKS.map(([id, label]) => opt('deck', id, `<span class="deckprev" data-deck="${id}">${cardHTML({ r: 13, s: 'H', id: -80 }, 'withpips')}${cardHTML({ r: ['americane', 'francesi', 'italiane'].includes(id) ? 3 : 7, s: 'D', id: -81 }, 'withpips')}${cardHTML({ r: 1, s: 'C', id: -82 }, 'withpips')}</span>${label}`)).join('')}</div>
       <h4>Carte</h4>
-      <div class="row">${opt('big', false, 'Normali')}${opt('big', true, 'Grandi')}</div>
+      <div class="row">${opt('big',false,`<span class="size-sample" style="--sample-card:38px" aria-hidden="true">${cardHTML({r:8,s:'S',id:-83})}</span>Normali`)}${opt('big',true,`<span class="size-sample" style="--sample-card:54px" aria-hidden="true">${cardHTML({r:8,s:'S',id:-84})}</span>Grandi`)}</div>
       <h4>Giochi calati sul tavolo</h4>
       <div class="row">${opt('melds', 'colonna', '⬇️ In colonna')}${opt('melds', 'fila', '➡️ In fila')}</div>
       <p class="muted small">In colonna le carte stanno una sotto l'altra: sul telefono restano più grandi anche con tanti giochi.</p>
@@ -277,8 +278,8 @@
       <div class="row">${opt('ui', 'semplice', '🙂 Semplici')}${opt('ui', 'completa', '🧩 Complete (tutte le opzioni)')}</div>
 </details>`,
       readability:`      <h4>Leggibilità</h4>
-      <div class="row">${opt('text', 'normale', 'Testo normale')}${opt('text', 'grande', 'Testo grande')}${opt('text', 'enorme', 'Testo molto grande')}</div>
-      <div class="row" style="margin-top:6px">${opt('contrast', false, 'Contrasto normale')}${opt('contrast', true, '◐ Alto contrasto')}</div>
+      <div class="row">${opt('text','normale','<span class="text-sample normal" aria-hidden="true">Aa 123</span>Testo normale')}${opt('text','grande','<span class="text-sample large" aria-hidden="true">Aa 123</span>Testo grande')}${opt('text','enorme','<span class="text-sample huge" aria-hidden="true">Aa 123</span>Testo molto grande')}</div>
+      <div class="row" style="margin-top:6px">${opt('contrast',false,'<span class="contrast-sample" aria-hidden="true">8 ♠ ♥</span>Contrasto normale')}${opt('contrast',true,'<span class="contrast-sample strong" aria-hidden="true">8 ♠ ♥</span>Alto contrasto')}</div>
       <div class="row" style="margin-top:6px">${opt('anim', true, '✨ Animazioni')}${opt('anim', false, 'Senza animazioni')}</div>
       ${'speechSynthesis' in window ? `<div class="row" style="margin-top:6px">${opt('speak', false, '🔈 Mosse in silenzio')}${opt('speak', true, '🗣️ Leggi le mosse ad alta voce')}</div>` : ''}
 `,

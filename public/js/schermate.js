@@ -6,6 +6,7 @@
   /* ================= Schermate ================= */
   function render() {
     Music.sync();
+    if(typeof cancelCardPeek==='function'&&(S.screen!=='game'||S.modalKind||!S.drag||S.drag.started||S.drag.peekContext!==tableSignalContext(S.room,S.game)||!S.game?.hand.some(c=>c.id===Number(S.drag.el?.dataset.card)))){cancelCardPeek();if(S.drag&&!S.drag.started)S.drag.peeked=true;}
     if (S.drag && S.drag.started) { S.pendingRender = true; return; }
     S.pendingRender = false;
     const app = $('#app');
@@ -23,6 +24,7 @@
       S.flipFrom = changed ? null : cardRects();
       app.innerHTML = gameHTML();
       afterGameRender();
+      if(S.drag&&!S.drag.started&&S.drag.src==='hand'){const card=document.querySelector('#hand [data-card="'+S.drag.el.dataset.card+'"]');if(card)S.drag.el=card;}
       campaignDecorateTable();
     }
     if (changed && app.firstElementChild) app.firstElementChild.classList.add('enter');
@@ -287,9 +289,9 @@
           ${isHost ? `<button class="btn small" data-act="addBot" data-seat="${i}" title="Metti il computer"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-bot /></svg> Computer</button>` : ''}</div>`;
       } else if (s.isBot && isHost) right = `<button class="btn small" data-act="removeSeat" data-seat="${i}">Togli</button>`;
       const team = r.n === 4 && !RX.isS40(r.rules) && r.rules.game !== 'rubamazzetto' ? `<span class="teamtag">Coppia ${i % 2 === 0 ? 'A' : 'B'}</span>` : '';
-      return `<div class="seat">
+      return `<div class="seat ${!s?'is-empty':s.connected||s.isBot?'is-connected':'is-away'} ${me?'is-me':''}">
         <div class="who">${s ? avatarHTML(s.name, i, s.isBot, s.avatar) : '<span class="avatar empty">?</span>'}
-        <div>${s ? `<b>${esc(s.name)}</b> ${lvlHTML(s.level)}${me ? ' <span class="badge">tu</span>' : ''}${s.connected ? '' : ' <span class="muted">(offline)</span>'}` : '<span class="muted">In attesa di un giocatore…</span>'}<br>${team}</div>
+        <div>${s ? `<b>${esc(s.name)}</b> ${lvlHTML(s.level)}${me ? ' <span class="badge">tu</span>' : ''}${s.connected ? '' : ' <span class="muted">(offline)</span>'}` : '<span class="muted">'+t('Posto libero')+'</span>'}<br><span class="seat-status">${uiIcon(!s?'clock':s.isBot?'bot':s.connected?'check':'clock')}${t(!s?'In attesa':s.isBot?'Computer':s.connected?'Collegato':'Scollegato')}</span>${team}</div>
         </div>${right}</div>`;
     }).join('');
     const filled = r.seats.filter(Boolean).length;
@@ -309,9 +311,9 @@
         ${r.quick ? `<p class="muted">${r.queueMode === 'casual' ? 'Amichevole online' : 'Classificata'} · ${Games2.idOf(r.rules) === 'burraco' ? 'Burraco Classico' : esc(RX.gameName(r.rules))} · ${r.n} giocatori.<br>In cerca di altri ${r.n - filled} giocatori. La partita parte appena il tavolo è pieno.</p>` : ''}
         ${r.quick ? `<div class="queue-help"><p>${t('Tempo di ricerca')}: <b data-wait-since="${S.queueSince || Date.now()}">0:00</b></p><p>${t('Puoi continuare ad aspettare, invitare un amico o allenarti con il computer.')}</p><div class="row"><button class="btn small" data-act="share">${uiIcon('friends')}${t('Invita un amico')}</button><button class="btn small" data-act="queueBots">${uiIcon('bot')}${t('Passa all’allenamento')}</button><button class="btn small" data-act="leaveNow">${t('Annulla ricerca')}</button></div></div>` : ''}
         ${r.quick && !r.ranked ? '<p class="muted small">Partita amichevole: il tuo grado non cambia.</p>' : ''}
-        <div class="seats">${seats}</div>
+        <p class="lobby-status ${ready?'is-ready':''}" role="status">${uiIcon(ready?'check':'friends')}${!ready?(r.n-filled===1?t('Manca un giocatore'):t('Mancano {0} giocatori').replace('{0}',String(r.n-filled))):r.seats.some(s=>s&&!s.isBot&&!s.connected)?t('Un giocatore è scollegato.'):t(isHost?'Puoi iniziare':'Il tavolo è pronto')}</p><div class="seats">${seats}</div>
         ${isHost ? `<div class="row" style="margin-top:12px">
-            <button class="btn primary big grow" data-act="${ready ? 'start' : 'startFill'}">${r.quick && !ready ? 'Gioca amichevole con il computer' : '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Inizia la partita'}</button></div>
+            <button class="btn primary big grow" data-act="${ready ? 'start' : 'startFill'}">${!ready ? t('Completa con il computer') : '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Inizia la partita'}</button></div>
             ${ready ? '' : '<p class="muted small" style="text-align:center">I posti ancora vuoti li prende il computer.</p>'}`
           : `<p class="muted" style="text-align:center">Aspettiamo che ${esc(hostName)} inizi la partita…</p>`}
       </div>

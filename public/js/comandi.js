@@ -130,32 +130,48 @@
     else if (kind === 'newmeld') act('takePile', { cardIds: selectedIds() });
   }
 
+  let cardPeekTimer=null;
+  function cancelCardPeek(){clearTimeout(cardPeekTimer);cardPeekTimer=null;document.querySelector('.card-lens')?.remove();}
+  function showCardPeek(d){
+    if(S.drag!==d||d.started||d.peekContext!==tableSignalContext(S.room,S.game)||S.modalKind||document.hidden||S.actionPending||!d.el.isConnected)return;
+    const card=S.game?.hand.find(c=>c.id===Number(d.el.dataset.card));if(!card)return;
+    d.peeked=true;const lens=document.createElement('div');lens.className='card-lens';lens.setAttribute('role','img');lens.setAttribute('aria-label',t('Anteprima della carta')+': '+d.el.getAttribute('aria-label'));
+    lens.innerHTML=cardHTML(card)+'<small>'+t('Rilascia per chiudere')+'</small>';document.body.append(lens);
+    const r=d.el.getBoundingClientRect();lens.style.left=Math.max(8,Math.min(innerWidth-lens.offsetWidth-8,r.x+r.width/2-lens.offsetWidth/2))+'px';lens.style.top=Math.max(8,Math.min(innerHeight-lens.offsetHeight-8,r.top-lens.offsetHeight-18))+'px';
+  }
+  window.addEventListener('resize',cancelCardPeek);
+  document.addEventListener('contextmenu',e=>{if(e.target.closest('#hand .card'))e.preventDefault();});
   document.addEventListener('pointerdown', (e) => {
-    Sound.unlock();
+    Sound.unlock();cancelCardPeek();
+    if (S.modalKind)return;
     if (e.button !== 0 || S.screen !== 'game' || !S.game) return;
     const card = e.target.closest('#hand .card');
     const dragEl = card || e.target.closest('[data-drag]');
     if (!dragEl) return;
-    S.drag = { src: card ? 'hand' : dragEl.dataset.drag, el: dragEl, sx: e.clientX, sy: e.clientY, started: false, ids: [], hover: null };
+    S.drag = { src: card ? 'hand' : dragEl.dataset.drag, el: dragEl, sx: e.clientX, sy: e.clientY, peekContext:tableSignalContext(S.room,S.game), started: false, ids: [], hover: null };
+    if(card){const d=S.drag;cardPeekTimer=setTimeout(()=>showCardPeek(d),480);}
   });
   document.addEventListener('pointermove', (e) => {
     const d = S.drag;
     if (!d) return;
+    if(d.peeked){e.preventDefault();return;}
     if (!d.started) {
       if (Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < 9) return;
-      startDrag(d);
+      cancelCardPeek();startDrag(d);
     }
     e.preventDefault();
     moveDrag(d, e.clientX, e.clientY);
   }, { passive: false });
   const finish = () => {
-    const d = S.drag;
+    cancelCardPeek();const d = S.drag;
+    if(d?.peeked){S.justDragged=Date.now();S.drag=null;if(S.pendingRender)render();return;}
     if (!d) return;
     if (d.started) endDrag(d); else S.drag = null;
   };
   document.addEventListener('pointerup', finish);
   document.addEventListener('pointercancel', () => {
-    const d = S.drag;
+    cancelCardPeek();const d = S.drag;
+    if(d?.peeked){S.justDragged=Date.now();S.drag=null;return;}
     if (d && d.started) { d.hover = null; endDrag(d); } else S.drag = null;
   });
 
@@ -185,7 +201,7 @@
       S.toggledCard = id;
       S.hint = null;
       Sound.play('select');
-      if (navigator.vibrate) navigator.vibrate(8);
+      // Sound.play applica anche la vibrazione scelta nelle preferenze.
       render();
       if(keyboardFocus)document.querySelector('#hand [data-card="'+id+'"]')?.focus({preventScroll:true});
       return;
@@ -331,6 +347,7 @@
   });
 
   document.addEventListener('keydown', (e) => {
+    if(e.key==='Escape'&&document.querySelector('.card-lens')){cancelCardPeek();return;}
     if((e.key==='Enter'||e.key===' ')&&e.target.matches('#hand .card[role=button]')){e.preventDefault();e.target.click();return;}
     if (S.modalKind === 'homeGamePicker') {
       if(e.key==='Escape') { e.preventDefault();closeModal();$('#homeGame')?.focus();return; }
@@ -384,6 +401,7 @@
   mobileViewport();
 
   function mobileBack() {
+    if(document.querySelector('.card-lens')){cancelCardPeek();if(S.drag)S.drag.peeked=true;return true;}
     if (document.activeElement?.matches('input, textarea')) { document.activeElement.blur(); return true; }
     if (S.chestBusy || S.collectionBusy) return true;
     if(S.modalKind==='settings'&&S.settingsSection){handlers.settingsBack();return true;}
@@ -411,6 +429,7 @@
   });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState !== 'hidden') return;
+    cancelCardPeek();
     const d = S.drag;
     if (d?.started) { d.hover = null; endDrag(d); } else S.drag = null;
   });

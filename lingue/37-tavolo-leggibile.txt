@@ -1,0 +1,15 @@
+Anteprima della carta ‖ Card preview ‖ Vista previa de la carta ‖ Prévia da carta
+Rilascia per chiudere ‖ Release to close ‖ Suelta para cerrar ‖ Solte para fechar
+{0} carte selezionate ‖ {0} cards selected ‖ {0} cartas seleccionadas ‖ {0} cartas selecionadas
+Deseleziona tutte le carte ‖ Deselect all cards ‖ Deseleccionar todas las cartas ‖ Desmarcar todas as cartas
+Posto libero ‖ Free seat ‖ Sitio libre ‖ Lugar livre
+In attesa ‖ Waiting ‖ Esperando ‖ Aguardando
+Collegato ‖ Connected ‖ Conectado ‖ Conectado
+Scollegato ‖ Disconnected ‖ Desconectado ‖ Desconectado
+Manca un giocatore ‖ One player is missing ‖ Falta un jugador ‖ Falta um jogador
+Mancano {0} giocatori ‖ {0} players are missing ‖ Faltan {0} jugadores ‖ Faltam {0} jogadores
+Un giocatore è scollegato. ‖ A player is disconnected. ‖ Un jugador está desconectado. ‖ Um jogador está desconectado.
+Puoi iniziare ‖ You can start ‖ Puedes empezar ‖ Você pode começar
+Il tavolo è pronto ‖ The table is ready ‖ La mesa está lista ‖ A mesa está pronta
+Completa con il computer ‖ Fill with computer players ‖ Completar con el ordenador ‖ Completar com o computador
+Categoria completata ‖ Category completed ‖ Categoría completada ‖ Categoria concluída

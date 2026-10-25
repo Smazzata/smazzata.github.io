@@ -371,7 +371,7 @@
     let actions = '<button class="ico" data-act="moveHelp" aria-label="'+t('Aiuto per questa mossa')+'" title="'+t('Aiuto per questa mossa')+'">'+uiIcon('rules')+'</button>';
     if (myTurn && r.hints && !r.campaign) actions += '<button class="ico" data-act="hint" title="Suggerimento" aria-label="Suggerimento"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-help /></svg></button>';
     if (g.you >= 0 && !r.campaign) actions = '<button class="ico" data-act="reactPicker" title="Reazioni"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-profile /></svg></button>' + actions;
-    if (sel) actions += '<button class="ico" data-act="clearSel" title="Deseleziona">✕</button>';
+    if(sel)actions+=`<button class="ico selection-count" data-act="clearSel" title="${t('{0} carte selezionate').replace('{0}',String(sel))}" aria-label="${t('Deseleziona tutte le carte')}"><b>${sel}</b>${uiIcon('cards')}<span aria-hidden="true">×</span></button>`;
     const sortLbl = { rank: '⇅ Valore', suit: '⇅ Seme', smart: '⇅ Giochi' }[S.sortMode] || '⇅ Ordina';
     if (g.you >= 0) actions += `<button class="ico wideico" data-act="sort" title="Riordina la mano">${sortLbl}</button>`;
     const left = g.phase === 'handEnd'
@@ -641,7 +641,26 @@
     });
   }
 
+  function tableSignalContext(room,game){return (room?.code||'')+':'+(room?.gameSeq||0)+':'+(game?.handNo||0);}
+  function rememberTableSignals(oldRoom,prev,room,game){
+    if(!prev||!game||!room||tableSignalContext(oldRoom,prev)!==tableSignalContext(room,game)){S.moveSpotlight=null;S.turnSpotlight=null;return;}
+    const ev=game.lastEvent,context=tableSignalContext(room,game);
+    if(ev&&ev.n!==prev.lastEvent?.n&&['discard','meld','add','swap'].includes(ev.type))S.moveSpotlight={context,until:Date.now()+2300,cardId:ev.type==='discard'?ev.cardId:null,meldIds:ev.meldIds||[ev.meldId].filter(x=>x!=null)};
+    if(game.you>=0&&game.turn===game.you&&game.phase==='draw'&&(prev.turn!==game.you||prev.phase==='handEnd'))S.turnSpotlight={context,until:Date.now()+1700};
+  }
+  function applyTableSignals(){
+    const context=tableSignalContext(S.room,S.game),move=S.moveSpotlight,turn=S.turnSpotlight;
+    if(move?.context===context&&move.until>Date.now()){
+      if(move.cardId!=null)document.querySelector('.pile .card[data-card="'+move.cardId+'"]')?.classList.add('recent-move');
+      for(const id of move.meldIds)document.querySelector('#felt .meld[data-mid="'+id+'"]')?.classList.add('recent-move');
+      setTimeout(()=>{if(S.moveSpotlight===move)document.querySelectorAll('.recent-move').forEach(el=>el.classList.remove('recent-move'));},Math.max(0,move.until-Date.now()));
+    }
+    if(turn?.context===context&&turn.until>Date.now()){
+      document.querySelector('.handwrap')?.classList.add('turn-arrival');setTimeout(()=>{if(S.turnSpotlight===turn)document.querySelector('.handwrap')?.classList.remove('turn-arrival');},Math.max(0,turn.until-Date.now()));
+    }
+  }
   function afterGameRender() {
+    applyTableSignals();
     if (S.modalKind === 'zoom') zoomModal();
     layoutHand();
     if (S.dealAnim) { S.dealAnim = false; dealAnimation(); }

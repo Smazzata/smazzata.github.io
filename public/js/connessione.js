@@ -387,6 +387,7 @@
   function onState(room, game) {
     if (S.campaignActive && !room?.campaign) return;
     const prev = S.game;
+    rememberTableSignals(S.room,prev,room,game);
     const keepLeaguePage = S.screen === 'leaders' && room?.code === S.room?.code && !!game === !!prev;
     speakNewMoves(game);
     const prevMusic = S.room && S.room.music;
@@ -436,8 +437,7 @@
       const w = stockWarning(game), pw = prev && prev.handNo === game.handNo ? stockWarning(prev) : null;
       if (w && w.level >= 2 && (!pw || pw.level < w.level)) { toast(w.text); Sound.play('turn'); }
       if (prev && game.turn === game.you && game.phase === 'draw' && (prev.turn !== game.you || prev.phase === 'handEnd')) {
-        if (navigator.vibrate) navigator.vibrate(60);
-        Sound.play('turn');
+        Sound.play('turn'); // Haptic rispetta la preferenza ed evita una vibrazione doppia.
         notify('Smazzata: tocca a te!', `Tavolo ${room.code} · ${lastMove(game)}`, 'turn');
       }
       if (game.phase === 'handEnd') recordStats(room, game);
