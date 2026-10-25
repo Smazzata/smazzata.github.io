@@ -1,0 +1,24 @@
+Oggi ‖ Today ‖ Hoy ‖ Hoje
+Settimana ‖ Week ‖ Semana ‖ Semana
+Mese ‖ Month ‖ Mes ‖ Mês
+Ricordi ‖ Memories ‖ Recuerdos ‖ Memórias
+Nel bottino ‖ In your loot ‖ En tu botín ‖ No seu saque
+2 partite online ‖ 2 online games ‖ 2 partidas en línea ‖ 2 partidas online
+3 partite online ‖ 3 online games ‖ 3 partidas en línea ‖ 3 partidas online
+3 partite nel weekend ‖ 3 weekend games ‖ 3 partidas el fin de semana ‖ 3 partidas no fim de semana
+2 giochi diversi ‖ 2 different games ‖ 2 juegos diferentes ‖ 2 jogos diferentes
+2 giorni di gioco ‖ Play on 2 days ‖ Juega en 2 días ‖ Jogue em 2 dias
+3 partite con amici ‖ 3 games with friends ‖ 3 partidas con amigos ‖ 3 partidas com amigos
+Giochi ‖ Games ‖ Juegos ‖ Jogos
+Giorni ‖ Days ‖ Días ‖ Dias
+Si rinnova domani ‖ Resets tomorrow ‖ Se renueva mañana ‖ Renova amanhã
+Si rinnova lunedì ‖ Resets on Monday ‖ Se renueva el lunes ‖ Renova na segunda-feira
+Si rinnova il prossimo mese ‖ Resets next month ‖ Se renueva el próximo mes ‖ Renova no próximo mês
+premi ‖ rewards ‖ premios ‖ prêmios
+Tappa {0} ‖ Step {0} ‖ Etapa {0} ‖ Etapa {0}
+Partite del mese ‖ Games this month ‖ Partidas del mes ‖ Partidas do mês
+Completato ‖ Completed ‖ Completado ‖ Concluído
+Pagina precedente ‖ Previous page ‖ Página anterior ‖ Página anterior
+Pagina successiva ‖ Next page ‖ Página siguiente ‖ Próxima página
+Online · con persone ‖ Online · with people ‖ En línea · con personas ‖ Online · com pessoas
+Copia offline ‖ Offline copy ‖ Copia sin conexión ‖ Cópia offline

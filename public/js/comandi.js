@@ -404,6 +404,7 @@
     if(document.querySelector('.card-lens')){cancelCardPeek();if(S.drag)S.drag.peeked=true;return true;}
     if (document.activeElement?.matches('input, textarea')) { document.activeElement.blur(); return true; }
     if (S.chestBusy || S.collectionBusy) return true;
+    if(S.modalKind==='journey'&&S.journeyTab==='memories'){handlers.journeyTab({dataset:{tab:S.journeyPreviousTab||'today'}});return true;}
     if(S.modalKind==='settings'&&S.settingsSection){handlers.settingsBack();return true;}
     if(['activities','helpMenu'].includes(S.modalKind)){handlers.more();return true;}
     if (S.modalKind === 'collectionTable') { handlers.collectionPreviewBack(); return true; }

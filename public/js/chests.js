@@ -9,22 +9,43 @@ function chestRequest() {
 }
 function nextChestText(data){return data.earnedToday>=1?t('Per oggi hai ottenuto la chest giornaliera.'):data.progress===1?t('Ancora una partita per la prossima chest'):t('Ancora {0} partite per la prossima chest').replace('{0}',String(2-data.progress));}
 function journeySummaryHTML(data){
- const j=data.journey;if(!j)return '';
- return `<button class="journey-entry" data-act="journey">${uiIcon('calendar')}<span><b>${t('Il tuo percorso')}</b><small>${t('Tappe del mese')}: ${j.month.awarded}/10${j.weekend.active?' · '+t('Weekend')+': '+j.weekend.matches+'/3':''}</small></span><span aria-hidden="true">›</span></button>`;
+ if(!data.journey)return '';
+ return `<button class="journey-entry loot-next" data-act="journey">${uiIcon('calendar')}<span><b>${t('I tuoi progressi')}</b><small>${t('Oggi')} · ${data.earnedToday>=1?t('Nel bottino'):data.progress+' / 2'}</small><progress max="2" value="${data.earnedToday>=1?2:data.progress}" aria-label="${t('Progressi verso la prossima chest')}"></progress></span><span aria-hidden="true">›</span></button>`;
+}
+function journeyRewardHTML(data,{name,type,progress,goal,awarded,label,prizeName}){
+ const value=Math.min(goal,Math.max(0,progress));
+ return `<article class="progress-reward ${awarded?'is-complete':''}"><div class="progress-prize" data-chest-type="${type}" aria-label="${t(data.rules.types[type].name)}"><span class="chest-sprite" aria-hidden="true"></span>${awarded?uiIcon('check'):''}</div><div class="progress-reward-copy"><h3>${esc(t(name))}</h3><div class="progress-count"><span>${esc(label||t('Partite'))}</span><b>${awarded?uiIcon('check'):value+' / '+goal}</b></div><progress value="${awarded?goal:value}" max="${goal}" aria-label="${esc(t(name))}"></progress><small>${t(awarded?'Nel bottino':prizeName||data.rules.types[type].name)}</small></div></article>`;
 }
 async function journeyModal(refreshOnly=false){
  const owner=S.token;let data,online=false;
+ if(refreshOnly!==true){S.journeyTab='today';S.journeyMemoryPage=0;S.journeyStep=null;}
  if(!OFFLINE&&S.connected){const r=await emit('chests');if(owner!==S.token)return;if(r.ok){data=r.chests;online=true;cacheChestState(data);}}
  if(!data){const cached=store.get('bur_chest_cache',null);if(cached?.owner===owner)data=cached.data;}
  if(owner!==S.token||(refreshOnly===true&&S.modalKind!=='journey'))return;
  if(!data?.journey){toast(t('Collegati per consultare il tuo percorso'),true);return;}
- S.chestState=data;const j=data.journey,m=j.month,w=j.weekend;
- openModal('journey',collectionShell('loot',`<section class="player-journey"><header><small>${esc(new Date(m.id+'-01T12:00:00Z').toLocaleDateString(LOCALE,{month:'long',year:'numeric'}))}</small><h2>${t('Il tuo percorso')}</h2><p>${t('Gioca quando vuoi. I progressi restano per tutto il mese.')}</p></header>
- ${!online?`<p class="chest-notice">${t('Copia offline: collegati per aggiornare i progressi.')}</p>`:''}
- <p>${t('Una tappa ogni 3 partite online con persone. Premi gratuiti, consegnati nel Bottino.')}</p><progress max="30" value="${m.matches}" aria-label="${t('Tappe del mese')}"></progress><p>${m.matches}/30 · ${t('Tappe del mese')}: ${m.awarded}/10</p>
- <ol class="journey-steps">${m.steps.map(s=>`<li class="${s.awarded?'is-complete':''}" ${s.step===m.awarded+1?'aria-current="step"':''}><span class="journey-step-number">${s.awarded?uiIcon('check'):s.step}</span><div data-chest-type="${s.type}"><div class="chest-sprite" aria-hidden="true"></div></div><b>${t(data.rules.types[s.type].name)}</b><small>${s.awarded?t('Premio consegnato'):s.goal+' '+t('partite')}</small></li>`).join('')}</ol>
- <section class="journey-weekend"><h3>${uiIcon('calendar')}${t('Un tavolo nel weekend')}</h3><p>${t(w.active?'Completa 3 partite tra sabato e domenica: ti aspetta una chest rara.':'Ci ritroviamo sabato: 3 partite nel weekend per una chest rara.')}</p>${w.active?`<progress max="3" value="${w.matches}" aria-label="${t('Weekend')}"></progress><p>${w.awarded?t('Premio consegnato'):w.matches+'/3'}</p>`:''}</section>
- <details class="journey-album"><summary>${uiIcon('book')} ${t('Album dei ricordi')} · ${j.album.filter(x=>x.at).length}/${j.album.length}</summary><p>${t('I tuoi ricordi restano, anche quando cambia il mese. Si parte dalle partite giocate da questo aggiornamento.')}</p><div class="memory-grid">${j.album.map(x=>`<article class="memory-card ${x.at?'is-complete':''}"><div class="memory-seal">${uiIcon(x.id==='comeback'?'refresh':x.id==='friend'?'friends':x.id.startsWith('win-')?'trophy':'cards')}</div><h3>${t(x.name)}</h3><p>${t(x.desc)}</p><small>${x.at?esc(new Date(x.at).toLocaleDateString(LOCALE)):x.progress+'/'+x.goal}</small>${x.type?`<small>${t(data.rules.types[x.type].name)} · ${t(x.at?'Premio consegnato':'Premio da scoprire')}</small>`:''}</article>`).join('')}</div></details><button class="btn primary" data-act="chests">${t('Vai al bottino')}</button></section>`));
+ S.chestState=data;S.journeyOnline=online;renderJourney();
+}
+function renderJourney(){
+ const data=S.chestState;if(!data?.journey)return;
+ const j=data.journey,m=j.month,w=j.weekend,tab=S.journeyTab||'today';let body='';
+ if(tab==='today'){
+  body=journeyRewardHTML(data,{name:'2 partite online',type:'common',prizeName:'Chest',progress:data.progress,goal:2,awarded:data.earnedToday>=1})+
+   (w.active?`<div class="progress-section-label">${t('Weekend')}</div>`+journeyRewardHTML(data,{name:'3 partite nel weekend',type:'rare',progress:w.matches,goal:3,awarded:w.awarded}):'')+
+   `<p class="progress-reset">${uiIcon('clock')}${t('Si rinnova domani')}</p>`;
+ }else if(tab==='week'){
+  const labels={matches:'3 partite online',games:'2 giochi diversi',days:'2 giorni di gioco',friends:'3 partite con amici'},units={matches:'Partite',games:'Giochi',days:'Giorni',friends:'Partite'};
+  body=(data.weekly?.missions||[]).map(x=>journeyRewardHTML(data,{...x,name:labels[x.id]||x.name,label:t(units[x.id]||'Partite')})).join('')+`<p class="progress-reset">${uiIcon('clock')}${t('Si rinnova lunedì')}</p>`;
+ }else if(tab==='month'){
+  const next=m.steps.find(x=>!x.awarded),step=m.steps.find(x=>x.step===S.journeyStep)||next||m.steps.at(-1);
+  body=`<div class="progress-month-title"><b>${esc(new Date(m.id+'-01T12:00:00Z').toLocaleDateString(LOCALE,{month:'long',year:'numeric'}))}</b><span>${m.awarded} / ${m.steps.length} ${t('premi')}</span></div>`+
+   journeyRewardHTML(data,{name:t('Tappa {0}').replace('{0}',String(step.step)),type:step.type,progress:m.matches,goal:step.goal,awarded:step.awarded,label:t('Partite del mese')})+
+   `<ol class="progress-steps" aria-label="${t('Tappe del mese')}">${m.steps.map(x=>`<li><button data-act="journeyStep" data-step="${x.step}" data-chest-type="${x.type}" class="${x.awarded?'is-complete':''}" aria-pressed="${x.step===step.step}" ${x.step===next?.step?'aria-current="step"':''} aria-label="${t('Tappa {0}').replace('{0}',String(x.step))} · ${t(data.rules.types[x.type].name)} · ${x.awarded?t('Nel bottino'):x.goal+' '+t('partite')}"><span class="chest-sprite" aria-hidden="true"></span><b>${x.awarded?uiIcon('check'):x.step}</b></button></li>`).join('')}</ol><p class="progress-reset">${uiIcon('clock')}${t('Si rinnova il prossimo mese')}</p>`;
+ }else{
+  const page=Math.max(0,Math.min(Math.ceil(j.album.length/3)-1,S.journeyMemoryPage||0));S.journeyMemoryPage=page;
+  body=`<div class="progress-memory-title"><h3 tabindex="-1">${t('Album dei ricordi')}</h3><b>${j.album.filter(x=>x.at).length} / ${j.album.length}</b></div><div class="progress-memories">${j.album.slice(page*3,page*3+3).map(x=>`<article class="progress-memory ${x.at?'is-complete':''}"><span class="memory-seal">${uiIcon(x.at?'check':x.id==='friend'?'friends':x.id.startsWith('win-')?'trophy':'cards')}</span><div><h3>${esc(t(x.name))}</h3><small>${esc(t(x.desc))}</small><progress max="${x.goal}" value="${x.progress}" aria-label="${esc(t(x.name))}"></progress><b>${x.at?t('Completato'):x.progress+' / '+x.goal}</b></div>${x.type?`<span class="progress-memory-prize" data-chest-type="${x.type}" aria-label="${t(data.rules.types[x.type].name)}"><span class="chest-sprite" aria-hidden="true"></span></span>`:''}</article>`).join('')}</div><nav class="progress-pages" aria-label="${t('Album dei ricordi')}"><button class="btn small" data-act="journeyPage" data-page="${page-1}" aria-label="${t('Pagina precedente')}" ${page===0?'disabled':''}>‹</button><span>${page+1} / ${Math.ceil(j.album.length/3)}</span><button class="btn small" data-act="journeyPage" data-page="${page+1}" aria-label="${t('Pagina successiva')}" ${(page+1)*3>=j.album.length?'disabled':''}>›</button></nav>`;
+ }
+ openModal('journey',collectionShell('loot',`<section class="player-journey compact-progress"><header><h2>${t('I tuoi progressi')}</h2><small>${t('Online · con persone')}</small></header>${!S.journeyOnline?`<p class="chest-notice" role="status">${t('Copia offline')}</p>`:''}<nav class="progress-tabs" aria-label="${t('I tuoi progressi')}">${[['today','Oggi'],['week','Settimana'],['month','Mese']].map(([id,name])=>`<button data-act="journeyTab" data-tab="${id}" aria-pressed="${tab===id}">${t(name)}</button>`).join('')}</nav><div class="progress-panel" data-period="${tab}">${body}</div><footer class="progress-footer">${tab!=='memories'?`<button class="progress-album-link" data-act="journeyTab" data-tab="memories">${uiIcon('book')}<span>${t('Ricordi')}</span><b>${j.album.filter(x=>x.at).length} / ${j.album.length}</b><span aria-hidden="true">›</span></button>`:''}</footer></section>`));
+ $('#modal .modal-box').scrollTop=0;
 }
 async function chestsModal(refreshOnly=false) {
   const owner=S.token;let data,online=false;
@@ -39,8 +60,8 @@ async function chestsModal(refreshOnly=false) {
     ${!online?`<p class="chest-notice" role="status">${t('Copia offline: collegati per aprire o scambiare.')}</p>`:''}
     ${data.pending.length?`<div class="inventory-chests">${rarities.filter(r=>data.pending.some(x=>x.type===r.id)).map(r=>{const items=data.pending.filter(x=>x.type===r.id);return `<button class="inventory-chest" data-act="chestOpen" data-id="${esc(items[0].id)}" data-chest-type="${r.id}" aria-label="${t(rules.types[r.id].name)} · ${items.length} · ${t('Tocca per aprire')}" ${disabled||S.chestBusy?'disabled':''}><span class="chest-quantity">×${items.length}</span><span class="chest-sprite" aria-hidden="true"></span><b>${t(rules.types[r.id].name)}</b><small>${t('Tocca per aprire')}</small></button>`;}).join('')}</div>`:`<div class="loot-empty">${uiIcon('trophy')}<p>${t('Nessuna chest da aprire. Le prossime ti aspettano qui.')}</p></div>`}
     ${request?`<p role="status">${t('Un risultato è in attesa di conferma. Recuperalo prima di continuare.')}</p><button class="btn primary" data-act="chestRetry" ${!online?'disabled':''}>${t('Recupera risultato')}</button>`:''}
-    <div class="loot-next"><p><b>${nextChestText(data)}</b></p><progress class="chest-progress" value="${data.progress}" max="2" aria-label="${t('Progressi verso la prossima chest')}"></progress>${data.earnedToday>=1?`<p class="muted small">${t('Il percorso mensile e gli obiettivi continuano ad avanzare.')}</p>`:''}</div>${journeySummaryHTML(data)}
-    <details class="loot-secondary loot-more"><summary>${t('Altro')}</summary>${data.weekly?`<details class="loot-secondary weekly-goals"><summary>${t('Come ottenere altre chest')}</summary><p>${t('Completa 2 partite online con avversari umani per una chest. Massimo 1 al giorno.')}</p>${data.weekly.missions.map(m=>`<div class="weekly-goal ${m.awarded?'is-complete':''}"><span><b>${t(m.name)}</b><small>${m.progress}/${m.goal}${m.awarded?' · '+t('Premio consegnato'):''}</small></span><progress value="${m.progress}" max="${m.goal}" aria-label="${t(m.name)}"></progress></div>`).join('')}</details>`:''}
+    ${journeySummaryHTML(data)}
+    <details class="loot-secondary loot-more"><summary>${t('Altro')}</summary>
     <details class="loot-secondary collection-loot-details"><summary>${t('Usa frammenti')} · ${data.fragments}</summary><p>${t('I doppioni diventano frammenti. Usali qui per ottenere un oggetto che ti manca.')}</p><div class="chest-exchanges">${rarities.map(r=>`<div><span><b>${t(r.name)}</b><small>${rules.costs[r.id]} ${t('frammenti')}</small></span><button class="btn small" data-act="chestExchange" data-rarity="${r.id}" ${disabled||!data.missing[r.id]||data.fragments<rules.costs[r.id]?'disabled':''}>${t(!data.missing[r.id]?'Tutti ottenuti':'Scambia')}</button></div>`).join('')}</div></details>
     ${data.recent.length?`<details class="loot-secondary"><summary>${t('Ultime aperture')}</summary><div class="chest-history">${data.recent.map(x=>{const a=chestPrize(x);return `<div>${a.html}<span>${esc(t(a.name))}<small>${x.duplicate?'+'+x.fragments+' '+t('frammenti'):t('Nuovo oggetto')}</small></span></div>`;}).join('')}</div></details>`:''}
   </details></section>`));
@@ -73,6 +94,9 @@ async function chestSubmit(request) {
 }
 Object.assign(handlers,{
   journey:journeyModal,
+  journeyTab(el){if(S.modalKind!=='journey'||!['today','week','month','memories'].includes(el.dataset.tab))return;if(el.dataset.tab==='memories')S.journeyPreviousTab=S.journeyTab||'today';S.journeyTab=el.dataset.tab;renderJourney();$('#modal '+(S.journeyTab==='memories'?'.progress-memory-title h3':'.progress-tabs [aria-pressed=true]'))?.focus({preventScroll:true});},
+  journeyStep(el){if(S.modalKind!=='journey'||S.journeyTab!=='month')return;S.journeyStep=Number(el.dataset.step);renderJourney();$('#modal .progress-steps [aria-pressed=true]')?.focus({preventScroll:true});},
+  journeyPage(el){if(S.modalKind!=='journey'||S.journeyTab!=='memories')return;S.journeyMemoryPage=Number(el.dataset.page);renderJourney();const buttons=$$('#modal .progress-pages button');(buttons.find(x=>!x.disabled&&Number(x.dataset.page)>S.journeyMemoryPage)||buttons.find(x=>!x.disabled))?.focus({preventScroll:true});},
   chests:chestsModal,
   chestOpen(el){
     if(chestRequest()||!S.chestState?.pending.some(x=>x.id===el.dataset.id))return;
