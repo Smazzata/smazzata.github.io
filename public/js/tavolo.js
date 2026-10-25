@@ -390,7 +390,7 @@
         <button class="iconbtn" data-act="leave" title="Esci"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg></button>`
         : `<button class="iconbtn menuico" data-act="tableMenu" title="Menu">☰${S.musicUnseen ? '<sup>•</sup>' : ''}</button>`}
       </div>
-      <div class="scorebar">${r.series ? `<span class="sc series">${seriesHTML(r, g)}</span>` : ''}${scores}${pozz}</div>
+      ${gameFeedbackHTML()}<div class="scorebar">${r.series ? `<span class="sc series">${seriesHTML(r, g)}</span>` : ''}${scores}${pozz}</div>
       <div class="seats-row n${g.n} ${g.you < 0 ? 'spect' : ''}">${seats}</div>
       ${surrenderBarHTML(g, r)}
       <div class="felt" id="felt">${typeof personalFeltsHTML==='function'?personalFeltsHTML(g,r):''}${g.presa ? presaCenterHTML(g) : others + center + mineZone}</div>
@@ -411,7 +411,7 @@
       const sel = S.selected.has(c.id) !== (c.id === toggled); // la carta appena toccata cambia stato dopo
       // Tressette: le carte che non rispondono al seme non si possono giocare
       const off = g.playable && !g.playable.includes(c.id);
-      return cardHTML(c, `${sel ? 'sel' : ''} ${S.newIds.has(c.id) ? 'newc' : ''} ${off ? 'unplayable' : ''}`);
+      return cardHTML(c, `${sel ? 'sel' : ''} ${S.newIds.has(c.id) ? 'newc' : ''} ${off ? 'unplayable' : ''}`, `role="button" tabindex="0" aria-pressed="${S.selected.has(c.id)}"`);
     }).join('');
   }
 

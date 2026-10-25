@@ -41,6 +41,7 @@
       toast(t('Riconnessione in corso. Attendi il ripristino del tavolo.'), true); return {ok:false};
     }
     S.actionPending = true;
+    const pendingHint=setTimeout(()=>{if(S.actionPending){const title=$('.game .topbar .title');if(title){title.dataset.pendingLabel=t('Invio della mossa…');title.setAttribute('role','status');}}},700);
     try {
     if (type === 'add' && isS40Game() && extra.cardIds && extra.cardIds.length === 1) {
       const g = S.game;
@@ -66,9 +67,9 @@
     // Un secondo render identico interromperebbe le animazioni appena avviate.
     if (r.ok && S.selected.size && ['meld', 'add', 'swap', 'discard', 'takePile', 'undo'].includes(type)) { S.selected.clear(); render(); }
     // mossa rifiutata: le carte nascoste dall'anticipo tornano al loro posto
-    if (!r.ok) { S.antic = null; clearAnticipated(); render(); }
+    if (!r.ok) { S.antic = null; clearAnticipated(); render();$('#hand')?.classList.add('move-rejected');setTimeout(()=>$('#hand')?.classList.remove('move-rejected'),1200); }
     return r;
-    } finally { S.actionPending = false; }
+    } finally { clearTimeout(pendingHint);S.actionPending = false;const title=$('.game .topbar .title[data-pending-label]');if(title){delete title.dataset.pendingLabel;title.removeAttribute('role');} }
   }
 
   // dietro il tunnel l'indirizzo cambia: gli inviti passano dalla pagina d'ingresso fissa
@@ -158,8 +159,11 @@
     howto() { openModal('rules', `<div class="rules-text">${HOW_TO}${R.OTHER_VARIANTS}</div>`); },
     settings: settingsModal,
     settingsSection(el){settingsModal(el.dataset.section||'');},
+    dismissFeedback(){S.gameFeedback=null;$('.game-feedback')?.remove();layoutHand();},
+    quickSetting(el){return handlers.pref({dataset:{key:el.dataset.key,val:el.dataset.val}});},
+    quickReadability(){S.quickSettingsReturn=true;settingsModal('readability');},
     settingsTable(){settingsModal('table');},
-    settingsBack(){if(S.settingsSection==='table')tableMenuModal();else settingsModal('');},
+    settingsBack(){if(S.quickSettingsReturn){S.quickSettingsReturn=false;tableMenuModal();return;}if(S.settingsSection==='table')tableMenuModal();else settingsModal('');},
     async pref(el) {
       const key = el.dataset.key;
       let val = el.dataset.val;
@@ -171,7 +175,7 @@
       }
       applyPrefs();
       if (key === 'lang') { location.reload(); return; } // la lingua si applica ricaricando la pagina
-      settingsModal();
+      if(S.modalKind==='tableMenu')tableMenuModal();else settingsModal();
       if (S.screen === 'game') render();
       if(key==='music')Music.sync(true);
       if (key === 'sound' && val) { Sound.unlock(); Sound.play('turn'); }

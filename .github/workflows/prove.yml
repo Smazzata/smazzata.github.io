@@ -46,6 +46,10 @@ jobs:
         run: node server/chest-uitest.js --menus
         env:
           CHROME_PATH: /usr/bin/google-chrome
+      - name: Rifiniture e comodità su telefono
+        run: node server/chest-uitest.js --qol
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
       - name: Fine partita, inviti e premi
         run: node server/chest-uitest.js --rewards
         env:

@@ -1,0 +1,7 @@
+Impostazioni rapide ‖ Quick settings ‖ Ajustes rápidos ‖ Configurações rápidas
+Accesa ‖ On ‖ Activada ‖ Ligada
+Spenta ‖ Off ‖ Desactivada ‖ Desligada
+Operazione non riuscita. Riprova. ‖ The action failed. Try again. ‖ No se pudo completar la acción. Inténtalo de nuevo. ‖ A operação falhou. Tente novamente.
+Invio della mossa… ‖ Sending your move… ‖ Enviando tu jugada… ‖ Enviando sua jogada…
+Cerchiamo un tavolo adatto a te. Puoi annullare quando vuoi. ‖ We are finding a suitable table. You can cancel anytime. ‖ Buscamos una mesa adecuada. Puedes cancelar cuando quieras. ‖ Estamos procurando uma mesa adequada. Você pode cancelar a qualquer momento.
+La partita riprende appena torna la connessione. ‖ Your game resumes when the connection returns. ‖ La partida se reanuda cuando vuelve la conexión. ‖ A partida continua quando a conexão voltar.

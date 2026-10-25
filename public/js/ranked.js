@@ -135,7 +135,7 @@ leadersHTML = function() {
     <aside class="league-note"><p>${t('Solo e Duo hanno progressi separati. Le partite contro il computer non contano.')}</p><p>${t('Turni di 60 secondi. Hai 120 secondi per riconnetterti; abbandoni e inattività comportano sconfitta e pausa Ranked.')}</p></aside></main>`;
 };
 function searchModal() {
-  openModal('rankedSearch', `<div class="result"><h2>${t('Ricerca Ranked')}</h2><p>${t('Tempo di ricerca')}: <b data-wait-since="${S.rankedSince || Date.now()}">0:00</b></p><p role="status">${t('Ricerca di avversari in corso…')}</p><p>${t('La ricerca amplia gradualmente il rating senza mescolare Solo e Duo.')}</p><button class="btn" data-act="rankedCancel">${t('Annulla ricerca')}</button><button class="btn" data-act="rankedTrain">${uiIcon('bot')}${t('Passa all’allenamento')}</button></div>`);
+  openModal('rankedSearch', `<div class="result"><h2>${t('Ricerca Ranked')}</h2><p>${t('Tempo di ricerca')}: <b data-wait-since="${S.rankedSince || Date.now()}">0:00</b></p><p class="search-status" role="status"><span class="search-pulse" aria-hidden="true"></span>${t('Ricerca di avversari in corso…')}</p><p>${t('Cerchiamo un tavolo adatto a te. Puoi annullare quando vuoi.')}</p><button class="btn" data-act="rankedCancel">${t('Annulla ricerca')}</button><button class="btn" data-act="rankedTrain">${uiIcon('bot')}${t('Passa all’allenamento')}</button></div>`);
 }
 Object.assign(handlers, {
   async rankedTrain() {

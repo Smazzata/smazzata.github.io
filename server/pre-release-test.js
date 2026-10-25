@@ -29,9 +29,21 @@ test('La disconnessione risolve le richieste pendenti senza ripeterle',async()=>
 });
 test('Il secondo tocco non invia una seconda mossa prima della conferma',async()=>{
   let resolve;let sent=0;
-  const c={S:{connected:true,selected:new Set()},OFFLINE:false,anticipate:()=>{},emit:()=>{sent++;return new Promise(r=>resolve=r);}};
+  const c={$:()=>null,setTimeout:()=>1,clearTimeout:()=>{},S:{connected:true,selected:new Set()},OFFLINE:false,anticipate:()=>{},emit:()=>{sent++;return new Promise(r=>resolve=r);}};
   vm.createContext(c);const source=read('azioni.js');
   vm.runInContext(source.slice(source.indexOf('  async function act('),source.indexOf('  // dietro il tunnel')),c);
   const first=c.act('draw');assert.equal((await c.act('draw')).busy,true);assert.equal(sent,1);
   resolve({ok:true});await first;assert.equal(c.S.actionPending,false);
+});
+
+test('Mossa lenta: riscontro nella barra senza ripetizione o spostamento del tavolo',async()=>{
+ let resolve,sent=0;const timers=new Map(),title={dataset:{},setAttribute(){},removeAttribute(){}};
+ const c={S:{connected:true,selected:new Set()},OFFLINE:false,t:x=>x,$:()=>title,setTimeout:f=>{timers.set(1,f);return 1;},clearTimeout:id=>timers.delete(id),anticipate:()=>{},emit:()=>{sent++;return new Promise(r=>resolve=r);}};
+ vm.createContext(c);const source=read('azioni.js');vm.runInContext(source.slice(source.indexOf('  async function act('),source.indexOf('  // dietro il tunnel')),c);
+ const first=c.act('draw');timers.get(1)();assert.equal(title.dataset.pendingLabel,'Invio della mossa…');assert.equal((await c.act('draw')).busy,true);resolve({ok:true});await first;assert.equal(title.dataset.pendingLabel,undefined);assert.equal(timers.size,0);assert.equal(sent,1);
+});
+test('Mossa rifiutata: selezione conservata e richiamo visivo senza carte nascoste',async()=>{
+ const classes=[],c={S:{connected:true,selected:new Set([7])},OFFLINE:false,$:s=>s==='#hand'?{classList:{add:x=>classes.push(x)}}:null,setTimeout:()=>1,clearTimeout:()=>{},anticipate:()=>{},clearAnticipated:()=>classes.push('ripristinate'),render:()=>{},emit:async()=>({ok:false})};
+ vm.createContext(c);const source=read('azioni.js');vm.runInContext(source.slice(source.indexOf('  async function act('),source.indexOf('  // dietro il tunnel')),c);
+ await c.act('draw');assert.equal(c.S.antic,null);assert(c.S.selected.has(7));assert.equal(c.S.actionPending,false);assert.deepEqual(classes,['ripristinate','move-rejected']);
 });

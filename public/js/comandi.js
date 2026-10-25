@@ -165,7 +165,11 @@
     const a = e.target.closest('[data-act]');
     if (a && a.dataset.act && handlers[a.dataset.act]) {
       if (a.disabled) return;
-      handlers[a.dataset.act](a, e);
+      const wasDisabled=a.disabled;const result=handlers[a.dataset.act](a,e);
+      if(result&&typeof result.then==='function'){
+        a.setAttribute('aria-busy','true');a.disabled=true;
+        Promise.resolve(result).catch(err=>{console.error(err);toast(t('Operazione non riuscita. Riprova.'),true);}).finally(()=>{a.removeAttribute('aria-busy');if(a.isConnected)a.disabled=wasDisabled;});
+      }
       return;
     }
     const g = S.game;
@@ -175,6 +179,7 @@
       return;
     }
     if (card && g) {
+      const keyboardFocus=document.activeElement===card;
       const id = Number(card.dataset.card);
       if (S.selected.has(id)) S.selected.delete(id); else S.selected.add(id);
       S.toggledCard = id;
@@ -182,6 +187,7 @@
       Sound.play('select');
       if (navigator.vibrate) navigator.vibrate(8);
       render();
+      if(keyboardFocus)document.querySelector('#hand [data-card="'+id+'"]')?.focus({preventScroll:true});
       return;
     }
     const meld = e.target.closest('[data-mid]');
@@ -325,6 +331,7 @@
   });
 
   document.addEventListener('keydown', (e) => {
+    if((e.key==='Enter'||e.key===' ')&&e.target.matches('#hand .card[role=button]')){e.preventDefault();e.target.click();return;}
     if (S.modalKind === 'homeGamePicker') {
       if(e.key==='Escape') { e.preventDefault();closeModal();$('#homeGame')?.focus();return; }
       if(e.key==='Tab') {

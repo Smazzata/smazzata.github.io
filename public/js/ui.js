@@ -110,12 +110,17 @@
     }
   });
   let toastTimer = null;
-  function toast(msg, error = false, duration = error ? 3200 : 2200) {
-    const t = $('#toast');
-    t.textContent = msg;
-    t.className = 'toast' + (error ? ' error' : '');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.add('hidden'), duration);
+  function gameFeedbackHTML(){const n=S.gameFeedback;return n&&n.until>Date.now()?`<div class="game-feedback ${n.error?'is-error':''}" role="${n.error?'alert':'status'}"><span>${esc(n.text)}</span><button data-act="dismissFeedback" aria-label="${t('Chiudi')}">×</button></div>`:'';}
+  function toast(msg,error=false,duration=error?6500:3000){
+    const box=$('#toast');clearTimeout(toastTimer);
+    if(S.screen==='game'&&!S.modalKind&&$('.game .topbar')){
+      box.classList.add('hidden');S.gameFeedback={text:String(msg),error,until:Date.now()+duration};
+      $('.game-feedback')?.remove();$('.game .topbar').insertAdjacentHTML('afterend',gameFeedbackHTML());layoutHand();
+      toastTimer=setTimeout(()=>{S.gameFeedback=null;$('.game-feedback')?.remove();layoutHand();},duration);return;
+    }
+    S.gameFeedback=null;$('.game-feedback')?.remove();
+    box.textContent=msg;box.className='toast'+(error?' error':'');box.setAttribute('role',error?'alert':'status');box.setAttribute('aria-live',error?'assertive':'polite');
+    toastTimer=setTimeout(()=>box.classList.add('hidden'),duration);
   }
   function confirmEquipped(item) {
     if(!item){toast(t('Equipaggiato'));return;}
@@ -127,17 +132,21 @@
   let modalTimer = null;
   function openModal(kind, html) {
     const m = $('#modal');
+    const previousKind=S.modalKind;
     const already = !m.classList.contains('hidden') && !m.classList.contains('closing');
     clearTimeout(modalTimer);
     S.modalKind = kind;
     Music.sync();
     $('#modal .modal-content').innerHTML = html;
+    const title=$('#modal .collection-layout.is-inspecting .collection-inspector h3')||$('#modal .modal-content h2');if(title){title.id='modal-title';title.classList.add('modal-title');m.setAttribute('aria-labelledby','modal-title');}else m.removeAttribute('aria-labelledby');
+    if(previousKind!==kind)$('#modal .modal-box').scrollTop=0;
     m.classList.remove('hidden', 'closing');
     $('#modal .modal-box').style.transform = '';
     // da una finestra all'altra: niente nuova salita, solo il contenuto che cambia
     m.classList.toggle('swap', already);
   }
   function closeModal() {
+    S.quickSettingsReturn=false;
     S.modalKind = null;
     Music.sync();
     const m = $('#modal');
