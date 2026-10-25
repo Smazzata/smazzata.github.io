@@ -32,7 +32,7 @@
     const mode = training ? 'Allenamento' : S.room.daily ? 'Sfida del giorno' : S.room.rankedFormat ? 'Classificata' : 'Amichevole online';
     const outcome = g.over && g.you >= 0 ? g.winners.length === 0 ? 'Pareggio' : g.winners.includes(g.you) ? 'Vittoria' : 'Sconfitta' : 'Fine smazzata';
     const progressHTML = training ? `<p class="result-mode-note">${t('Allenamento: nessun punto classifica, esperienza o trofeo.')}</p>`
-      : earned ? `<section class="result-progress"><h3>${uiIcon('stats')} ${t('Progressi confermati')}</h3><p><b>+${earned.xp} ${t('punti esperienza')}</b> · ${t('Livello')} ${progress.level}</p><progress max="${progress.need}" value="${progress.into}" aria-label="${t('Esperienza nel livello')}"></progress><p>${progress.into}/${progress.need}</p>${earned.trophies.map(x=>`<p>${uiIcon('trophy')} ${esc(t(x.name))}</p>`).join('')}${(earned.rewards || []).map(x=>`<p>${uiIcon('check')} ${t('Premio sbloccato')}: ${esc(t(x.name))}</p>`).join('')}</section>` : '';
+      : earned ? `<section class="result-progress"><h3>${uiIcon('stats')} ${t('Progressi confermati')}</h3><p><b>+${earned.xp} ${t('punti esperienza')}</b> · ${t('Livello')} ${progress.level}</p><progress max="${progress.need}" value="${progress.into}" aria-label="${t('Esperienza nel livello')}"></progress>${earned.trophies.map(x=>`<p>${uiIcon('trophy')} ${esc(t(x.name))}</p>`).join('')}${(earned.rewards || []).map(x=>`<p>${uiIcon('check')} ${t('Premio sbloccato')}: ${esc(t(x.name))}</p>`).join('')}</section>` : '';
     const P = g.cfg.pozzettoName;
     const cols = hr.teams.map((t) => `<th>${esc(t.members.map((s) => (s === g.you ? 'Tu' : g.players[s].name)).join(' & '))}</th>`).join('');
     const row = (label, fn) => `<tr><td>${label}</td>${hr.teams.map((t) => `<td>${fn(t)}</td>`).join('')}</tr>`;
@@ -63,17 +63,17 @@
       const result = S.rankedLast?.matchId === S.room.rankedFormat.id ? S.rankedLast : null;
       footer = `
         ${result ? `${rankedCard(result.after)}${result.after.provisional || result.placementMatch ? '' : `<p>${result.delta > 0 ? '+' : ''}${result.delta} LP</p>`}` : ''}
-        <div class="endopts"><button class="btn primary" data-act="rankedAgain">${t('Cerca partita')}</button><button class="btn" data-act="rankedProfile">${t('Profilo competitivo')}</button><button class="btn" data-act="leaveNow">${t('Torna alla home')}</button></div>`;
+        <div class="endopts"><button class="btn primary" data-act="rankedAgain">${t('Cerca partita')}</button><button class="btn" data-act="leaveNow">${t('Torna alla home')}</button></div>`;
     } else if (g.over) {
-      // fine partita: tre strade chiare (rivincita, di nuovo al tavolo, uscire)
+      // Due azioni principali, con le opzioni del tavolo raccolte sotto.
       const solo = S.room.onDevice || S.room.offline || humans.length <= 1;
-      footer = `
-        <div class="endopts">
-          <button class="btn primary big" data-act="ready" ${imReady ? 'disabled' : ''}>${imReady ? 'Rivincita: hai votato ✓' : solo ? t('Gioca ancora') : t('Rivincita')}</button>
-          ${solo ? '<button class="btn big" data-act="newFromResult"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-cards /></svg> Nuova partita</button>' : '<button class="btn big" data-act="backToLobby"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg> Torna al tavolo</button>'}
-          <button class="btn big" data-act="leaveNow"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Torna alla home</button>
-        </div>
-        ${imReady && waiting.length ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : solo ? '' : '<p class="muted small">Rivincita: stessi posti e stesse regole, si riparte quando tutti la premono. Torna al tavolo: per cambiare regole o giocatori.</p>'}`;
+      footer = `<div class="endopts">
+        <button class="btn primary big" data-act="ready" ${imReady?'disabled':''}>${imReady?t('Rivincita: hai votato ✓'):solo?t('Gioca ancora'):t('Rivincita')}</button>
+        <button class="btn big" data-act="leaveNow">${t('Torna alla home')}</button></div>
+        ${imReady&&waiting.length?'<p class="muted">'+t('In attesa di:')+' '+esc(waiting.join(', '))+'</p>':''}
+        <details class="result-secondary"><summary>${t('Altre opzioni')}</summary>
+        <button class="btn" data-act="${solo?'newFromResult':'backToLobby'}">${t(solo?'Nuova partita':'Torna al tavolo')}</button>
+        ${solo?'':'<p>'+t('Rivincita: stessi posti e stesse regole, si riparte quando tutti la premono.')+'</p>'}</details>`;
     } else {
       footer = `<button class="btn primary big" data-act="ready" style="width:100%" ${imReady ? 'disabled' : ''}>${imReady ? 'Pronto ✓' : 'Prossima smazzata'}</button>
         ${waiting.length && imReady ? `<p class="muted">In attesa di: ${esc(waiting.join(', '))}</p>` : ''}`;
@@ -103,12 +103,12 @@
     const key = `${S.room.code}:${S.room.gameSeq || ''}:${g.handNo}:${hr.teams.map((t) => t.total).join(',')}`;
     const firstShow = S.resultShown !== key;
     S.resultShown = key;
-    openModal('result', `<div class="result ${firstShow ? 'anim' : ''}">
-      <header class="result-heading"><p>${t(mode)} · ${t('Smazzata')} ${g.handNo}</p>${uiIcon(outcome === 'Vittoria' ? 'trophy' : 'cards')}<h2>${t(outcome)}</h2></header><p>${reason}</p>
+    openModal('result', `<div class="result ${g.over?'is-final':''} ${firstShow ? 'anim' : ''}">
+      <header class="result-heading" data-outcome="${outcome === 'Vittoria' ? 'win' : outcome === 'Sconfitta' ? 'loss' : 'neutral'}"><p>${t(mode)} · ${t('Smazzata')} ${g.handNo}</p>${uiIcon(outcome === 'Vittoria' ? 'trophy' : 'cards')}<h2>${t(outcome)}</h2></header><p class="result-reason">${reason}</p>
       <div class="rsum">${summary}</div>
       ${progressHTML}${typeof resultLootHTML==='function'?resultLootHTML():''}
-      <div class="result-actions">${footer}</div>
-      ${g.over&&!training&&g.you>=0&&S.social?.nick?`<section class="result-company"><h3>${t('Una bella compagnia?')}</h3><p>${t('Ritrovatevi per la prossima partita.')}</p><div class="row">${humans.filter(i=>i!==g.you&&!(S.social.blocked||[]).includes(S.room.seats[i].name)).map(i=>`<button class="btn small" data-act="playerMenu" data-nick="${esc(S.room.seats[i].name)}">${uiIcon('friends')}${esc(S.room.seats[i].name)}</button>`).join('')}<button class="btn small" data-act="friends">${t('Il mio gruppo')}</button></div></section>`:''}
+      <div class="result-actions">${footer}</div>${g.over&&S.room.rankedFormat?`<details class="result-secondary"><summary>${t('Altre opzioni')}</summary><button class="btn" data-act="rankedProfile">${t('Profilo competitivo')}</button></details>`:''}
+      ${g.over&&!training&&g.you>=0&&S.social?.nick?`<details class="result-company"><summary>${t('Una bella compagnia?')}</summary><p>${t('Ritrovatevi per la prossima partita.')}</p><div class="row">${humans.filter(i=>i!==g.you&&!(S.social.blocked||[]).includes(S.room.seats[i].name)).map(i=>`<button class="btn small" data-act="playerMenu" data-nick="${esc(S.room.seats[i].name)}">${uiIcon('friends')}${esc(S.room.seats[i].name)}</button>`).join('')}<button class="btn small" data-act="friends">${t('Il mio gruppo')}</button></div></details>`:''}
       <details class="result-details"><summary>${t('Dettaglio del punteggio')}</summary>
       <table><tr><th></th>${cols}</tr>
       ${hr.rows ? hr.rows.map((rw) => `<tr><td>${esc(rw.label)}</td>${rw.values.map((v, i) => `<td class="${rw.plain ? '' : v > 0 ? 'pos' : ''}">${rw.plain ? v : signed(v)}${rw.notes && rw.notes[i] ? `<br><span class="muted small">${esc(rw.notes[i])}</span>` : ''}</td>`).join('')}</tr>`).join('') : ''}

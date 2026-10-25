@@ -78,10 +78,21 @@
     return `${base}?t=${S.room.code}`;
   }
 
-  async function copyLink() {
-    try { await navigator.clipboard.writeText(inviteLink()); toast('Link copiato'); }
-    catch (e) { prompt('Copia il link:', inviteLink()); }
+  async function copyInviteText(text,message){
+    try{
+      if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(text);
+      else {
+        const field=document.createElement('textarea');field.value=text;field.setAttribute('readonly','');field.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.append(field);field.select();
+        let copied=false;try{copied=document.execCommand('copy');}finally{field.remove();}
+        if(!copied)throw Error('Copia non disponibile');
+      }
+      toast(t(message));return true;
+    }catch(_){
+      openModal('copyInvite',`<h2>${t('Il tuo invito')}</h2><p>${t('Tieni premuto il testo per copiarlo.')}</p><input class="invite-manual" aria-label="${t('Il tuo invito')}" value="${esc(text)}" readonly><button class="btn primary" data-act="closeModal">${t('Torna al tavolo')}</button>`);
+      const field=$('#modal .invite-manual');field.focus();field.select();return false;
+    }
   }
+  async function copyLink(){if(S.room?.code)return copyInviteText(inviteLink(),'Link copiato');}
 
   function setRule(target, key, value) {
     const obj = target === 'edit' ? S.editRules : S.rules;
@@ -231,12 +242,13 @@
     async backToLobby() { const r = await emit('backToLobby'); if (r.ok) closeModal(); },
     // fine partita contro il computer: si sceglie un'altra partita
     newFromResult() { closeModal(); emit('leaveRoom'); Local.attached = false; S.localGame = false; S.room = null; S.game = null; S.playMode = 'bots'; S.screen = 'setup'; render(); },
-    share() {
-      const text = t(`Gioca a carte con me su Smazzata! Codice tavolo ${S.room.code}`);
-      if (navigator.share) navigator.share({ title: 'Smazzata', text, url: inviteLink() }).catch(() => {});
-      // nell'app Android la condivisione del browser non c'è: si apre WhatsApp con il messaggio pronto
-      else window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + inviteLink()), '_blank');
+    async share() {
+      if(!S.room?.code)return;
+      const text=t('Gioca a carte con me su Smazzata! Codice tavolo {0}').replace('{0}',S.room.code);
+      if(navigator.share){try{await navigator.share({title:'Smazzata',text,url:inviteLink()});return;}catch(e){if(e.name==='AbortError')return;}}
+      return copyLink();
     },
+    copyInviteCode(){if(S.room?.code)return copyInviteText(S.room.code,'Codice copiato');},
     copy: copyLink,
     sit(el) { emit('sit', { seat: Number(el.dataset.seat) }); },
     addBot(el) { emit('addBot', { seat: Number(el.dataset.seat) }); },

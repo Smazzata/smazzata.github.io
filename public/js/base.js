@@ -4,7 +4,7 @@
 'use strict';
 
   const R = window.BurracoRules;
-  const CLIENT_BUILD = '2026.10.25.2';
+  const CLIENT_BUILD = '2026.10.25.3';
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -197,6 +197,11 @@
       o.type = 'sine'; o.frequency.setValueAtTime(240, t); o.frequency.exponentialRampToValueAtTime(130, t + 0.14);
       this.env(g, t, 0.32, 0.005, 0.16);
       o.connect(g).connect(this.out); o.start(t); o.stop(t + 0.2);
+    },
+    chest(rarity){
+      if(!S.prefs.sound||!this.ctx)return;
+      const notes={common:[523.25,659.25],rare:[587.33,739.99,880],epic:[659.25,783.99,987.77,1318.5],legendary:[523.25,659.25,783.99,1046.5,1567.98]}[rarity]||[523.25,659.25];
+      notes.forEach((f,i)=>this.note(f,i*.085,.045,i===notes.length-1?.8:.45));
     },
     play(kind) {
       Haptic.forSound(kind); // ogni suono ha la sua vibrazione (anche a suoni spenti)

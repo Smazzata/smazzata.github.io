@@ -51,7 +51,7 @@ function chestReveal(reward) {
   const reduce=S.prefs.anim===false || matchMedia('(prefers-reduced-motion: reduce)').matches;
   clearTimeout(S.chestRevealTimer);
   openModal('chestReward',collectionShell('loot',`<section class="chest-reveal ${reduce?'':'is-opening'}" data-rarity="${rarity.id}">
-    <h2>${t('Il tuo premio')}</h2><div class="chest-stage" data-chest-type="${reward.chestType || reward.rarity}" aria-hidden="true"><div class="chest-burst"></div><div class="chest-sprite"></div>${Array.from({length:8},(_,i)=>`<i class="chest-spark" style="--spark:${i}"></i>`).join('')}</div>
+    <h2>${t('Il tuo premio')}</h2><button class="chest-stage" data-act="chestSkip" data-chest-type="${reward.chestType || reward.rarity}" aria-label="${t('Tocca per scoprire il premio')}"><div class="chest-burst"></div><div class="chest-sprite"></div>${Array.from({length:8},(_,i)=>`<i class="chest-spark" style="--spark:${i}"></i>`).join('')}</button>
     <button class="btn small chest-skip" data-act="chestSkip">${t('Salta animazione')}</button>
     <div class="chest-prize" hidden role="status"><div class="chest-prize-art">${a.html}</div><span class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</span><h3>${esc(t(a.name))}</h3><p>${reward.duplicate?t('Doppione')+' · +'+reward.fragments+' '+t('frammenti'):t('Nuovo oggetto nella tua collezione')}</p><div class="row"><button class="btn primary" data-act="chestEquip" data-kind="${a.kind}" data-item-id="${a.id}">${a.kind==='avatar'?t('Usa avatar'):t('Usa questo stile')}</button><button class="btn" data-act="chests">${t('Continua')}</button></div></div></section>`));
   $('#modal .modal-box').scrollTop=0;
@@ -85,8 +85,8 @@ Object.assign(handlers,{
   async chestShowItem(el){await collectionModal(el.dataset.kind);if(collectionOwned().has(el.dataset.id))await handlers.collectionSelect(el);},
   chestRetry(){const r=chestRequest();if(r)return chestSubmit(r);},
   chestSkip(){
-    clearTimeout(S.chestRevealTimer);const root=$('#modal .chest-reveal');if(!root)return;
-    root.classList.remove('is-opening');root.classList.add('is-revealed');
+    clearTimeout(S.chestRevealTimer);const root=$('#modal .chest-reveal');if(!root||root.classList.contains('is-revealed'))return;
+    Sound.chest(root.dataset.rarity);root.querySelector('.chest-stage').disabled=true;root.classList.remove('is-opening');root.classList.add('is-revealed');
     root.querySelector('.chest-prize').hidden=false;root.querySelector('.chest-skip').hidden=true;
     root.querySelector('.chest-prize [data-act=chestEquip]')?.focus({preventScroll:true});
   },
@@ -136,5 +136,5 @@ function resultLootHTML() {
   const d=S.chestMatch;
   if(!d||d.owner!==S.token||d.roomCode!==S.room?.code||d.gameSeq!==S.room?.gameSeq||!S.game?.over||S.game.you<0||S.room.onDevice||S.room.offline||S.room.tutorial||S.room.progressEligible===false)return '';
   const count=(d.justEarned?1:0)+(d.weeklyEarned||0)+(d.journeyEarned||0),next=d.weekly?.missions.find(m=>!m.awarded);
-  return `<section class="result-progress result-loot"><h3>${t('Le tue ricompense')}</h3><p>${count?t('Chest ottenute')+': <b>'+count+'</b>':d.earnedToday>=1?t('Limite giornaliero raggiunto. Riprendi domani; le tue chest non scadono.'):t('Progressi salvati per la prossima chest')}</p><progress max="2" value="${d.progress}" aria-label="${t('Progressi verso la prossima chest')}"></progress><p>${d.progress}/2 · ${t('Chest ottenute oggi')}: ${d.earnedToday}/1</p>${next?`<p>${t('Prossimo obiettivo')}: ${t(next.name)} · ${next.progress}/${next.goal}</p>`:`<p>${t('Obiettivi settimanali completati')}</p>`}<button class="btn" data-act="chests">${t('Vai al bottino')}</button></section>`;
+  return `<section class="result-progress result-loot"><h3>${t('Le tue ricompense')}</h3><p>${count?t('Chest ottenute')+': <b>'+count+'</b>':d.earnedToday>=1?t('Limite giornaliero raggiunto. Riprendi domani; le tue chest non scadono.'):t('Progressi salvati per la prossima chest')}</p><details class="result-reward-details"><summary>${t('I tuoi progressi')}</summary><progress max="2" value="${d.progress}" aria-label="${t('Progressi verso la prossima chest')}"></progress><p>${d.progress}/2 · ${t('Chest ottenute oggi')}: ${d.earnedToday}/1</p>${next?`<p>${t('Prossimo obiettivo')}: ${t(next.name)} · ${next.progress}/${next.goal}</p>`:`<p>${t('Obiettivi settimanali completati')}</p>`}</details><button class="btn" data-act="chests">${t('Vai al bottino')}</button></section>`;
 }

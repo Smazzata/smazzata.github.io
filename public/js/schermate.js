@@ -300,8 +300,8 @@
       <div class="panel" style="text-align:center">
         <h2 class="bigtitle">${esc(RX.gameName(r.rules))}: invita gli amici</h2>
         <div class="muted">Codice del tavolo</div>
-        <div class="code">${esc(r.code)}</div>
-        <div class="row" style="justify-content:center"><button class="btn primary big" data-act="share"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Manda l'invito</button></div>
+        <button class="code invite-code" data-act="copyInviteCode" aria-label="${t('Copia il codice')}"><b>${esc(r.code)}</b><small>${t('Tocca per copiare')}</small></button>
+        <div class="row" style="justify-content:center"><button class="btn primary big" data-act="share"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> ${t('Invita un amico')}</button></div>
         <div class="row" style="justify-content:center;margin-top:6px"><button class="btn ghost small" data-act="copy">Copia il link</button>${S.social && S.social.nick ? '<button class="btn ghost small" data-act="friends"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg> Dai miei amici</button>' : ''}</div>
       </div>
       <div class="panel">

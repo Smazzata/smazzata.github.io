@@ -1,0 +1,9 @@
+Il tuo invito ‖ Your invitation ‖ Tu invitación ‖ Seu convite
+Tieni premuto il testo per copiarlo. ‖ Press and hold the text to copy it. ‖ Mantén pulsado el texto para copiarlo. ‖ Mantenha o texto pressionado para copiar.
+Copia il codice ‖ Copy code ‖ Copiar código ‖ Copiar código
+Tocca per copiare ‖ Tap to copy ‖ Toca para copiar ‖ Toque para copiar
+Tocca per scoprire il premio ‖ Tap to reveal your reward ‖ Toca para descubrir tu premio ‖ Toque para revelar seu prêmio
+Gioca a carte con me su Smazzata! Codice tavolo {0} ‖ Play cards with me on Smazzata! Table code {0} ‖ ¡Juega a las cartas conmigo en Smazzata! Código de mesa {0} ‖ Jogue cartas comigo no Smazzata! Código da mesa {0}
+Rivincita: stessi posti e stesse regole, si riparte quando tutti la premono. ‖ Rematch: same seats and rules, starting when everyone is ready. ‖ Revancha: mismos sitios y reglas; empieza cuando todos estén listos. ‖ Revanche: mesmos lugares e regras; começa quando todos estiverem prontos.
+In attesa di: ‖ Waiting for: ‖ Esperando a: ‖ Aguardando:
+I tuoi progressi ‖ Your progress ‖ Tu progreso ‖ Seu progresso

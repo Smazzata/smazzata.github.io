@@ -32,6 +32,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   if(process.argv.includes('--first-use')){await require('./first-use-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
   if(process.argv.includes('--journey')){await require('./journey-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
   if(process.argv.includes('--simple')){await require('./simple-inventory-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
+  if(process.argv.includes('--rewards')){await require('./reward-polish-ui-flow')(cdp,shot);return;}
   if(process.argv.includes('--menus')){await require('./menus-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
   await cdp.run(`if(Music.active!==null||S.prefs.music)throw Error('musica attiva senza scelta');settingsModal('audio');if(!document.querySelector('[data-key=music][data-val=true]'))throw Error('comando musica assente');const range=document.querySelector('#musicVolume');if(!range||range.value!=='50')throw Error('volume iniziale errato');range.value='25';range.dispatchEvent(new Event('input',{bubbles:true}));if(Music.volume()!==25||store.get('bur_prefs',{}).musicVolume!==25||document.querySelector('#musicVolumeValue').textContent!=='25%')throw Error('volume non salvato');if(Music.active!==null)throw Error('regolare volume avvia musica spenta');settingsModal();if(document.querySelector('#musicVolume').value!=='25')throw Error('volume perso riaprendo impostazioni');`);
   await cdp.send('Runtime.evaluate',{expression:`S.prefs.music=true;applyPrefs();Music.sync(true);`,userGesture:true});await wait(400);
