@@ -2,8 +2,12 @@
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 module.exports=async(cdp,shot)=>{
  await cdp.send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
- await cdp.run(`hideIntro();S.prefs.anim=false;S.prefs.sound=false;S.prefs.haptic=false;applyPrefs();closeModal();handlers.playBots();await handlers.createBots();for(let n=0;n<100&&S.game.turn!==S.game.you;n++)await new Promise(r=>setTimeout(r,100));if(S.game.turn!==S.game.you)throw Error('Turno non disponibile');`);await wait(300);
  await cdp.send('Page.bringToFront');
+ const initial=await cdp.run(`hideIntro();S.prefs.anim=false;S.prefs.sound=false;S.prefs.haptic=false;applyPrefs();closeModal();handlers.playBots();S.rules=RX.normalize({...S.rules,players:2});await handlers.createBots();const speed=await emit('setBotSpeed',{speed:'veloce'});if(!speed.ok)throw Error('Velocità di prova non impostata');return {turn:S.game?.turn,you:S.game?.you,players:S.room?.n};`);
+ // Il primo turno è casuale: con quattro posti i tre computer potevano superare i vecchi 10 secondi.
+ // Si aspetta il turno reale, senza cambiare il giocatore attivo né fermare i computer.
+ await cdp.run(`const deadline=Date.now()+30000;while(Date.now()<deadline&&!(S.screen==='game'&&S.game?.you>=0&&S.game.turn===S.game.you&&S.game.phase==='draw')){if(S.game?.over||S.game?.phase==='handEnd')break;await new Promise(r=>setTimeout(r,100));}if(!(S.screen==='game'&&S.game?.you>=0&&S.game.turn===S.game.you&&S.game.phase==='draw'))throw Error('Turno non disponibile: '+JSON.stringify({screen:S.screen,turn:S.game?.turn,you:S.game?.you,phase:S.game?.phase,players:S.room?.n,local:S.localGame,hidden:document.hidden}));`);await wait(100);
+ console.log('Avvio reale della prova: '+JSON.stringify(initial));
  // Aspetta che l'intro abbia davvero liberato il tavolo; un tempo fisso dipende dalla velocità del runner.
  await cdp.run(`await document.fonts.ready;for(let n=0;n<100&&document.querySelector('#intro');n++)await new Promise(r=>setTimeout(r,50));if(document.querySelector('#intro'))throw Error('Intro ancora davanti al tavolo');layoutHand();`);
  // Il centro del rettangolo trasformato può essere coperto: premere un punto realmente esposto della carta.
