@@ -112,7 +112,7 @@
   let toastTimer = null;
   function gameFeedbackHTML(){const n=S.gameFeedback;return n&&n.until>Date.now()?`<div class="game-feedback ${n.error?'is-error':''}" role="${n.error?'alert':'status'}"><span>${esc(n.text)}</span><button data-act="dismissFeedback" aria-label="${t('Chiudi')}">×</button></div>`:'';}
   function toast(msg,error=false,duration=error?6500:3000){
-    const box=$('#toast');clearTimeout(toastTimer);
+    const box=$('#toast');clearTimeout(toastTimer);S.toastFeedback={text:String(msg),error,until:Date.now()+duration};
     if(S.screen==='game'&&!S.modalKind&&$('.game .topbar')){
       box.classList.add('hidden');S.gameFeedback={text:String(msg),error,until:Date.now()+duration};
       $('.game-feedback')?.remove();$('.game .topbar').insertAdjacentHTML('afterend',gameFeedbackHTML());layoutHand();
@@ -122,6 +122,10 @@
     box.textContent=msg;box.className='toast'+(error?' error':'');box.setAttribute('role',error?'alert':'status');box.setAttribute('aria-live',error?'assertive':'polite');
     toastTimer=setTimeout(()=>box.classList.add('hidden'),duration);
   }
+  function carryToastToGame(){
+    const n=S.toastFeedback,box=$('#toast');if(S.modalKind||!n||n.until<=Date.now()||box.classList.contains('hidden'))return;
+    box.classList.add('hidden');S.gameFeedback=n;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{if(S.gameFeedback===n){S.gameFeedback=null;$('.game-feedback')?.remove();layoutHand();}},n.until-Date.now());
+  }
   function confirmEquipped(item) {
     if(!item){toast(t('Equipaggiato'));return;}
     toast(t('Ora stai usando')+': '+t(item.name),false,3600);
@@ -129,12 +133,18 @@
     el.innerHTML=`<span aria-hidden="true">${uiIcon('check')}</span><span><b>${t('Ora stai usando')}</b><small>${esc(t(item.name))}</small></span>`;
   }
 
-  let modalTimer = null;
+  let modalTimer = null,modalReturnFocus=null,modalPendingOpener=null;
+  function rememberModalOpener(el){modalPendingOpener={key:focusKey(el),until:Date.now()+60000};}
+  function focusKey(el){if(!el||el===document.body)return null;return {element:el,id:el.id,act:el.dataset?.act,data:{...el.dataset}};}
+  function focusTarget(key,root=document){if(!key)return null;if(key.element?.isConnected)return key.element;if(key.id){const found=document.getElementById(key.id);if(found&&root.contains(found))return found;}return [...root.querySelectorAll('[data-act]')].find(el=>el.dataset.act===key.act&&Object.entries(key.data).every(([k,v])=>el.dataset[k]===v));}
+  function modalFocusables(){return [...document.querySelectorAll('#modal button:not(:disabled),#modal a[href],#modal input:not(:disabled),#modal select:not(:disabled),#modal textarea:not(:disabled),#modal summary,#modal [tabindex="0"]')].filter(el=>el.getClientRects().length&&!el.closest('[hidden],[inert]'));}
+
   function openModal(kind, html) {
     if(typeof cancelCardPeek==='function')cancelCardPeek();
     const m = $('#modal');
-    const previousKind=S.modalKind;
+    const previousKind=S.modalKind,previousFocus=focusKey(document.activeElement);
     const already = !m.classList.contains('hidden') && !m.classList.contains('closing');
+    if(!already){modalReturnFocus=modalPendingOpener?.until>Date.now()?modalPendingOpener.key:previousFocus;modalPendingOpener=null;}
     clearTimeout(modalTimer);
     S.modalKind = kind;
     Music.sync();
@@ -145,16 +155,21 @@
     $('#modal .modal-box').style.transform = '';
     // da una finestra all'altra: niente nuova salita, solo il contenuto che cambia
     m.classList.toggle('swap', already);
+    $('#app').inert=true;
+    const target=already&&previousKind===kind?focusTarget(previousFocus,m):null;
+    (target||m.querySelector('[autofocus]')||m.querySelector('.modal-close'))?.focus({preventScroll:true});
   }
   function closeModal() {
     S.quickSettingsReturn=false;
     S.modalKind = null;
+    $('#app').inert=false;
+    if(S.screen==='game'&&S.toastFeedback?.until>Date.now()&&!$('#toast').classList.contains('hidden'))toast(S.toastFeedback.text,S.toastFeedback.error,S.toastFeedback.until-Date.now());
     Music.sync();
     const m = $('#modal');
     if (m.classList.contains('hidden')) return;
     m.classList.add('closing');
     clearTimeout(modalTimer);
-    modalTimer = setTimeout(() => { m.classList.add('hidden'); m.classList.remove('closing'); }, S.prefs.anim === false ? 0 : 200);
+    modalTimer = setTimeout(() => { m.classList.add('hidden'); m.classList.remove('closing');if(!S.modalKind){const target=focusTarget(modalReturnFocus);if(target&&!target.disabled)target.focus({preventScroll:true});modalReturnFocus=null;} }, S.prefs.anim === false ? 0 : 200);
   }
   // trascinare giù la finestra (dalla maniglia in alto) la chiude
   (() => {
@@ -259,7 +274,7 @@
 `,
       appearance:`      <h4>Tema</h4>
       <div class="row">${opt('theme', 'chiaro', '☀️ Chiaro')}${opt('theme', 'scuro', '🌙 Scuro')}</div>
-<details class="menu-details"><summary>${t('Carte e tavolo')}</summary>      <h4>Colore del tavolo</h4>
+<details class="menu-details"><summary>${t('Carte e tavolo')}</summary>${!OFFLINE&&S.social?.nick?`<div class="style-shortcuts"><button class="btn" data-act="collectionStyle" data-kind="back">${uiIcon('cards')}${t('Dorsi')}</button><button class="btn" data-act="collectionStyle" data-kind="felt">${uiIcon('home')}${t('Tappetini')}</button></div>`:`      <h4>Colore del tavolo</h4>
       <div class="row">${opt('felt', 'verde', '<i class="sw felt-verde"></i>Verde')}${opt('felt', 'blu', '<i class="sw felt-blu"></i>Blu')}${opt('felt', 'bordeaux', '<i class="sw felt-bordeaux"></i>Bordeaux')}${opt('felt', 'antracite', '<i class="sw felt-antracite"></i>Antracite')}</div>
       <h4>Dorso delle carte</h4>
       <div class="row">${opt('back', 'rosso', '<i class="sw back-rosso"></i>Rosso')}${opt('back', 'blu', '<i class="sw back-blu"></i>Blu')}${opt('back', 'verde', '<i class="sw back-verde"></i>Verde')}${opt('back', 'nero', '<i class="sw back-nero"></i>Nero')}${[['oro', 'b_oro', 'Oro'], ['notte', 'b_notte', 'Notte stellata'], ['smeraldo', 'b_smeraldo', 'Smeraldo']].map(([id, pid, label]) => {
@@ -267,6 +282,7 @@
         return free ? opt('back', id, `<i class="sw back-${id}"></i>${label}`)
           : `<button class="swatch locked" disabled title="${esc(window.BurracoPremi.howTo(window.BurracoPremi.BY_ID[pid]))}"><i class="sw back-${id}"></i><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-privacy /></svg> ${label}</button>`;
       }).join('')}</div>
+`}
       <h4>Stile delle carte</h4>
       <div class="row">${DECKS.map(([id, label]) => opt('deck', id, `<span class="deckprev" data-deck="${id}">${cardHTML({ r: 13, s: 'H', id: -80 }, 'withpips')}${cardHTML({ r: ['americane', 'francesi', 'italiane'].includes(id) ? 3 : 7, s: 'D', id: -81 }, 'withpips')}${cardHTML({ r: 1, s: 'C', id: -82 }, 'withpips')}</span>${label}`)).join('')}</div>
       <h4>Carte</h4>

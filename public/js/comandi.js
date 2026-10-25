@@ -181,6 +181,7 @@
     const a = e.target.closest('[data-act]');
     if (a && a.dataset.act && handlers[a.dataset.act]) {
       if (a.disabled) return;
+      if(!S.modalKind)rememberModalOpener(a);
       const wasDisabled=a.disabled;const result=handlers[a.dataset.act](a,e);
       if(result&&typeof result.then==='function'){
         a.setAttribute('aria-busy','true');a.disabled=true;
@@ -349,14 +350,10 @@
   document.addEventListener('keydown', (e) => {
     if(e.key==='Escape'&&document.querySelector('.card-lens')){cancelCardPeek();return;}
     if((e.key==='Enter'||e.key===' ')&&e.target.matches('#hand .card[role=button]')){e.preventDefault();e.target.click();return;}
+    if(e.key==='Tab'&&S.modalKind){const list=modalFocusables(),first=list[0],last=list.at(-1);if(!list.includes(document.activeElement)||(e.shiftKey&&document.activeElement===first)||(!e.shiftKey&&document.activeElement===last)){e.preventDefault();(e.shiftKey?last:first)?.focus();}return;}
     if (S.modalKind === 'homeGamePicker') {
       if(e.key==='Escape') { e.preventDefault();closeModal();$('#homeGame')?.focus();return; }
-      if(e.key==='Tab') {
-        const buttons=[...document.querySelectorAll('#modal button:not([disabled])')].filter(b=>b.getClientRects().length);
-        const first=buttons[0],last=buttons[buttons.length-1];
-        if(e.shiftKey&&document.activeElement===first) {e.preventDefault();last?.focus();}
-        else if(!e.shiftKey&&document.activeElement===last) {e.preventDefault();first?.focus();}
-      }
+
     }
     if (e.key === 'Escape' && S.modalKind) closeModal();
     if (e.key === 'Enter' && e.target.id === 'joinCode') handlers.join();

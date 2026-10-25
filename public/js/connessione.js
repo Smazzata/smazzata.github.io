@@ -119,6 +119,7 @@
   });
   socket.on('social', (soc) => {
     S.social = soc;
+    if(Number.isInteger(soc?.nextChest?.available))S.chestCount={owner:S.token,value:soc.nextChest.available};
     if (soc && soc.nick) flushLocalResults();
     // solo all'apertura della pagina: la pagina d'ingresso non conosce ancora questo profilo
     // (dopo una registrazione invece si passa da lei con «Ho salvato il codice», senza interrompere)
@@ -162,6 +163,7 @@
       if(S.modalKind==='chests')chestsModal(true);
       else if(S.modalKind==='journey')journeyModal(true);
       else if(S.modalKind==='cosmetics')collectionModal(undefined,true);
+      else{const owner=S.token;emit('chests').then(r=>{if(owner!==S.token||!r.ok)return;cacheChestState(r.chests);if(S.screen==='home')render();});}
     };
     inventoryRefreshTimer=setTimeout(refresh,50);
   });

@@ -1452,3 +1452,5 @@ body.contrast .lobby-status,body.contrast .collection-complete{background:#fff;c
 
 /* La pescata rimane riconoscibile per tre secondi, anche senza animazioni. */
 .hand .card.draw-highlight{outline:3px solid #e7bd52;outline-offset:-3px;box-shadow:inset 0 0 0 3px #ffe8a6,0 0 9px #edcd6c88}body.contrast .hand .card.draw-highlight{outline:3px solid #000;outline-offset:-3px;box-shadow:inset 0 0 0 6px #ffeb3b}
+
+.style-shortcuts{display:flex;gap:8px;margin:10px 0}.style-shortcuts>.btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px}.game .topbar .labelled-control{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:44px;min-height:44px;padding:3px}.labelled-control small{font:700 10px/1.1 Nunito;display:block}.game .topbar .labelled-control .ui-icon{width:21px;height:21px}.game .topbar .labelled-control.menuico{font-size:18px}

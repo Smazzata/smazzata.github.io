@@ -23,6 +23,10 @@ async function collectionModal(kind,refreshOnly=false){
   if(refreshOnly===true&&S.modalKind!=='cosmetics')return;
   renderCollection();
 }
+function collectionBaseChoices(kind){
+ const list=kind==='back'?[['rosso','Rosso'],['blu','Blu'],['verde','Verde'],['nero','Nero'],...[['oro','Oro','b_oro'],['notte','Notte stellata','b_notte'],['smeraldo','Smeraldo','b_smeraldo']].filter(x=>S.progress?.unlocks?.includes(x[2]))]:kind==='felt'?[['verde','Verde'],['blu','Blu'],['bordeaux','Bordeaux'],['antracite','Antracite']]:[];
+ if(!list.length)return '';return `<details class="collection-base"><summary>${t('Stile di base')}</summary><div>${list.map(([value,name])=>`<button data-act="collectionBase" data-kind="${kind}" data-value="${value}" aria-pressed="${!cosmeticState().loadout[kind]&&S.prefs[kind]===value}" ${!S.collectionOnline?'disabled':''}><i class="sw ${kind}-${value}" aria-hidden="true"></i>${t(name)}</button>`).join('')}</div></details>`;
+}
 function collectionRememberView(){const layout=$('#modal .collection-layout'),box=$('#modal .modal-box');if(S.modalKind==='cosmetics'&&layout?.dataset.scrollKey&&box)(S.collectionPositions||={})[layout.dataset.scrollKey]=box.scrollTop;}
 function collectionMilestone(kind,have,total){
   if(S.collectionMilestones?.owner!==S.token)S.collectionMilestones={owner:S.token,counts:{},seen:{},until:{}};
@@ -43,12 +47,19 @@ function renderCollection(){
   openModal('cosmetics',collectionShell('collection',`<div data-scroll-key="${kind}:${S.collectionOnlyOwned!==false}:${S.collectionInspect?S.collectionSelected:'grid'}" class="collection-layout ${S.collectionInspect&&selected?'is-inspecting':''}"><nav class="collection-categories cx-tabs" aria-label="${t('Tipo di oggetto')}">${categories.map(c=>`<button data-act="collectionCategory" data-kind="${c.id}" aria-pressed="${c.id===kind}">${uiIcon(c.icon)}<span>${t(c.name)}</span></button>`).join('')}</nav><section class="collection-browser"><div class="collection-heading"><div><h2>${t(category.name)}</h2></div><div class="collection-completion"><strong>${have}<span> / ${total}</span></strong><progress value="${have}" max="${total}" aria-label="${t('Oggetti posseduti')}"></progress></div></div>
     ${milestone.complete?`<p class="collection-complete ${milestone.celebrate?'is-celebrating':''}" ${milestone.celebrate?'role="status"':''}>${uiIcon('check')}${t('Categoria completata')}</p>`:''}
     ${!S.collectionOnline?`<p class="collection-notice">${t('Copia offline: collegati per cambiare stile.')}</p>`:''}
+    ${collectionBaseChoices(kind)}
     <div class="collection-ownership" role="group" aria-label="${t('Disponibilità')}"><button data-act="collectionOwnership" data-owned="true" aria-pressed="${S.collectionOnlyOwned!==false}">${t('Solo posseduti')}</button><button data-act="collectionOwnership" data-owned="false" aria-pressed="${S.collectionOnlyOwned===false}">${t('Mostra tutti')}</button></div>
     <div class="collection-grid cx-grid" role="group" aria-label="${t(category.name)}">${items.map(x=>`<button class="collection-card cx-item ${owned.has(x.id)?'':'is-locked'} ${collectionEquipped(x)?'is-equipped':''} ${newIds.has(x.id)?'is-new':''}" data-act="collectionSelect" data-id="${x.id}" data-rarity="${x.rarity}" data-kind="${kind}" aria-pressed="${selected?.id===x.id}" aria-label="${esc(t(x.name))}, ${t(rarities.find(r=>r.id===x.rarity).name)}, ${t(owned.has(x.id)?'Posseduto':'Non posseduto')}"><div class="collection-card-art">${collectionArt(x)}</div><span class="collection-card-label"><b>${esc(t(x.name))}</b><small>${t(collectionEquipped(x)?'In uso':owned.has(x.id)?rarities.find(r=>r.id===x.rarity).name:'Non posseduto')}</small></span>${newIds.has(x.id)?`<span class="collection-new">${t('Nuovo')}</span>`:''}${collectionEquipped(x)?`<span class="collection-tick" aria-label="${t('In uso')}">✓</span>`:''}</button>`).join('')||`<div class="collection-empty">${uiIcon('cards')}<h3>${t('Nessun oggetto da mostrare')}</h3><p>${t('Trova nuovi oggetti nelle chest oppure scegli Mostra tutti.')}</p><button class="collection-primary" data-act="chests">${t('Vai al bottino')}</button></div>`}</div></section>${inspector}</div>`));
   const scrollKey=$('#modal .collection-layout')?.dataset.scrollKey;$('#modal .modal-box').scrollTop=S.collectionPositions?.[scrollKey]||0;
 }
 Object.assign(handlers,{
   collection:()=>collectionModal(),
+  collectionStyle:el=>collectionModal(el.dataset.kind),
+  async collectionBase(el){
+    const kind=el.dataset.kind,value=el.dataset.value,allowed=kind==='felt'?['verde','blu','bordeaux','antracite']:kind==='back'?['rosso','blu','verde','nero',...[['oro','b_oro'],['notte','b_notte'],['smeraldo','b_smeraldo']].filter(x=>S.progress?.unlocks?.includes(x[1])).map(x=>x[0])]:[];
+    if(!allowed.includes(value)||!S.collectionOnline||S.collectionBusy)return;const owner=S.token;S.collectionBusy=true;
+    try{if(cosmeticState().loadout[kind]&&!await equipCosmetic(kind,null))return;if(owner!==S.token)return;S.prefs[kind]=value;applyPrefs();renderCollection();const details=$('#modal .collection-base');if(details)details.open=true;toast(t('Stile aggiornato'));}finally{S.collectionBusy=false;}
+  },
   collectionAvatar:()=>collectionModal('avatar'),
   collectionCategory(el){S.collectionCategory=el.dataset.kind;S.collectionSelected=null;S.collectionInspect=false;renderCollection();},
   collectionOwnership(el){S.collectionOnlyOwned=el.dataset.owned==='true';S.collectionInspect=false;renderCollection();},

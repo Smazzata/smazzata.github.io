@@ -35,6 +35,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   if(process.argv.includes('--simple')){await require('./simple-inventory-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
   if(process.argv.includes('--daily')){await require('./daily-ui-flow')(cdp,shot);return;}
   if(process.argv.includes('--comfort')){await require('./table-comfort-ui-flow')(cdp,shot);return;}
+  if(process.argv.includes('--coherence')){await require('./coherence-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
   if(process.argv.includes('--qol')){await require('./qol-ui-flow')(cdp,shot);return;}
   if(process.argv.includes('--rewards')){await require('./reward-polish-ui-flow')(cdp,shot);return;}
   if(process.argv.includes('--menus')){await require('./menus-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}

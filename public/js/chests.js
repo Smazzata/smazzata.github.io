@@ -1,7 +1,7 @@
 'use strict';
 // Le immagini raccontano l'apertura; il risultato è già salvato dal server.
 function cacheChestState(data) {
-  if(data)store.set('bur_chest_cache',{owner:S.token,data});
+  if(data){store.set('bur_chest_cache',{owner:S.token,data});S.chestCount={owner:S.token,value:data.pending?.length||0};}
 }
 function chestRequest() {
   const r=store.get('bur_chest_request',null);
@@ -160,5 +160,6 @@ function resultLootHTML() {
   const d=S.chestMatch;
   if(!d||d.owner!==S.token||d.roomCode!==S.room?.code||d.gameSeq!==S.room?.gameSeq||!S.game?.over||S.game.you<0||S.room.onDevice||S.room.offline||S.room.tutorial||S.room.progressEligible===false)return '';
   const count=(d.justEarned?1:0)+(d.weeklyEarned||0)+(d.journeyEarned||0),next=d.weekly?.missions.find(m=>!m.awarded);
-  return `<section class="result-progress result-loot"><h3>${t('Le tue ricompense')}</h3><p>${count?t('Chest ottenute')+': <b>'+count+'</b>':d.earnedToday>=1?t('Limite giornaliero raggiunto. Riprendi domani; le tue chest non scadono.'):t('Progressi salvati per la prossima chest')}</p><details class="result-reward-details"><summary>${t('I tuoi progressi')}</summary><progress max="2" value="${d.progress}" aria-label="${t('Progressi verso la prossima chest')}"></progress><p>${d.progress}/2 · ${t('Chest ottenute oggi')}: ${d.earnedToday}/1</p>${next?`<p>${t('Prossimo obiettivo')}: ${t(next.name)} · ${next.progress}/${next.goal}</p>`:`<p>${t('Obiettivi settimanali completati')}</p>`}</details><button class="btn" data-act="chests">${t('Vai al bottino')}</button></section>`;
+  const remaining=d.journey?.month?Math.max(0,Math.min(30,(d.journey.month.awarded+1)*3)-d.journey.month.matches):0;
+  return `<section class="result-progress result-loot"><h3>${t('Le tue ricompense')}</h3><p>${count?t('Chest ottenute')+': <b>'+count+'</b>':d.earnedToday>=1?t('Premio giornaliero ottenuto'):t('Progressi salvati per la prossima chest')}</p><details class="result-reward-details"><summary>${t('I tuoi progressi')}</summary><progress max="2" value="${d.earnedToday>=1?2:d.progress}" aria-label="${t('Progressi verso la prossima chest')}"></progress><p>${d.earnedToday>=1?2:d.progress}/2 · ${t('Chest ottenute oggi')}: ${d.earnedToday}/1</p>${d.journey?.month?.awarded<10?`<p>${t('Prossima tappa')}: ${remaining===1?t('1 partita'):t('{0} partite').replace('{0}',String(remaining))}</p>`:''}${next?`<p>${t('Prossimo obiettivo')}: ${t(next.name)} · ${next.progress}/${next.goal}</p>`:`<p>${t('Obiettivi settimanali completati')}</p>`}</details><button class="btn" data-act="chests">${t('Vai al bottino')}</button></section>`;
 }

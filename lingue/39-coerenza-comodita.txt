@@ -1,0 +1,8 @@
+Stile di base ‖ Base style ‖ Estilo básico ‖ Estilo básico
+Stile aggiornato ‖ Style updated ‖ Estilo actualizado ‖ Estilo atualizado
+Premio giornaliero ottenuto ‖ Daily reward earned ‖ Premio diario obtenido ‖ Recompensa diária obtida
+Prossima tappa ‖ Next step ‖ Próxima etapa ‖ Próxima etapa
+Chest da aprire ‖ Chests to open ‖ Cofres para abrir ‖ Baús para abrir
+Storico ‖ History ‖ Historial ‖ Histórico
+1 partita ‖ 1 game ‖ 1 partida ‖ 1 partida
+{0} partite ‖ {0} games ‖ {0} partidas ‖ {0} partidas

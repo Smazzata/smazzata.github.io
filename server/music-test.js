@@ -55,7 +55,7 @@ test('Riepilogo bottino: soltanto premi confermati della propria partita online'
  S.game.you=-1;assert.equal(ctx.resultLootHTML(),'');S.game.you=0;
  S.room.onDevice=true;assert.equal(ctx.resultLootHTML(),'');S.room.onDevice=false;
  S.game.over=false;assert.equal(ctx.resultLootHTML(),'');S.game.over=true;
- S.chestMatch.justEarned=false;S.chestMatch.weeklyEarned=0;S.chestMatch.earnedToday=1;assert.match(ctx.resultLootHTML(),/Limite giornaliero raggiunto/);
+ S.chestMatch.justEarned=false;S.chestMatch.weeklyEarned=0;S.chestMatch.earnedToday=1;assert.match(ctx.resultLootHTML(),/Premio giornaliero ottenuto/);assert.doesNotMatch(ctx.resultLootHTML(),/Riprendi domani/);S.chestMatch.journey={month:{awarded:2,matches:7}};assert.match(ctx.resultLootHTML(),/Prossima tappa: 2 partite/);assert.match(ctx.resultLootHTML(),/value="2"/);S.chestMatch.journey.month.matches=8;assert.match(ctx.resultLootHTML(),/Prossima tappa: 1 partita/);
 });
 
 test('Arrangiamento: frase lunga, pause, timbro morbido e scheduler limitato',()=>{

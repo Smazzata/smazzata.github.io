@@ -21,6 +21,7 @@
     else if (S.screen === 'lobby') app.innerHTML = lobbyHTML();
     else if (S.screen === 'rankedLobby') app.innerHTML = rankedLobbyHTML();
     else if (S.screen === 'game') {
+      carryToastToGame();
       S.flipFrom = changed ? null : cardRects();
       app.innerHTML = gameHTML();
       afterGameRender();
@@ -96,7 +97,7 @@
     return `<div class="home-toolbar"><div class="home-game"><span id="homeGameLabel">${t('Scegli il gioco')}</span><button id="homeGame" class="home-game-trigger" data-act="homeGameMenu" aria-haspopup="dialog" aria-labelledby="homeGameLabel homeGameName"><span class="home-game-symbol" aria-hidden="true">${gameIcon(homeGame())}</span><b id="homeGameName">${esc(GAME_TILES.find(([id])=>id===homeGame())[2])}</b><span class="home-game-chevron" aria-hidden="true">⌄</span></button></div></div>`;
   }
   function homeNavigationHTML(){
-    return `<nav class="home-navigation" aria-label="${t('Menu principale')}">${!OFFLINE&&S.social?.nick?`<button data-act="collection">${uiIcon('cards')}<span>${t('Collezione')}</span></button><button data-act="friends">${uiIcon('friends')}<span>${t('Amici')}</span>${S.social.reqIn?.length?'<b>'+S.social.reqIn.length+'</b>':''}</button>`:''}<button data-act="more">${uiIcon('menu')}<span>${t('Menu')}</span></button></nav>`;
+    return `<nav class="home-navigation" aria-label="${t('Menu principale')}">${!OFFLINE&&S.social?.nick?`<button data-act="collection">${uiIcon('cards')}<span>${t('Collezione')}</span>${S.chestCount?.owner===S.token&&S.chestCount.value>0?`<b class="home-chest-badge" aria-label="${t('Chest da aprire')}: ${S.chestCount.value}">${S.chestCount.value}</b>`:''}</button><button data-act="friends">${uiIcon('friends')}<span>${t('Amici')}</span>${S.social.reqIn?.length?'<b>'+S.social.reqIn.length+'</b>':''}</button>`:''}<button data-act="more">${uiIcon('menu')}<span>${t('Menu')}</span></button></nav>`;
   }
   function homeProgressHTML(){
     if(OFFLINE||!S.social?.nick)return '';
