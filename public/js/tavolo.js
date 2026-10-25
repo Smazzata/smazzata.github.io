@@ -643,13 +643,23 @@
 
   function tableSignalContext(room,game){return (room?.code||'')+':'+(room?.gameSeq||0)+':'+(game?.handNo||0);}
   function rememberTableSignals(oldRoom,prev,room,game){
-    if(!prev||!game||!room||tableSignalContext(oldRoom,prev)!==tableSignalContext(room,game)){S.moveSpotlight=null;S.turnSpotlight=null;return;}
+    if(!prev||!game||!room||tableSignalContext(oldRoom,prev)!==tableSignalContext(room,game)){S.moveSpotlight=null;S.turnSpotlight=null;S.drawSpotlight=null;return;}
     const ev=game.lastEvent,context=tableSignalContext(room,game);
+    if(game.you!==prev.you)S.drawSpotlight=null;
+    if(ev&&ev.n!==prev.lastEvent?.n&&ev.seat===game.you&&game.you===prev.you&&game.you>=0&&['draw','pile'].includes(ev.type)){
+      const before=new Set((prev.hand||[]).map(c=>c.id)),ids=(game.hand||[]).filter(c=>!before.has(c.id)).map(c=>c.id);
+      if(ids.length)S.drawSpotlight={context,until:Date.now()+3000,ids};
+    }
     if(ev&&ev.n!==prev.lastEvent?.n&&['discard','meld','add','swap'].includes(ev.type))S.moveSpotlight={context,until:Date.now()+2300,cardId:ev.type==='discard'?ev.cardId:null,meldIds:ev.meldIds||[ev.meldId].filter(x=>x!=null)};
     if(game.you>=0&&game.turn===game.you&&game.phase==='draw'&&(prev.turn!==game.you||prev.phase==='handEnd'))S.turnSpotlight={context,until:Date.now()+1700};
   }
   function applyTableSignals(){
     const context=tableSignalContext(S.room,S.game),move=S.moveSpotlight,turn=S.turnSpotlight;
+    const draw=S.drawSpotlight;
+    if(draw?.context===context&&draw.until>Date.now()){
+      for(const id of draw.ids)document.querySelector('#hand .card[data-card="'+id+'"]')?.classList.add('draw-highlight');
+      clearTimeout(S.drawSpotlightTimer);S.drawSpotlightTimer=setTimeout(()=>{if(S.drawSpotlight===draw){document.querySelectorAll('#hand .draw-highlight').forEach(el=>el.classList.remove('draw-highlight'));S.drawSpotlight=null;}},Math.max(0,draw.until-Date.now()));
+    }
     if(move?.context===context&&move.until>Date.now()){
       if(move.cardId!=null)document.querySelector('.pile .card[data-card="'+move.cardId+'"]')?.classList.add('recent-move');
       for(const id of move.meldIds)document.querySelector('#felt .meld[data-mid="'+id+'"]')?.classList.add('recent-move');

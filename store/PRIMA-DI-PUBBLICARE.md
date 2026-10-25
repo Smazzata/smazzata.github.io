@@ -1,6 +1,6 @@
 # Apertura di Smazzata su Google Play
 
-Aggiornato al 23 ottobre 2026. Le caselle aperte sono verifiche reali ancora da completare: la presenza di questo documento non significa che siano state fatte. Non inviare in produzione finché i blocchi non sono chiusi. Evidenze e accessi mancanti in [STATO-OPERATIVO-2026-10-22.md](STATO-OPERATIVO-2026-10-22.md). Il titolare attende l'esito del riconoscimento documentale Google; nessun test chiuso risulta avviato.
+Aggiornato al 25 ottobre 2026. Le caselle aperte sono verifiche reali ancora da completare: la presenza di questo documento non significa che siano state fatte. Non inviare in produzione finché i blocchi non sono chiusi. Evidenze e accessi mancanti in [STATO-OPERATIVO-2026-10-22.md](STATO-OPERATIVO-2026-10-22.md). Il titolare comunica il 25 ottobre 2026 che Google ha confermato la sua identità. Lo stato degli altri passaggi in Console e dell'eventuale test chiuso resta da verificare; la verifica dell'identità non certifica l'approvazione dell'app.
 
 La verifica storica della build 1.30 non copre le rifiniture del 23 ottobre: vedere `RIFINITURE-2026-10-23.md`. Servono una nuova build finale e il confronto con `SCHERMATE.md`.
 
