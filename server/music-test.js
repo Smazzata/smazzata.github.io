@@ -1,18 +1,20 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
 function setup(){
- const listeners={},timers=new Map(),oscillators=[],buses=[];let issued=0;
+ const listeners={},timers=new Map(),oscillators=[],buses=[];let issued=0,audio;
  const param=()=>({value:0,setValueAtTime(){},linearRampToValueAtTime(){},exponentialRampToValueAtTime(){},cancelScheduledValues(){},setTargetAtTime(){}});
  class AudioContext{
-  constructor(){this.currentTime=0;this.state='running';this.destination={};}
+  constructor(){audio=this;this.currentTime=0;this.state='running';this.destination={};}
   createGain(){const n={gain:param(),connect(){return this;},disconnect(){this.disconnected=true;}};buses.push(n);return n;}
+  createBiquadFilter(){return {frequency:param(),Q:param(),connect(){return this;},disconnect(){}};}
+  createDelay(){return {delayTime:param(),connect(){return this;},disconnect(){}};}
   createOscillator(){const o={frequency:{value:0},connect(){return this;},start(at){this.startAt=at;},stop(at){this.stopAt=at;},disconnect(){}};oscillators.push(o);return o;}
   resume(){this.state='running';return Promise.resolve();}suspend(){this.state='suspended';return Promise.resolve();}
  }
  const S={prefs:{music:false,sound:false},screen:'home',room:null},document={hidden:false,addEventListener(k,f){listeners[k]=f;}};
  const ctx=vm.createContext({S,document,window:{AudioContext,addEventListener(k,f){listeners[k]=f;}},setInterval(f){const id=++issued;timers.set(id,f);return id;},clearInterval(id){timers.delete(id);},setTimeout(f){f();}});
  vm.runInContext(fs.readFileSync(require.resolve('../public/js/music.js'),'utf8')+'\nglobalThis.music=Music;',ctx);
- return {S,document,listeners,timers,oscillators,buses,music:ctx.music};
+ return {S,document,listeners,timers,oscillators,buses,music:ctx.music,advance(seconds){for(let t=0;t<seconds;t+=.1){audio.currentTime+=.1;for(const f of timers.values())f();}}};
 }
 test('Musica: consenso separato dai suoni, melodie, cambio senza sequenze sovrapposte e arresto',()=>{
  const x=setup();x.music.sync(true);assert.equal(x.music.active,null);assert.equal(x.oscillators.length,0);
@@ -54,4 +56,16 @@ test('Riepilogo bottino: soltanto premi confermati della propria partita online'
  S.room.onDevice=true;assert.equal(ctx.resultLootHTML(),'');S.room.onDevice=false;
  S.game.over=false;assert.equal(ctx.resultLootHTML(),'');S.game.over=true;
  S.chestMatch.justEarned=false;S.chestMatch.weeklyEarned=0;S.chestMatch.earnedToday=2;assert.match(ctx.resultLootHTML(),/Limite giornaliero raggiunto/);
+});
+
+test('Arrangiamento: frase lunga, pause, timbro morbido e scheduler limitato',()=>{
+ const x=setup();x.S.prefs.music=true;x.music.sync(true);x.advance(70);
+ assert(x.oscillators.length>100);assert(x.oscillators.length<1800);
+ assert(x.oscillators.every(o=>o.type==='sine'&&o.stopAt>o.startAt&&Number.isFinite(o.frequency.value)));
+ for(const theme of Object.values(x.music.themes)){
+  assert.equal(theme.chords.length,8);assert.equal(theme.lead.length,8);
+  assert(theme.lead.includes(null));assert(theme.bpm>=58&&theme.bpm<=78);
+ }
+ const before=x.oscillators.length;x.S.prefs.music=false;x.music.sync();x.advance(10);
+ assert.equal(x.oscillators.length,before);assert.equal(x.timers.size,0);
 });

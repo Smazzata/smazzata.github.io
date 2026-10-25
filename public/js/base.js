@@ -4,7 +4,7 @@
 'use strict';
 
   const R = window.BurracoRules;
-  const CLIENT_BUILD = '2026.10.24.12';
+  const CLIENT_BUILD = '2026.10.25.1';
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

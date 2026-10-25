@@ -150,3 +150,6 @@ Profilo con quattro sezioni espandibili: nome, accesso/sicurezza, recupero, gest
 
 ## Home senza sovrapposizioni — 24 ottobre 2026
 La home è un contenitore alto quanto il viewport dinamico: home-scroll è l'unica area scorrevole, home-footer è un fratello esterno ai pannelli e contiene progresso chest e navigazione. Non reintrodurre position:fixed della navigazione dentro pannelli con backdrop-filter. Mantenere spazio reale per footer e safe area. Modalità compatte e minimo 44 px per i tocchi. Barra 0–3 basata su nextChest autorevole; limite giornaliero esplicito. Prove geometriche con ripresa partita, testo enorme, schermi piccoli e orizzontali in menus-ui-flow.js. Client .12, cache v80.
+
+## Musiche da salotto — 25 ottobre 2026
+music.js usa accordi estesi su otto battute con quattro variazioni di frase, pause e arrangiamenti più radi durante le partite. Timbro sinusoidale a più armoniche, filtro morbido ed eco breve con feedback 0,16. Conservare consenso, volume indipendente, pausa background e priorità della musica condivisa. Anteprime WAV dal motore reale: node scripts/music-preview.js; output ignorato test-output/musiche. Test lungo dello scheduler in music-test.js. Client 2026.10.25.1, cache v81.
