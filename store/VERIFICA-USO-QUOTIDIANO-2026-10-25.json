@@ -1,0 +1,268 @@
+{
+  "date": "2026-10-25",
+  "scope": "Solo PC, server e dati temporanei; nessuna prova di carico sul telefono o sul servizio pubblico",
+  "fullGames": {
+    "seed": 25102026,
+    "botRandomSeeded": true,
+    "matches": 400,
+    "hands": 2690,
+    "actions": 182693,
+    "restores": 1142,
+    "games": {
+      "burraco": {
+        "matches": 100,
+        "hands": 372,
+        "maxActions": 700
+      },
+      "scala40": {
+        "matches": 100,
+        "hands": 723,
+        "maxActions": 964
+      },
+      "ramino": {
+        "matches": 100,
+        "hands": 984,
+        "maxActions": 1002
+      },
+      "canasta": {
+        "matches": 100,
+        "hands": 611,
+        "maxActions": 1015
+      }
+    },
+    "failures": [],
+    "seconds": 519
+  },
+  "dailyProfiles": {
+    "profiles": 240,
+    "days": 14,
+    "completionEvents": 6720,
+    "excludedEvents": 240,
+    "uniqueOpenings": 720,
+    "replayedOpenings": 720,
+    "exchanges": 120,
+    "equips": 240,
+    "invalidEquipsRejected": 240,
+    "reconnections": 240,
+    "calls": 4920,
+    "maxSockets": 480,
+    "restarts": 1,
+    "failures": [],
+    "source": "server temporaneo sul PC; eventi di fine partita separati dalle partite intere del motore",
+    "confirmedLiveSockets": 480,
+    "ms": 8294,
+    "responseMs": {
+      "median": 11.8,
+      "p95": 34.4,
+      "max": 65.8
+    },
+    "fixture": "Profili e frammenti iniziali inseriti solo nell’archivio temporaneo; ricompense successive, aperture, scambi ed equipaggiamento verificati dalle API vere."
+  },
+  "browser": {
+    "cycles": 100,
+    "clicks": 910,
+    "openings": 100,
+    "gameStarts": 10,
+    "offlineVisits": 10,
+    "errors": []
+  },
+  "signups": {
+    "profiles": 60,
+    "signups": 60,
+    "logins": 120,
+    "wrongPasswordsRejected": 60,
+    "persistedProfiles": 60,
+    "restarts": 1,
+    "errors": [],
+    "responseMs": {
+      "median": 44.5,
+      "p95": 109.8,
+      "max": 175.1
+    }
+  },
+  "load": [
+    {
+      "rooms": 10,
+      "seconds": 30,
+      "connectedProfiles": 20,
+      "serverBots": 20,
+      "environment": {
+        "platform": "win32",
+        "node": "v24.13.1",
+        "cpu": "Intel(R) Core(TM) 7 240H",
+        "logicalCores": 16
+      },
+      "source": "server isolato sul PC, non misura il telefono",
+      "failures": [],
+      "actions": 191,
+      "rejected": 0,
+      "errorKinds": {},
+      "responseMs": {
+        "median": 0.9,
+        "p95": 4.2,
+        "max": 10.9
+      },
+      "server": {
+        "peakRssMB": 105,
+        "startRssMB": 73,
+        "endRssMB": 105,
+        "peakCpuPercent": 7,
+        "maxEventLoopP99Ms": 48.5,
+        "samples": 31
+      },
+      "withinPcBudget": true
+    },
+    {
+      "rooms": 25,
+      "seconds": 30,
+      "connectedProfiles": 50,
+      "serverBots": 50,
+      "environment": {
+        "platform": "win32",
+        "node": "v24.13.1",
+        "cpu": "Intel(R) Core(TM) 7 240H",
+        "logicalCores": 16
+      },
+      "source": "server isolato sul PC, non misura il telefono",
+      "failures": [],
+      "actions": 457,
+      "rejected": 0,
+      "errorKinds": {},
+      "responseMs": {
+        "median": 0.9,
+        "p95": 6.6,
+        "max": 12.7
+      },
+      "server": {
+        "peakRssMB": 203,
+        "startRssMB": 80,
+        "endRssMB": 203,
+        "peakCpuPercent": 14,
+        "maxEventLoopP99Ms": 48,
+        "samples": 31
+      },
+      "withinPcBudget": true
+    },
+    {
+      "rooms": 50,
+      "seconds": 30,
+      "connectedProfiles": 100,
+      "serverBots": 100,
+      "environment": {
+        "platform": "win32",
+        "node": "v24.13.1",
+        "cpu": "Intel(R) Core(TM) 7 240H",
+        "logicalCores": 16
+      },
+      "source": "server isolato sul PC, non misura il telefono",
+      "failures": [],
+      "actions": 929,
+      "rejected": 0,
+      "errorKinds": {},
+      "responseMs": {
+        "median": 1.2,
+        "p95": 8.7,
+        "max": 20.9
+      },
+      "server": {
+        "peakRssMB": 213,
+        "startRssMB": 84,
+        "endRssMB": 213,
+        "peakCpuPercent": 25,
+        "maxEventLoopP99Ms": 40,
+        "samples": 31
+      },
+      "withinPcBudget": true
+    },
+    {
+      "rooms": 100,
+      "seconds": 30,
+      "connectedProfiles": 200,
+      "serverBots": 200,
+      "environment": {
+        "platform": "win32",
+        "node": "v24.13.1",
+        "cpu": "Intel(R) Core(TM) 7 240H",
+        "logicalCores": 16
+      },
+      "source": "server isolato sul PC, non misura il telefono",
+      "failures": [],
+      "actions": 1856,
+      "rejected": 0,
+      "errorKinds": {},
+      "responseMs": {
+        "median": 2.7,
+        "p95": 15,
+        "max": 41.7
+      },
+      "server": {
+        "peakRssMB": 300,
+        "startRssMB": 108,
+        "endRssMB": 300,
+        "peakCpuPercent": 39,
+        "maxEventLoopP99Ms": 44.3,
+        "samples": 31
+      },
+      "withinPcBudget": true
+    }
+  ],
+  "sustainedLoad": {
+    "rooms": 50,
+    "seconds": 180,
+    "connectedProfiles": 100,
+    "serverBots": 100,
+    "environment": {
+      "platform": "win32",
+      "node": "v24.13.1",
+      "cpu": "Intel(R) Core(TM) 7 240H",
+      "logicalCores": 16
+    },
+    "source": "server isolato sul PC, non misura il telefono",
+    "failures": [],
+    "actions": 5415,
+    "rejected": 0,
+    "errorKinds": {},
+    "responseMs": {
+      "median": 1.8,
+      "p95": 26.8,
+      "max": 140.6
+    },
+    "server": {
+      "peakRssMB": 250,
+      "startRssMB": 85,
+      "endRssMB": 249,
+      "peakCpuPercent": 61,
+      "maxEventLoopP99Ms": 64.7,
+      "samples": 179
+    },
+    "withinPcBudget": true
+  },
+  "limits": [
+    "Le partite intere sono simulate nei motori con mazzi e casualità riproducibili.",
+    "I 6720 eventi di completamento esercitano le ricompense e non sono altrettante partite giocate.",
+    "I profili della prova inventario e i frammenti iniziali sono fixture isolate; le 60 iscrizioni sono invece completate dalle API.",
+    "I clic del browser sono inviati da Chrome DevTools su controlli visibili; non è un test con persone reali.",
+    "Le misure di carico usano localhost sul PC: niente rete mobile, tunnel Cloudflare, Android, batteria o temperatura.",
+    "Il limite IP di accesso è aumentato soltanto nei server temporanei per simulare molti utenti dallo stesso localhost.",
+    "Tre minuti di carico non dimostrano stabilità per ore né assenza di perdite di memoria nel lungo periodo."
+  ],
+  "regressions": {
+    "preRelease": {
+      "passed": 70,
+      "failed": 0
+    },
+    "stress": {
+      "passed": 4,
+      "failed": 0,
+      "completionEvents": 1800,
+      "baseChestDraws": 40000,
+      "engineHands": 96
+    },
+    "multiplayerE2E": "passed"
+  },
+  "ciSmoke": {
+    "signupProfiles": 12,
+    "browserCycles": 20,
+    "passed": true
+  }
+}

@@ -25,7 +25,10 @@
     "test:avatar": "node --test server/avatar-catalog-test.js",
     "test:partite": "node server/mass-games-test.js",
     "test:stress": "node --test server/stress-scenarios-test.js",
-    "test:prerilascio": "node --test server/pre-release-test.js server/avatar-catalog-test.js server/result-progress-test.js server/chest-test.js server/chest-e2e-test.js server/cosmetics-test.js server/deliveries-test.js server/deliveries-e2e-test.js server/collection-progress-test.js server/personal-table-e2e-test.js server/music-test.js server/android-back-test.js server/scala40-cycle-test.js server/connection-feedback-test.js server/inventory-year-test.js server/player-journey-test.js"
+    "test:prerilascio": "node --test server/pre-release-test.js server/avatar-catalog-test.js server/result-progress-test.js server/chest-test.js server/chest-e2e-test.js server/cosmetics-test.js server/deliveries-test.js server/deliveries-e2e-test.js server/collection-progress-test.js server/personal-table-e2e-test.js server/music-test.js server/android-back-test.js server/scala40-cycle-test.js server/connection-feedback-test.js server/inventory-year-test.js server/player-journey-test.js",
+    "test:quotidiano:server": "node server/daily-use-test.js 240 14",
+    "test:quotidiano:ui": "node server/chest-uitest.js --daily",
+    "test:iscrizioni": "node server/signup-burst-test.js 60"
   },
   "engines": {
     "node": ">=18"

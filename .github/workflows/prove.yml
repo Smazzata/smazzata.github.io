@@ -32,6 +32,8 @@ jobs:
         run: npm run e2e
       - name: Riconnessione, progressi reali e collezione avatar
         run: npm run test:prerilascio
+      - name: Uso quotidiano con molti profili e due dispositivi
+        run: node server/daily-use-test.js 120 7 && node server/signup-burst-test.js 12
       - name: Scenari riproducibili di stress e probabilità delle chest
         run: npm run test:stress && npm run test:partite -- 40
       - name: Ranked (Glicko-2, BO3, Solo/Duo, persistenza e simulazioni)
@@ -54,6 +56,11 @@ jobs:
         run: node server/chest-uitest.js --rewards
         env:
           CHROME_PATH: /usr/bin/google-chrome
+      - name: Cicli quotidiani nel browser
+        run: node server/chest-uitest.js --daily
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+          DAILY_UI_CYCLES: 20
       - name: Inventario semplificato
         run: node server/chest-uitest.js --simple
         env:

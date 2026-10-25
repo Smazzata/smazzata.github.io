@@ -12,6 +12,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
  if(process.argv.includes('--first-use'))s.cosmeticOwned=Cosmetics.LIST.filter(x=>['back','frame'].includes(x.kind)&&x.rarity==='common').slice(0,2).map(x=>x.id);
  for(let i=0;i<3;i++)C.recordGame({chestGameId:String(i),seats:[{token:'demo'},{token:'other'}],progressEligible:true,game:{over:true,handResult:{reason:'close'}}},p,()=>{});
  s.chests.items=['common','rare','epic','legendary'].map((type,i)=>({id:String(i+1),type,version:1,at:Date.now()}));s.chests.issued=4;s.chests.fragments=2000;
+ if(process.argv.includes('--daily')){s.chests.items=Array.from({length:120},(_,i)=>({id:String(i+1),type:['common','rare','epic','legendary'][i%4],version:3,at:Date.now()}));s.chests.issued=120;}
  if(process.argv.includes('--simple')){for(const id of ['5','6'])s.chests.items.push({id,type:'common',version:3,at:Date.now()});s.chests.issued=6;}
  const deliveryContext={sessions:p};for(let i=0;i<23;i++)require('./deliveries').deliver(deliveryContext,'ui-mail-'+String(i).padStart(10,'0'),require('./deliveries').normalize({title:'Benvenuto '+i,body:'Un messaggio per la tua collezione.\nGrazie di giocare con noi!',mode:'all',gift:i===22?Cosmetics.LIST.find(x=>x.kind==='felt').id:''}),['demo'],()=>{});
  fs.writeFileSync(path.join(dir,'stato.json'),JSON.stringify({accountsEpoch:3,progressEpoch:1,sessions:[...p],leaderboard:[],rooms:[],leagues:[],tournaments:[],daily:[]}));
@@ -32,6 +33,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   if(process.argv.includes('--first-use')){await require('./first-use-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
   if(process.argv.includes('--journey')){await require('./journey-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
   if(process.argv.includes('--simple')){await require('./simple-inventory-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
+  if(process.argv.includes('--daily')){await require('./daily-ui-flow')(cdp,shot);return;}
   if(process.argv.includes('--qol')){await require('./qol-ui-flow')(cdp,shot);return;}
   if(process.argv.includes('--rewards')){await require('./reward-polish-ui-flow')(cdp,shot);return;}
   if(process.argv.includes('--menus')){await require('./menus-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
