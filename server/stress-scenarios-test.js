@@ -16,7 +16,7 @@ test('Stress inventario: 1800 partite, retry, errori disco, riavvii, giorni e se
   C.recordGame(room,sessions,()=>{},now,random);
   const after=structuredClone(sessions);C.recordGame(room,sessions,()=>assert.fail('retry salvato due volte'),now,random);assert.deepEqual(sessions,after);
   const s=sessions.get(ids[a]),view=C.view(s,now),pending=view.pending;
-  assert(view.earnedToday<=2);assert(view.progress>=0&&view.progress<3);
+  assert(view.earnedToday<=C.RULES.dailyLimit);assert(view.progress>=0&&view.progress<C.RULES.matches);
   if(pending.length){
    const id=pending[random(pending.length)].id,old=structuredClone(s),fragments=s.chests.fragments;
    if(i%5===0){assert.throws(()=>C.open(s,id,()=>{throw Error('disco');},random,now));assert.deepEqual(s,old);rollbacks++;}

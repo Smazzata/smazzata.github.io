@@ -1,0 +1,7 @@
+# Musiche distinte e ricompense — 25 ottobre 2026
+
+Menu: valzer in 3/4 con frase melodica scritta, piano a quattro armoniche, accordi sui tempi deboli. Partita: accordi sostenuti con attacco di 1,4 secondi, rare note isolate, nessun basso pulsato. Burraco usa anche una progressione armonica diversa. Sei test audio, inclusa differenza di densità delle note fra home e partita. Anteprime aggiornate in test-output/musiche (34 secondi): picchi home 0,046 e Burraco 0,031, senza clipping. Non sono registrazioni di strumenti acustici.
+
+Incluse le modifiche alle ricompense preparate nell'altra sessione e autorizzate: una chest ordinaria dopo due partite umane valide nello stesso giorno, massimo una al giorno; reset del progresso a mezzanotte Europe/Rome. Conservati inventario, probabilità, garanzie, premi settimanali e percorso. Allineati contatori, traduzioni e test; la vista social limita il vecchio progresso come la vista inventario. La migrazione non accredita premi senza una nuova partita valida.
+
+Verifiche superate: test:prerilascio 67 test; test:stress 4 prove (1.800 eventi di partita, 40.000 estrazioni e scenari motore); e2e multigiocatore; chest-uitest --menus, --journey e completo; release-ui-test --store 32 scene. Tutte le prove grafiche eseguite in sequenza. Screenshot e impronte delle 151 fonti allineati. Nessuna prova su Android fisico o ascolto umano certificato. Client 2026.10.25.2, cache v82.

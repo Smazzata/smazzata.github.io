@@ -11,14 +11,14 @@ function profile(type='common'){
 }
 function roll(value){let first=true;return max=>{if(first){first=false;return value;}return 0;};}
 
-test('Tre partite umane, due chest al giorno e nessun accredito ripetuto dopo riavvio',()=>{
+test('Due partite umane, una chest al giorno e nessun accredito ripetuto dopo riavvio',()=>{
  const p=players();let saves=0;const r=game('unique');
  C.recordGame(r,p,()=>saves++,DAY);C.recordGame(JSON.parse(JSON.stringify(r)),p,()=>saves++,DAY);
  assert.equal(saves,1);assert.equal(C.view(p.get('a'),DAY).progress,1);
- earn(p,8);assert.equal(C.view(p.get('a'),DAY).pending.filter(x=>x.source==='game').length,2);assert.equal(C.view(p.get('a'),DAY).progress,0);
- assert.equal(C.view(p.get('a'),DAY).earnedToday,2);
- const next=DAY+86400000;earn(p,2,next);assert.equal(C.view(p.get('a'),next).progress,2);
- earn(p,1,next);assert.equal(C.view(p.get('a'),next).pending.filter(x=>x.source==='game').length,3);
+ earn(p,8);assert.equal(C.view(p.get('a'),DAY).pending.filter(x=>x.source==='game').length,1);assert.equal(C.view(p.get('a'),DAY).progress,0);
+ assert.equal(C.view(p.get('a'),DAY).earnedToday,1);
+ const next=DAY+86400000;earn(p,1,next);assert.equal(C.view(p.get('a'),next).progress,1);
+ earn(p,1,next);assert.equal(C.view(p.get('a'),next).pending.filter(x=>x.source==='game').length,2);
  assert.equal(C.dayOf(Date.parse('2026-10-24T22:05:00Z')),'2026-10-25');
 });
 test('Niente chest da bot, tutorial, offline, abbandoni, vecchie partite o identità duplicate',()=>{
@@ -109,7 +109,7 @@ test('I quattro sprite sono distinti e disponibili in entrambe le cache offline'
 });
 
 test('Errore durante l’estrazione di una chest: accredito atomico per tutti i giocatori',()=>{
- const p=players();earn(p,2);const before=JSON.stringify([...p]);let calls=0;
+ const p=players();earn(p,1);const before=JSON.stringify([...p]);let calls=0;
  assert.throws(()=>C.recordGame(game('fault'),p,noop,DAY,()=>{if(++calls===2)throw Error('casualità non disponibile');return 0;}));
  assert.equal(JSON.stringify([...p]),before);
 });
@@ -125,3 +125,7 @@ test('Simulazione delle frequenze e rispetto delle garanzie su 10000 aperture',(
  assert(counts.legendary>=200);assert(counts.epic>700);
  console.log('Frequenze comuni con garanzie (10000):',JSON.stringify(counts));
 });
+
+test('Obiettivo giornaliero: i progressi parziali ripartono il giorno dopo',()=>{const p=players();earn(p,1);const next=DAY+86400000;assert.equal(C.view(p.get('a'),next).progress,0);earn(p,1,next);assert.equal(C.view(p.get('a'),next).earnedToday,0);earn(p,1,next);assert.equal(C.view(p.get('a'),next).earnedToday,1);});
+
+test('Passaggio al nuovo limite: nessuna perdita di chest o doppio accredito',()=>{const p=players();earn(p,1);for(const s of p.values())s.chests.progress=2;const before=C.view(p.get('a'),DAY).pending.filter(x=>x.source==='game').length;assert.equal(C.view(p.get('a'),DAY).progress,1);C.recordGame(game('migration'),p,noop,DAY);assert.equal(C.view(p.get('a'),DAY).pending.filter(x=>x.source==='game').length,before+1);assert.equal(C.view(p.get('a'),DAY).earnedToday,1);for(const s of p.values())s.chests.earnedToday=2;const count=C.view(p.get('a'),DAY).pending.filter(x=>x.source==='game').length;C.recordGame(game('old-cap'),p,noop,DAY);assert.equal(C.view(p.get('a'),DAY).pending.filter(x=>x.source==='game').length,count);});

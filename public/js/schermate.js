@@ -98,9 +98,9 @@
   }
   function homeProgressHTML(){
     if(OFFLINE||!S.social?.nick)return '';
-    const next=S.social.nextChest,remaining=Math.max(0,Math.min(3,Number(next?.remaining??3)));
-    const label=next?.limit?t('Per oggi hai ottenuto le due chest da partite.'):remaining===1?t('Ancora una partita per la prossima chest'):t('Ancora {0} partite per la prossima chest').replace('{0}',String(remaining));
-    return `<button class="home-journey home-progress" data-act="journey"><span>${label}<progress max="3" value="${next?.limit?3:3-remaining}" aria-label="${t('Progressi verso la prossima chest')}"></progress></span><span aria-hidden="true">›</span></button>`;
+    const next=S.social.nextChest,remaining=Math.max(0,Math.min(2,Number(next?.remaining??2)));
+    const label=next?.limit?t('Per oggi hai ottenuto la chest giornaliera.'):remaining===1?t('Ancora una partita per la prossima chest'):t('Ancora {0} partite per la prossima chest').replace('{0}',String(remaining));
+    return `<button class="home-journey home-progress" data-act="journey"><span>${label}<progress max="2" value="${next?.limit?2:2-remaining}" aria-label="${t('Progressi verso la prossima chest')}"></progress></span><span aria-hidden="true">›</span></button>`;
   }
   function menuCardsHTML(title,items,back='more'){
     return `<section class="simple-menu">${back?`<button class="menu-back" data-act="${back}">← ${t('Menu')}</button>`:''}<h2>${t(title)}</h2><div class="menu-cards">${items.map(x=>`<button class="menu-card" data-act="${x.act}">${uiIcon(x.icon)}<span><b>${t(x.name)}</b>${x.note?`<small>${t(x.note)}</small>`:''}</span><span aria-hidden="true">›</span></button>`).join('')}</div></section>`;

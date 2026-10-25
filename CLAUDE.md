@@ -153,3 +153,7 @@ La home è un contenitore alto quanto il viewport dinamico: home-scroll è l'uni
 
 ## Musiche da salotto — 25 ottobre 2026
 music.js usa accordi estesi su otto battute con quattro variazioni di frase, pause e arrangiamenti più radi durante le partite. Timbro sinusoidale a più armoniche, filtro morbido ed eco breve con feedback 0,16. Conservare consenso, volume indipendente, pausa background e priorità della musica condivisa. Anteprime WAV dal motore reale: node scripts/music-preview.js; output ignorato test-output/musiche. Test lungo dello scheduler in music-test.js. Client 2026.10.25.1, cache v81.
+
+## Temi distinti e ricompensa giornaliera — 25 ottobre 2026
+La home usa un valzer in 3/4 con melodia scritta e piano più ricco di armoniche. I quattro giochi usano tappeti armonici con attacco lento, senza basso pulsato, poche note isolate e filtro più scuro. Burraco ha anche una progressione distinta dalla home. Non presentare semplici differenze di tempo come nuove composizioni.
+Ricompensa ordinaria: due partite online umane valide nello stesso giorno, massimo una chest al giorno; progresso azzerato a mezzanotte Europe/Rome. Premi già assegnati conservati; settimanali, percorso, weekend, probabilità e garanzie invariati. Migrazione del progresso precedente visualizzata in modo coerente fra home e bottino, senza accrediti retroattivi. Client 2026.10.25.2, cache v82.

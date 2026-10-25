@@ -37,7 +37,7 @@ Tutti i profili nuovi ricevono Fante di quadri, Dama di fiori, Giardiniere di fi
 
 ## Acquisizione gratuita
 
-Una chest ogni 3 partite online completate con soli avversari umani registrati, massimo 2 al giorno per profilo. Nessun premio da allenamento locale, tutorial, sfida del giorno, partite annullate, rese, abbandoni o sostituzioni con bot. Il limite giornaliero si rinnova a mezzanotte Europe/Rome; il progresso parziale resta. Le partite oltre il limite non accumulano progressi. Una partita conta una sola volta, anche dopo riconnessione o riavvio. Nessun accredito retroattivo per partite precedenti alla funzione.
+Una chest dopo 2 partite online completate con soli avversari umani registrati, massimo 1 al giorno per profilo. Nessun premio da allenamento locale, tutorial, sfida del giorno, partite annullate, rese, abbandoni o sostituzioni con bot. Il limite giornaliero si rinnova a mezzanotte Europe/Rome; il progresso parziale riparte da zero. Le partite oltre il limite non accumulano progressi. Una partita conta una sola volta, anche dopo riconnessione o riavvio. Nessun accredito retroattivo per partite precedenti alla funzione.
 
 ## Estrazione
 

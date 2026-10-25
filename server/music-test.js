@@ -55,7 +55,7 @@ test('Riepilogo bottino: soltanto premi confermati della propria partita online'
  S.game.you=-1;assert.equal(ctx.resultLootHTML(),'');S.game.you=0;
  S.room.onDevice=true;assert.equal(ctx.resultLootHTML(),'');S.room.onDevice=false;
  S.game.over=false;assert.equal(ctx.resultLootHTML(),'');S.game.over=true;
- S.chestMatch.justEarned=false;S.chestMatch.weeklyEarned=0;S.chestMatch.earnedToday=2;assert.match(ctx.resultLootHTML(),/Limite giornaliero raggiunto/);
+ S.chestMatch.justEarned=false;S.chestMatch.weeklyEarned=0;S.chestMatch.earnedToday=1;assert.match(ctx.resultLootHTML(),/Limite giornaliero raggiunto/);
 });
 
 test('Arrangiamento: frase lunga, pause, timbro morbido e scheduler limitato',()=>{
@@ -69,3 +69,5 @@ test('Arrangiamento: frase lunga, pause, timbro morbido e scheduler limitato',()
  const before=x.oscillators.length;x.S.prefs.music=false;x.music.sync();x.advance(10);
  assert.equal(x.oscillators.length,before);assert.equal(x.timers.size,0);
 });
+
+test('Menu e partita hanno metrica, armonia e attacchi distinti',()=>{const a=setup(),b=setup();for(const x of [a,b])x.S.prefs.music=true;b.S.screen='game';b.S.room={rules:{game:'burraco'}};a.music.sync(true);b.music.sync(true);a.advance(30);b.advance(30);assert.notDeepEqual(a.music.themes.home.chords,a.music.themes.burraco.chords);assert(a.oscillators.length>b.oscillators.length*2);assert.equal(a.music.themes.home.style,'salon');assert.equal(b.music.themes.burraco.style,'ambient');});

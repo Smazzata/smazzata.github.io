@@ -3,7 +3,7 @@ Tappe del mese ‖ Monthly milestones ‖ Etapas del mes ‖ Etapas do mês
 Weekend ‖ Weekend ‖ Fin de semana ‖ Fim de semana
 Ancora {0} partite per la prossima chest ‖ {0} more games until your next chest ‖ {0} partidas más para tu próximo cofre ‖ Mais {0} partidas para seu próximo baú
 Ancora una partita per la prossima chest ‖ One more game until your next chest ‖ Una partida más para tu próximo cofre ‖ Mais uma partida para seu próximo baú
-Per oggi hai ottenuto le due chest da partite. ‖ You have earned today's two match chests. ‖ Ya has obtenido los dos cofres de partidas de hoy. ‖ Você já ganhou os dois baús de partidas de hoje.
+Per oggi hai ottenuto la chest giornaliera. ‖ You have earned your daily chest today. ‖ Ya has conseguido el cofre diario de hoy. ‖ Você já recebeu o baú diário de hoje.
 Il percorso mensile e gli obiettivi continuano ad avanzare. ‖ Your monthly journey and goals keep progressing. ‖ Tu recorrido mensual y tus objetivos siguen avanzando. ‖ Seu caminho mensal e seus objetivos continuam avançando.
 Il percorso mensile continua ad avanzare. ‖ Your monthly journey keeps progressing. ‖ Tu recorrido mensual sigue avanzando. ‖ Seu caminho mensal continua avançando.
 Collegati per consultare il tuo percorso ‖ Connect to see your journey ‖ Conéctate para ver tu recorrido ‖ Conecte-se para ver seu caminho

@@ -6,7 +6,7 @@ const C=require('../shared/cosmetics');
 const Weekly=require('./weekly-rewards');
 const Journey=require('./player-journey');
 const {GameError}=require('./engine');
-const RULES={version:3,matches:3,dailyLimit:2,epicPity:20,legendaryPity:50,
+const RULES={version:3,matches:2,dailyLimit:1,epicPity:20,legendaryPity:50,
   chestRates:{common:75,rare:20,epic:4,legendary:1},
   types:{
     common:{name:'Chest comune',rates:{common:66.5,rare:25,epic:8,legendary:0.5}},
@@ -58,7 +58,7 @@ function draw(weights,randomInt) {
 }
 function view(s,now=Date.now()) {
   const b=inventory(s),owned=ownedOf(s);
-  return {version:b.version,progress:b.progress,earnedToday:b.day===dayOf(now)?b.earnedToday:0,day:dayOf(now),
+  return {version:b.version,progress:b.day===dayOf(now)?Math.min(b.progress,RULES.matches-1):0,earnedToday:b.day===dayOf(now)?b.earnedToday:0,day:dayOf(now),
     pending:b.items.filter(x=>!x.reward).map(x=>({id:x.id,type:typeOf(x),version:x.version,at:x.at,source:x.source||'game',odds:odds(b,typeOf(x))})),
     recent:b.items.filter(x=>x.reward).slice(-10).reverse().map(x=>({id:x.id,...x.reward})),
     fragments:b.fragments,epicIn:RULES.epicPity-b.epicMisses,legendaryIn:RULES.legendaryPity-b.legendaryMisses,
@@ -115,8 +115,8 @@ function recordGame(room,sessions,persist,now=Date.now(),randomInt=crypto.random
   const marker=room.chestRecordedGame;
   try { for(const token of tokens) {
     const s=sessions.get(token),b=inventory(s),day=dayOf(now);
-    if(b.day!==day){b.day=day;b.earnedToday=0;}
-    if(b.earnedToday<RULES.dailyLimit && ++b.progress===RULES.matches) {
+    if(b.day!==day){b.day=day;b.earnedToday=0;b.progress=0;}
+    if(b.earnedToday<RULES.dailyLimit && ++b.progress>=RULES.matches) {
       b.progress=0;b.earnedToday++;b.items.push({id:String(++b.issued),type:draw(RULES.chestRates,randomInt),version:RULES.version,at:now});
       awarded.add(token);
     }

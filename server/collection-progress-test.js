@@ -27,7 +27,7 @@ test('Settimana italiana: tre obiettivi, tre soli premi aggiuntivi e nessun dopp
  for(const s of p.values()){
   const b=C.view(s,monday+2*86400000),weekly=b.pending.filter(x=>x.source==='weekly');
   assert.equal(weekly.length,3);assert.deepEqual(weekly.map(x=>x.type).sort(),['common','common','rare']);
-  assert(b.weekly.missions.filter(x=>x.id!=='friends').every(x=>x.awarded));assert.equal(b.progress,0);assert.equal(b.pending.filter(x=>x.source==='game').length,1);
+  assert(b.weekly.missions.filter(x=>x.id!=='friends').every(x=>x.awarded));assert.equal(b.progress,1);assert.equal(b.pending.filter(x=>x.source==='game').length,0);
  }
  assert.equal(saves,3);
  for(let i=3;i<12;i++)C.recordGame(room('weekly-'+i),p,()=>{},monday+2*86400000);
