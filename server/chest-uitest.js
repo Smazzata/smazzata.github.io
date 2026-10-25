@@ -115,4 +115,4 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   if(errors.length)throw Error(errors.join('\n'));
   console.log('Chest UI OK: quattro sprite, sei layout, testo enorme, quattro fotogrammi, premi, recupero, scambio, riduzione movimento e offline');
  }finally{if(cdp)cdp.ws.close();if(browser)browser.kill();server.kill();}
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(e=>{console.error(e);process.exitCode=1; if(process.env.GITHUB_ACTIONS)console.error('::error::'+String(e.stack||e.message||e).replace(/%/g,'%25').replace(/\r/g,'%0D').replace(/\n/g,'%0A')); });

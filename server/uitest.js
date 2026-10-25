@@ -419,4 +419,4 @@ const HELPERS = `
     fs.rmSync(dataDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
     try { fs.rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); } catch (e) { /* il browser può tenere aperti dei file */ }
   }
-})().catch((e) => { console.error('✗', e.message); process.exitCode = 1; setTimeout(() => process.exit(1), 300); });
+})().catch((e) => { console.error('✗', e.message); process.exitCode = 1; if(process.env.GITHUB_ACTIONS)console.error('::error::'+String(e.stack||e.message||e).replace(/%/g,'%25').replace(/\r/g,'%0D').replace(/\n/g,'%0A'));  setTimeout(() => process.exit(1), 300); });

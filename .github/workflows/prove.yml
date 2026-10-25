@@ -42,8 +42,36 @@ jobs:
         run: npm run anim
         env:
           CHROME_PATH: /usr/bin/google-chrome
-      - name: Prova dell'interfaccia nel browser (Chrome senza finestra)
-        run: node server/chest-uitest.js --menus && node server/chest-uitest.js --simple && node server/chest-uitest.js --journey && node server/chest-uitest.js --first-use && node server/chest-uitest.js && node server/uitest.js --polish && npm run ui && node server/uitest.js --campaign
+      - name: Menu e home su schermi piccoli
+        run: node server/chest-uitest.js --menus
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+      - name: Inventario semplificato
+        run: node server/chest-uitest.js --simple
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+      - name: Percorso e ricordi
+        run: node server/chest-uitest.js --journey
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+      - name: Primo uso dell’inventario
+        run: node server/chest-uitest.js --first-use
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+      - name: Inventario completo e apertura chest
+        run: node server/chest-uitest.js
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+      - name: Rifiniture grafiche
+        run: node server/uitest.js --polish
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+      - name: Partite e navigazione completa nel browser
+        run: npm run ui
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+      - name: Interfaccia della campagna
+        run: node server/uitest.js --campaign
         env:
           CHROME_PATH: /usr/bin/google-chrome
       - name: Schermate della prova dell'interfaccia
