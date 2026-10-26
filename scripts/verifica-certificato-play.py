@@ -1,16 +1,17 @@
 """Estrae l'impronta del firmatario AAB e la confronta con la chiave pubblica APK.
 
-Non accede a Play Console o a chiavi upload private. Richiede cryptography/OpenSSL.
+Non accede a Play Console o a chiavi upload private. Richiede solo Python standard e OpenSSL.
 """
 import argparse
 import json
+import hashlib
+import re
+import ssl
+import shutil
 from pathlib import Path
 import subprocess
 import tempfile
 import zipfile
-from cryptography import x509
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.serialization import pkcs12
 
 
 def verify(aab, openssl):
@@ -31,16 +32,26 @@ def verify(aab, openssl):
         pem = (tmp / 'signer.pem').read_bytes()
         if pem.count(b'-----BEGIN CERTIFICATE-----') != 1:
             raise ValueError('Atteso un solo firmatario')
-        signer = x509.load_pem_x509_certificate(pem)
-    # Password della chiave APK già pubblicata nel repository, non un segreto upload.
-    _, public_apk_cert, _ = pkcs12.load_key_and_certificates((root / 'android-app/burraco.p12').read_bytes(), b'burraco-amici')
-    def public_key(cert):
-        return cert.public_key().public_bytes(serialization.Encoding.DER, serialization.PublicFormat.SubjectPublicKeyInfo)
-    distinct = public_key(signer) != public_key(public_apk_cert)
+        # Il certificato dell'APK è pubblico: estraiamo solo il certificato, mai la chiave.
+        apk = subprocess.run([openssl, 'pkcs12', '-in', str(root / 'android-app/burraco.p12'),
+                              '-passin', 'pass:burraco-amici', '-clcerts', '-nokeys'], capture_output=True)
+        if apk.returncode:
+            raise ValueError('Certificato pubblico APK non leggibile: ' + apk.stderr.decode())
+        public_pem = re.search(rb'-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----', apk.stdout, re.S)
+        if not public_pem:
+            raise ValueError('Certificato pubblico APK assente')
+        def public_key(cert):
+            extract = subprocess.run([openssl, 'x509', '-pubkey', '-noout'], input=cert, capture_output=True, check=True)
+            return subprocess.run([openssl, 'pkey', '-pubin', '-outform', 'DER'], input=extract.stdout, capture_output=True, check=True).stdout
+        def fingerprint(cert):
+            return hashlib.sha256(ssl.PEM_cert_to_DER_cert(cert.decode())).hexdigest().upper()
+        distinct = public_key(pem) != public_key(public_pem.group())
+        upload_fingerprint = fingerprint(pem)
+        apk_fingerprint = fingerprint(public_pem.group())
     report = {
         'aab': Path(aab).name,
-        'upload_certificate_sha256': signer.fingerprint(hashes.SHA256()).hex().upper(),
-        'public_apk_certificate_sha256': public_apk_cert.fingerprint(hashes.SHA256()).hex().upper(),
+        'upload_certificate_sha256': upload_fingerprint,
+        'public_apk_certificate_sha256': apk_fingerprint,
         'upload_public_key_distinct_from_public_apk': distinct,
         'play_console_match': 'NON VERIFICATO: confrontare con certificato chiave di caricamento, non con chiave firma app di Google',
         'scope': 'Verifica aggiuntiva identità firmatario; non sostituisce la verifica completa dei digest AAB già eseguita.'
@@ -53,7 +64,7 @@ def verify(aab, openssl):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('aab')
-    parser.add_argument('--openssl', default='C:/Program Files/Git/usr/bin/openssl.exe')
+    parser.add_argument('--openssl', default=shutil.which('openssl') or 'C:/Program Files/Git/usr/bin/openssl.exe')
     parser.add_argument('--output', required=True)
     args = parser.parse_args()
     result = verify(args.aab, args.openssl)

@@ -42,7 +42,7 @@ Confrontare etichette e percorso con l'app in inglese prima dell'invio. Usare la
 
 1. Attendere Prove sul commit definitivo, controllando l'esito una volta su richiesta; nessun monitor periodico.
 2. Ottenere un nuovo `Smazzata.aab` da quella versione. La verifica dell'AAB 1.30 è storica.
-3. Verificare firma upload privata, Play App Signing, versione crescente, package, target API, contenuti offline e assenza del prompt di aggiornamento APK esterno. Procedura in `LEGGIMI.md` e `scripts/verifica-aab.py`.
+3. Verificare firma upload privata, Play App Signing, versione crescente, package, target API, contenuti offline e assenza del prompt di aggiornamento APK esterno. Procedura in `LEGGIMI.md`: `python scripts/verifica-aab.py <file.aab> --source-root .` e confronto del certificato con `scripts/verifica-certificato-play.py`.
 4. Installare da un canale di test Play e provare registrazione/email, login dopo riavvio, partita, riconnessione, premi, monete, cancellazione e musica/Indietro Android. Il test interno non sostituisce il test chiuso richiesto per la produzione.
 5. Configurare il test chiuso e invitare i tester seguendo `TEST-CHIUSO.md`. Conservare le loro email privatamente.
 

@@ -14,6 +14,8 @@ Il punto attuale è [STATO-RILASCIO-2026-10-26.md](STATO-RILASCIO-2026-10-26.md)
 
 ## Pacchetto Android
 
+AAB 1.70 verificato sul PC, client 2026.10.26.2; esiti in `PRETEST-AAB-2026-10-26.md` e `VERIFICA-AAB-1.70.json`. Non risulta installato o caricato su Play da questa verifica.
+
 Identificativo fisso `it.smazzata.app`. `Smazzata.aab` viene creato dal workflow Android e pubblicato nelle Releases accanto a `Burraco.apk`. La compilazione corrente usa Capacitor 8 e target Android API 36; verificare in Console i requisiti al momento dell'invio.
 
 L'AAB deve essere firmato con la chiave upload **privata**, configurata nei Secrets `PLAY_UPLOAD_KEY` e `PLAY_UPLOAD_KEY_PASSWORD`, con Play App Signing. La chiave `android-app/burraco.p12` è pubblica e serve solo all'APK distribuito dal sito: non usarla per Google Play. Conservare separatamente una copia protetta della chiave privata; non inserirla nel repository.

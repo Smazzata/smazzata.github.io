@@ -12,7 +12,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
  if(process.argv.includes('--first-use'))s.cosmeticOwned=Cosmetics.LIST.filter(x=>['back','frame'].includes(x.kind)&&x.rarity==='common').slice(0,2).map(x=>x.id);
  for(let i=0;i<3;i++)C.recordGame({chestGameId:String(i),seats:[{token:'demo'},{token:'other'}],progressEligible:true,game:{over:true,handResult:{reason:'close'}}},p,()=>{});
  s.chests.items=['common','rare','epic','legendary'].map((type,i)=>({id:String(i+1),type,version:1,at:Date.now()}));s.chests.issued=4;s.chests.coins=12000;
- if(process.argv.includes('--economy')){s.chests.coins=36000;s.chests.items.forEach(x=>x.version=4);}
+ if(process.argv.includes('--economy')||process.argv.includes('--interruptions')){s.chests.coins=36000;s.chests.items.forEach(x=>x.version=4);}
  if(process.argv.includes('--daily')){s.chests.items=Array.from({length:120},(_,i)=>({id:String(i+1),type:['common','rare','epic','legendary'][i%4],version:3,at:Date.now()}));s.chests.issued=120;}
  if(process.argv.includes('--simple')){for(const id of ['5','6'])s.chests.items.push({id,type:'common',version:3,at:Date.now()});s.chests.issued=6;}
  const deliveryContext={sessions:p};for(let i=0;i<23;i++)require('./deliveries').deliver(deliveryContext,'ui-mail-'+String(i).padStart(10,'0'),require('./deliveries').normalize({title:'Benvenuto '+i,body:'Un messaggio per la tua collezione.\nGrazie di giocare con noi!',mode:'all',gift:i===22?Cosmetics.LIST.find(x=>x.kind==='felt').id:''}),['demo'],()=>{});
@@ -32,6 +32,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await cdp.send('Page.navigate',{url:'http://localhost:3992'});await wait(1800);
   const shot=async name=>{await cdp.run('await document.fonts.ready;');const r=await cdp.send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,name+'.png'),Buffer.from(r.data,'base64'));};
   if(process.argv.includes('--first-use')){await require('./first-use-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
+  if(process.argv.includes('--interruptions')){await require('./interruption-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
   if(process.argv.includes('--economy')){await require('./economy-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
   if(process.argv.includes('--journey')){await require('./journey-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
   if(process.argv.includes('--simple')){await require('./simple-inventory-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}

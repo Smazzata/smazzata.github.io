@@ -10,9 +10,16 @@ const root=path.resolve(__dirname,'..');
 const out=path.join(root,process.argv.includes('--store')?'store/schermate-rilascio':'test-output/rilascio');
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'smazzata-visual-'));
 fs.mkdirSync(out,{recursive:true});
-fs.cpSync(path.join(root,'public'),dir,{recursive:true});
-fs.cpSync(path.join(root,'shared'),path.join(dir,'shared'),{recursive:true});
-fs.writeFileSync(path.join(dir,'engine.js'),require('../scripts/bundle-engine').bundle());
+const packageOption=process.argv.indexOf('--package');
+const packaged=packageOption>=0?path.resolve(process.argv[packageOption+1]):null;
+if(packaged){
+ if(process.argv.includes('--store'))throw Error('La prova del pacchetto non sovrascrive gli screenshot store');
+ fs.cpSync(path.join(packaged,'gioca'),dir,{recursive:true});
+}else{
+ fs.cpSync(path.join(root,'public'),dir,{recursive:true});
+ fs.cpSync(path.join(root,'shared'),path.join(dir,'shared'),{recursive:true});
+ fs.writeFileSync(path.join(dir,'engine.js'),require('../scripts/bundle-engine').bundle());
+}
 const bootstrap=`
 localStorage.clear();localStorage.setItem('bur_prefs',JSON.stringify({lang:'it',anim:false}));localStorage.setItem('smazzata_intro_seen','true');
 window.io=()=>{
@@ -94,6 +101,6 @@ const size=async(width=375,height=812,dpr=1)=>send('Emulation.setDeviceMetricsOv
  await run(`S.room=null;S.game=null;S.screen='rankedOverview';S.overviewData={ranks:{},currentSeason:0,ends:Date.now()+86400000};closeModal();render();if(!document.querySelector('.empty-state'))throw Error('classifica vuota senza azione');`);await shot('09-classifica');
  await run(`S.room=null;S.game=null;S.localGame=false;Local.attached=false;S.screen='home';const previousSocial=S.social;S.social=null;S.mailOn=false;closeModal();render();if(!document.querySelector('.guest-start')||document.querySelector('#profile-signup').open)throw Error('accesso ospite');handlers.playBots();if(S.screen!=='setup')throw Error('CPU richiede registrazione');await handlers.practice({dataset:{game:'scala40'}});await new Promise(r=>setTimeout(r,700));if(!S.game||!S.room.tutorial||!S.localGame)throw Error('tutorial ospite non locale');handlers.moveHelp();if(!document.querySelector('[data-act=gameRules]'))throw Error('aiuto contestuale assente');closeModal();handlers.report();const field=document.querySelector('#reportin');field.value='Bozza problema senza rete';field.dispatchEvent(new Event('input',{bubbles:true}));closeModal();handlers.report();if(document.querySelector('#reportin').value!=='Bozza problema senza rete')throw Error('bozza segnalazione persa');closeModal();S.social=previousSocial;`);await shot('aiuto-ospite');
  if(errors.length)throw Error(errors.join('\n'));
- fs.writeFileSync(path.join(out,'VERIFICA.json'),JSON.stringify({at:new Date().toISOString(),method:'Chrome da file locali; risposte social vuote simulate, motore locale reale',checks:['320/375/768 px','tema chiaro/scuro','testo normale/grande/enorme','viewport ridotto e Indietro','guida e scelta gioco','quattro avatar iniziali e altri nascosti','bozza amico con emoji conservata','allenamento senza progressi'],sourceBase:require('child_process').execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim()+' + sorgenti identificate dagli hash' ,sourceHashes,notVerified:['rete e riconnessione reali','background e blocco schermo su Android fisico','API social e classificate sul server','pubblicazione online'],storeSelection:shots.filter(n=>/^\d{2}-/.test(n)),shots},null,2));
+ fs.writeFileSync(path.join(out,'VERIFICA.json'),JSON.stringify({at:new Date().toISOString(),method:packaged?'Chrome sui file estratti dall’AAB; risposte social vuote simulate, motore offline del pacchetto':'Chrome da file locali; risposte social vuote simulate, motore locale reale',checks:['320/375/768 px','tema chiaro/scuro','testo normale/grande/enorme','viewport ridotto e Indietro','guida e scelta gioco','quattro avatar iniziali e altri nascosti','bozza amico con emoji conservata','allenamento senza progressi'],sourceBase:require('child_process').execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim()+' + sorgenti identificate dagli hash' ,sourceHashes,notVerified:['rete e riconnessione reali','background e blocco schermo su Android fisico','API social e classificate sul server','pubblicazione online'],storeSelection:shots.filter(n=>/^\d{2}-/.test(n)),shots},null,2));
  console.log('Verifiche visive locali OK: '+shots.length+' schermate in '+out);
  }catch(e){try{console.log(await run(`return {modal:S.modalKind,phase:S.game?.phase,room:S.room,};`));await shot('errore');console.log(errors);}catch(_){}throw e;}finally{browser.kill();}})().catch(e=>{console.error(e);process.exitCode=1;});

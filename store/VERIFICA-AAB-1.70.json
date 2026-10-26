@@ -1,0 +1,56 @@
+{
+  "release": "apk-70",
+  "sourceCommit": "b09c075c695bd02a8fd9cabb21bb4cac3b492b8b",
+  "download": "https://github.com/Smazzata/smazzata.github.io/releases/download/apk-70/Smazzata.aab",
+  "verification": {
+    "file": "test-output/play-70/Smazzata.aab",
+    "sha256": "00677dbcca8a47047e28f2fbb29c38cd8fa76242d5edfcd42536f01d383da9aa",
+    "bytes": 23022719,
+    "firma_crittografica_valida": true,
+    "file_con_digest_verificato": 690,
+    "manifest": {
+      "package": "it.smazzata.app",
+      "versionCode": "70",
+      "versionName": "1.70",
+      "compileSdkVersion": "36",
+      "platformBuildVersionCode": "36",
+      "compileSdkVersionCodename": "16",
+      "platformBuildVersionName": "16"
+    },
+    "sdk": {
+      "minSdkVersion": "24",
+      "targetSdkVersion": "36"
+    },
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.VIBRATE",
+      "it.smazzata.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+    ],
+    "store_user_agent": true,
+    "privacy_data": "26 ottobre 2026",
+    "file_sorgenti_corrispondenti": 248,
+    "nota": "Verifica della firma interna, non dell'identità della chiave registrata in Play Console né del suo certificato di fiducia."
+  },
+  "certificate": {
+    "aab": "Smazzata.aab",
+    "upload_certificate_sha256": "7866C935A935DED7000E4E2BFB327F860C27278671DB25DB0C9C726F98D7F6FE",
+    "public_apk_certificate_sha256": "DC0AAC21BA47A4F9D007309F6F07FEC475DA35F95005D6547084B2A37FF125EC",
+    "upload_public_key_distinct_from_public_apk": true,
+    "play_console_match": "NON VERIFICATO: confrontare con certificato chiave di caricamento, non con chiave firma app di Google",
+    "scope": "Verifica aggiuntiva identità firmatario; non sostituisce la verifica completa dei digest AAB già eseguita."
+  },
+  "additionalChecks": {
+    "modifiedArchiveRejected": true,
+    "otherSourcesRejected": true,
+    "storeMode": true,
+    "previousMusicServiceAbsent": true,
+    "packagedUiScenes": 34
+  },
+  "notVerified": [
+    "Installazione e aggiornamento nativi Android",
+    "Firma upload confrontata con Play Console",
+    "Play App Signing",
+    "Pubblicazione su Play",
+    "Server del telefono aggiornato e sotto carico"
+  ]
+}
