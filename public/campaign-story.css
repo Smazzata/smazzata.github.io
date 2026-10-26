@@ -164,3 +164,6 @@
 @media(max-height:680px) { .cad-conversation-stage { height:160px; } .cad-conversation-stage .cad-portrait { width:180px; height:180px; } .cad-conversation h2 { margin-top:10px; } }
 @media(max-width:360px) { .cad-live-coach .cad-tools .cad-item-render { width:28px; height:32px; } }
 @media(prefers-reduced-motion:reduce) { .cad-map-shimmer,.cad-conversation-stage,.cad-conversation-stage .cad-portrait,.cad-is-talking .cad-conversation-stage .cad-rendered-character,.cad-speaking .cad-conversation-stage .cad-rendered-character,.cad-is-talking .cad-coach-actor .cad-rendered-character,.cad-floating-suit,.cad-conversation .cad-live-bubble,.cad-power-flight,.cad-power-arrived { animation:none; } .cad-power-flight { display:none; } }
+
+/* Sui telefoni stretti recupera spazio fra le zone, senza ridurre i comandi. */
+@media(max-width:360px) { .cad-game.tight2 .felt.compact .teamzone { margin-top:2px; } }

@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-26T06:50:18.607Z",
+  "at": "2026-10-26T09:47:16.973Z",
   "method": "Chrome da file locali; risposte social vuote simulate, motore locale reale",
   "checks": [
     "320/375/768 px",
@@ -11,7 +11,7 @@
     "bozza amico con emoji conservata",
     "allenamento senza progressi"
   ],
-  "sourceBase": "f9a0eff4e83cdbfdfd7d4dbb0f2d7f8a38a0e708 + sorgenti identificate dagli hash",
+  "sourceBase": "9709f4d6d0295bace12293e764a705fba4467486 + sorgenti identificate dagli hash",
   "sourceHashes": {
     "public/index.html": "89c657ae0d1e110b040242157bdacf9486f917a52c14f72819b03a4f217cd373",
     "public/privacy.html": "45ee88adc8053dbd8154688360943d2b746a2304a156fe47c3748a4a5972d1e5",
@@ -135,12 +135,12 @@
     "public/art/avatars/drago-imperatore.webp": "76db01140a5c3acf87cfa5396e8e0ac50292765c0ecc8b26473c63e7d60a0a5a",
     "public/art/avatars/volpe-nove-code.webp": "1873b7abbc4ad94d3ec3abf74330a7d35fd1fb7978b6d61e5e1ff5c9e40a4289",
     "public/style.css": "c4968bcfa27fbcbc99ea94046421c754bff20ad79da8fff7060a824bc04e4963",
-    "public/sw.js": "83be08b45db9b118b13b24626c7a07760d899f5353ef7de23d85bb80bb67cb5e",
-    "launcher/sw.js": "5e07613738553cfcca6208efb106e8d28d313bac841c3a6c9a9cecaea3bf5232",
+    "public/sw.js": "282efbfb7b56c0692fed3497fb0515bbaea88ef08d96e9a33e6beb0d221dff9f",
+    "launcher/sw.js": "b6d165ce8cde78e70d47c578d0e217e17fd4f0915889e86af6661ee1bc395beb",
     "public/js/animazioni.js": "ba8f2444d9503c5cb7ffd5f7b21699ce4343d7148fe64db270f131628ed3b970",
     "public/js/avatars.js": "5ff457259d67be24575287caf460ac2e9c1b2b457f0b71bc0cbe74100fc239c7",
     "public/js/azioni.js": "21b363fed59c3a637934ce1d9c76bd8ac751ccbe8c369290732d3e84817d1469",
-    "public/js/base.js": "81f7c8574b356a0365caedbef377d74c3088b5de8bcc94892f3a2c798463b0e1",
+    "public/js/base.js": "8b86d9fff6fa492365b6cd16ce18e643134eaaabf576a0fd10c15b83458e14ab",
     "public/js/campagna.js": "3403f66055bf9e853ab662b7b8caa41e3d3786a6452b4b481dd7a89d9986a0dc",
     "public/js/campaign-adventure.js": "e8f1b31d6284359277107463b1daf6a80b4179fcc53c3092287442ff10d6d827",
     "public/js/campaign-story.js": "3896eb0b3bb24944333192efa9e4affe2223ba7958676d96b82ec624c1e55cd2",
