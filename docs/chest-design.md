@@ -1,123 +1,49 @@
-# Premi e chest — versione 3
+# Premi e monete — versione 4
 
-## Aggiornamento: un solo oggetto per chest
+Economia autorizzata dal titolare dopo la simulazione in `store/ECONOMIA-SIMULAZIONI-2026-10-25.md`. Una sola ricompensa per chest, monete gratuite oppure un oggetto. Nessuna vendita in denaro implementata.
 
-La versione 3 sostituisce l'estrazione riservata agli avatar con un unico catalogo: 46 avatar estraibili (i quattro iniziali sono esclusi) e 100 cosmetici indipendenti. Nessun premio extra al 25% e nessun set. Ogni chest assegna **esattamente un oggetto**, oppure i frammenti corrispondenti se è già posseduto. Le ricevute precedenti restano immutabili; le chest ancora chiuse passano alle nuove regole.
+## Probabilità base assolute per apertura
 
-Prima viene estratta la rarità; poi viene scelto uniformemente un oggetto tra tutti quelli di quella rarità, inclusi i già posseduti. Non viene estratta prima una categoria con pesi uguali.
-
-| Tipo | Comuni | Rari | Epici | Leggendari |
-|---|---:|---:|---:|---:|
-| Avatar estraibili | 20 | 15 | 8 | 3 |
-| Dorsi | 10 | 6 | 3 | 1 |
-| Cornici | 10 | 6 | 3 | 1 |
-| Tappetini | 10 | 6 | 3 | 1 |
-| Reazioni | 10 | 6 | 3 | 1 |
-| Vittorie | 10 | 6 | 3 | 1 |
-| Totale | **70** | **45** | **23** | **8** |
-
-Quindi, condizionatamente alla rarità, gli avatar hanno probabilità 20/70, 15/45, 8/23 e 3/8; ciascuna delle altre cinque categorie ha probabilità 10/70, 6/45, 3/23 e 1/8. Ogni singolo oggetto ha probabilità 1/70, 1/45, 1/23 o 1/8. La chest leggendaria garantisce un oggetto leggendario di qualunque categoria.
-
-| Chest ottenuta | Frequenza | Comune | Raro | Epico | Leggendario |
+| Chest | Monete | Comune | Raro | Epico | Leggendario |
 |---|---:|---:|---:|---:|---:|
-| Comune | 75% | 66,5% | 25% | 8% | 0,5% |
-| Rara | 20% | 20% | 61,5% | 17% | 1,5% |
-| Epica | 4% | 0% | 20% | 77% | 3% |
-| Leggendaria | 1% | 0% | 0% | 0% | 100% |
+| Comune | 70% | 20% | 7% | 2,5% | 0,5% |
+| Rara | 45% | 10% | 35,5% | 8% | 1,5% |
+| Epica | 20% | 0% | 15% | 62% | 3% |
+| Leggendaria | 0% | 0% | 0% | 0% | 100% |
 
-Le garanzie a 20 e 50 aperture continuano a riferirsi alla rarità del singolo oggetto, indipendentemente dal tipo. Gli scambi scelgono uniformemente fra gli oggetti mancanti della rarità scelta, conservando costi e idempotenza. I dettagli seguenti documentano l'introduzione delle chest; dove parlano soltanto di avatar, questo aggiornamento prevale.
+Tipi di chest ottenuta: 75/20/4/1. Quantità quando escono monete: 30 comune, 80 rara, 200 epica. Le probabilità non sono esposte nelle schermate del gioco, secondo indicazione del titolare.
 
-Il profilo salva `cosmeticOwned` e `cosmeticLoadout`, verificati dal server. Le cornici sono pubbliche nell'avatar; le reazioni sono condivise al tavolo soltanto se possedute. Dorsi, tappetini e vittorie sono preferenze personali. Gli stili base e i precedenti premi di progressione restano utilizzabili. La collezione mostra soltanto oggetti posseduti, con anteprima, selezione e ripristino dello stile base. Tutti gli elementi sono estetici e non modificano le regole.
+Garanzie dopo 19 aperture senza epico o superiore e 49 senza leggendario: alla successiva apertura si assegna l'oggetto garantito, anche se normalmente potevano uscire monete. Gli acquisti diretti non modificano i contatori.
 
-Implementazione autorizzata il 24 ottobre 2026. Quattro chest gratuite, nessun acquisto. Regole in `server/chests.js`; immagini originali in `public/art/chests/`, istruzioni di generazione in `chest-art-prompts.json` e `chest-art-variants.json`.
+Il catalogo estraibile ha 146 oggetti: 70 comuni, 45 rari, 23 epici, 8 leggendari. Quattro avatar iniziali esclusi dalle estrazioni. All'interno della rarità ogni oggetto ha la stessa probabilità, senza estrarre prima la categoria. I cento cosmetici restano divisi in cinque categorie, ciascuna con 10/6/3/1 oggetti; gli avatar estraibili sono 20/15/8/3.
 
-## Collezione iniziale
+## Acquisti diretti e doppioni
 
-Tutti i profili nuovi ricevono Fante di quadri, Dama di fiori, Giardiniere di fiori e Pasticciera vaniglia. Gli avatar non posseduti restano nascosti. Gli sblocchi espliciti e gli avatar già equipaggiati nei profili precedenti restano conservati. I titoli continuano a dipendere esclusivamente da livelli e trofei.
+| Rarità | Prezzo | Monete per doppione |
+|---|---:|---:|
+| Comune | 600 | 30 |
+| Rara | 1.800 | 90 |
+| Epica | 6.000 | 300 |
+| Leggendaria | 18.000 | 900 |
 
-## Acquisizione gratuita
+La Collezione permette di scegliere l'oggetto preciso. Mostra prezzo e saldo, richiede conferma e non equipaggia automaticamente. Prezzo e possesso sono verificati dal server. Una ricevuta persistente rende idempotente il recupero dopo una risposta persa; riutilizzare l'identificatore per un oggetto differente è rifiutato. Saldo, oggetto e ricevuta vengono salvati insieme, con rollback completo su errore. Nessun acquisto da copia offline, nessun acquisto di chest o di monete con denaro.
 
-Una chest dopo 2 partite online completate con soli avversari umani registrati, massimo 1 al giorno per profilo. Nessun premio da allenamento locale, tutorial, sfida del giorno, partite annullate, rese, abbandoni o sostituzioni con bot. Il limite giornaliero si rinnova a mezzanotte Europe/Rome; il progresso parziale riparte da zero. Le partite oltre il limite non accumulano progressi. Una partita conta una sola volta, anche dopo riconnessione o riavvio. Nessun accredito retroattivo per partite precedenti alla funzione.
+I doppioni dei regali amministrativi usano la stessa tabella di monete. Equipaggiamento e azzeramento dello stile restano gratuiti.
 
-## Estrazione
+## Come si guadagna
 
-La rarità della chest viene estratta e salvata quando la si ottiene: comune **75%**, rara **20%**, epica **4%**, leggendaria **1%**. Non si trovano altre chest dentro una chest. Ogni chest contiene un oggetto:
+- Cinque monete per ciascuna delle prime tre partite umane valide al giorno; massimo quindici da questa fonte.
+- Una chest giornaliera dopo due partite valide, massimo una al giorno.
+- Settimana: tre partite 100 monete; due giorni 100; due giochi 150; tre partite con amici una chest rara.
+- Mese: dieci tappe ogni tre partite, con premi 50 monete / comune / 100 monete / 100 monete / comune / 150 monete / 150 monete / rara / 200 monete / epica.
+- Weekend: chest rara dopo tre partite; ricordi permanenti invariati.
 
-| Chest | Oggetto comune | Raro | Epico | Leggendario |
-|---|---:|---:|---:|---:|
-| Comune | 66,5% | 25% | 8% | 0,5% |
-| Rara | 20% | 61,5% | 17% | 1,5% |
-| Epica | 0% | 20% | 77% | 3% |
-| Leggendaria | 0% | 0% | 0% | **100%** |
+Calendario Europe/Rome. Nessun premio per allenamento, tutorial, offline, resa, identità duplicate, tavoli con computer o classificate abbandonate. I contatori e gli accrediti sono autoritativi, con salvataggio atomico per tutti i profili partecipanti e nessun doppio accredito dopo ripetizione o riavvio.
 
-Versione 2, ribilanciamento richiesto dal titolare: probabilità leggendario 0,5% / 1,5% / 3% nelle chest comuni / rare / epiche. La differenza torna alla rarità principale della chest. Le nuove tabelle valgono anche per le chest ancora chiuse della versione 1; le ricevute dei premi già aperti restano immutate. Estrazione su 10000 valori interi per rappresentare esattamente le frazioni percentuali.
+## Migrazione
 
-Prima si estrae la rarità, poi un oggetto uniforme di quella rarità, esclusi i quattro avatar iniziali. Un oggetto già posseduto è un doppione; anche un premio leggendario può essere un doppione. L'interfaccia mostra la tabella base di ogni chest e le probabilità effettive della prossima apertura, comprensive delle garanzie.
+Il titolare ha dichiarato che nessun account ha raccolto frammenti e ne ha chiesto la rimozione senza conversione. L'archivio attivo e le ricevute vengono ripuliti dai vecchi campi; l'API degli scambi è rimossa. Nessuna conversione 12:1.
 
-Il premio resta estetico: nessun effetto su carte, matchmaking, LP o abilità del computer. Le probabilità sono versionate e non cambiano silenziosamente.
+Le chest già possedute di versione 1/2/3 conservano la precedente estrazione di un oggetto; le nuove sono versione 4. Gli oggetti posseduti e le consegne già avvenute restano conservati. Tappe mensili e obiettivi settimanali già completati prima dell'aggiornamento non attribuiscono nuovamente monete e mantengono il premio storico nella vista.
 
-## Doppioni e garanzie
-
-I doppioni diventano frammenti: comune 5, raro 15, epico 50, leggendario 150. Un unico saldo gratuito; nessuna conversione in denaro. Lo scambio costa 50/150/500/1500 frammenti e assegna un oggetto casuale **mancante** della rarità scelta. Se il gruppo è completo, lo scambio è disabilitato. Gli avatar non posseduti restano nascosti.
-
-Dopo 19 aperture consecutive senza epico o leggendario, la ventesima dà almeno un epico; dopo 49 senza leggendario, la cinquantesima dà un leggendario. Contatori globali per tutti i tipi di chest, persistenti e visibili; si azzerano anche con un premio doppione della rarità garantita. La garanzia leggendaria prevale. La garanzia epica trasferisce la probabilità dei comuni/rari agli epici, conservando quella leggendaria della chest. Gli scambi non avanzano e non azzerano i contatori. Simulazione deterministica di 10000 chest comuni con garanzie: 6453 comuni, 2384 rari, 942 epici, 221 leggendari; non sono le percentuali base promesse per ogni singola apertura.
-
-## Flusso nell'app
-
-Nel profilo, sotto gli avatar posseduti, un accesso «Inventario personale» con il numero di aperture disponibili e il progresso verso la prossima (0/3, 1/3, 2/3). Al raggiungimento del limite giornaliero, indicare chiaramente quando il conteggio riprende. Nessun timer per aprire una chest già guadagnata e nessuna scadenza che obblighi a collegarsi.
-
-Prima dell'apertura mostrare probabilità, contatori di garanzia e regole dei doppioni. Il server conferma il premio, poi parte una breve animazione saltabile, diversa per rarità e rispettosa del movimento ridotto. Infine: nome, illustrazione e azioni «Usa avatar»/«Usa questo stile» oppure «Continua». Le nuove acquisizioni compaiono subito nella collezione; gli avatar mancanti restano nascosti.
-
-Quattro illustrazioni con quattro fotogrammi ciascuna (1536×512, trasparenza WebP). Sprite chiuso/socchiuso/aperto/illuminato, luce e particelle colorate, apertura saltabile. Con animazioni disattivate o movimento ridotto il premio appare subito. Nessun timer di apertura, scadenza, acquisto, evento o valuta a pagamento.
-
-## Persistenza e controlli
-
-- Inventario e casualità soltanto sul server; mai fidarsi di premi o rarità inviati dal client.
-- Ogni chest ha ID univoco nel profilo, tipo immutabile, data, versione e risultato. Il proprietario deriva dalla sessione autenticata.
-- Apertura atomica: consumo, estrazione, frammenti, inventario e contatori salvati insieme.
-- Ripetere la richiesta con lo stesso ID restituisce lo stesso risultato senza un secondo consumo.
-- Offline si può consultare una copia dell'inventario; l'apertura richiede connessione.
-- In caso di interruzione si recupera il risultato già salvato; l'animazione non decide il premio.
-- Verificare distribuzione con simulazioni, garanzie, collezione completa, doppioni, richieste simultanee, riavvii e migrazione dei profili esistenti.
-
-Le mutazioni sono sincrone nel processo autoritativo, con salvataggio atomico dell'intero stato SQLite/JSON prima della risposta. Gli errori di salvataggio ripristinano inventario e contatori in memoria. Un UUID per partita e un marcatore persistito impediscono accrediti doppi; se il salvataggio fallisce, il recupero deve precedere una nuova partita. Le richieste di scambio hanno un ID conservato dal client fino alla conferma, così una risposta persa non causa un nuovo addebito. Nessun parametro client può impostare premi, frammenti, rarità della chest o possesso. Cancellando il profilo si elimina anche il suo inventario e la copia locale.
-
-
-## Inventario e regali amministrativi — 24 ottobre 2026
-
-L’inventario è accessibile dalla Home, da Altro e dal profilo. Raggruppa le chest chiuse per rarità: si sceglie quale tipo aprire, con probabilità effettive aggiornate dal server per quella chest. Tutti i contatori di garanzia restano globali; ogni chest, anche regalo, contiene un solo oggetto. Nessuna variazione delle percentuali.
-
-La posta personale raccoglie comunicazioni e ricevute dei regali, con stato di lettura e pagine da 20 messaggi. Le chest regalo restano chiuse; gli oggetti specifici vengono assegnati alla consegna. Doppioni specifici in frammenti: 5/15/50/150. La lettura non assegna nuovamente il regalo. I regali non consumano il limite giornaliero delle chest guadagnate giocando e non alterano i contatori di garanzia prima dell’apertura.
-
-Dalla pagina di stato protetta, «Posta, aggiornamenti e regali ai giocatori» apre il compositore: nickname singoli/multipli, tutti gli iscritti attuali oppure un intervallo di iscrizione. Dal giorno incluso / prima del giorno escluso, fuso Europe/Rome. Per i vecchi profili si usa la data documentata di accettazione iniziale (`terms`), se disponibile; non si inventano date mancanti. I profili senza data sono esclusi dai soli filtri cronologici.
-
-Ogni invio richiede un’anteprima con elenco completo dei destinatari, valida 15 minuti, e una conferma. È una consegna agli iscritti selezionati al momento dell’anteprima, non una campagna automatica per utenti futuri. Per un benvenuto periodico si seleziona l’intervallo dei nuovi iscritti. Una nuova anteprima è un nuovo invio intenzionale; ripetere la stessa conferma non duplica i premi.
-
-I messaggi sono salvati insieme ai premi e alla ricevuta globale prima di confermare; un errore di salvataggio annulla tutte le assegnazioni dell’invio. Lo storico persiste in SQLite e JSON e impedisce repliche anche dopo riavvio. Non conserva elenchi di nickname/token; i titoli sono ripuliti dei riferimenti al profilo in caso di cancellazione. L’interfaccia espone i nomi degli oggetti, non identificativi interni o credenziali. L’accesso amministrativo ha controllo della chiave e token anti-CSRF; il testo viene sempre mostrato come testo, mai come HTML.
-
-La notifica esterna è facoltativa, solo per dispositivi già abilitati, dopo il salvataggio. La posta persistente è la fonte della consegna: la richiesta push non certifica la ricezione o la lettura e non viene ripetuta automaticamente dopo un riavvio. Nessuna email viene inviata. La posta non è salvata nella cache locale; offline resta consultabile l’inventario già memorizzato.
-
-## Premi settimanali e campagne con codice
-
-Quattro obiettivi settimanali, basati esclusivamente sulle stesse partite online umane idonee alle chest ordinarie:
-
-| Obiettivo | Premio |
-|---|---|
-| Completa 3 partite online | Una chest comune |
-| Completa partite a 2 giochi diversi | Una chest rara |
-| Completa partite in 2 giorni diversi | Una chest comune |
-| Completa 3 partite con almeno un amico reciproco al tavolo | Una chest rara |
-
-I premi settimanali sono aggiuntivi: non consumano il limite giornaliero delle chest ordinarie. Un solo accredito per obiettivo e profilo nella settimana; reset il lunedì a mezzanotte, fuso Europe/Rome. Le chest guadagnate non scadono. Nessun recupero retroattivo di partite concluse prima dell'introduzione. L'apertura usa le stesse percentuali, un oggetto per chest e i contatori globali delle garanzie. Il salvataggio atomico include contatori, marcatori della partita e premi: gli errori annullano tutto l'accredito.
-
-Un codice campagna facoltativo collega invii amministrativi diversi allo stesso omaggio: ogni profilo lo riceve una sola volta. Il codice vincola il regalo; cambiarlo richiede un codice nuovo. I destinatari che hanno già la ricevuta sono esclusi dall'anteprima e ricontrollati al momento dell'invio. Conferme ripetute dello stesso invio restano idempotenti anche senza codice campagna.
-
-Le bozze salvate sono private al gestore e non inviano messaggi; massimo 30, da eliminare esplicitamente quando non servono. Il benvenuto automatico è un'opzione separata, inizialmente disattivata, con anteprima e conferma della configurazione. Alla creazione e alla riconnessione di un nuovo profilo idoneo assegna una volta il regalo impostato; non assegna regali ai profili già iscritti prima dell'attivazione e non invia notifiche esterne automatiche. Il gestore può disattivarlo dalla stessa pagina. Questa aggiunta sostituisce il precedente limite documentato che escludeva qualsiasi campagna automatica futura.
-
-Le novità della Collezione sono ricavate dalle ricevute di aperture, scambi e regali. Un oggetto già posseduto convertito in frammenti non diventa una nuova acquisizione. Visualizzare un oggetto aggiorna un marcatore del solo profilo, senza cambiare possesso o premi. La copia dei metadati resta nel cache privato dell'inventario già previsto; gli stili pubblici condivisi al tavolo non includono l'inventario o le ricevute.
-
-Per l’obiettivo amici basta un’amicizia accettata da entrambi al termine della partita, anche da avversari. Una partita conta una sola volta anche con più amici; nessun recupero retroattivo. Il contatore non salva identificativi degli amici. Un quarto premio settimanale fuori dal limite giornaliero, con le stesse probabilità delle altre chest rare.
-
-## Interfaccia semplificata (richiesta del 24 ottobre 2026)
-
-La UI non presenta più percentuali, tabelle delle probabilità o garanzie numeriche. Questi dati rimangono definiti e testati sul server con le stesse tabelle sopra riportate. Il bottino mostra chest disponibili e apertura; progressi, frammenti e storico sono sezioni chiuse. La guida iniziale spiega soltanto premio e doppioni. Questo sostituisce le precedenti descrizioni dell'esposizione delle probabilità prima dell'apertura: non cambia il sistema di estrazione.
+I resoconti datati delle simulazioni restano documenti storici. Il relativo simulatore usa calendari congelati al commit f9a0eff, separati dall'economia attiva. `server/economy-v4-test.js` confronta invece l'economia attuale con la variante raccomandata a 30/90/180 giorni.

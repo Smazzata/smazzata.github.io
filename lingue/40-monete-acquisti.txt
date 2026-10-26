@@ -1,0 +1,14 @@
+Monete ‖ Coins ‖ Monedas ‖ Moedas
+Monete ricevute ‖ Coins received ‖ Monedas recibidas ‖ Moedas recebidas
+Saldo aggiornato ‖ Balance updated ‖ Saldo actualizado ‖ Saldo atualizado
+Acquisto completato ‖ Purchase complete ‖ Compra completada ‖ Compra concluída
+Conferma acquisto ‖ Confirm purchase ‖ Confirmar compra ‖ Confirmar compra
+Acquista ‖ Buy ‖ Comprar ‖ Comprar
+Il tuo saldo ‖ Your balance ‖ Tu saldo ‖ Seu saldo
+Monete insufficienti ‖ Not enough coins ‖ Monedas insuficientes ‖ Moedas insuficientes
+Acquisto non valido ‖ Invalid purchase ‖ Compra no válida ‖ Compra inválida
+Oggetto non disponibile ‖ Item unavailable ‖ Objeto no disponible ‖ Item indisponível
+Oggetto già posseduto ‖ Item already owned ‖ Ya tienes este objeto ‖ Item já possuído
+Saldo non valido ‖ Invalid balance ‖ Saldo no válido ‖ Saldo inválido
+Collegati per aprire le chest o acquistare. ‖ Connect to open chests or buy items. ‖ Conéctate para abrir cofres o comprar. ‖ Conecte-se para abrir baús ou comprar.
+5 monete per partita ‖ 5 coins per game ‖ 5 monedas por partida ‖ 5 moedas por partida

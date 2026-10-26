@@ -3,10 +3,7 @@ Apri una chest e scopri il tuo premio. ‖ Open a chest and discover your reward
 Apri ‖ Open ‖ Abrir ‖ Abrir
 Prossima chest ‖ Next chest ‖ Próximo cofre ‖ Próximo baú
 Come ottenere altre chest ‖ How to earn more chests ‖ Cómo conseguir más cofres ‖ Como ganhar mais baús
-Usa frammenti ‖ Use fragments ‖ Usar fragmentos ‖ Usar fragmentos
-I doppioni diventano frammenti. Usali qui per ottenere un oggetto che ti manca. ‖ Duplicates become fragments. Use them here for an item you don't own. ‖ Los duplicados se convierten en fragmentos. Úsalos aquí para un objeto que te falte. ‖ Duplicatas viram fragmentos. Use-os aqui para obter um item que falta.
 Dentro trovi un oggetto per personalizzare il tuo gioco. ‖ Inside is an item to personalise your game. ‖ Dentro encontrarás un objeto para personalizar tu juego. ‖ Dentro há um item para personalizar seu jogo.
-Se lo possiedi già, ricevi frammenti da usare più avanti. ‖ If you already own it, you receive fragments to use later. ‖ Si ya lo tienes, recibirás fragmentos para usar más adelante. ‖ Se já tiver o item, receberá fragmentos para usar depois.
 Cerca e filtra ‖ Search and filter ‖ Buscar y filtrar ‖ Buscar e filtrar
 I tuoi oggetti ‖ Your items ‖ Tus objetos ‖ Seus itens
 Altre opzioni ‖ More options ‖ Más opciones ‖ Mais opções

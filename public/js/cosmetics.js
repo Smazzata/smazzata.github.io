@@ -64,6 +64,7 @@ function cosmeticArt(item){
   return `<img src="${item.art}" alt="" loading="lazy" class="cx-art cx-art-${item.kind}">`;
 }
 function chestPrize(reward){
+  if(reward.kind==='coins')return {kind:'coins',name:'Monete',html:'<span class="coin-prize">'+uiIcon('coins')+'</span>'};
   const item=window.SmazzataCosmetics.byId.get(reward.itemId);
   if(item)return {...item,html:cosmeticArt(item)};
   const a=window.SmazzataAvatars.resolve(reward.avatarId||reward.itemId);return {...a,kind:'avatar',html:window.SmazzataAvatars.svg(a.id)};

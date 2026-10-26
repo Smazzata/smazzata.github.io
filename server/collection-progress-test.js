@@ -26,23 +26,23 @@ test('Settimana italiana: tre obiettivi, tre soli premi aggiuntivi e nessun dopp
  for(let i=0;i<3;i++){const r=room('weekly-'+i,i===1?'scala40':'burraco');C.recordGame(r,p,()=>saves++,monday+i*86400000);C.recordGame(r,p,()=>assert.fail('salvataggio duplicato'),monday+i*86400000);}
  for(const s of p.values()){
   const b=C.view(s,monday+2*86400000),weekly=b.pending.filter(x=>x.source==='weekly');
-  assert.equal(weekly.length,3);assert.deepEqual(weekly.map(x=>x.type).sort(),['common','common','rare']);
+  assert.equal(weekly.length,0);assert(b.coins>=365);
   assert(b.weekly.missions.filter(x=>x.id!=='friends').every(x=>x.awarded));assert.equal(b.progress,1);assert.equal(b.pending.filter(x=>x.source==='game').length,0);
  }
  assert.equal(saves,3);
  for(let i=3;i<12;i++)C.recordGame(room('weekly-'+i),p,()=>{},monday+2*86400000);
- assert.equal(C.view(p.get('a'),monday+2*86400000).pending.filter(x=>x.source==='weekly').length,3);
+ assert.equal(C.view(p.get('a'),monday+2*86400000).pending.filter(x=>x.source==='weekly').length,0);
  assert.equal(W.weekOf('2026-10-25'),'2026-10-19');assert.equal(W.weekOf('2026-10-26'),'2026-10-26');
- const newWeek=C.view(p.get('a'),monday+7*86400000);assert(newWeek.weekly.missions.every(x=>x.progress===0&&!x.awarded));assert.equal(newWeek.pending.filter(x=>x.source==='weekly').length,3);
+ const newWeek=C.view(p.get('a'),monday+7*86400000);assert(newWeek.weekly.missions.every(x=>x.progress===0&&!x.awarded));assert.equal(newWeek.pending.filter(x=>x.source==='weekly').length,0);
 });
 test('Premi settimanali: esclusioni, rollback e ripartenza nella nuova settimana',()=>{
  const p=players();for(const extra of [{onDevice:true},{tutorial:true},{offline:true},{progressEligible:false},{seats:[{token:'a'},{isBot:true}]}])C.recordGame({...room('bad'),...extra},p,()=>assert.fail('non deve salvare'),monday);
  assert(!p.get('a').chests);
  C.recordGame(room('first'),p,()=>{},monday);C.recordGame(room('second'),p,()=>{},monday);
  const before=structuredClone(p),third=room('third');assert.throws(()=>C.recordGame(third,p,()=>{throw Error('disco pieno');},monday));assert.deepEqual(p,before);assert.equal(third.chestRecordedGame,undefined);
- C.recordGame(third,p,()=>{},monday);assert.equal(p.get('a').chests.items.filter(x=>x.source==='weekly').length,1);
+ C.recordGame(third,p,()=>{},monday);assert.equal(p.get('a').chests.items.filter(x=>x.source==='weekly').length,0);
  for(let i=0;i<3;i++)C.recordGame(room('next-'+i),p,()=>{},monday+7*86400000);
- assert.equal(p.get('a').chests.items.filter(x=>x.source==='weekly').length,2);
+ assert.equal(p.get('a').chests.items.filter(x=>x.source==='weekly').length,0);
 });
 test('Novità della collezione: date reali, lettura persistente, possesso e rollback',()=>{
  const s={nick:'Anna'},ctx={sessions:new Map([['a',s]])},item=Cosmetics.LIST.find(x=>x.kind==='felt');

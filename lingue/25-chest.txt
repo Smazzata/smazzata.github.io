@@ -6,11 +6,8 @@ Chest comune ‖ Common chest ‖ Cofre común ‖ Baú comum
 Chest rara ‖ Rare chest ‖ Cofre raro ‖ Baú raro
 Chest epica ‖ Epic chest ‖ Cofre épico ‖ Baú épico
 Chest leggendaria ‖ Legendary chest ‖ Cofre legendario ‖ Baú lendário
-Frammenti ‖ Fragments ‖ Fragmentos ‖ Fragmentos
-frammenti ‖ fragments ‖ fragmentos ‖ fragmentos
 Collegati per consultare le tue chest ‖ Connect to view your chests ‖ Conéctate para consultar tus cofres ‖ Conecte-se para consultar seus baús
 Torna al profilo ‖ Back to profile ‖ Volver al perfil ‖ Voltar ao perfil
-Copia offline: collegati per aprire o scambiare. ‖ Offline copy: connect to open or exchange. ‖ Copia sin conexión: conéctate para abrir o canjear. ‖ Cópia offline: conecte-se para abrir ou trocar.
 Completa 2 partite online con avversari umani per una chest. Massimo 1 al giorno. ‖ Complete 2 online games against human opponents for one chest. Up to 1 per day. ‖ Completa 2 partidas en línea contra personas para obtener un cofre. Máximo 1 al día. ‖ Complete 2 partidas online contra pessoas para receber um baú. Máximo de 1 por dia.
 Progressi verso la prossima chest ‖ Progress towards the next chest ‖ Progreso hacia el próximo cofre ‖ Progresso para o próximo baú
 Chest ottenute oggi ‖ Chests earned today ‖ Cofres obtenidos hoy ‖ Baús obtidos hoje
@@ -24,11 +21,9 @@ Le probabilità mostrate includono le garanzie attive. Le aperture seguono l’o
 Epico o leggendario entro ‖ Epic or legendary within ‖ Épico o legendario en un máximo de ‖ Épico ou lendário em até
 Leggendario entro ‖ Legendary within ‖ Legendario en un máximo de ‖ Lendário em até
 aperture ‖ openings ‖ aperturas ‖ aberturas
-Prima viene estratta la rarità, poi un avatar uniforme di quella rarità, esclusi i quattro iniziali. I doppioni diventano frammenti. ‖ Rarity is drawn first, then an equally likely avatar of that rarity, excluding the four starters. Duplicates become fragments. ‖ Primero se sortea la rareza y luego un avatar de esa rareza con igual probabilidad, excluyendo los cuatro iniciales. Los duplicados se convierten en fragmentos. ‖ Primeiro é sorteada a raridade e depois um avatar dessa raridade com chances iguais, excluindo os quatro iniciais. Duplicados viram fragmentos.
 Un risultato è in attesa di conferma. Recuperalo prima di continuare. ‖ A result is awaiting confirmation. Recover it before continuing. ‖ Un resultado está pendiente de confirmación. Recupéralo antes de continuar. ‖ Um resultado aguarda confirmação. Recupere-o antes de continuar.
 Recupera risultato ‖ Recover result ‖ Recuperar resultado ‖ Recuperar resultado
 Apri una chest ‖ Open a chest ‖ Abrir un cofre ‖ Abrir um baú
-Scambia frammenti ‖ Exchange fragments ‖ Canjear fragmentos ‖ Trocar fragmentos
 Ricevi un avatar casuale non posseduto della rarità scelta. Lo scambio non modifica le garanzie delle chest. ‖ Receive a random unowned avatar of the chosen rarity. Exchanges do not change chest guarantees. ‖ Recibe un avatar aleatorio que no tengas de la rareza elegida. Los canjes no modifican las garantías de los cofres. ‖ Receba um avatar aleatório que ainda não possui da raridade escolhida. As trocas não alteram as garantias dos baús.
 Doppione ‖ Duplicate ‖ Duplicado ‖ Duplicado
 Tutti ottenuti ‖ All collected ‖ Todos obtenidos ‖ Todos obtidos
@@ -44,4 +39,3 @@ Chest non disponibile ‖ Chest unavailable ‖ Cofre no disponible ‖ Baú ind
 Versione chest non supportata ‖ Unsupported chest version ‖ Versión de cofre no compatible ‖ Versão de baú não suportada
 Scambio non valido ‖ Invalid exchange ‖ Canje no válido ‖ Troca inválida
 Hai già tutti gli avatar di questa rarità ‖ You already own every avatar of this rarity ‖ Ya tienes todos los avatares de esta rareza ‖ Você já possui todos os avatares desta raridade
-Frammenti insufficienti ‖ Not enough fragments ‖ Fragmentos insuficientes ‖ Fragmentos insuficientes

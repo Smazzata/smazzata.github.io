@@ -421,9 +421,9 @@ module.exports = function createSocial({ io, sessions, isConnected, roomOfToken,
       const s=sess(me());if(!s.nick)fail('Scegli prima il tuo nickname');
       const result=Chests.open(s,String(id||''),()=>require('./contesto').saveNow(true,false));inventoryChanged();return result;
     }));
-    socket.on('exchangeChestFragments', handler(({rarity,requestId}) => {
+    socket.on('buyCollectionItem', handler(({itemId,requestId}) => {
       const s=sess(me());if(!s.nick)fail('Scegli prima il tuo nickname');
-      const result=Chests.exchange(s,rarity,requestId,()=>require('./contesto').saveNow(true,false));inventoryChanged();return result;
+      const result=Chests.buy(s,String(itemId||''),requestId,()=>require('./contesto').saveNow(true,false));inventoryChanged();return result;
     }));
 
     socket.on('setLook', handler(({ title, frame }) => {

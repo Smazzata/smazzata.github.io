@@ -5,6 +5,7 @@ function cacheChestState(data) {
 }
 function chestRequest() {
   const r=store.get('bur_chest_request',null);
+  if(r?.type==='exchange'){store.set('bur_chest_request',null);return null;}
   return r?.owner===S.token?r:null;
 }
 function nextChestText(data){return data.earnedToday>=1?t('Per oggi hai ottenuto la chest giornaliera.'):data.progress===1?t('Ancora una partita per la prossima chest'):t('Ancora {0} partite per la prossima chest').replace('{0}',String(2-data.progress));}
@@ -12,9 +13,9 @@ function journeySummaryHTML(data){
  if(!data.journey)return '';
  return `<button class="journey-entry loot-next" data-act="journey">${uiIcon('calendar')}<span><b>${t('I tuoi progressi')}</b><small>${t('Oggi')} · ${data.earnedToday>=1?t('Nel bottino'):data.progress+' / 2'}</small><progress max="2" value="${data.earnedToday>=1?2:data.progress}" aria-label="${t('Progressi verso la prossima chest')}"></progress></span><span aria-hidden="true">›</span></button>`;
 }
-function journeyRewardHTML(data,{name,type,progress,goal,awarded,label,prizeName}){
+function journeyRewardHTML(data,{name,type,progress,goal,awarded,label,prizeName,coins=0}){
  const value=Math.min(goal,Math.max(0,progress));
- return `<article class="progress-reward ${awarded?'is-complete':''}"><div class="progress-prize" data-chest-type="${type}" aria-label="${t(data.rules.types[type].name)}"><span class="chest-sprite" aria-hidden="true"></span>${awarded?uiIcon('check'):''}</div><div class="progress-reward-copy"><h3>${esc(t(name))}</h3><div class="progress-count"><span>${esc(label||t('Partite'))}</span><b>${awarded?uiIcon('check'):value+' / '+goal}</b></div><progress value="${awarded?goal:value}" max="${goal}" aria-label="${esc(t(name))}"></progress><small>${t(awarded?'Nel bottino':prizeName||data.rules.types[type].name)}</small></div></article>`;
+ return `<article class="progress-reward ${awarded?'is-complete':''}"><div class="progress-prize" data-chest-type="${type}" aria-label="${coins?coins+' '+t('Monete'):t(data.rules.types[type].name)}">${coins?uiIcon('coins'):'<span class="chest-sprite" aria-hidden="true"></span>'}${awarded?uiIcon('check'):''}</div><div class="progress-reward-copy"><h3>${esc(t(name))}</h3><div class="progress-count"><span>${esc(label||t('Partite'))}</span><b>${awarded?uiIcon('check'):value+' / '+goal}</b></div><progress value="${awarded?goal:value}" max="${goal}" aria-label="${esc(t(name))}"></progress><small>${awarded?(coins?coins+' '+t('Monete ricevute'):t('Nel bottino')):coins?coins+' '+t('Monete'):t(prizeName||data.rules.types[type].name)}</small></div></article>`;
 }
 async function journeyModal(refreshOnly=false){
  const owner=S.token;let data,online=false;
@@ -31,15 +32,15 @@ function renderJourney(){
  if(tab==='today'){
   body=journeyRewardHTML(data,{name:'2 partite online',type:'common',prizeName:'Chest',progress:data.progress,goal:2,awarded:data.earnedToday>=1})+
    (w.active?`<div class="progress-section-label">${t('Weekend')}</div>`+journeyRewardHTML(data,{name:'3 partite nel weekend',type:'rare',progress:w.matches,goal:3,awarded:w.awarded}):'')+
-   `<p class="progress-reset">${uiIcon('clock')}${t('Si rinnova domani')}</p>`;
+   `<p class="progress-reset daily-coins">${uiIcon('coins')}${t('5 monete per partita')} · ${data.coinGames||0}/3</p><p class="progress-reset">${uiIcon('clock')}${t('Si rinnova domani')}</p>`;
  }else if(tab==='week'){
   const labels={matches:'3 partite online',games:'2 giochi diversi',days:'2 giorni di gioco',friends:'3 partite con amici'},units={matches:'Partite',games:'Giochi',days:'Giorni',friends:'Partite'};
   body=(data.weekly?.missions||[]).map(x=>journeyRewardHTML(data,{...x,name:labels[x.id]||x.name,label:t(units[x.id]||'Partite')})).join('')+`<p class="progress-reset">${uiIcon('clock')}${t('Si rinnova lunedì')}</p>`;
  }else if(tab==='month'){
   const next=m.steps.find(x=>!x.awarded),step=m.steps.find(x=>x.step===S.journeyStep)||next||m.steps.at(-1);
   body=`<div class="progress-month-title"><b>${esc(new Date(m.id+'-01T12:00:00Z').toLocaleDateString(LOCALE,{month:'long',year:'numeric'}))}</b><span>${m.awarded} / ${m.steps.length} ${t('premi')}</span></div>`+
-   journeyRewardHTML(data,{name:t('Tappa {0}').replace('{0}',String(step.step)),type:step.type,progress:m.matches,goal:step.goal,awarded:step.awarded,label:t('Partite del mese')})+
-   `<ol class="progress-steps" aria-label="${t('Tappe del mese')}">${m.steps.map(x=>`<li><button data-act="journeyStep" data-step="${x.step}" data-chest-type="${x.type}" class="${x.awarded?'is-complete':''}" aria-pressed="${x.step===step.step}" ${x.step===next?.step?'aria-current="step"':''} aria-label="${t('Tappa {0}').replace('{0}',String(x.step))} · ${t(data.rules.types[x.type].name)} · ${x.awarded?t('Nel bottino'):x.goal+' '+t('partite')}"><span class="chest-sprite" aria-hidden="true"></span><b>${x.awarded?uiIcon('check'):x.step}</b></button></li>`).join('')}</ol><p class="progress-reset">${uiIcon('clock')}${t('Si rinnova il prossimo mese')}</p>`;
+   journeyRewardHTML(data,{name:t('Tappa {0}').replace('{0}',String(step.step)),type:step.type,coins:step.coins,progress:m.matches,goal:step.goal,awarded:step.awarded,label:t('Partite del mese')})+
+   `<ol class="progress-steps" aria-label="${t('Tappe del mese')}">${m.steps.map(x=>`<li><button data-act="journeyStep" data-step="${x.step}" data-chest-type="${x.type}" class="${x.awarded?'is-complete':''}" aria-pressed="${x.step===step.step}" ${x.step===next?.step?'aria-current="step"':''} aria-label="${t('Tappa {0}').replace('{0}',String(x.step))} · ${x.coins?x.coins+' '+t('Monete'):t(data.rules.types[x.type].name)} · ${x.awarded?t(x.coins?'Monete ricevute':'Nel bottino'):x.goal+' '+t('partite')}">${x.coins?uiIcon('coins'):'<span class="chest-sprite" aria-hidden="true"></span>'}<b>${x.awarded?uiIcon('check'):x.step}</b></button></li>`).join('')}</ol><p class="progress-reset">${uiIcon('clock')}${t('Si rinnova il prossimo mese')}</p>`;
  }else{
   const page=Math.max(0,Math.min(Math.ceil(j.album.length/3)-1,S.journeyMemoryPage||0));S.journeyMemoryPage=page;
   body=`<div class="progress-memory-title"><h3 tabindex="-1">${t('Album dei ricordi')}</h3><b>${j.album.filter(x=>x.at).length} / ${j.album.length}</b></div><div class="progress-memories">${j.album.slice(page*3,page*3+3).map(x=>`<article class="progress-memory ${x.at?'is-complete':''}"><span class="memory-seal">${uiIcon(x.at?'check':x.id==='friend'?'friends':x.id.startsWith('win-')?'trophy':'cards')}</span><div><h3>${esc(t(x.name))}</h3><small>${esc(t(x.desc))}</small><progress max="${x.goal}" value="${x.progress}" aria-label="${esc(t(x.name))}"></progress><b>${x.at?t('Completato'):x.progress+' / '+x.goal}</b></div>${x.type?`<span class="progress-memory-prize" data-chest-type="${x.type}" aria-label="${t(data.rules.types[x.type].name)}"><span class="chest-sprite" aria-hidden="true"></span></span>`:''}</article>`).join('')}</div><nav class="progress-pages" aria-label="${t('Album dei ricordi')}"><button class="btn small" data-act="journeyPage" data-page="${page-1}" aria-label="${t('Pagina precedente')}" ${page===0?'disabled':''}>‹</button><span>${page+1} / ${Math.ceil(j.album.length/3)}</span><button class="btn small" data-act="journeyPage" data-page="${page+1}" aria-label="${t('Pagina successiva')}" ${(page+1)*3>=j.album.length?'disabled':''}>›</button></nav>`;
@@ -57,24 +58,22 @@ async function chestsModal(refreshOnly=false) {
   S.chestState=data;S.chestReadOnly=!online;
   const rules=data.rules,request=chestRequest(),disabled=!online||!!request,rarities=window.SmazzataAvatars.RARITIES;
   openModal('chests',collectionShell('loot',`<section class="chest-room simple-loot"><h2>${t('Le tue chest')}</h2><p>${t('Tocca una chest per aprirla.')}</p>
-    ${!online?`<p class="chest-notice" role="status">${t('Copia offline: collegati per aprire o scambiare.')}</p>`:''}
+    ${!online?`<p class="chest-notice" role="status">${t('Collegati per aprire le chest o acquistare.')}</p>`:''}
     ${data.pending.length?`<div class="inventory-chests">${rarities.filter(r=>data.pending.some(x=>x.type===r.id)).map(r=>{const items=data.pending.filter(x=>x.type===r.id);return `<button class="inventory-chest" data-act="chestOpen" data-id="${esc(items[0].id)}" data-chest-type="${r.id}" aria-label="${t(rules.types[r.id].name)} · ${items.length} · ${t('Tocca per aprire')}" ${disabled||S.chestBusy?'disabled':''}><span class="chest-quantity">×${items.length}</span><span class="chest-sprite" aria-hidden="true"></span><b>${t(rules.types[r.id].name)}</b><small>${t('Tocca per aprire')}</small></button>`;}).join('')}</div>`:`<div class="loot-empty">${uiIcon('trophy')}<p>${t('Nessuna chest da aprire. Le prossime ti aspettano qui.')}</p></div>`}
     ${request?`<p role="status">${t('Un risultato è in attesa di conferma. Recuperalo prima di continuare.')}</p><button class="btn primary" data-act="chestRetry" ${!online?'disabled':''}>${t('Recupera risultato')}</button>`:''}
     ${journeySummaryHTML(data)}
-    <details class="loot-secondary loot-more"><summary>${t('Altro')}</summary>
-    <details class="loot-secondary collection-loot-details"><summary>${t('Usa frammenti')} · ${data.fragments}</summary><p>${t('I doppioni diventano frammenti. Usali qui per ottenere un oggetto che ti manca.')}</p><div class="chest-exchanges">${rarities.map(r=>`<div><span><b>${t(r.name)}</b><small>${rules.costs[r.id]} ${t('frammenti')}</small></span><button class="btn small" data-act="chestExchange" data-rarity="${r.id}" ${disabled||!data.missing[r.id]||data.fragments<rules.costs[r.id]?'disabled':''}>${t(!data.missing[r.id]?'Tutti ottenuti':'Scambia')}</button></div>`).join('')}</div></details>
-    ${data.recent.length?`<details class="loot-secondary"><summary>${t('Ultime aperture')}</summary><div class="chest-history">${data.recent.map(x=>{const a=chestPrize(x);return `<div>${a.html}<span>${esc(t(a.name))}<small>${x.duplicate?'+'+x.fragments+' '+t('frammenti'):t('Nuovo oggetto')}</small></span></div>`;}).join('')}</div></details>`:''}
-  </details></section>`));
+    ${data.recent.length?`<details class="loot-secondary loot-more"><summary>${t('Ultime aperture')}</summary><div class="chest-history">${data.recent.map(x=>{const a=chestPrize(x);return `<div>${a.html}<span>${esc(t(a.name))}<small>${x.kind==='coins'||x.duplicate?'+'+(x.coins||0)+' '+t('Monete'):t('Nuovo oggetto')}</small></span></div>`;}).join('')}</div></details>`:''}
+  </section>`));
   $('#modal .modal-box').scrollTop=0;
 }
 function chestReveal(reward) {
-  const a=chestPrize(reward),rarity=window.SmazzataAvatars.RARITIES.find(r=>r.id===reward.rarity);
-  const reduce=S.prefs.anim===false || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const a=chestPrize(reward),rarity=window.SmazzataAvatars.RARITIES.find(r=>r.id===(reward.rarity||reward.chestType||'common'));S.chestReward=reward;
+  const reduce=reward.purchase||S.prefs.anim===false || matchMedia('(prefers-reduced-motion: reduce)').matches;
   clearTimeout(S.chestRevealTimer);
   openModal('chestReward',collectionShell('loot',`<section class="chest-reveal ${reduce?'':'is-opening'}" data-rarity="${rarity.id}">
-    <h2>${t('Il tuo premio')}</h2><button class="chest-stage" data-act="chestSkip" data-chest-type="${reward.chestType || reward.rarity}" aria-label="${t('Tocca per scoprire il premio')}"><div class="chest-burst"></div><div class="chest-sprite"></div>${Array.from({length:8},(_,i)=>`<i class="chest-spark" style="--spark:${i}"></i>`).join('')}</button>
+    <h2>${t(reward.purchase?'Acquisto completato':'Il tuo premio')}</h2><button class="chest-stage" data-act="chestSkip" data-chest-type="${reward.chestType || reward.rarity}" aria-label="${t('Tocca per scoprire il premio')}"><div class="chest-burst"></div><div class="chest-sprite"></div>${Array.from({length:8},(_,i)=>`<i class="chest-spark" style="--spark:${i}"></i>`).join('')}</button>
     <button class="btn small chest-skip" data-act="chestSkip">${t('Salta animazione')}</button>
-    <div class="chest-prize" hidden role="status"><div class="chest-prize-art">${a.html}</div><span class="avatar-rarity" data-rarity="${rarity.id}">${t(rarity.name)}</span><h3>${esc(t(a.name))}</h3><p>${reward.duplicate?t('Doppione')+' · +'+reward.fragments+' '+t('frammenti'):t('Nuovo oggetto nella tua collezione')}</p><div class="row"><button class="btn primary" data-act="chestEquip" data-kind="${a.kind}" data-item-id="${a.id}">${a.kind==='avatar'?t('Usa avatar'):t('Usa questo stile')}</button><button class="btn" data-act="chests">${t('Continua')}</button></div></div></section>`));
+    <div class="chest-prize" hidden role="status"><div class="chest-prize-art">${a.html}</div><span class="avatar-rarity" data-rarity="${rarity.id}" ${reward.kind==='coins'?'hidden':''}>${t(rarity.name)}</span><h3>${reward.kind==='coins'?reward.coins+' ':''}${esc(t(a.name))}</h3><p>${reward.kind==='coins'?t('Saldo aggiornato'):reward.duplicate?t('Doppione')+' · +'+reward.coins+' '+t('Monete'):t('Nuovo oggetto nella tua collezione')}</p><div class="row"><button class="btn primary" data-act="chestEquip" ${a.kind==='coins'?'hidden':''} data-kind="${a.kind}" data-item-id="${a.id}">${a.kind==='avatar'?t('Usa avatar'):t('Usa questo stile')}</button><button class="btn" data-act="${reward.purchase?'collection':'chests'}">${t('Continua')}</button></div></div></section>`));
   $('#modal .modal-box').scrollTop=0;
   if(reduce)handlers.chestSkip();else S.chestRevealTimer=setTimeout(()=>{if(S.modalKind==='chestReward')handlers.chestSkip();},1900);
 }
@@ -85,12 +84,12 @@ async function chestSubmit(request) {
   store.set('bur_chest_request',{...request,owner:S.token});
   for(const el of $$('#modal .modal-content button'))el.disabled=true;
   try {
-    const payload=request.type==='open'?{id:request.id}:{rarity:request.rarity,requestId:request.requestId};
-    const r=await emit(request.type==='open'?'openChest':'exchangeChestFragments',payload);
+    const payload=request.type==='open'?{id:request.id}:{itemId:request.itemId,requestId:request.requestId};
+    const r=await emit(request.type==='open'?'openChest':'buyCollectionItem',payload);
     if(owner!==S.token)return;
     if(r.ok){store.set('bur_chest_request',null);cacheChestState(r.chests);S.chestState=r.chests;chestReveal(r.reward);}
     else {if(!r.timeout&&!r.disconnected)store.set('bur_chest_request',null);await chestsModal();}
-  } finally {S.chestBusy=false;}
+  } finally {S.chestBusy=false;if(owner===S.token&&S.modalKind==='chests')for(const button of $$('#modal [data-act=chestOpen]'))button.disabled=S.chestReadOnly||!!chestRequest();}
 }
 Object.assign(handlers,{
   journey:journeyModal,
@@ -102,33 +101,38 @@ Object.assign(handlers,{
     if(chestRequest()||!S.chestState?.pending.some(x=>x.id===el.dataset.id))return;
     return chestSubmit({type:'open',id:el.dataset.id});
   },
-  chestExchange(el){
-    const requestId=crypto.randomUUID?.() || Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
-    return chestSubmit({type:'exchange',rarity:el.dataset.rarity,requestId});
+  async collectionBuy(el){
+    const item=collectionItems().find(x=>x.id===el.dataset.id);if(!item||collectionOwned().has(item.id)||chestRequest())return;
+    const owner=S.token,r=await emit('chests');if(owner!==S.token||!r.ok)return;cacheChestState(r.chests);S.chestState=r.chests;S.chestReadOnly=false;
+    const cost=r.chests.rules.costs[item.rarity];
+    openModal('buyConfirm',collectionShell('collection',`<section class="buy-confirm"><h2>${t('Conferma acquisto')}</h2><div class="buy-confirm-art">${collectionArt(item)}</div><h3>${esc(t(item.name))}</h3><p class="buy-price">${uiIcon('coins')}${cost}</p><p>${t('Il tuo saldo')}: ${r.chests.coins}</p><button class="btn primary" data-act="buyConfirm" data-id="${item.id}" ${r.chests.coins<cost?'disabled':''}>${t(r.chests.coins<cost?'Monete insufficienti':'Acquista')}</button><button class="btn" data-act="collectionBuyBack">${t('Annulla')}</button></section>`));
   },
+  collectionBuyBack(){return collectionModal();},
+  buyConfirm(el){if(chestRequest())return;const requestId=crypto.randomUUID?.()||Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');return chestSubmit({type:'buy',itemId:el.dataset.id,requestId});},
+
   async chestShowItem(el){await collectionModal(el.dataset.kind);if(collectionOwned().has(el.dataset.id))await handlers.collectionSelect(el);},
   chestRetry(){const r=chestRequest();if(r)return chestSubmit(r);},
   chestSkip(){
     clearTimeout(S.chestRevealTimer);const root=$('#modal .chest-reveal');if(!root||root.classList.contains('is-revealed'))return;
     Sound.chest(root.dataset.rarity);root.querySelector('.chest-stage').disabled=true;root.classList.remove('is-opening');root.classList.add('is-revealed');
     root.querySelector('.chest-prize').hidden=false;root.querySelector('.chest-skip').hidden=true;
-    root.querySelector('.chest-prize [data-act=chestEquip]')?.focus({preventScroll:true});
+    root.querySelector('.chest-prize button:not([hidden])')?.focus({preventScroll:true});
   },
   async chestEquip(el){
     const owner=S.token,item=collectionItems().find(x=>x.id===el.dataset.itemId);
-    if(el.dataset.kind!=='avatar'){if(await equipCosmetic(el.dataset.kind,el.dataset.itemId)&&owner===S.token){confirmEquipped(item);await chestsModal();}return;}
+    if(el.dataset.kind!=='avatar'){if(await equipCosmetic(el.dataset.kind,el.dataset.itemId)&&owner===S.token){confirmEquipped(item);if(S.chestReward?.purchase)await collectionModal(item.kind);else await chestsModal();}return;}
     const p=await emit('profile');if(owner!==S.token||!p.ok)return;
     const r=await emit('setAvatar',{id:el.dataset.itemId,c:p.avatar?.c||p.colors[0]});
-    if(owner===S.token&&r.ok){confirmEquipped(item);await chestsModal();}
+    if(owner===S.token&&r.ok){confirmEquipped(item);if(S.chestReward?.purchase)await collectionModal(item.kind);else await chestsModal();}
   }
 });
 socket.on('chests',data=>{
   cacheChestState(data);
   S.chestState=data;
   if(data.roomCode){S.chestMatch={owner:S.token,...data};if(S.modalKind==='result')showResult();}
-  if(data.justEarned)toast(t('Hai ottenuto una chest gratuita!'));
-  if(data.weeklyEarned)toast(t('Hai completato un obiettivo settimanale: il premio è nel bottino.'));
-  if(data.journeyEarned)toast(t('Un nuovo premio del percorso ti aspetta nel Bottino.'));
+  if(data.justEarned||data.weeklyEarned||data.journeyEarned)toast(t('Un nuovo premio del percorso ti aspetta nel Bottino.'));
+  if(data.coinsEarned&&!data.justEarned&&!data.weeklyEarned&&!data.journeyEarned)toast('+'+data.coinsEarned+' '+t('Monete'));
+
   if(S.social)S.social.nextChest={remaining:2-data.progress,limit:data.earnedToday>=1};
   if(S.screen==='home')render();
   const count=$('#modal .chest-entry small');if(count)count.textContent=t('Chest disponibili')+': '+data.pending.length;
@@ -143,7 +147,7 @@ async function inboxModal(offset=0) {
   const box=r.inbox;
   openModal('inbox',collectionShell('mail',`<section class="personal-inbox"><button class="btn small" data-act="chests">${t('Inventario personale')}</button><h2>${t('Posta personale')}</h2><p>${t('Messaggi e regali da Smazzata')}</p>
     ${box.messages.length?box.messages.map(m=>`<article class="personal-letter ${m.read?'':'unread'}"><small>${esc(new Date(m.at).toLocaleString())} · ${t(m.read?'Letto':'Da leggere')}</small><h3>${esc(m.title)}</h3><p class="letter-body">${esc(m.body)}</p>
-    ${m.gift?`<div class="letter-gift">${m.gift.kind==='chest'?`<div data-chest-type="${esc(m.gift.type)}"><div class="chest-sprite" aria-hidden="true"></div></div><b>${t(({common:'Chest comune',rare:'Chest rara',epic:'Chest epica',legendary:'Chest leggendaria'})[m.gift.type])}</b>`:`${chestPrize(m.gift).html}<b>${esc(t(chestPrize(m.gift).name))}</b>`}<p>${m.gift.duplicate?'+'+m.gift.fragments+' '+t('frammenti'):t('Regalo consegnato al tuo inventario')}</p><button class="btn small" data-act="chests">${t('Inventario personale')}</button></div>`:''}
+    ${m.gift?`<div class="letter-gift">${m.gift.kind==='chest'?`<div data-chest-type="${esc(m.gift.type)}"><div class="chest-sprite" aria-hidden="true"></div></div><b>${t(({common:'Chest comune',rare:'Chest rara',epic:'Chest epica',legendary:'Chest leggendaria'})[m.gift.type])}</b>`:`${chestPrize(m.gift).html}<b>${esc(t(chestPrize(m.gift).name))}</b>`}<p>${m.gift.duplicate?'+'+m.gift.coins+' '+t('Monete'):t('Regalo consegnato al tuo inventario')}</p><button class="btn small" data-act="chests">${t('Inventario personale')}</button></div>`:''}
     ${!m.read?`<button class="btn small" data-act="readMail" data-id="${esc(m.id)}" data-offset="${box.offset}">${t('Segna come letto')}</button>`:''}</article>`).join(''):`<p class="chest-notice">${t('Non hai ancora ricevuto messaggi.')}</p>`}
     <nav class="inventory-nav">${box.offset?`<button class="btn small" data-act="inbox" data-offset="${Math.max(0,box.offset-20)}">${t('Più recenti')}</button>`:''}${box.offset+box.messages.length<box.total?`<button class="btn small" data-act="inbox" data-offset="${box.offset+20}">${t('Più vecchi')}</button>`:''}</nav></section>`));
 }
@@ -161,5 +165,5 @@ function resultLootHTML() {
   if(!d||d.owner!==S.token||d.roomCode!==S.room?.code||d.gameSeq!==S.room?.gameSeq||!S.game?.over||S.game.you<0||S.room.onDevice||S.room.offline||S.room.tutorial||S.room.progressEligible===false)return '';
   const count=(d.justEarned?1:0)+(d.weeklyEarned||0)+(d.journeyEarned||0),next=d.weekly?.missions.find(m=>!m.awarded);
   const remaining=d.journey?.month?Math.max(0,Math.min(30,(d.journey.month.awarded+1)*3)-d.journey.month.matches):0;
-  return `<section class="result-progress result-loot"><h3>${t('Le tue ricompense')}</h3><p>${count?t('Chest ottenute')+': <b>'+count+'</b>':d.earnedToday>=1?t('Premio giornaliero ottenuto'):t('Progressi salvati per la prossima chest')}</p><details class="result-reward-details"><summary>${t('I tuoi progressi')}</summary><progress max="2" value="${d.earnedToday>=1?2:d.progress}" aria-label="${t('Progressi verso la prossima chest')}"></progress><p>${d.earnedToday>=1?2:d.progress}/2 · ${t('Chest ottenute oggi')}: ${d.earnedToday}/1</p>${d.journey?.month?.awarded<10?`<p>${t('Prossima tappa')}: ${remaining===1?t('1 partita'):t('{0} partite').replace('{0}',String(remaining))}</p>`:''}${next?`<p>${t('Prossimo obiettivo')}: ${t(next.name)} · ${next.progress}/${next.goal}</p>`:`<p>${t('Obiettivi settimanali completati')}</p>`}</details><button class="btn" data-act="chests">${t('Vai al bottino')}</button></section>`;
+  return `<section class="result-progress result-loot"><h3>${t('Le tue ricompense')}</h3>${d.coinsEarned?`<p class="result-coins">${uiIcon('coins')} +${d.coinsEarned} ${t('Monete')}</p>`:''}<p>${count?t('Chest ottenute')+': <b>'+count+'</b>':d.earnedToday>=1?t('Premio giornaliero ottenuto'):t('Progressi salvati per la prossima chest')}</p><details class="result-reward-details"><summary>${t('I tuoi progressi')}</summary><progress max="2" value="${d.earnedToday>=1?2:d.progress}" aria-label="${t('Progressi verso la prossima chest')}"></progress><p>${d.earnedToday>=1?2:d.progress}/2 · ${t('Chest ottenute oggi')}: ${d.earnedToday}/1</p>${d.journey?.month?.awarded<10?`<p>${t('Prossima tappa')}: ${remaining===1?t('1 partita'):t('{0} partite').replace('{0}',String(remaining))}</p>`:''}${next?`<p>${t('Prossimo obiettivo')}: ${t(next.name)} · ${next.progress}/${next.goal}</p>`:`<p>${t('Obiettivi settimanali completati')}</p>`}</details><button class="btn" data-act="chests">${t('Vai al bottino')}</button></section>`;
 }

@@ -7,6 +7,7 @@
   // Piccole illustrazioni originali: panno verde, carta avorio e dettagli d'oro.
   function uiIcon(name) {
     const paths = {
+      coins: '<circle cx=20 cy=20 r=17 fill="#e5b947" stroke="#9a7025"/><circle cx=20 cy=20 r=12 fill="#ffdc78" stroke="#bb8e32"/><path d="m20 11 6 9-6 9-6-9Z" fill="#b17b21"/>',
       sun: '<circle cx="20" cy="20" r="8" fill="#edbd4e"/><path d="M20 2v5m0 26v5M2 20h5m26 0h5M7 7l4 4m18 18 4 4M7 33l4-4m18-18 4-4" stroke="#b18b44" stroke-width="3"/>',
       moon: '<path d="M30 31A16 16 0 0 1 12 5c-2 14 7 22 18 26Z" fill="#edbd4e"/><path d="m29 7 2 4 4 1-4 2-2 4-1-4-4-2 4-1Z" fill="#6cabc0"/>',
       mail: '<rect x="4" y="8" width="32" height="24" rx="4" fill="#fff1cd"/><path d="m5 10 15 12 15-12" stroke="#398566"/>',

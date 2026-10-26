@@ -24,7 +24,7 @@ test('Regali: una chest chiusa, limite giornaliero invariato, retry e apertura i
 test('Oggetti specifici, doppioni, rollback atomico e messaggi senza regalo',()=>{
  const ctx=context(),item=Cosmetics.LIST.find(x=>x.rarity==='legendary'),p=D.normalize({...base,gift:item.id});
  D.deliver(ctx,'test-delivery-000002',p,['a'],()=>{});assert(ctx.sessions.get('a').cosmeticOwned.includes(item.id));
- D.deliver(ctx,'test-delivery-000003',p,['a'],()=>{});assert.equal(C.view(ctx.sessions.get('a')).fragments,150);
+ D.deliver(ctx,'test-delivery-000003',p,['a'],()=>{});assert.equal(C.view(ctx.sessions.get('a')).coins,900);
  const old=structuredClone(ctx);
  assert.throws(()=>D.deliver(ctx,'test-delivery-000004',p,['a','b'],()=>{throw Error('disco pieno');}));assert.deepEqual(ctx,old);
  D.deliver(ctx,'test-delivery-000005',D.normalize({...base,gift:''}),['b'],()=>{});assert.equal(ctx.sessions.get('b').inbox[0].gift,null);assert.equal(C.view(ctx.sessions.get('b')).pending.length,0);
@@ -62,7 +62,7 @@ test('Regalo avatar, destinatari rimossi e garanzie non consumate dalla consegna
  const p=D.normalize({...base,gift:a.id});ctx.sessions.delete('b');
  const result=D.deliver(ctx,'test-avatar-delivery-01',p,['a','b','guest'],()=>{});
  assert.equal(result.count,1);assert(A.ownedIds(s).includes(a.id));assert.equal(s.chests.epicMisses,17);assert.equal(s.chests.legendaryMisses,35);
- D.deliver(ctx,'test-avatar-delivery-02',p,['a'],()=>{});assert.equal(C.view(s).fragments,150);
+ D.deliver(ctx,'test-avatar-delivery-02',p,['a'],()=>{});assert.equal(C.view(s).coins,900);
 });
 test('Invio a 1000 profili: un salvataggio, un regalo ciascuno e replay senza scritture',()=>{
  const ctx={sessions:new Map(Array.from({length:1000},(_,i)=>['user-'+i,{nick:'Utente_'+i}]))};

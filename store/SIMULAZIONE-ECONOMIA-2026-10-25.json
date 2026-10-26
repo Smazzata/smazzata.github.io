@@ -6,7 +6,7 @@
     "catalogue": 146,
     "starterAvatars": 4,
     "seeded": true,
-    "calendar": "moduli reali chests/weekly-rewards/player-journey; calendario fisso per profilo, estrazioni Monte Carlo",
+    "calendar": "calendari storici dei moduli reali al commit f9a0eff, congelati in scripts/fixtures/economy-calendar-v3.json; estrazioni Monte Carlo",
     "pity": "20 epico/50 leggendario su tutte le aperture, non su acquisti",
     "limits": "Nessuna simulazione di durata partite, abbandoni, retention, regali admin, migrazione profili esistenti o costi monetari; quantità fisse di monete; calendario campione, non popolazione reale."
   },

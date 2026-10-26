@@ -1,7 +1,8 @@
 'use strict';
 // Progressione delle sole partite umane valide, salvata insieme alle chest.
 const Weekly=require('./weekly-rewards');
-const MONTH_REWARDS=['common','common','rare','common','rare','common','rare','common','rare','epic'];
+const MONTH_REWARDS=[50,'common',100,100,'common',150,150,'rare',200,'epic'];
+const LEGACY_MONTH=['common','common','rare','common','rare','common','rare','common','rare','epic'];
 const GAMES=['burraco','scala40','ramino','canasta'];
 const MEMORIES=[
  {id:'first',name:'Il primo tavolo',desc:'Completa una partita online',goal:1,type:'common'},
@@ -18,7 +19,7 @@ function state(b){return b.journey||fresh();}
 function month(j,day){return j.month?.id===day.slice(0,7)?j.month:{id:day.slice(0,7),matches:0,awarded:0};}
 function weekend(j,day){const id=Weekly.weekOf(day),active=[0,6].includes(new Date(day+'T12:00:00Z').getUTCDay());return {...(j.weekend?.id===id?j.weekend:{id,matches:0,awarded:false}),active};}
 function progress(j,m){return m.id==='explorer'?j.games.length:m.id.startsWith('win-')?Number(j.wins.includes(m.id.slice(4))):m.id==='comeback'?Number(!!j.comeback):m.id==='friend'?Number(!!j.friend):j.matches;}
-function view(b,day){const j=state(b),m=month(j,day),w=weekend(j,day);return {month:{...m,steps:MONTH_REWARDS.map((type,i)=>({step:i+1,type,goal:(i+1)*3,awarded:i<m.awarded}))},weekend:w,album:MEMORIES.map(x=>({...x,progress:Math.min(x.goal,progress(j,x)),at:j.memories[x.id]||null})),matches:j.matches};}
+function view(b,day){const j=state(b),m=month(j,day),w=weekend(j,day);return {month:{...m,steps:MONTH_REWARDS.map((reward,i)=>{const value=i<(m.legacyAwarded||0)?LEGACY_MONTH[i]:reward;return {step:i+1,type:typeof value==='string'?value:null,coins:typeof value==='number'?value:0,goal:(i+1)*3,awarded:i<m.awarded};})},weekend:w,album:MEMORIES.map(x=>({...x,progress:Math.min(x.goal,progress(j,x)),at:j.memories[x.id]||null})),matches:j.matches};}
 function comeback(g,seat,game){
  if(!g.winners?.includes(seat)||!['burraco','canasta'].includes(game))return false;
  const teams=g.teams||[],mine=teams.findIndex(t=>t.members.includes(seat));if(mine<0)return false;
@@ -35,7 +36,7 @@ function record(b,room,seat,now,day,award,withFriend){
  if(room.game.winners?.includes(seat)&&GAMES.includes(game)&&!j.wins.includes(game))j.wins.push(game);
  if(withFriend)j.friend=true;if(comeback(room.game,seat,game))j.comeback=true;
  m.matches=Math.min(30,m.matches+1);let count=0;
- while(m.awarded<Math.floor(m.matches/3)){award(MONTH_REWARDS[m.awarded],now,'monthly',m.id+'-'+(++m.awarded));count++;}
+ while(m.awarded<Math.floor(m.matches/3)){const reward=MONTH_REWARDS[m.awarded];award(reward,now,'monthly',m.id+'-'+(++m.awarded));if(typeof reward==='string')count++;}
  if(w.active){w.matches=Math.min(3,w.matches+1);if(w.matches===3&&!w.awarded){award('rare',now,'weekend',w.id);w.awarded=true;count++;}delete w.active;j.weekend=w;}
  for(const memory of MEMORIES)if(!j.memories[memory.id]&&progress(j,memory)>=memory.goal){j.memories[memory.id]=now;if(memory.type){award(memory.type,now,'memory',memory.id);count++;}}
  return count;

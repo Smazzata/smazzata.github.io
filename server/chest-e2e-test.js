@@ -10,7 +10,7 @@ test('Chest via socket: concorrenza, isolamento, scambio e riavvio del server',{
  const profiles=new Map([['test',s],['other',{nick:'Altro'}]]);
  s.friends=['other'];profiles.get('other').friends=['test'];
  for(let i=0;i<3;i++)C.recordGame({chestGameId:String(i),seats:[{token:'test'},{token:'other'}],progressEligible:true,game:{over:true,handResult:{reason:'close'}}},profiles,()=>{});
- s.chests.items=s.chests.items.filter(x=>!x.source);s.chests.items[0].id='1';s.chests.items[0].type='legendary';s.chests.fragments=2000;
+ s.chests.items=s.chests.items.filter(x=>!x.source);s.chests.items[0].id='1';s.chests.items[0].type='legendary';s.chests.coins=24000;
  fs.writeFileSync(path.join(dir,'stato.json'),JSON.stringify({accountsEpoch:3,progressEpoch:1,sessions:[...profiles],leaderboard:[],rooms:[],leagues:[],tournaments:[],daily:[]}));
  let proc;const sockets=[];
  const start=()=>new Promise((resolve,reject)=>{
@@ -32,13 +32,13 @@ test('Chest via socket: concorrenza, isolamento, scambio e riavvio del server',{
   assert.equal((await b('social')).social.friends.find(x=>x.nick==='Altro').favorite,true);
   assert.equal((await a('chests')).chests.pending[0].type,'legendary');
   assert.equal((await guest('openChest',{id:'1'})).ok,false);
-  const [r1,r2]=await Promise.all([a('openChest',{id:'1',type:'common',avatarId:'fante-quadri',fragments:999999}),b('openChest',{id:'1'})]);
+  const [r1,r2]=await Promise.all([a('openChest',{id:'1',type:'common',avatarId:'fante-quadri',coins:999999}),b('openChest',{id:'1'})]);
   assert(r1.ok&&r2.ok);assert.deepEqual(r1.reward,r2.reward);assert.equal(r1.reward.rarity,'legendary');
-  assert.equal(r1.reward.chestType,'legendary');assert.equal(r1.chests.fragments,2000);
+  assert.equal(r1.reward.chestType,'legendary');assert.equal(r1.chests.coins,24000);
   assert.equal((await a('chests')).chests.pending.length,0);
   const requestId=crypto.randomUUID();
-  const [e1,e2]=await Promise.all([a('exchangeChestFragments',{rarity:'epic',requestId}),b('exchangeChestFragments',{rarity:'epic',requestId})]);
-  assert.deepEqual(e1.reward,e2.reward);assert.equal(e1.chests.fragments,1500);
+  const itemId=C.POOL.find(x=>x.rarity==='epic'&&x.kind==='avatar').id;const [e1,e2]=await Promise.all([a('buyCollectionItem',{itemId,requestId,price:1,coins:999999,rarity:'common'}),b('buyCollectionItem',{itemId,requestId})]);
+  assert.deepEqual(e1.reward,e2.reward);assert.equal(e1.chests.coins,18000);
   const profile=await a('profile'),award=e1.reward;
   assert((award.kind==='avatar'?profile.ownedAvatarIds:profile.cosmetics.ownedIds).includes(award.itemId));
   assert((award.kind==='avatar'?await a('setAvatar',{id:award.itemId,c:'#64b5f6'}):await a('setCosmetic',{kind:award.kind,id:award.itemId})).ok);
@@ -63,7 +63,7 @@ test('Chest via socket: concorrenza, isolamento, scambio e riavvio del server',{
   assert((await again('react',{cosmeticId:reaction.id})).ok);
   assert.equal((await again('react',{cosmeticId:reaction.id})).ok,false);
   assert.deepEqual((await again('openChest',{id:'1'})).reward,r1.reward);
-  assert.equal((await again('exchangeChestFragments',{rarity:'epic',requestId})).chests.fragments,1500);
+  assert.equal((await again('buyCollectionItem',{itemId,requestId})).chests.coins,18000);
   assert.equal((await again('openChest',{id:'not-owned'})).ok,false);
  }finally{for(const sock of sockets)sock.disconnect();await stop();}
 });

@@ -35,7 +35,7 @@ La verifica storica della build 1.30 non copre le rifiniture del 23 ottobre: ved
 - [ ] Scheda e schermate attuali, nessun Elo numerico/Avventura/promessa non presente. Screenshot finali in `schermate-rilascio/`, selezione e metodo in `SCHERMATE.md`; confrontarli con il nuovo AAB e leggerli tutti prima di caricarli.
 - [ ] URL privacy e cancellazione aperti senza login e da una rete esterna. Contatti dello store effettivamente presidiati.
 - [ ] Modulo Sicurezza dei dati compilato dalla mappa `SICUREZZA-DEI-DATI.md`, verificando i fornitori reali e la release finale.
-- [ ] Dichiarazione annunci: **no** per questa release. Acquisti: assenti. Aggiornare prima di introdurli.
+- [ ] Dichiarazione annunci: **no** per questa release. Acquisti in denaro: assenti; monete gratuite e acquisti di cosmetici con monete presenti. Aggiornare prima di introdurli.
 - [ ] Questionario classificazione: dichiarare chat/interazione utenti, segnalazione e blocco. Nessuna puntata, fiches monetizzabili o premio convertibile; rispondere alle domande sui giochi di carte secondo il loro testo effettivo. Il rating viene assegnato dal questionario, non scelto da noi.
 - [ ] Pubblico e paesi: servizio online almeno 14 anni; decidere distribuzione iniziale e requisiti dei paesi. Le fasce Console non coincidono con 14 anni: non scegliere fasce per aggirare Families e non selezionare automaticamente tutti i paesi. Confrontare età dichiarata, pubblico reale, scheda e tutele tecniche.
 - [ ] Accesso app per revisori: fornire un account di prova già verificato con istruzioni su login e funzioni online, senza OTP/email personali del titolare. Salvare le credenziali soltanto nella Console, non nel repository. Nessun bypass dei controlli nel codice.

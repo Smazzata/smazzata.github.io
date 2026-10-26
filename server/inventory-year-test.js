@@ -13,7 +13,7 @@ test('Un anno di inventario: accumulo, due dispositivi, ricevute e riavvio',{tim
   if(day%30===0){const restored=JSON.parse(JSON.stringify(s));assert.deepEqual(C.view(restored,now),C.view(s,now));assert.deepEqual(C.collection(restored),C.collection(s));}
  }
  const yearView=C.view(s),owned=[...A.ownedIds(s),...Cos.ownedIds(s)],receipts=s.chests.items.filter(x=>x.reward).map(x=>[x.id,x.reward]);
- assert(yearView.pending.length>500);assert.equal(receipts.length,opened);assert.equal(new Set(s.chests.items.map(x=>x.id)).size,s.chests.items.length);
+ assert(yearView.pending.length>300);assert.equal(yearView.pending.length,s.chests.items.length-receipts.length);assert.equal(receipts.length,opened);assert.equal(new Set(s.chests.items.map(x=>x.id)).size,s.chests.items.length);
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'smazzata-year-'));
  fs.writeFileSync(path.join(dir,'stato.json'),JSON.stringify({accountsEpoch:3,progressEpoch:1,sessions:[...sessions],leaderboard:[],rooms:[],leagues:[],tournaments:[],daily:[]}));
  let proc;const sockets=[];
@@ -25,10 +25,10 @@ test('Un anno di inventario: accumulo, due dispositivi, ricevute e riavvio',{tim
   assert.deepEqual((await a.call('chests')).chests,(await b.call('chests')).chests);
   const one=yearView.pending[0].id,[r1,r2]=await Promise.all([a.call('openChest',{id:one}),b.call('openChest',{id:one})]);assert(r1.ok&&r2.ok);assert.deepEqual(r1.reward,r2.reward);
   let view=(await b.call('chests')).chests;assert.equal(view.pending.length,yearView.pending.length-1);
-  const oldFragments=view.fragments,ids=view.pending.slice(0,2).map(x=>x.id),results=await Promise.all([a.call('openChest',{id:ids[0]}),b.call('openChest',{id:ids[1]})]);assert(results.every(x=>x.ok));
-  view=(await a.call('chests')).chests;assert.equal(view.fragments,oldFragments+results.reduce((n,r)=>n+r.reward.fragments,0));
-  const rarity=Object.keys(view.missing).find(r=>view.missing[r]>0&&view.fragments>=C.RULES.costs[r]);let exchange;
-  if(rarity){const requestId=crypto.randomUUID(),both=await Promise.all([a.call('exchangeChestFragments',{rarity,requestId}),b.call('exchangeChestFragments',{rarity,requestId})]);assert(both.every(x=>x.ok));assert.deepEqual(both[0].reward,both[1].reward);assert.equal((await b.call('chests')).chests.fragments,view.fragments-C.RULES.costs[rarity]);exchange={rarity,requestId,reward:both[0].reward};}
+  const oldCoins=view.coins,ids=view.pending.slice(0,2).map(x=>x.id),results=await Promise.all([a.call('openChest',{id:ids[0]}),b.call('openChest',{id:ids[1]})]);assert(results.every(x=>x.ok));
+  view=(await a.call('chests')).chests;assert.equal(view.coins,oldCoins+results.reduce((n,r)=>n+r.reward.coins,0));
+  const rarity=Object.keys(view.missing).find(r=>view.missing[r]>0&&view.coins>=C.RULES.costs[r]);let exchange;
+  if(rarity){const profile=await a.call('profile'),mine=new Set([...profile.ownedAvatarIds,...profile.cosmetics.ownedIds]),itemId=C.POOL.find(x=>x.rarity===rarity&&!mine.has(x.id)).id,requestId=crypto.randomUUID(),both=await Promise.all([a.call('buyCollectionItem',{itemId,requestId}),b.call('buyCollectionItem',{itemId,requestId})]);assert(both.every(x=>x.ok));assert.deepEqual(both[0].reward,both[1].reward);assert.equal((await b.call('chests')).chests.coins,view.coins-C.RULES.costs[rarity]);exchange={itemId,requestId,reward:both[0].reward};}
   // Il primo dispositivo perde la conferma, il secondo verifica il salvataggio.
   const lostId=(await a.call('chests')).chests.pending[0].id;a.sock.emit('openChest',{id:lostId});
   let saved;for(let n=0;n<30&&!saved;n++){const state=(await b.call('chests')).chests;if(!state.pending.some(x=>x.id===lostId))saved=state;else await new Promise(r=>setTimeout(r,20));}assert(saved);a.sock.disconnect();
@@ -36,7 +36,7 @@ test('Un anno di inventario: accumulo, due dispositivi, ricevute e riavvio',{tim
   const profile=(await b.call('profile')),newOwned=new Set([...profile.ownedAvatarIds,...profile.cosmetics.ownedIds]);assert(owned.every(id=>newOwned.has(id)));
   for(const [id,reward] of receipts){assert.deepEqual((await b.call('openChest',{id})).reward,reward);}
   const before=(await b.call('chests')).chests;await stop();await startServer();const restored=await client(keys[0]);assert.deepEqual((await restored.call('chests')).chests,before);assert.deepEqual((await restored.call('openChest',{id:one})).reward,r1.reward);assert.deepEqual((await restored.call('openChest',{id:lostId})).reward,recovered.reward);
-  if(exchange)assert.deepEqual((await restored.call('exchangeChestFragments',exchange)).reward,exchange.reward);
+  if(exchange)assert.deepEqual((await restored.call('buyCollectionItem',exchange)).reward,exchange.reward);
   const guest=await client();assert.equal((await guest.call('openChest',{id:one})).ok,false);
   console.log(JSON.stringify({days:365,matches:2190,issued:s.chests.items.length,opened,unopened:yearView.pending.length,receiptsReplayed:receipts.length,devices:2}));
  }finally{await stop();}

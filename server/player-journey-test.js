@@ -6,7 +6,7 @@ const room=(id,game='burraco',extra={})=>({chestGameId:id,progressEligible:true,
 test('Percorso mensile: dieci tappe, consegna automatica, limite e nuovo mese senza perdere premi',()=>{
  const p=players();for(let i=0;i<40;i++)C.recordGame(room('oct-'+i),p,()=>{},at('2026-10-24'));
  const s=p.get('a'),oct=C.view(s,at('2026-10-31')),rewards=s.chests.items.filter(x=>x.source==='monthly');
- assert.equal(oct.journey.month.matches,30);assert.equal(oct.journey.month.awarded,10);assert.equal(rewards.length,10);assert.equal(rewards.at(-1).type,'epic');assert.equal(oct.earnedToday,0);
+ assert.equal(oct.journey.month.matches,30);assert.equal(oct.journey.month.awarded,10);assert.equal(rewards.length,4);assert(oct.coins>=750);assert.equal(rewards.at(-1).type,'epic');assert.equal(oct.earnedToday,0);
  assert.equal(C.view(s,at('2026-11-01')).journey.month.matches,0);const oldIds=s.chests.items.map(x=>x.id);
  for(let i=0;i<3;i++)C.recordGame(room('nov-'+i),p,()=>{},at('2026-11-01'));
  assert.equal(C.view(s,at('2026-11-01')).journey.month.awarded,1);assert(oldIds.every(id=>s.chests.items.some(x=>x.id===id)));assert.equal(new Set(s.chests.items.map(x=>x.id)).size,s.chests.items.length);

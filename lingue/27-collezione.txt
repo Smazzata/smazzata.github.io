@@ -21,4 +21,3 @@ Non posseduto ‖ Not owned ‖ No adquirido ‖ Não possuído
 Nessun oggetto da mostrare ‖ No items to display ‖ No hay objetos que mostrar ‖ Nenhum item para mostrar
 Prova un altro filtro oppure scopri i premi nel bottino. ‖ Try another filter or discover rewards in Loot. ‖ Prueba otro filtro o descubre premios en el botín. ‖ Experimente outro filtro ou descubra prêmios nos saques.
 Azzera filtri ‖ Reset filters ‖ Restablecer filtros ‖ Limpar filtros
-Progressi, garanzie e frammenti ‖ Progress, guarantees and fragments ‖ Progreso, garantías y fragmentos ‖ Progresso, garantias e fragmentos

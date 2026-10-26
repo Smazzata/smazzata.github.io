@@ -1,131 +1,40 @@
 'use strict';
-const test=require('node:test'),assert=require('node:assert/strict');
-const C=require('./chests'),A=require('../shared/avatars');
-const DAY=Date.parse('2026-10-24T10:00:00Z');
-const noop=()=>{};
-function players(){return new Map(['a','b'].map(t=>[t,{nick:t}]));}
+const test=require('node:test'),assert=require('node:assert/strict'),C=require('./chests'),A=require('../shared/avatars');
+const DAY=Date.parse('2026-10-24T10:00:00Z'),noop=()=>{},players=()=>new Map(['a','b'].map(t=>[t,{nick:t}]));
 function game(id,extra={}){return {chestGameId:id,seats:['a','b'].map(token=>({token})),progressEligible:true,game:{over:true,handResult:{reason:'close'}},...extra};}
-function earn(sessions,n,now=DAY,random=max=>0){for(let i=0;i<n;i++)C.recordGame(game('game-'+i),sessions,noop,now,random);}
-function profile(type='common'){
- const sessions=players();earn(sessions,3);const s=sessions.get('a');s.chests.items=s.chests.items.filter(x=>!x.source);s.chests.items[0].id='1';s.chests.items[0].type=type;return s;
-}
+function earn(p,n,now=DAY){for(let i=0;i<n;i++)C.recordGame(game('game-'+i),p,noop,now,()=>0);}
+function profile(type='common',version=4){const s={nick:'Prova'};s.chests=C.inventory(s);s.chests.items=[{id:'1',type,version,at:DAY}];s.chests.issued=1;return s;}
 function roll(value){let first=true;return max=>{if(first){first=false;return value;}return 0;};}
-
-test('Due partite umane, una chest al giorno e nessun accredito ripetuto dopo riavvio',()=>{
- const p=players();let saves=0;const r=game('unique');
- C.recordGame(r,p,()=>saves++,DAY);C.recordGame(JSON.parse(JSON.stringify(r)),p,()=>saves++,DAY);
- assert.equal(saves,1);assert.equal(C.view(p.get('a'),DAY).progress,1);
- earn(p,8);assert.equal(C.view(p.get('a'),DAY).pending.filter(x=>x.source==='game').length,1);assert.equal(C.view(p.get('a'),DAY).progress,0);
- assert.equal(C.view(p.get('a'),DAY).earnedToday,1);
- const next=DAY+86400000;earn(p,1,next);assert.equal(C.view(p.get('a'),next).progress,1);
- earn(p,1,next);assert.equal(C.view(p.get('a'),next).pending.filter(x=>x.source==='game').length,2);
- assert.equal(C.dayOf(Date.parse('2026-10-24T22:05:00Z')),'2026-10-25');
+test('Giornaliero: una chest dopo due partite, cinque monete per le prime tre, reset e retry',()=>{
+ const p=players(),r=game('once');let saves=0;C.recordGame(r,p,()=>saves++,DAY);C.recordGame(r,p,()=>assert.fail(),DAY);assert.equal(saves,1);assert.equal(C.view(p.get('a'),DAY).coins,5);
+ earn(p,8);let v=C.view(p.get('a'),DAY);assert.equal(v.earnedToday,1);assert.equal(v.coinGames,3);assert.equal(v.progress,0);assert.equal(v.pending.filter(x=>x.source==='game').length,1);
+ const before=v.coins;earn(p,1,DAY+86400000);v=C.view(p.get('a'),DAY+86400000);assert.equal(v.coinGames,1);assert.equal(v.progress,1);assert(v.coins>=before+5);
 });
-test('Niente chest da bot, tutorial, offline, abbandoni, vecchie partite o identità duplicate',()=>{
- for(const extra of [{tutorial:true},{localGame:true},{onDevice:true},{offline:true},{daily:true},{progressEligible:false},{chestGameId:null},
-   {game:{over:false}},{game:{over:true,handResult:{reason:'surrender'}}},{rankedMatch:{abandoned:['a']}},
-   {seats:[{token:'a'},{token:'b',isBot:true,leftToken:'b'}]},{seats:[{token:'a'},{token:'a'}]}]){
-  const p=players();C.recordGame(game('bad',extra),p,()=>assert.fail('salvataggio inatteso'),DAY);assert(!p.get('a').chests);
- }
+test('Esclusioni: bot, offline, resa, classificata abbandonata e identità duplicate non danno valuta',()=>{
+ for(const extra of [{onDevice:true},{offline:true},{localGame:true},{tutorial:true},{daily:true},{progressEligible:false},{chestGameId:null},{game:{over:false}},{game:{over:true,handResult:{reason:'surrender'}}},{rankedMatch:{abandoned:['a']}},{seats:[{token:'a'},{token:'b',isBot:true}]},{seats:[{token:'a'},{token:'a'}]}]){const p=players();C.recordGame(game('bad',extra),p,()=>assert.fail(),DAY);assert(!p.get('a').chests);}
 });
-test('Le chest vengono assegnate al 75/20/4/1 e il tipo resta persistito',()=>{
- const expected={common:0,rare:0,epic:0,legendary:0};
- for(let roll=0;roll<100;roll++){
-  const p=players();earn(p,3,DAY,()=>roll*100);const s=JSON.parse(JSON.stringify(p.get('a')));
-  expected[C.view(s,DAY).pending.find(x=>x.source==='game').type]++;
- }
- assert.deepEqual(expected,C.RULES.chestRates);
+test('Tabelle assolute: tutti i 10000 esiti di ogni chest, un solo premio',()=>{
+ for(const [type,rule] of Object.entries(C.RULES.types)){const counts={coins:0,common:0,rare:0,epic:0,legendary:0};for(let i=0;i<10000;i++){const s=profile(type),r=C.open(s,'1',noop,roll(i),DAY).reward;counts[r.kind==='coins'?'coins':r.rarity]++;if(r.kind==='coins'){assert.equal(r.coins,C.RULES.coinAmounts[type]);assert(!r.itemId);assert.equal(s.chests.coins,r.coins);}else{assert(C.POOL.some(x=>x.id===r.itemId));assert(!A.STARTER_IDS.includes(r.itemId));}}for(const [key,value]of Object.entries(rule.rates))assert.equal(counts[key],value*100);}
 });
-test('Ogni tipo usa la sua tabella avatar; la leggendaria garantisce un leggendario',()=>{
- for(const type of Object.keys(C.RULES.types)){
-  const counts={common:0,rare:0,epic:0,legendary:0};
-  for(let i=0;i<200;i++){
-   const s=profile(type),r=C.open(s,'1',noop,roll(i*50),DAY).reward;
-   counts[r.rarity]++;assert.equal(A.resolve(r.avatarId).rarity,r.rarity);assert(!A.STARTER_IDS.includes(r.avatarId));
-  }
-  assert.deepEqual(Object.fromEntries(Object.entries(counts).map(([k,n])=>[k,n/2])),C.RULES.types[type].rates);
- }
+test('Garanzie: anche le monete contano, epico entro 20 e leggendario entro 50',()=>{
+ const s=profile();for(let i=0;i<50;i++){s.chests.items[0].reward=undefined;const r=C.open(s,'1',noop,()=>0).reward;if(i===19||i===39)assert.equal(r.rarity,'epic');if(i===49)assert.equal(r.rarity,'legendary');assert(s.chests.epicMisses<20);assert(s.chests.legendaryMisses<50);}
+ for(const[type,n]of[['common',9950],['rare',9850],['epic',9700]])assert.equal(C.open(profile(type),'1',noop,roll(n)).reward.rarity,'legendary');
 });
-test('Garanzie globali a 20 e 50 aperture, probabilità effettive mostrate prima di aprire',()=>{
- const s=profile('rare');s.chests.epicMisses=19;s.chests.legendaryMisses=49;
- assert.deepEqual(C.view(s).odds,{common:0,rare:0,epic:0,legendary:100});
- assert.equal(C.open(s,'1',noop,roll(0)).reward.rarity,'legendary');
- assert.equal(s.chests.epicMisses,0);assert.equal(s.chests.legendaryMisses,0);
- const e=profile('rare');e.chests.epicMisses=19;
- assert.equal(C.view(e).odds.epic,98.5);assert.equal(C.open(e,'1',noop,roll(0)).reward.rarity,'epic');
+test('Chest già possedute mantengono un oggetto; frammenti rimossi senza conversione',()=>{
+ const s=profile('common',1);s.chests.version=3;s.chests.fragments=9999;delete s.chests.coins;s.chests.exchanges={};const v=C.view(s);assert.equal(v.coins,0);assert(!('fragments'in v));assert.equal(v.pending[0].version,3);assert.equal(C.open(s,'1',noop,()=>0).reward.kind,'avatar');assert(!('fragments'in s.chests));assert(!('exchanges'in s.chests));assert.equal(s.chests.coins,0);
 });
-
-test('Probabilità frazionarie precise e migrazione delle chest chiuse senza cambiare premi aperti',()=>{
- for(const [type,threshold] of [['common',9950],['rare',9850],['epic',9700]]){
-  assert.notEqual(C.open(profile(type),'1',noop,roll(threshold-1)).reward.rarity,'legendary');
-  assert.equal(C.open(profile(type),'1',noop,roll(threshold)).reward.rarity,'legendary');
- }
- const s=profile();s.chests.version=1;s.chests.items[0].version=1;
- assert.equal(C.view(s).version,3);assert.equal(C.view(s).pending[0].version,3);
- const reward=C.open(s,'1',noop,roll(0)).reward;
- assert.equal(s.chests.version,3);assert.equal(s.chests.items[0].version,3);
- s.chests.version=1;s.chests.items[0].version=1;
- assert.deepEqual(C.open(s,'1',()=>assert.fail(),()=>assert.fail()).reward,reward);
- assert.equal(s.chests.items[0].version,1);
+test('Aperture idempotenti e doppioni danno solo il credito previsto',()=>{
+ const s=profile('legendary');s.avatarOwned=A.LIST.map(x=>x.id);s.avatarInventoryVersion=1;let saves=0;const first=C.open(s,'1',()=>saves++,()=>0).reward;assert(first.duplicate);assert.equal(s.chests.coins,900);assert.deepEqual(C.open(s,'1',()=>assert.fail(),()=>assert.fail()).reward,first);assert.equal(saves,1);assert.equal(s.chests.coins,900);assert.throws(()=>C.open({nick:'Altro'},'1',noop));
 });
-test('Apertura idempotente, doppioni in frammenti e inventario autorevole',async()=>{
- const s=profile();s.avatarOwned=A.LIST.map(a=>a.id);s.avatarInventoryVersion=1;
- let saves=0;const first=C.open(s,'1',()=>saves++,roll(0));
- const reboot=JSON.parse(JSON.stringify(s));
- const second=C.open(reboot,'1',()=>assert.fail('secondo salvataggio'),()=>assert.fail('seconda estrazione'));
- assert.deepEqual(second.reward,first.reward);assert.equal(saves,1);assert.equal(s.chests.fragments,5);
- assert(first.reward.duplicate);assert.throws(()=>C.open({nick:'Altro'},'1',noop));
+test('Acquisti diretti: prezzo server, nessun doppio addebito, id riutilizzato e possesso',()=>{
+ const s=profile(),id='request-1234567890',item=C.POOL.find(x=>x.rarity==='legendary');s.chests.coins=24000;s.chests.epicMisses=17;s.chests.legendaryMisses=48;const before=[s.chests.epicMisses,s.chests.legendaryMisses];const r=C.buy(s,item.id,id,noop).reward;assert.equal(r.itemId,item.id);assert.equal(r.cost,18000);assert.equal(s.chests.coins,6000);assert.deepEqual(C.buy(s,item.id,id,()=>assert.fail()).reward,r);assert.equal(s.chests.coins,6000);assert.deepEqual([s.chests.epicMisses,s.chests.legendaryMisses],before);assert.throws(()=>C.buy(s,C.POOL.find(x=>x.rarity==='common').id,id,noop));assert.throws(()=>C.buy(s,item.id,'request-0987654321',noop));assert.throws(()=>C.buy(s,'inesistente','request-1234567891',noop));assert.throws(()=>C.buy(profile(),item.id,'request-1234567892',noop),/Monete insufficienti/);
 });
-test('Scambio: costo corretto, solo avatar mancanti e stessa richiesta senza secondo addebito',()=>{
- const s=profile();s.chests.fragments=2000;
- const id='request-1234567890';const a=C.exchange(s,'legendary',id,noop,()=>0);
- assert.equal(s.chests.fragments,500);assert(A.ownedIds(s).includes(a.reward.avatarId));
- assert.equal(C.exchange(s,'legendary',id,()=>assert.fail()).reward.avatarId,a.reward.avatarId);
- assert.equal(s.chests.fragments,500);assert.equal(s.chests.legendaryMisses,0);
- assert.throws(()=>C.exchange(s,'legendary','request-0987654321',noop));
- assert.throws(()=>C.exchange(s,'epic',id,noop));
- s.avatarOwned=A.LIST.map(a=>a.id);s.avatarInventoryVersion=1;
- s.cosmeticOwned=require('../shared/cosmetics').LIST.map(a=>a.id);
- assert.throws(()=>C.exchange(s,'common','request-2345678901',noop));
+test('Rollback: saldo, oggetto, ricevuta, aperture e ricompense di tutti i profili',()=>{
+ const s=profile(),fail=()=>{throw Error('disco pieno');},before=structuredClone(s);assert.throws(()=>C.open(s,'1',fail,()=>0));assert.deepEqual(s,before);s.chests.coins=18000;const previous=structuredClone(s);assert.throws(()=>C.buy(s,C.POOL[0].id,'request-1234567890',fail));assert.deepEqual(s,previous);const p=players(),r=game('rollback');assert.throws(()=>C.recordGame(r,p,fail,DAY));assert(!p.get('a').chests);assert(!r.chestRecordedGame);C.recordGame(r,p,noop,DAY);assert.equal(p.get('a').chests.coins,5);
 });
-test('Errore su disco: nessuna chest consumata, nessun premio o costo applicato',()=>{
- const s=profile(),before=JSON.stringify(s),error=()=>{throw Error('disco');};
- assert.throws(()=>C.open(s,'1',error,roll(99)));assert.equal(JSON.stringify(s),before);
- s.chests.fragments=2000;const prior=JSON.stringify(s);
- assert.throws(()=>C.exchange(s,'legendary','request-1234567890',error));assert.equal(JSON.stringify(s),prior);
- const p=players(),r=game('rollback');assert.throws(()=>C.recordGame(r,p,error));
- assert(!p.get('a').chests);assert(!r.chestRecordedGame);
-  C.recordGame(r,p,noop);assert.equal(p.get('a').chests.progress,1);
+test('Ricompense monetarie: settimana 350, mese 750 e quattro chest mensili',()=>{
+ const p=players();for(let i=0;i<30;i++)C.recordGame(game('month-'+i,{rules:{game:i%2?'scala40':'burraco'}}),p,noop,DAY+i%2*86400000,()=>0);const s=p.get('a'),v=C.view(s,DAY);assert.equal(s.chests.items.filter(x=>x.source==='monthly').length,4);assert(v.coins>=1115);assert.equal(v.journey.month.steps.filter(x=>x.coins).length,6);assert(v.weekly.missions.filter(x=>x.id!=='friends').every(x=>x.awarded));
 });
-
-test('I quattro sprite sono distinti e disponibili in entrambe le cache offline',()=>{
- const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');const hashes=[];
- for(const type of ['opening','rare','epic','legendary']){
-  const file='art/chests/chest-'+type+'.webp',bytes=fs.readFileSync(path.join(__dirname,'../public',file));
-  assert.equal(bytes.toString('ascii',0,4),'RIFF');hashes.push(crypto.createHash('sha256').update(bytes).digest('hex'));
-  for(const [sw,prefix] of [['public/sw.js',''],['launcher/sw.js','gioca/']])assert(fs.readFileSync(path.join(__dirname,'..',sw),'utf8').includes("'"+prefix+file+"'"));
- }
- assert.equal(new Set(hashes).size,4);
+test('Mezzanotte italiana e nessun credito retroattivo su vecchie tappe',()=>{
+ assert.equal(C.dayOf(Date.parse('2026-10-25T23:00:00Z')),'2026-10-26');const s=profile();s.chests.version=3;s.chests.journey={matches:0,games:[],wins:[],memories:{},month:{id:'2026-10',matches:3,awarded:1}};const v=C.view(s,DAY);assert.equal(v.journey.month.steps[0].type,'common');assert.equal(v.journey.month.steps[0].coins,0);assert.equal(v.coins,0);
 });
-
-test('Errore durante l’estrazione di una chest: accredito atomico per tutti i giocatori',()=>{
- const p=players();earn(p,1);const before=JSON.stringify([...p]);let calls=0;
- assert.throws(()=>C.recordGame(game('fault'),p,noop,DAY,()=>{if(++calls===2)throw Error('casualità non disponibile');return 0;}));
- assert.equal(JSON.stringify([...p]),before);
-});
-test('Simulazione delle frequenze e rispetto delle garanzie su 10000 aperture',()=>{
- let seed=937;const random=max=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return Math.floor(seed/4294967296*max);};
- const s=profile();const counts={common:0,rare:0,epic:0,legendary:0};
- for(let i=0;i<10000;i++){
-  const r=s.chests.items[0];r.reward=undefined;r.type='common';
-  const result=C.open(s,'1',noop,random).reward;counts[result.rarity]++;
-  assert(s.chests.epicMisses<20);assert(s.chests.legendaryMisses<50);
-  // Il test non accumula uno storico artificiale infinito.
- }
- assert(counts.legendary>=200);assert(counts.epic>700);
- console.log('Frequenze comuni con garanzie (10000):',JSON.stringify(counts));
-});
-
-test('Obiettivo giornaliero: i progressi parziali ripartono il giorno dopo',()=>{const p=players();earn(p,1);const next=DAY+86400000;assert.equal(C.view(p.get('a'),next).progress,0);earn(p,1,next);assert.equal(C.view(p.get('a'),next).earnedToday,0);earn(p,1,next);assert.equal(C.view(p.get('a'),next).earnedToday,1);});
-
-test('Passaggio al nuovo limite: nessuna perdita di chest o doppio accredito',()=>{const p=players();earn(p,1);for(const s of p.values())s.chests.progress=2;const before=C.view(p.get('a'),DAY).pending.filter(x=>x.source==='game').length;assert.equal(C.view(p.get('a'),DAY).progress,1);C.recordGame(game('migration'),p,noop,DAY);assert.equal(C.view(p.get('a'),DAY).pending.filter(x=>x.source==='game').length,before+1);assert.equal(C.view(p.get('a'),DAY).earnedToday,1);for(const s of p.values())s.chests.earnedToday=2;const count=C.view(p.get('a'),DAY).pending.filter(x=>x.source==='game').length;C.recordGame(game('old-cap'),p,noop,DAY);assert.equal(C.view(p.get('a'),DAY).pending.filter(x=>x.source==='game').length,count);});

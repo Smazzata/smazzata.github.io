@@ -83,7 +83,7 @@ function loadSaved() {
       }
       console.log(`Progressi azzerati (epoca ${PROGRESS_EPOCH}); profili e amicizie conservati`);
     }
-    for (const [token, sess] of data.sessions || []) sessions.set(token, sess);
+    for (const [token, sess] of data.sessions || []) {if(sess.chests)sess.chests=require('./chests').inventory(sess);for(const letter of sess.inbox||[])if(letter.gift){delete letter.gift.fragments;letter.gift.coins=letter.gift.coins||0;}sessions.set(token, sess);}
     for (const [token, e] of data.leaderboard || []) {
       // prima delle statistiche per gioco si giocava solo a Burraco
       if (!e.byGame && (e.games || e.hands)) {

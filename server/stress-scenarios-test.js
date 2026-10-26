@@ -6,7 +6,7 @@ function rng(seed){return max=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;re
 test('Stress inventario: 1800 partite, retry, errori disco, riavvii, giorni e settimane',()=>{
  const random=rng(24102026),start=Date.parse('2026-10-23T20:00:00Z');
  let sessions=new Map(Array.from({length:12},(_,i)=>['p'+i,{nick:'Prova'+i,friends:Array.from({length:12},(_,j)=>'p'+j).filter(x=>x!=='p'+i)}]));
- let openings=0,rollbacks=0,exchanges=0;
+ let openings=0,rollbacks=0,purchases=0;
  for(let i=0;i<1800;i++){
   const now=start+i*37*60000,ids=[...sessions.keys()],a=random(12),b=(a+1+random(11))%12;
   const room={chestGameId:'stress-'+i,progressEligible:true,rules:{game:['burraco','scala40','ramino','canasta'][random(4)]},seats:[{token:ids[a]},{token:ids[b]}],game:{over:true,handResult:{reason:'close'}}};
@@ -18,15 +18,15 @@ test('Stress inventario: 1800 partite, retry, errori disco, riavvii, giorni e se
   const s=sessions.get(ids[a]),view=C.view(s,now),pending=view.pending;
   assert(view.earnedToday<=C.RULES.dailyLimit);assert(view.progress>=0&&view.progress<C.RULES.matches);
   if(pending.length){
-   const id=pending[random(pending.length)].id,old=structuredClone(s),fragments=s.chests.fragments;
+   const id=pending[random(pending.length)].id,old=structuredClone(s),coins=s.chests.coins;
    if(i%5===0){assert.throws(()=>C.open(s,id,()=>{throw Error('disco');},random,now));assert.deepEqual(s,old);rollbacks++;}
    const r=C.open(s,id,()=>{},random,now),snapshot=structuredClone(s);openings++;
-   assert.equal(s.chests.fragments,fragments+r.reward.fragments);
-   assert(new Set([...A.ownedIds(s),...Cos.ownedIds(s)]).has(r.reward.itemId));
+   assert.equal(s.chests.coins,coins+r.reward.coins);
+   if(r.reward.kind!=='coins')assert(new Set([...A.ownedIds(s),...Cos.ownedIds(s)]).has(r.reward.itemId));
    assert.deepEqual(C.open(s,id,()=>assert.fail('retry apertura'),()=>assert.fail('nuova estrazione'),now).reward,r.reward);assert.deepEqual(s,snapshot);
   }
-  const v=C.view(s,now),rarity=Object.keys(C.RULES.costs).find(r=>v.missing[r]&&v.fragments>=C.RULES.costs[r]);
-  if(rarity&&i%3===0){const id='stress-exchange-'+i,before=s.chests.fragments,r=C.exchange(s,rarity,id,()=>{},random,now);exchanges++;assert(!r.reward.duplicate);assert.equal(s.chests.fragments,before-C.RULES.costs[rarity]);assert.deepEqual(C.exchange(s,rarity,id,()=>assert.fail('retry scambio'),random,now).reward,r.reward);}
+  const v=C.view(s,now),rarity=Object.keys(C.RULES.costs).find(r=>v.missing[r]&&v.coins>=C.RULES.costs[r]);
+  if(rarity&&i%3===0){const id='stress-exchange-'+i,before=s.chests.coins,itemId=C.POOL.find(x=>x.rarity===rarity&&!new Set([...A.ownedIds(s),...Cos.ownedIds(s)]).has(x.id)).id,r=C.buy(s,itemId,id,()=>{},now);purchases++;assert(!r.reward.duplicate);assert.equal(s.chests.coins,before-C.RULES.costs[rarity]);assert.deepEqual(C.buy(s,itemId,id,()=>assert.fail('retry acquisto'),now).reward,r.reward);}
   if(i%31===0)sessions=new Map(JSON.parse(JSON.stringify([...sessions])));
  }
  for(const s of sessions.values()){
@@ -36,17 +36,17 @@ test('Stress inventario: 1800 partite, retry, errori disco, riavvii, giorni e se
    else if(!item.source||item.source==='game'){days.set(day,(days.get(day)||0)+1);assert(days.get(day)<=2);}
   }
  }
- assert(openings>300);assert(exchanges>0);console.log(JSON.stringify({matches:1800,openings,rollbacks,exchanges,profiles:12}));
+ assert(openings>300);assert(purchases>0);console.log(JSON.stringify({matches:1800,openings,rollbacks,purchases,profiles:12}));
 });
 test('Probabilità base: tutti i 10000 esiti per ciascuna delle quattro chest',()=>{
  const results={};
  for(const [type,rule] of Object.entries(C.RULES.types)){
-  const s={nick:'Probabilità'},counts={common:0,rare:0,epic:0,legendary:0};
+  const s={nick:'Probabilità'},counts={coins:0,common:0,rare:0,epic:0,legendary:0};
   s.chests=C.inventory(s);s.chests.items=[{id:'1',type,version:C.RULES.version,at:1}];
   for(let roll=0;roll<10000;roll++){
-   const b=s.chests;b.items[0].reward=undefined;b.epicMisses=0;b.legendaryMisses=0;b.fragments=0;
+   const b=s.chests;b.items[0].reward=undefined;b.epicMisses=0;b.legendaryMisses=0;b.coins=0;
    const r=C.open(s,'1',()=>{},max=>max===10000?roll:roll%max,1).reward;
-   counts[r.rarity]++;assert(!A.STARTER_IDS.includes(r.itemId));assert.equal(C.POOL.find(x=>x.id===r.itemId).rarity,r.rarity);
+   counts[r.kind==='coins'?'coins':r.rarity]++;if(r.kind!=='coins'){assert(!A.STARTER_IDS.includes(r.itemId));assert.equal(C.POOL.find(x=>x.id===r.itemId).rarity,r.rarity);}
   }
   for(const [rarity,percent] of Object.entries(rule.rates))assert.equal(counts[rarity],Math.round(percent*100),type+': '+rarity);
   results[type]=counts;

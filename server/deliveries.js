@@ -49,10 +49,10 @@ function deliver(ctx,id,p,targets,persist,now=Date.now()){
         b.items.push(chest);s.chests=b;gift={kind:'chest',type:p.gift,id:chest.id};
       }else if(item){
         const duplicate=(item.kind==='avatar'?Avatars.ownedIds(s):Cosmetics.ownedIds(s)).includes(item.id);
-        const fragments=duplicate?Chests.RULES.fragments[item.rarity]:0;
+        const coins=duplicate?Chests.RULES.duplicateCoins[item.rarity]:0;
         Object.assign(s,Chests.grant(s,item));
-        if(duplicate){const b=Chests.inventory(s);b.fragments+=fragments;s.chests=b;duplicates++;}
-        gift={kind:item.kind,itemId:item.id,rarity:item.rarity,duplicate,fragments};
+        if(duplicate){const b=Chests.inventory(s);Chests.addCoins(b,coins);s.chests=b;duplicates++;}
+        gift={kind:item.kind,itemId:item.id,rarity:item.rarity,duplicate,coins};
       }
       s.inbox=[...(s.inbox||[]),{id,title:p.title,body:p.body,at:now,read:false,gift}];
       if(p.campaignKey)s.campaignReceipts=[...(s.campaignReceipts||[]),p.campaignKey];count++;
