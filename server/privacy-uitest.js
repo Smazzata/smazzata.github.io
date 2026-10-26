@@ -1,5 +1,5 @@
 'use strict';
-// Verifica in un browser reale: pagine legali su telefono, Spotify senza iframe e cancellazione locale.
+// Verifica in un browser reale: pagine legali su telefono, musica locale senza servizi esterni e cancellazione locale.
 const assert = require('assert');
 const fs = require('fs');
 const os = require('os');
@@ -53,13 +53,13 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
       await new Promise(r=>setTimeout(r,200));
       const room=await emit('createRoom',{rules:{players:2},vsBots:true});if(!room.ok)throw Error(room.error);
       await new Promise(r=>setTimeout(r,400));
-      const music=await emit('setMusic',{url:'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M'});if(!music.ok)throw Error(music.error);
-      await new Promise(r=>setTimeout(r,200));musicModal();
-      if(document.querySelector('iframe[src*="spotify"]'))throw Error('Spotify caricato senza scelta');
-      const a=document.querySelector('#modal a[href^="https://open.spotify.com"]');if(!a||!a.rel.includes('noreferrer'))throw Error('collegamento Spotify mancante');
+      const music=await emit('setMusic',{url:'https://example.invalid/music'});if(music.ok)throw Error('Condivisione esterna ancora disponibile');
+      settingsModal('audio');
+      if(document.querySelector('#musicform')||document.querySelector('[data-act=music]'))throw Error('Comando musicale esterno ancora presente');
+      if(!document.querySelector('#musicVolume'))throw Error('Volume musica locale assente');
       return true;
     `);
-    assert(!requests.some((r) => /https:\/\/[^/]*spotify/.test(r)), 'nessun invio a Spotify aprendo la finestra musicale');
+    assert(!requests.some(r => /^https?:/.test(r) && new URL(r).origin !== new URL(url).origin), 'nessun servizio esterno caricato');
     const oldKey = await cdp.run(`
       const key=store.get('bur_token');localStorage.setItem('bur_stats',JSON.stringify({test:true}));localStorage.setItem('smazzata_campaign_privacytest','1');localStorage.setItem('bur_chest_cache','{}');localStorage.setItem('bur_cosmetic_cache','{}');localStorage.setItem('bur_chest_request','{}');
       closeModal();await handlers.deleteProfile();return key;
@@ -73,12 +73,17 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
       } catch (e) { /* cambio documento dopo il logout */ }
     }
     assert(cleared, 'cancellazione da interfaccia: logout, dati locali rimossi e nuovo profilo anonimo');
-    console.log('Privacy nel browser: quattro pagine a 360 px, Spotify senza richieste anticipate, cancellazione e dati locali OK');
+    console.log('Privacy nel browser: quattro pagine a 360 px, musica locale senza richieste esterne, cancellazione e dati locali OK');
   } finally {
     if (cdp) cdp.ws.close();
     for (const proc of [browser, server]) if (proc && proc.exitCode === null) {
       await new Promise((res) => { proc.once('exit', res); proc.kill(); });
     }
-    fs.rmSync(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+    // Su Windows i processi secondari del browser possono rilasciare il profilo in ritardo.
+    try { await fs.promises.rm(root, { recursive: true, force: true, maxRetries: 15, retryDelay: 200 }); }
+    catch (error) {
+      if (process.platform !== 'win32' || !['EPERM','EBUSY'].includes(error.code)) throw error;
+      console.warn('Profilo temporaneo ancora occupato dal browser; conservato senza alterare gli esiti delle verifiche.');
+    }
   }
 })().catch((e) => { console.error(e); process.exitCode = 1; });

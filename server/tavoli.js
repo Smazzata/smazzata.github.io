@@ -69,7 +69,6 @@ function roomInfo(room) {
     gameSeq: room.gameSeq,
     hints: !!room.hints && humanCount(room) <= 1, humans: humanCount(room),
     aids: room.aids !== false,
-    music: room.music || null,
     spectators: (room.spectators || []).filter((t) => isConnected(t)).map((t) => (sessions.get(t) || {}).name || 'Ospite'),
     botLevel: room.botLevel || 'normale',
     turnTime: room.turnTime || 0,

@@ -15,7 +15,7 @@ Verifica del 21 ottobre 2026. Questo inventario non assegna al progetto diritti 
 | Avatar illustrati | 50 ritratti generati individualmente con imagegen, riferimento stilistico interno Avventura; 3 sprite leggendari. Provenienza in `docs/avatar-illustrati.md`, istruzioni in `docs/avatar-prompts.json` | Asset WebP nel progetto; nessun atlante commerciale esterno aggiunto |
 | Chest illustrate | Quattro sprite trasparenti generati con imagegen integrato nello stile interno Avventura; quattro pose per apertura. Prompt in `docs/chest-art-prompts.json` e `docs/chest-art-variants.json` | Asset originali ottimizzati in `public/art/chests/`; nessuna risorsa commerciale esterna |
 | Emoji | Caratteri resi dal sistema/browser, non un pacchetto di immagini acquistato | Non aggiungere atlanti emoji esterni senza relativa licenza |
-| Musica | Nessun file musicale distribuito; link Spotify aperto dall'utente | Nessun diritto sulla musica rivendicato da Smazzata |
+| Musica | Dodici partiture e sintesi Web Audio interne in `public/js/music.js`; provenienza in `musiche-originali.md` | Nessuna registrazione, campione o melodia di terzi deliberatamente utilizzata; non è una certificazione legale di unicità |
 
 Le licenze complete si consultano nell'app attraverso il collegamento nella privacy. Per rigenerare gli avvisi dopo `npm ci`: `node scripts/licenze.js`. Il generatore fallisce se manca un testo di licenza; non sostituisce una revisione delle condizioni di uso o del codice originale.
 

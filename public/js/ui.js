@@ -342,26 +342,3 @@
     return `<div class="row">${[['lenta', '🐢 Lenta'], ['normale', 'Normale'], ['veloce', '⚡ Veloce']]
       .map(([v, l]) => `<button class="swatch ${cur === v ? 'on' : ''}" data-act="botSpeed" data-val="${v}">${l}</button>`).join('')}</div>`;
   }
-
-  /** Link di Spotify → indirizzo del lettore integrato (solo per contenuti pubblici, non per le Jam) */
-  function spotifyEmbed(url) {
-    const m = /open\.spotify\.com\/(?:intl-[a-z-]+\/)?(playlist|album|track|artist|show|episode)\/([A-Za-z0-9]+)/.exec(url || '');
-    return m ? `https://open.spotify.com/embed/${m[1]}/${m[2]}` : null;
-  }
-
-  function musicModal() {
-    const r = S.room;
-    const mu = r.music;
-    S.musicUnseen = false;
-    const embed = mu && spotifyEmbed(mu.url);
-    const isJam = mu && !embed;
-    openModal('music', `<h2><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-music /></svg> Musica del tavolo</h2>
-      ${mu ? `<p>${esc(mu.by)} ha condiviso ${isJam ? 'una <b>Jam</b> di Spotify: entrando ascoltate tutti la stessa musica, sincronizzata.' : 'questa musica:'}</p>
-        <a class="btn primary big" style="display:block;text-align:center;text-decoration:none;margin-top:10px" href="${esc(mu.url)}" target="_blank" rel="noopener noreferrer">${isJam ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Unisciti alla Jam su Spotify' : '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-play /></svg> Apri in Spotify'}</a>`
-        : '<p class="muted">Nessuna musica condivisa per ora.</p>'}
-      ${r.isHost ? `<h4>${mu ? 'Cambia musica' : 'Condividi la musica con il tavolo'}</h4>
-        <p class="muted small">Su Spotify avvia una <b>Jam</b> (dal brano in riproduzione: icona dei dispositivi → <i>Avvia una Jam</i>) e copia il link d'invito, oppure copia il link di una playlist. Poi incollalo qui.</p>
-        <form id="musicform" class="row"><input id="musicin" class="grow" placeholder="https://open.spotify.com/…" autocomplete="off"><button class="btn primary">Condividi</button></form>
-        ${mu ? '<button class="btn small danger" style="margin-top:8px" data-act="musicStop">Smetti di condividere</button>' : ''}` : ''}
-      <p class="muted small" style="margin-top:12px">Ognuno ascolta dal proprio Spotify: per le Jam di solito serve Spotify Premium a chi la avvia.</p>`);
-  }

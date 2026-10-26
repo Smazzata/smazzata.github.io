@@ -44,7 +44,7 @@ function saveNow(throwOnError = false, purgeResiduals = true) {
       tournaments: [...tournaments.values()],
       rooms: [...rooms.values()].map((r) => ({
         code: r.code, rules: r.rules, n: r.n, hostToken: r.hostToken, seats: r.seats, game: r.game, rankedMatch: r.rankedMatch, chestGameId:r.chestGameId, chestRecordedGame:r.chestRecordedGame,
-        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, music: r.music, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, queueMode: r.queueMode, series: r.series, daily: r.daily, seed: r.seed, slow: r.slow, lastActionAt: r.lastActionAt, tournament: r.tournament, rankedGame: r.rankedGame, progressEligible: r.progressEligible,
+        ready: [...r.ready], turnCounter: r.turnCounter, lastTurnSeat: r.lastTurnSeat, botSpeed: r.botSpeed, hints: r.hints, aids: r.aids, turnTime: r.turnTime, botLevel: r.botLevel, gameSeq: r.gameSeq, recordedGame: r.recordedGame, spectators: r.spectators || [], tutorial: r.tutorial, quick: r.quick, queueMode: r.queueMode, series: r.series, daily: r.daily, seed: r.seed, slow: r.slow, lastActionAt: r.lastActionAt, tournament: r.tournament, rankedGame: r.rankedGame, progressEligible: r.progressEligible,
       })),
     };
     store.save(data);
@@ -103,6 +103,7 @@ function loadSaved() {
     for (const r of data.rooms || []) {
       // tavoli di giochi tolti dall'app (es. Sette e mezzo): non si riaprono
       if (r.rules && r.rules.game && !require('./games').GAMES[r.rules.game]) continue;
+      delete r.music; // I vecchi collegamenti musicali non vengono più ripristinati.
       rooms.set(r.code, { ...r, ready: new Set(r.ready || []), botTimer: null, botMemo: {}, botMemoTurn: -1 });
     }
     for (const room of rooms.values()) scheduleBot(room);

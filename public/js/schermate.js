@@ -321,7 +321,6 @@
       <details class="panel tableset">
         <summary><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-settings /></svg> Impostazioni del tavolo</summary>
         <p>${rulesStatus(r.rules)} <span class="muted">· ${r.n} giocatori · si vince a ${r.rules.target}</span></p>
-        <div class="row"><button class="btn small" data-act="music"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-music /></svg> Musica del tavolo${r.music ? ' (attiva)' : ''}</button></div>
         <div class="row" style="margin-top:8px"><button class="btn small" data-act="roomRules"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-rules /></svg> Leggi le regole</button>
         ${isHost && !r.quick ? '<button class="btn small" data-act="editRules"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-rules /></svg> Modifica regole</button>' : ''}</div>
         ${isHost && !r.quick ? `<h3 style="margin-top:14px">Torneo</h3>${seriesPickHTML(r.series && r.series.bestOf)}` : r.series ? `<p><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-trophy /></svg> Torneo al meglio di ${r.series.bestOf}</p>` : ''}

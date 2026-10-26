@@ -233,20 +233,9 @@ module.exports.register = function register(socket, handler) {
     return { hint };
   }));
 
-  // Musica del tavolo: l'host condivide un link Spotify (Jam, playlist, album o brano)
-  socket.on('setMusic', handler(({ url }) => {
-    const room = getRoom(socket);
-    requireHost(socket, room);
-    if (!url) { room.music = null; broadcast(room); return; }
-    const u = String(url).trim().slice(0, 300);
-    let parsed;
-    try { parsed = new URL(u); } catch (e) { throw new E.GameError('Link non valido'); }
-    if (parsed.protocol !== 'https:' || !/(^|\.)(spotify\.com|spotify\.link)$/.test(parsed.hostname)) {
-      throw new E.GameError('Incolla un link di Spotify (Jam, playlist, album o brano)');
-    }
-    const seat = seatOfToken(room, socket.data.token);
-    room.music = { url: parsed.href, by: seat >= 0 ? room.seats[seat].name : 'Host', at: Date.now() };
-    broadcast(room);
+  // Risposta esplicita ai client precedenti; nessun URL viene salvato o trasmesso.
+  socket.on('setMusic', handler(() => {
+    throw new E.GameError('La condivisione musicale non è disponibile.');
   }));
 
   socket.on('setSeries', handler(({ bestOf }) => {

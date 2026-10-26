@@ -11,7 +11,6 @@ Torneo creato: invita gli amici a iscriversi! ‖ Tournament created: invite you
 Grazie, segnalazione inviata 🙏 ‖ Thanks, report sent 🙏 ‖ Gracias, informe enviado 🙏 ‖ Obrigado, relato enviado 🙏
 Campionato creato: aggiungi i tuoi amici! ‖ League created: add your friends! ‖ ¡Liga creada: añade a tus amigos! ‖ Liga criada: adicione seus amigos!
 Grazie! Segnalazione inviata 🙏 ‖ Thanks! Report sent 🙏 ‖ ¡Gracias! Informe enviado 🙏 ‖ Obrigado! Relato enviado 🙏
-🎵 Musica condivisa con il tavolo ‖ 🎵 Music shared with the table ‖ 🎵 Música compartida con la mesa ‖ 🎵 Música compartilhada com a mesa
 ✓ Riconnesso ‖ ✓ Reconnected ‖ ✓ Reconectado ‖ ✓ Reconectado
 Smazzata: torneo 🏆 ‖ Smazzata: tournament 🏆 ‖ Smazzata: torneo 🏆 ‖ Smazzata: torneio 🏆
 Smazzata: tocca a te 🐢 ‖ Smazzata: your turn 🐢 ‖ Smazzata: te toca 🐢 ‖ Smazzata: sua vez 🐢
@@ -115,8 +114,6 @@ Condividi link ‖ Share link ‖ Compartir enlace ‖ Compartilhar link
 Gli amici aprono il link oppure scrivono il codice nella schermata iniziale. ‖ Friends open the link or type the code on the home screen. ‖ Los amigos abren el enlace o escriben el código en la pantalla inicial. ‖ Os amigos abrem o link ou digitam o código na tela inicial.
 Giocatori ({1}/{2}) ‖ Players ({1}/{2}) ‖ Jugadores ({1}/{2}) ‖ Jogadores ({1}/{2})
 · {7} giocatori · si vince a {8} ‖ · {7} players · first to {8} wins ‖ · {7} jugadores · se gana a {8} ‖ · {7} jogadores · vence quem chegar a {8}
-🎵 Musica del tavolo{9} ‖ 🎵 Table music{9} ‖ 🎵 Música de la mesa{9} ‖ 🎵 Música da mesa{9}
-🎵 Musica del tavolo ‖ 🎵 Table music ‖ 🎵 Música de la mesa ‖ 🎵 Música da mesa
 📜 Leggi le regole ‖ 📜 Read the rules ‖ 📜 Lee las reglas ‖ 📜 Leia as regras
 ← Torna alla modifica ‖ ← Back to editing ‖ ← Volver a editar ‖ ← Voltar à edição
 Regole personalizzate ‖ Custom rules ‖ Reglas personalizadas ‖ Regras personalizadas
@@ -181,20 +178,11 @@ Nessun limite ‖ No limit ‖ Sin límite ‖ Sem limite
 🎓 Esperto ‖ 🎓 Expert ‖ 🎓 Experto ‖ 🎓 Especialista
 🐢 Lenta ‖ 🐢 Slow ‖ 🐢 Lenta ‖ 🐢 Lenta
 ⚡ Veloce ‖ ⚡ Fast ‖ ⚡ Rápida ‖ ⚡ Rápida
-di Spotify: entrando ascoltate tutti la stessa musica, sincronizzata. ‖ on Spotify: by joining you all listen to the same music, in sync. ‖ de Spotify: al entrar todos escucháis la misma música, sincronizada. ‖ do Spotify: entrando, todos ouvem a mesma música, sincronizada.
 questa musica: ‖ this music: ‖ esta música: ‖ esta música:
 {0} ha condiviso {1} ‖ {0} shared {1} ‖ {0} compartió {1} ‖ {0} compartilhou {1}
-▶ Unisciti alla Jam su Spotify ‖ ▶ Join the Jam on Spotify ‖ ▶ Únete a la Jam en Spotify ‖ ▶ Entre na Jam no Spotify
-▶ Apri in Spotify ‖ ▶ Open in Spotify ‖ ▶ Abrir en Spotify ‖ ▶ Abrir no Spotify
-Nessuna musica condivisa per ora. ‖ No music shared yet. ‖ Todavía no hay música compartida. ‖ Nenhuma música compartilhada ainda.
 Cambia musica ‖ Change music ‖ Cambiar música ‖ Trocar música
-Condividi la musica con il tavolo ‖ Share music with the table ‖ Compartir música con la mesa ‖ Compartilhar música com a mesa
-Smetti di condividere ‖ Stop sharing ‖ Dejar de compartir ‖ Parar de compartilhar
-Su Spotify avvia una ‖ On Spotify start a ‖ En Spotify inicia una ‖ No Spotify inicie uma
 (dal brano in riproduzione: icona dei dispositivi → ‖ (from the playing track: devices icon → ‖ (desde la canción en reproducción: icono de dispositivos → ‖ (a partir da música tocando: ícone de dispositivos →
-Avvia una Jam ‖ Start a Jam ‖ Iniciar una Jam ‖ Iniciar uma Jam
 ) e copia il link d'invito, oppure copia il link di una playlist. Poi incollalo qui. ‖ ) and copy the invite link, or copy a playlist link. Then paste it here. ‖ ) y copia el enlace de invitación, o copia el enlace de una playlist. Luego pégalo aquí. ‖ ) e copie o link de convite, ou copie o link de uma playlist. Depois cole aqui.
-Ognuno ascolta dal proprio Spotify: per le Jam di solito serve Spotify Premium a chi la avvia. ‖ Everyone listens on their own Spotify: Jams usually need Spotify Premium for whoever starts them. ‖ Cada uno escucha desde su propio Spotify: para las Jam normalmente quien la inicia necesita Spotify Premium. ‖ Cada um ouve no próprio Spotify: para Jams geralmente quem inicia precisa do Spotify Premium.
 Torneo (si imposta tra una partita e l'altra) ‖ Series (set between one game and the next) ‖ Serie (se configura entre una partida y otra) ‖ Série (definida entre uma partida e outra)
 vinta ‖ won ‖ ganada ‖ vencida
 persa ‖ lost ‖ perdida ‖ perdida

@@ -15,7 +15,6 @@ Ci sono posti liberi: aspetta altri giocatori o aggiungi dei bot ‖ There are f
 Partita non iniziata ‖ Game not started ‖ Partida no iniciada ‖ Partida não iniciada
 I suggerimenti sono disponibili solo giocando da soli contro il computer ‖ Hints are only available when playing alone against the computer ‖ Las sugerencias solo están disponibles jugando solo contra la computadora ‖ As dicas só estão disponíveis jogando sozinho contra o computador
 Link non valido ‖ Invalid link ‖ Enlace no válido ‖ Link inválido
-Incolla un link di Spotify (Jam, playlist, album o brano) ‖ Paste a Spotify link (Jam, playlist, album or track) ‖ Pega un enlace de Spotify (Jam, playlist, álbum o canción) ‖ Cole um link do Spotify (Jam, playlist, álbum ou música)
 Torneo non valido ‖ Invalid series ‖ Serie no válida ‖ Série inválida
 Si cambia il torneo tra una partita e l'altra ‖ The series can be changed between games ‖ La serie se cambia entre una partida y otra ‖ A série se muda entre uma partida e outra
 Livello non valido ‖ Invalid level ‖ Nivel no válido ‖ Nível inválido

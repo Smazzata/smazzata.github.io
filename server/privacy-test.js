@@ -27,7 +27,7 @@ module.exports = function privacyTests() {
     const E = require('./engine'), Bot = require('./bot');
     const game = E.createGame({ players: [{ name: 'Tempo' }, { name: 'Anna' }, { name: 'B' }, { name: 'C' }] });
     const room = { code: 'ABC', seats: [{ token, name: 'Tempo', avatar: { e: '😀' } }, { token: 'other', name: 'Anna' }, { isBot: true, name: 'B' }, { isBot: true, name: 'C' }],
-      game, spectators: [token], hostToken: token, botMemo: {}, chatLog: [{ name: 'Tempo', text: 'Ciao' }], music: { by: 'Tempo', url: 'https://open.spotify.com/playlist/x' } };
+      game, spectators: [token], hostToken: token, botMemo: {}, chatLog: [{ name: 'Tempo', text: 'Ciao' }], music: { by: 'Tempo', url: 'https://example.invalid/old-music' } };
     const league = { id: 'L', owner: token, members: [token, 'other'], standings: { [token]: { name: 'Tempo' } }, past: [{ winners: ['Tempo', 'Anna'] }] };
     const ctx = { sessions: new Map([[token, { nick: 'Tempo', name: 'Tempo' }]]),
       leaderboard: new Map([[token, { games: 10 }], ['other', { games: 4, history: [{ tokens: [token, 'other'], teams: [{ names: ['Tempo', 'Anna'] }] }], timeline: [{ o: ['Tempo'] }] }]]),

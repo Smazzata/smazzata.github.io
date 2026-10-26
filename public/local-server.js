@@ -71,7 +71,7 @@
         code: onDevice ? '🤖' : 'OFFLINE', host: 0, rules: room.rules, n: room.n, preset: self.BurracoGames[room.rules.game] && room.rules.game !== 'burraco' ? room.rules.game : Rules().matchPreset(room.rules), game: self.BurracoGames[room.rules.game] ? room.rules.game : 'burraco',
         seats: room.seats.map((s) => ({ name: s.name, isBot: !!s.isBot, connected: true, avatar: null })),
         started: !!room.game, ready: room.ready.slice(), botSpeed: room.botSpeed || 'normale',
-        hints: !!room.hints, humans: 1, aids: room.aids !== false, music: null, spectators: [],
+        hints: !!room.hints, humans: 1, aids: room.aids !== false, spectators: [],
         botLevel: room.botLevel || 'normale', turnTime: 0, tutorial: !!room.tutorial, quick: 0, series: null,
         turnLeft: null, you: 0, isHost: true, offline: !onDevice, onDevice,
       };

@@ -69,7 +69,6 @@ Che fortuna! ‖ Lucky you! ‖ ¡Qué suerte! ‖ Que sorte!
 Ops… ‖ Oops… ‖ Uy… ‖ Ops…
 Ben giocato 👏 ‖ Well played 👏 ‖ Bien jugado 👏 ‖ Bem jogado 👏
 Cronaca ‖ Game log ‖ Crónica ‖ Histórico
-Jam ‖ Jam ‖ Jam ‖ Jam
 Condividi ‖ Share ‖ Compartir ‖ Compartilhar
 Entri in un tavolo con chi sta cercando una partita adesso. Si parte appena il tavolo è pieno (oppure puoi riempirlo con il computer). ‖ You join a table with people looking for a game right now. It starts as soon as the table is full (or you can fill it with the computer). ‖ Entras en una mesa con quien busca partida ahora. Empieza en cuanto la mesa está llena (o puedes llenarla con la computadora). ‖ Você entra numa mesa com quem procura partida agora. Começa assim que a mesa encher (ou você pode completá-la com o computador).
 In 2 ‖ 2 players ‖ De 2 ‖ Em 2

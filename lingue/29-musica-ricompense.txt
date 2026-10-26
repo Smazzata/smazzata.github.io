@@ -18,3 +18,5 @@ Disattiva musica ‖ Disable music ‖ Desactivar música ‖ Desativar música
 Temi dedicati a menu, giochi e ricompense. La scelta resta salvata su questo dispositivo; gli effetti sonori sono indipendenti. ‖ Themes for menus, games and rewards. Your choice is saved on this device; sound effects are independent. ‖ Temas para menús, juegos y recompensas. Tu elección se guarda en este dispositivo; los efectos de sonido son independientes. ‖ Temas para menus, jogos e recompensas. Sua escolha fica salva neste dispositivo; os efeitos sonoros são independentes.
 
 Volume musica ‖ Music volume ‖ Volumen de música ‖ Volume da música
+
+La condivisione musicale non è disponibile. ‖ Music sharing is unavailable. ‖ No está disponible compartir música. ‖ O compartilhamento de música não está disponível.

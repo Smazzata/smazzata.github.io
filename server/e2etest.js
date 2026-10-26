@@ -389,12 +389,10 @@ async function signup(p, nick, email = mailOf()) {
     assert((await A.call('setAids', { on: true })).ok);
     step("aiuto 'dove attaccare' attivabile solo dall'host");
 
-    // musica: l'host condivide, l'altro la riceve; link non Spotify rifiutato
-    assert(!(await A.call('setMusic', { url: 'https://evil.example/x' })).ok);
-    assert((await A.call('setMusic', { url: 'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M' })).ok);
-    await B.until((s) => s.room.music && /spotify/.test(s.room.music.url) && s.room.music.by === 'Anna', 'musica condivisa');
-    assert(!(await B.call('setMusic', { url: 'https://open.spotify.com/playlist/x' })).ok, 'solo l\'host cambia la musica');
-    step('musica del tavolo condivisa (e riservata all\'host)');
+    // I client precedenti ricevono un rifiuto e non possono condividere URL.
+    assert(!(await A.call('setMusic', { url: 'https://example.invalid/music' })).ok);
+    assert(!(await B.call('setMusic', { url: '' })).ok);
+    assert(!A.state.room.music && !B.state.room.music);
 
     // bravura del computer
     assert(!(await A.call('setBotLevel', { level: 'impossibile' })).ok);

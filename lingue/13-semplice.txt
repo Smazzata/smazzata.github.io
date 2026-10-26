@@ -48,8 +48,6 @@ Riordina le carte ‖ Sort the cards ‖ Ordenar las cartas ‖ Ordenar as carta
 per valore ‖ by value ‖ por valor ‖ por valor
 per seme ‖ by suit ‖ por palo ‖ por naipe
 per giochi ‖ by melds ‖ por combinaciones ‖ por jogos
-Musica del tavolo ‖ Table music ‖ Música de la mesa ‖ Música da mesa
-Musica del tavolo (attiva) ‖ Table music (on) ‖ Música de la mesa (activa) ‖ Música da mesa (ativa)
 Esci dalla partita ‖ Leave the game ‖ Salir de la partida ‖ Sair da partida
 Schermate ‖ Screens ‖ Pantallas ‖ Telas
 🙂 Semplici ‖ 🙂 Simple ‖ 🙂 Sencillas ‖ 🙂 Simples

@@ -434,7 +434,6 @@
       toast(`${text}`);
       render();
     },
-    music() { musicModal(); render(); },
     stats: statsModal,
     async claimNick() {
       const nick = ($('#nick') || {}).value || '';
@@ -612,7 +611,6 @@
     toggleTheme() { S.prefs.theme = S.prefs.theme === 'scuro' ? 'chiaro' : 'scuro'; applyPrefs(); render(); },
     leaders(el) { return S.screen === 'leaders' ? openLeaguePage(el) : openRankedOverview(); },
     resetStats() { if (confirm('Azzerare le statistiche?')) { store.set('bur_stats', {}); statsModal(); } },
-    musicStop() { emit('setMusic', { url: '' }).then(() => musicModal()); },
     botLevel(el) { emit('setBotLevel', { level: el.dataset.val }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     turnTime(el) { emit('setTurnTime', { seconds: Number(el.dataset.val) }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },
     setAids(el) { emit('setAids', { on: el.dataset.val === '1' }).then(() => { if (S.modalKind === 'settings') settingsModal(); }); },

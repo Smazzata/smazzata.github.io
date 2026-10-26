@@ -333,12 +333,6 @@
       friendform: async () => { const n = $('#friendin').value.trim(); if (!n) return; const r = await emit('friendRequest', { nick: n }); if (r.ok) toast(`Richiesta inviata a ${n}`); },
     };
     if (forms[e.target.id]) { e.preventDefault(); forms[e.target.id](e.target); return; }
-    if (e.target.id === 'musicform') {
-      e.preventDefault();
-      const url = $('#musicin').value.trim();
-      if (url) emit('setMusic', { url }).then((r) => { if (r.ok) { toast('Musica condivisa con il tavolo'); musicModal(); } });
-      return;
-    }
     if (e.target.id === 'chatform') {
       e.preventDefault();
       const inp = $('#chatin');

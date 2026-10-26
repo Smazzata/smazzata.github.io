@@ -392,11 +392,6 @@
     rememberTableSignals(S.room,prev,room,game);
     const keepLeaguePage = S.screen === 'leaders' && room?.code === S.room?.code && !!game === !!prev;
     speakNewMoves(game);
-    const prevMusic = S.room && S.room.music;
-    if (room && room.music && (!prevMusic || prevMusic.at !== room.music.at)) {
-      if (prevMusic !== undefined && !room.isHost) { S.musicUnseen = true; toast(`${room.music.by} ha avviato la musica: tocca per ascoltarla`); }
-    }
-    if (room && !room.music) S.musicUnseen = false;
     S.turnEnd = room && room.turnLeft != null ? Date.now() + room.turnLeft : null;
     S.warned10 = S.turnKey === (game && `${game.handNo}:${game.turn}`) ? S.warned10 : false;
     S.turnKey = game && `${game.handNo}:${game.turn}`;

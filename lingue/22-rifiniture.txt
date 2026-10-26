@@ -33,7 +33,6 @@ Fine smazzata ‖ End of hand ‖ Fin de la mano ‖ Fim da rodada
 Gioca ancora ‖ Play again ‖ Jugar de nuevo ‖ Jogar novamente
 Grazie, segnalazione inviata ‖ Thanks, report sent ‖ Gracias, informe enviado ‖ Obrigado, relato enviado
 Grazie! Segnalazione inviata ‖ Thanks! Report sent ‖ ¡Gracias! Informe enviado ‖ Obrigado! Relato enviado
-Musica condivisa con il tavolo ‖ Music shared with the table ‖ Música compartida con la mesa ‖ Música compartilhada com a mesa
 Smazzata: torneo ‖ Smazzata: tournament ‖ Smazzata: torneo ‖ Smazzata: torneio
 Smazzata: tocca a te ‖ Smazzata: your turn ‖ Smazzata: te toca ‖ Smazzata: sua vez
 Invito ‖ Invitation ‖ Invitación ‖ Convite
@@ -60,7 +59,6 @@ Tavolo veloce: la partita parte da sola appena il tavolo è pieno. Se non arriva
 Torneo al meglio di {0} ‖ Best of {0} ‖ Al mejor de {0} ‖ Melhor de {0}
 Con calma ‖ Slow ‖ Con calma ‖ Sem pressa
 Invita amici ‖ Invite friends ‖ Invitar amigos ‖ Convidar amigos
-Musica del tavolo{9} ‖ Table music{9} ‖ Música de la mesa{9} ‖ Música da mesa{9}
 Leggi le regole ‖ Read the rules ‖ Lee las reglas ‖ Leia as regras
 Da puoi cambiare colore del tavolo, dorso delle carte, dimensione e suoni. Giocando da solo contro il computer puoi attivare i ‖ In you can change table colour, card back, size and sounds. Playing alone against the computer you can turn on ‖ En puedes cambiar el color de la mesa, el dorso de las cartas, el tamaño y los sonidos. Jugando solo contra la computadora puedes activar las ‖ Em você pode mudar a cor da mesa, o verso das cartas, o tamanho e os sons. Jogando sozinho contra o computador você pode ativar as
 Da ‖ In ‖ En ‖ Em
@@ -76,8 +74,6 @@ Abbandona la partita ‖ Leave the game ‖ Abandonar la partida ‖ Abandonar a
 Automatica ‖ Automatic ‖ Automático ‖ Automático
 Lenta ‖ Slow ‖ Lenta ‖ Lenta
 Veloce ‖ Fast ‖ Rápida ‖ Rápida
-Unisciti alla Jam su Spotify ‖ Join the Jam on Spotify ‖ Únete a la Jam en Spotify ‖ Entre na Jam no Spotify
-Apri in Spotify ‖ Open in Spotify ‖ Abrir en Spotify ‖ Abrir no Spotify
 Anteprima regole ‖ Rules preview ‖ Vista previa de las reglas ‖ Prévia das regras
 Animazioni ‖ Animations ‖ Animaciones ‖ Animações
 Mosse in silenzio ‖ Moves in silence ‖ Jugadas en silencio ‖ Jogadas em silêncio

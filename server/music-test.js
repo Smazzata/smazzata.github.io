@@ -8,7 +8,8 @@ function setup(){
   createGain(){const n={gain:param(),connect(){return this;},disconnect(){this.disconnected=true;}};buses.push(n);return n;}
   createBiquadFilter(){return {frequency:param(),Q:param(),connect(){return this;},disconnect(){}};}
   createDelay(){return {delayTime:param(),connect(){return this;},disconnect(){}};}
-  createOscillator(){const o={frequency:{value:0},connect(){return this;},start(at){this.startAt=at;},stop(at){this.stopAt=at;},disconnect(){}};oscillators.push(o);return o;}
+  createPeriodicWave(real,imag){return {real:[...real],imag:[...imag]};}
+  createOscillator(){const o={frequency:{value:0},setPeriodicWave(w){this.wave=w;this.type='custom';},connect(){return this;},start(at){this.startAt=at;},stop(at){this.stopAt=at;},disconnect(){}};oscillators.push(o);return o;}
   resume(){this.state='running';return Promise.resolve();}suspend(){this.state='suspended';return Promise.resolve();}
  }
  const S={prefs:{music:false,sound:false},screen:'home',room:null},document={hidden:false,addEventListener(k,f){listeners[k]=f;}};
@@ -19,16 +20,16 @@ function setup(){
 test('Musica: consenso separato dai suoni, melodie, cambio senza sequenze sovrapposte e arresto',()=>{
  const x=setup();x.music.sync(true);assert.equal(x.music.active,null);assert.equal(x.oscillators.length,0);
  x.S.prefs.music=true;x.music.sync();assert.equal(x.music.active,'home');assert.equal(x.timers.size,1);
- assert(x.oscillators.length>=3);assert(x.oscillators.every(o=>Number.isFinite(o.frequency.value)&&o.frequency.value>0&&o.stopAt>o.startAt));
+ assert(x.oscillators.length>=2);assert(x.oscillators.every(o=>Number.isFinite(o.frequency.value)&&o.frequency.value>0&&o.stopAt>o.startAt));
  const first=x.buses[0];x.S.screen='game';x.S.room={rules:{game:'canasta'}};x.music.sync();assert.equal(x.music.active,'canasta');assert.equal(x.timers.size,1);assert(first.disconnected);
  x.S.prefs.music=false;x.music.sync();assert.equal(x.music.active,null);assert.equal(x.timers.size,0);
 });
-test('Musica: sospensione in background, rientro, Spotify e dodici contesti distinti',()=>{
+test('Musica: sospensione in background, rientro e dodici contesti locali distinti',()=>{
  const x=setup();x.S.prefs.music=true;x.music.sync();assert.equal(x.music.active,null);
  x.listeners.pointerdown();assert.equal(x.music.active,'home');
  x.document.hidden=true;x.listeners.visibilitychange();assert.equal(x.timers.size,0);
  x.document.hidden=false;x.listeners.visibilitychange();assert.equal(x.music.active,'home');
- x.S.room={music:{url:'condivisa'}};x.music.sync();assert.equal(x.music.active,null);
+ x.S.room={music:{url:'vecchio-collegamento'}};x.music.sync();assert.equal(x.music.active,'home');
  x.S.room=null;x.S.modalKind='collection';x.music.sync();assert.equal(x.music.active,'collection');
  x.S.modalKind='chestReward';x.music.sync();assert.equal(x.music.active,'chest');
  x.S.modalKind='result';x.S.game={over:true,you:0,winners:[0]};assert.equal(x.music.theme(),'victory');x.S.game.winners=[1];assert.equal(x.music.theme(),'defeat');
@@ -60,16 +61,25 @@ test('Riepilogo bottino: soltanto premi confermati della propria partita online'
 
 test('Arrangiamento: frase lunga, pause, timbro morbido e scheduler limitato',()=>{
  const x=setup();x.S.prefs.music=true;x.music.sync(true);x.advance(70);
- assert(x.oscillators.length>100);assert(x.oscillators.length<1800);
- assert(x.oscillators.every(o=>o.type==='sine'&&o.stopAt>o.startAt&&Number.isFinite(o.frequency.value)));
+ assert(x.oscillators.length>100);assert(x.oscillators.length<700);
+ assert(x.oscillators.every(o=>o.type==='custom'&&o.wave.imag.some((v,i)=>i>1&&v>0)&&o.stopAt>o.startAt&&Number.isFinite(o.frequency.value)));
  for(const theme of Object.values(x.music.themes)){
-  assert.equal(theme.chords.length,8);assert.equal(theme.lead.length,8);
-  assert(theme.lead.includes(null));assert(theme.bpm>=58&&theme.bpm<=78);
+  assert.equal(theme.melody.length,16);assert(theme.melody.every(bar=>bar.length===8&&bar.includes(null)));
+  assert(theme.bpm>=66&&theme.bpm<=92);
  }
  const before=x.oscillators.length;x.S.prefs.music=false;x.music.sync();x.advance(10);
  assert.equal(x.oscillators.length,before);assert.equal(x.timers.size,0);
 });
 
-test('Menu e partita hanno metrica, armonia e attacchi distinti',()=>{const a=setup(),b=setup();for(const x of [a,b])x.S.prefs.music=true;b.S.screen='game';b.S.room={rules:{game:'burraco'}};a.music.sync(true);b.music.sync(true);a.advance(30);b.advance(30);assert.notDeepEqual(a.music.themes.home.chords,a.music.themes.burraco.chords);assert(a.oscillators.length>b.oscillators.length*2);assert.equal(a.music.themes.home.style,'salon');assert.equal(b.music.themes.burraco.style,'ambient');});
+test('Partiture: dodici arrangiamenti distinti, pause, dinamica e carico limitato',()=>{
+ const x=setup(),signatures=new Set();for(const name of Object.keys(x.music.themes)){
+  const bars=Array.from({length:256},(_,i)=>x.music.score(name,i));signatures.add(JSON.stringify(bars));
+  assert(bars.some(notes=>notes.length===0));assert(bars.flat().length<650);
+  for(const n of bars.flat()){assert(Number.isFinite(n.midi)&&n.midi>=30&&n.midi<=90);assert(n.duration>0&&n.duration<3);assert(n.level>0&&n.level<=.065);assert(n.delay>=0&&n.delay<.1);}
+  assert.notDeepEqual(bars.slice(0,64),bars.slice(64,128));assert.notDeepEqual(bars.slice(0,128),bars.slice(128));
+ }assert.equal(signatures.size,12);
+ const count=name=>Array.from({length:128},(_,i)=>x.music.score(name,i)).flat().length;
+ assert(count('home')>count('burraco'));assert.equal(x.music.themes.home.style,'bossa');assert.equal(x.music.themes.burraco.style,'table');
+});
 
 test('Apertura chest: quattro segnali distinti e rispetto dei suoni disattivati',()=>{const source=fs.readFileSync(require.resolve('../public/js/base.js'),'utf8');const start=source.indexOf('    chest(rarity){'),end=source.indexOf('    play(kind)',start);assert(start>=0&&end>start);const S={prefs:{sound:false}},calls=[];const box=vm.createContext({S});const sound=vm.runInContext('({'+source.slice(start,end)+'})',box);sound.ctx={};sound.note=(...args)=>calls.push(args);sound.chest('legendary');assert.equal(calls.length,0);S.prefs.sound=true;const signatures=[];for(const [rarity,count] of [['common',2],['rare',3],['epic',4],['legendary',5]]){calls.length=0;sound.chest(rarity);assert.equal(calls.length,count);assert(calls.every(([f,delay,vol])=>f>0&&delay>=0&&vol<=.05));signatures.push(JSON.stringify(calls));}assert.equal(new Set(signatures).size,4);sound.ctx=null;calls.length=0;sound.chest('legendary');assert.equal(calls.length,0);});
