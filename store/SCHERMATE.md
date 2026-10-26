@@ -1,6 +1,6 @@
 # Screenshot della versione rifinita
 
-Rigenerati il 24 ottobre 2026 in `schermate-rilascio/`. I nove PNG numerati sono **1080×1920**. L'interfaccia, le illustrazioni e il motore sono quelli della copia locale finale; i dati social sono risposte vuote simulate per il rendering. Non sono screenshot di una release già distribuita o una prova del multiplayer.
+Aggiornati per la revisione del 26 ottobre 2026 in `schermate-rilascio/`. I nove PNG numerati sono **1080×1920**. L'interfaccia, le illustrazioni e il motore sono quelli della copia locale finale; i dati social sono risposte vuote simulate per il rendering. Non sono screenshot di una release già distribuita o una prova del multiplayer.
 
 Selezione consigliata per la scheda italiana, in ordine:
 
@@ -12,7 +12,7 @@ Selezione consigliata per la scheda italiana, in ordine:
 6. `schermate-rilascio/07-amici.png` — elenco amici vuoto con azione utile.
 7. `schermate-rilascio/09-classifica.png` — primo accesso alle classificate, nessun giocatore o grado inventato.
 
-`02-allenamento.png` mostra le impostazioni dell'allenamento. `04-fine-allenamento.png` verifica la resa: non è nella selezione consigliata. Le vecchie prove delle anteprime leggendarie restano storiche: il catalogo dei non posseduti non è più accessibile.
+`02-allenamento.png` mostra le impostazioni dell'allenamento. `04-fine-allenamento.png` verifica la resa: non è nella selezione consigliata. Le vecchie prove delle anteprime leggendarie restano storiche: la Collezione parte dai posseduti; “Mostra tutti” permette di consultare gli altri e acquistarli con monete gratuite.
 
 Gli screenshot precedenti in `schermate/` restano conservati, ma **non sono la selezione finale**. In particolare, non usare il vecchio screenshot Scopa, non disponibile al lancio, né le vecchie leghe o l'avviso di aggiornamento APK. Le vecchie schermate in altre lingue non sono state rigenerate in questa verifica e non vanno presentate come aggiornate.
 

@@ -41,7 +41,7 @@ Le prove grafiche usano l'interfaccia reale e il motore locale, con risposte soc
 - Rieseguito `npm run e2e`: passato integralmente su server temporaneo, inclusi profili, cancellazione, riconnessione, tornei e classificate.
 - Rieseguito `node server/uitest.js --polish`: passato, incluse anteprime avatar, selezione dei soli comuni e profilo mobile. Ripetuto dopo le ultime correzioni.
 - Rieseguito `node server/release-ui-test.js --store`: passato, 23 acquisizioni. Corretti il vecchio simbolo robot nell'intestazione dell'allenamento e la frase «Tu ha chiuso»; rigenerati tutti i nove PNG store 1080×1920. Gli hash delle sorgenti sono nel nuovo `VERIFICA.json`.
-- Eseguito `node server/privacy-uitest.js`: passato, quattro pagine a 360 px, Spotify senza richieste anticipate, cancellazione e dati locali.
+- Eseguito `node server/privacy-uitest.js`: passato, quattro pagine a 360 px, collegamenti musicali esterni senza richieste anticipate, cancellazione e dati locali.
 - Controllati diff, file non tracciati, sintassi JS/JSON e traduzioni. Nessuna credenziale privata, chiave privata, database, backup o artefatto temporaneo incluso; esempi email nei form, contatti pubblici del titolare e attribuzioni delle licenze sono contenuti intenzionali. Nessun file ignorato aggiunto forzatamente. Screenshot ispezionati: dati dimostrativi e nomi dei computer, nessun giocatore reale.
 - La lettura del riferimento remoto `origin/main` è riuscita: base remota `7149eee`. I precedenti errori di connessione locale non si ripresentano. L'esito del push e dei controlli remoti va distinto dai test locali sopra elencati.
 

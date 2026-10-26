@@ -7,7 +7,7 @@ Limiti di Google: nome massimo 30 caratteri, descrizione breve massimo 80, descr
 ## Italiano
 **Nome:** Smazzata – Giochi di carte
 
-**Descrizione breve:** Burraco, Scala 40, Scopa, Briscola, Tressette e altri: con amici o col computer
+**Descrizione breve:** Burraco, Scala 40, Ramino e Canasta: con amici o contro il computer
 
 **Descrizione completa:**
 Smazzata è il tavolo da gioco di carte per giocare con gli amici, in famiglia o contro il computer.
@@ -16,8 +16,6 @@ Gratis.
 🃏 TANTI GIOCHI, UN SOLO TAVOLO
 • Burraco (Classico con le regole da torneo, Reale, Buraco brasiliano Aberto e Fechado)
 • Scala 40 • Ramino • Canasta
-• Scopa e Scopone scientifico • Briscola e Briscola in 5 (a chiamata) • Tressette (con accusi)
-• Rubamazzetto
 Ogni regola si può personalizzare: obiettivo, matte, pozzetti, punteggi e molto altro.
 
 👥 CON GLI AMICI
@@ -38,7 +36,7 @@ Ogni regola si può personalizzare: obiettivo, matte, pozzetti, punteggi e molto
 
 ✨ FATTO PER IL TELEFONO
 • Si gioca toccando e trascinando le carte, il tavolo si adatta anche agli schermi piccoli
-• Carte francesi e italiane in tanti stili, tema chiaro e scuro
+• Carte in tanti stili, tema chiaro e scuro, musiche originali facoltative
 • Accessibilità: testo grande, alto contrasto, mosse lette ad alta voce
 • Italiano, English, Español, Português
 
@@ -49,7 +47,7 @@ Trofei, livelli, titoli e cornici da sbloccare nelle partite tra persone. Le par
 ## English
 **Name:** Smazzata – Card games
 
-**Short description:** Burraco, Scala 40, Scopa, Briscola, Tressette and more: with friends or the CPU
+**Short description:** Burraco, Scala 40, Ramino and Canasta: with friends or against the computer
 
 **Full description:**
 Smazzata is the card table for playing with friends, family or against the computer.
@@ -58,8 +56,6 @@ Free to play.
 🃏 MANY GAMES, ONE TABLE
 • Burraco (Classic with tournament rules, Royal, Brazilian Buraco Aberto and Fechado)
 • Scala 40 • Ramino (rummy) • Canasta
-• Scopa and Scopone scientifico • Briscola and Briscola in 5 (with a called partner) • Tressette (with declarations)
-• Rubamazzetto
 Every rule can be customised: target score, wild cards, kitties, scoring and much more.
 
 👥 WITH FRIENDS
@@ -80,7 +76,7 @@ Every rule can be customised: target score, wild cards, kitties, scoring and muc
 
 ✨ MADE FOR YOUR PHONE
 • Play by tapping and dragging cards; the table adapts to small screens too
-• French and Italian cards in many styles, light and dark theme
+• Cards in many styles, light and dark themes, optional original music
 • Accessibility: large text, high contrast, moves read aloud
 • Italiano, English, Español, Português
 
@@ -91,7 +87,7 @@ Unlock trophies, levels, titles and frames in matches between people. Computer m
 ## Español
 **Nombre:** Smazzata – Juegos de cartas
 
-**Descripción breve:** Burraco, Scala 40, Escoba, Brisca, Tressette y más: con amigos o la computadora
+**Descripción breve:** Burraco, Scala 40, Ramino y Canasta: con amigos o contra la computadora
 
 **Descripción completa:**
 Smazzata es la mesa de cartas para jugar con amigos, en familia o contra la computadora.
@@ -100,8 +96,6 @@ Gratis.
 🃏 MUCHOS JUEGOS, UNA SOLA MESA
 • Burraco (Clásico con reglas de torneo, Real, Buraco brasileño Aberto y Fechado)
 • Scala 40 • Ramino (rummy) • Canasta
-• Escoba y Scopone científico • Brisca y Briscola in 5 (con socio llamado) • Tressette (con cantos)
-• Rubamazzetto
 Cada regla se puede personalizar: objetivo, comodines, muertos, puntuación y mucho más.
 
 👥 CON AMIGOS
@@ -122,7 +116,7 @@ Cada regla se puede personalizar: objetivo, comodines, muertos, puntuación y mu
 
 ✨ HECHO PARA EL TELÉFONO
 • Se juega tocando y arrastrando las cartas; la mesa se adapta también a pantallas pequeñas
-• Cartas francesas e italianas en muchos estilos, tema claro y oscuro
+• Cartas en muchos estilos, temas claro y oscuro, música original opcional
 • Accesibilidad: texto grande, alto contraste, jugadas leídas en voz alta
 • Italiano, English, Español, Português
 
@@ -133,7 +127,7 @@ Desbloquea trofeos, niveles, títulos y marcos en partidas entre personas. Las p
 ## Português
 **Nome:** Smazzata – Jogos de cartas
 
-**Descrição curta:** Buraco, Canastra, Escopa, Bisca, Tressette e mais: com amigos ou o computador
+**Descrição curta:** Buraco, Scala 40, Ramino e Canastra: com amigos ou contra o computador
 
 **Descrição completa:**
 Smazzata é a mesa de cartas para jogar com amigos, em família ou contra o computador.
@@ -142,8 +136,6 @@ Grátis.
 🃏 MUITOS JOGOS, UMA SÓ MESA
 • Buraco (Aberto e Fechado) e Burraco italiano (Clássico com regras de torneio, Real)
 • Scala 40 • Ramino (rummy) • Canastra
-• Escopa e Scopone científico • Bisca e Briscola in 5 (com parceiro chamado) • Tressette (com acusos)
-• Rouba-monte
 Cada regra pode ser personalizada: objetivo, curingas, mortos, pontuação e muito mais.
 
 👥 COM OS AMIGOS
@@ -164,7 +156,7 @@ Cada regra pode ser personalizada: objetivo, curingas, mortos, pontuação e mui
 
 ✨ FEITO PARA O CELULAR
 • Joga-se tocando e arrastando as cartas; a mesa se adapta também a telas pequenas
-• Cartas francesas e italianas em vários estilos, tema claro e escuro
+• Cartas em vários estilos, temas claro e escuro, música original opcional
 • Acessibilidade: texto grande, alto contraste, jogadas lidas em voz alta
 • Italiano, English, Español, Português
 

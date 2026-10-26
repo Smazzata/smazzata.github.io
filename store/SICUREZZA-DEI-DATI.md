@@ -1,6 +1,6 @@
 # Sicurezza dei dati — scheda di compilazione
 
-Versione verificata: 21 ottobre 2026. Questa è una mappa del codice attuale, non una dichiarazione già inviata alla Play Console. Ricontrollare il pacchetto AAB definitivo e i servizi effettivamente configurati prima di inviare il modulo.
+Mappa aggiornata al 26 ottobre 2026; controlli sulla configurazione reale ancora aperti. Questa è una mappa del codice attuale, non una dichiarazione già inviata alla Play Console. Ricontrollare il pacchetto AAB definitivo e i servizi effettivamente configurati prima di inviare il modulo.
 
 ## Risposte generali
 
@@ -12,7 +12,7 @@ Versione verificata: 21 ottobre 2026. Questa è una mappa del codice attuale, no
 - Eliminazione nell'app: Profilo → Elimina il mio profilo.
 - Eliminazione senza app: https://smazzata.github.io/gioca/elimina-profilo.html
 - Privacy: https://smazzata.github.io/gioca/privacy.html
-- Pubblicità, acquisti, SDK di analytics e Advertising ID: non presenti nella versione attuale. Ricontrollare le dipendenze finali; non estendere questa risposta a versioni future.
+- Pubblicità, acquisti in denaro, SDK di analytics e Advertising ID: non presenti nella versione attuale. Ricontrollare le dipendenze finali; non estendere questa risposta a versioni future.
 
 ## Dati da dichiarare
 
@@ -24,7 +24,7 @@ Le etichette possono cambiare nella Console. Selezionare le categorie corrispond
 | Informazioni personali → ID utente | Nickname, identificativo del profilo, codici/chiavi di accesso e recupero (impronte per le chiavi dispositivo) | Funzionalità; gestione account; sicurezza | Profilo online facoltativo; identificativi necessari per usarlo |
 | Attività nell'app → Interazioni con l'app | Mosse, risultati, classifica/grado, trofei, livello, sfide, tornei, amici e inviti; inventario avatar/chest, aperture con data e premio, monete, acquisti con monete e contatori di garanzia | Funzionalità dell'app | Trasmesse quando si usano le relative funzioni online; non analytics pubblicitari. Inventario e ricevute conservati nel profilo fino alla sua cancellazione; copia locale funzionale |
 | Messaggi → Altri messaggi in-app | Chat fra giocatori e chat allegata alle segnalazioni | Funzionalità; sicurezza e moderazione | Messaggi volontari. La sola chat ordinaria è temporanea, gli allegati alle segnalazioni persistono fino a 90 giorni |
-| Attività nell'app → Altri contenuti generati dagli utenti | Testi delle segnalazioni, nomi dei tornei/campionati, link musicali condivisi, avatar predefinito scelto | Funzionalità; assistenza; sicurezza | Volontari; segnalazioni massimo 90 giorni e 100 voci |
+| Attività nell'app → Altri contenuti generati dagli utenti | Testi delle segnalazioni, nomi dei tornei/campionati, avatar predefinito scelto | Funzionalità; assistenza; sicurezza | Volontari; segnalazioni massimo 90 giorni e 100 voci |
 | Informazioni e prestazioni dell'app → Diagnostica | Browser/dispositivo, dimensioni schermo e contesto tecnico allegati manualmente alla segnalazione | Funzionalità/assistenza, secondo le opzioni del modulo | Invio volontario col pulsante Segnala un problema; niente SDK automatico di crash reporting |
 | ID dispositivo o altri ID | Endpoint e chiavi Web Push, impronte di chiavi per dispositivo se incluse in questa categoria dalla definizione vigente | Funzionalità; gestione account; sicurezza | Push solo dopo attivazione; chiavi di accesso necessarie per il profilo |
 
@@ -38,7 +38,7 @@ Non escludere dal questionario un dato soltanto perché resta in memoria: verifi
 
 La risposta non si deduce dalla presenza di Cloudflare/GitHub/Google. Le eccezioni per fornitori che operano per conto del titolare e per trasferimenti avviati consapevolmente dall'utente vanno applicate solo se ne ricorrono le condizioni contrattuali e tecniche. Documentare i contratti reali prima di segnare «non condiviso». Nickname, avatar, risultati e messaggi sono visibili ai destinatari descritti nell'informativa; l'email non è pubblica.
 
-Spotify ora è un collegamento esterno scelto dall'utente: nessun iframe viene caricato nell'app. Non dichiarare raccolta di dati Spotify da parte di Smazzata se non avviene.
+La musica viene sintetizzata sul dispositivo. Nessun servizio musicale esterno, nessuna condivisione di URL musicali, nessun microfono o invio audio. Volume e attivazione sono preferenze locali.
 
 ## Controllo finale per ogni riga
 
@@ -51,4 +51,4 @@ Spotify ora è un collegamento esterno scelto dall'utente: nessun iframe viene c
 Fonte: [Guida ufficiale Sicurezza dei dati](https://support.google.com/googleplay/android-developer/answer/10787469?hl=it). Non è un'autocertificazione legale né un'esenzione dalle verifiche richieste al titolare.
 
 ### Inventario cosmetici (24 ottobre 2026)
-Il profilo conserva anche gli oggetti estetici posseduti e le selezioni per dorso, cornice, tappetino, reazione e vittoria. Restano dati dell’inventario gratuito, eliminati insieme al profilo. Copia locale `bur_cosmetic_cache` separata per proprietario e inclusa nella cancellazione dei dati `bur_`. Nessuna nuova categoria di identificativi, acquisto o tracciamento.
+Il profilo conserva anche gli oggetti estetici posseduti e le selezioni per dorso, cornice, tappetino, reazione e vittoria. Restano dati dell’inventario gratuito, eliminati insieme al profilo. Copia locale `bur_cosmetic_cache` separata per proprietario e inclusa nella cancellazione dei dati `bur_`. Gli acquisti con monete gratuite sono registrati nell’inventario; nessun pagamento in denaro o tracciamento pubblicitario.

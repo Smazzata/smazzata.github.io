@@ -1,12 +1,12 @@
 # Smazzata sul Play Store
 
-La lista operativa aggiornata è [PRIMA-DI-PUBBLICARE.md](PRIMA-DI-PUBBLICARE.md). Contiene anche i blocchi ancora aperti: non considerare pronta la pubblicazione soltanto perché i file esistono.
+Il punto attuale è [STATO-RILASCIO-2026-10-26.md](STATO-RILASCIO-2026-10-26.md); la guida Console è [PLAY-CONSOLE.md](PLAY-CONSOLE.md). La lista operativa è [PRIMA-DI-PUBBLICARE.md](PRIMA-DI-PUBBLICARE.md). Contiene anche i blocchi ancora aperti: non considerare pronta la pubblicazione soltanto perché i file esistono.
 
 ## Materiale
 
 - `icona-512.png`: icona 512×512.
 - `immagine-in-evidenza.png`: immagine 1024×500.
-- `schermate/`: schermate attuali, rigenerabili con `STORE=1 node server/uitest.js` (in PowerShell: `$env:STORE='1'; node server/uitest.js`). Verificare che non contengano credenziali o dati reali prima di caricarle.
+- `schermate-rilascio/`: selezione attuale in `SCHERMATE.md`, rigenerabile con `node server/release-ui-test.js --store`; `schermate/` conserva prove storiche da non caricare automaticamente.
 - `testi.md`: nome, descrizione breve e completa in quattro lingue.
 - `SICUREZZA-DEI-DATI.md`: mappa dei dati per compilare il modulo, da confrontare con fornitori e AAB effettivi.
 - `../docs/privacy-operazioni.md`: cancellazioni, vecchi backup, gestione delle richieste e incidenti.
@@ -28,4 +28,4 @@ La versione store usa `SmazzataStore` e non mostra inviti a scaricare aggiorname
 - Assistenza: smazzata.play@gmail.com
 - Richieste privacy: muliellostudio@gmail.com
 
-La nuova documentazione riguarda la versione gratuita senza annunci e acquisti. Aggiungerli richiederà prima una nuova valutazione tecnica e delle dichiarazioni: non basta riutilizzare il modulo attuale.
+La nuova documentazione riguarda la versione gratuita senza annunci e pagamenti in denaro. Sono presenti monete gratuite e acquisti di cosmetici con queste monete. Aggiungerli richiederà prima una nuova valutazione tecnica e delle dichiarazioni: non basta riutilizzare il modulo attuale.

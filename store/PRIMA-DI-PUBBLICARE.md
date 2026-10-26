@@ -1,6 +1,6 @@
 # Apertura di Smazzata su Google Play
 
-Aggiornato al 25 ottobre 2026. Le caselle aperte sono verifiche reali ancora da completare: la presenza di questo documento non significa che siano state fatte. Non inviare in produzione finché i blocchi non sono chiusi. Evidenze e accessi mancanti in [STATO-OPERATIVO-2026-10-22.md](STATO-OPERATIVO-2026-10-22.md). Il titolare comunica il 25 ottobre 2026 che Google ha confermato la sua identità. Lo stato degli altri passaggi in Console e dell'eventuale test chiuso resta da verificare; la verifica dell'identità non certifica l'approvazione dell'app.
+Aggiornato al 26 ottobre 2026. Le caselle aperte sono verifiche reali ancora da completare: la presenza di questo documento non significa che siano state fatte. Non inviare in produzione finché i blocchi non sono chiusi. Evidenze e accessi mancanti in [STATO-OPERATIVO-2026-10-22.md](STATO-OPERATIVO-2026-10-22.md). Il titolare comunica il 25 ottobre 2026 che Google ha confermato la sua identità. Lo stato degli altri passaggi in Console e dell'eventuale test chiuso resta da verificare; la verifica dell'identità non certifica l'approvazione dell'app.
 
 La verifica storica della build 1.30 non copre le rifiniture del 23 ottobre: vedere `RIFINITURE-2026-10-23.md`. Servono una nuova build finale e il confronto con `SCHERMATE.md`.
 
@@ -12,7 +12,7 @@ La verifica storica della build 1.30 non copre le rifiniture del 23 ottobre: ved
 - [x] Condizioni d'uso: contenuti vietati, segnalazione, blocco, riesame, niente denaro/premi monetari, diritti inderogabili preservati.
 - [x] Cancellazione nel codice: credenziali/dispositivi, amicizie/blocchi, progressi, risultati quotidiani, riferimenti negli storici/gare/tavoli e copie locali precedenti.
 - [x] Nuovi backup solo locali e cifrati; scadenze per età delle copie e delle segnalazioni; niente nuovi caricamenti automatici di backup su GitHub.
-- [x] Spotify aperto su scelta dell'utente, senza lettore di terzi incorporato automaticamente.
+- [x] Solo musiche interne originali, disattivate inizialmente; rimossi collegamenti e condivisione musicale esterna.
 - [x] Testi dello store aggiornati ai gradi e all'allenamento senza progressi; Avventura non pubblicizzata.
 - [x] Versione privacy pubblicata e server/Pages verificati nella sessione precedente del 22 ottobre; Android 1.30 verificato in `test-output/verifica-aab-30.json`, ultimo commit `040e6d2`.
 - [ ] Test di cancellazione con account di prova dopo installazione sul server reale: evidenza distinta ancora da acquisire.
@@ -30,7 +30,8 @@ La verifica storica della build 1.30 non copre le rifiniture del 23 ottobre: ved
 
 ## Play Console: operazioni del titolare
 
-- [ ] Account sviluppatore verificato; tipo account e dati pubblici corretti; stato trader/DSA dichiarato correttamente.
+- [x] Identità confermata da Google secondo comunicazione del titolare.
+- [ ] Verificare eventuali altri adempimenti account, tipo/data account, dati pubblici e dichiarazione trader/DSA in Console.
 - [ ] App `it.smazzata.app`, categoria gioco, gratuita; AAB firmato con chiave upload privata e Play App Signing.
 - [ ] Scheda e schermate attuali, nessun Elo numerico/Avventura/promessa non presente. Screenshot finali in `schermate-rilascio/`, selezione e metodo in `SCHERMATE.md`; confrontarli con il nuovo AAB e leggerli tutti prima di caricarli.
 - [ ] URL privacy e cancellazione aperti senza login e da una rete esterna. Contatti dello store effettivamente presidiati.

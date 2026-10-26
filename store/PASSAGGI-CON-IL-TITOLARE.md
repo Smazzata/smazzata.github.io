@@ -2,7 +2,7 @@
 
 Aggiornamento 23 ottobre: le rifiniture della UI e ranked sono ora incluse nella pubblicazione autorizzata su main; per sorgenti, verifiche e screenshot finali seguire `RIFINITURE-2026-10-23.md` e `SCHERMATE.md`. I riferimenti a `040e6d2` e all’AAB 1.30 qui sotto descrivono materiale storico, non il pacchetto finale.
 
-Le operazioni seguenti non sono già eseguite. Non occorre attendere Google per backup, chiave e fornitori. Riconoscimento documenti e test chiuso restano separati.
+Le operazioni seguenti non sono già eseguite. Non occorre attendere Google per backup, chiave e fornitori. Il titolare ha comunicato la conferma dell’identità Google il 25 ottobre; il test chiuso resta un passaggio separato.
 
 ## Primo accesso, nel pomeriggio
 
