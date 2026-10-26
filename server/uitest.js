@@ -120,6 +120,10 @@ const HELPERS = `
       if (S.modalKind === 'firstRun') { __tap('[data-act="closeModal"]'); await __W(250); }
       return document.querySelector('.home-account') ? document.querySelector('.home-account').innerText : null;`);
     if (!nick || !nick.includes('Robot_UI')) throw new Error('nickname non confermato');
+    if (process.argv.includes('--tournament-start')) {
+      await require('./tournament-start-ui-flow')({cdp,shot,step});
+      return;
+    }
     if (process.argv.includes('--polish')) {
       await require('./ui-polish-flow')({ cdp, shot, errors, step });
       return;
@@ -323,23 +327,12 @@ const HELPERS = `
     step('Ramino: avvio sul dispositivo con carte francesi');
 
     // 5d. torneo: creazione, riempimento con il computer, avvio, tabellone con «Vai al tavolo»
-    const tour = await cdp.run(`
+    await cdp.run(`
       await __menu('leave'); await __W(400);
       if (document.querySelector('[data-act="leaveNow"]')) { __tap('[data-act="leaveNow"]'); await __W(800); }
       if (document.querySelector('#modal:not(.hidden)')) { document.querySelector('.modal-close').click(); await __W(300); await __menu('leave'); await __W(800); }
-      await __menu('tournaments'); await __W(700);
-      document.querySelector('#tourname').value = 'Coppa del robot';
-      document.querySelector('[name=toursize][value="4"]').click();
-      document.querySelector('#tourform button').click(); await __W(900);
-      const waitFor = async (sel) => { for (let i = 0; i < 40 && !document.querySelector(sel); i++) await __W(150); return document.querySelector(sel); };
-      __tap(await waitFor('[data-act="tourFill"]'));
-      __tap(await waitFor('[data-act="tourStart"]'));
-      // Il pulsante della home arriva prima del tabellone aggiornato nel modale.
-      await waitFor('#modal .bracket [data-act="tourPlay"]');
-      return { bracket: !!document.querySelector('#modal .bracket'), play: !!document.querySelector('#modal .bracket [data-act="tourPlay"]') };`);
-    await shot('05-torneo');
-    if (!tour.bracket || !tour.play) throw new Error('torneo: ' + JSON.stringify(tour));
-    step('torneo: creato, riempito con il computer, avviato, tabellone con «Vai al tavolo»');
+    `);
+    await require('./tournament-start-ui-flow')({cdp,shot,step});
     await cdp.run(`document.querySelector('.modal-close').click(); return true;`);
 
     // 6. gioco senza internet

@@ -4,7 +4,7 @@
  * Il modulo gestisce iscrizioni, tabellone e avanzamento; le partite vere sono tavoli normali,
  * creati e conclusi dal server tramite i callback:
  *   openMatch(t, match)  → crea il tavolo della partita (restituisce il codice) o null se è tra due computer
- *   simulate(t, a, b)    → gioca all'istante una partita tra due computer: restituisce 'a' o 'b'
+ *   simulate(t, a, b)    → risolve un incontro fra computer di pari livello: restituisce 'a' o 'b'
  *   notify(token, text, code) → avvisa un giocatore (in app o con notifica push)
  *   champion(token)      → premia il vincitore
  */

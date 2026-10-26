@@ -923,6 +923,20 @@ async function signup(p, nick, email = mailOf()) {
     do { await wait(100); tl = (await TT.call('tournaments')).list.find((x) => x.id === tc.id); } while (tl.status !== 'finito' && Date.now() < tEnd);
     assert(tl.status === 'finito' && tl.champion != null && !tl.players[tl.champion].me, 'il torneo arriva al campione (non chi si è arreso)');
     assert(tl.rounds.length === 2, 'semifinali e finale');
+    // Avviare tornei grandi non deve bloccare il server con partite invisibili fra bot.
+    let maxTournamentMs=0;
+    for(const game of ['burraco','scala40','ramino','canasta']){
+      const created=await TT.call('tournamentCreate',{name:'Coppa rapida '+game,game,size:16});assert(created.ok,JSON.stringify(created));
+      assert((await TT.call('tournamentFill',{id:created.id})).ok);
+      const at=Date.now();const [started,probe]=await Promise.all([TT.call('tournamentStart',{id:created.id}),A.call('myStats')]);
+      const ms=Date.now()-at;maxTournamentMs=Math.max(maxTournamentMs,ms);assert(started.ok&&probe.ok);assert(ms<4000,'torneo '+game+' blocca il server: '+ms+' ms');
+      const view=(await TT.call('tournaments')).list.find(x=>x.id===created.id),first=view.rounds[0];
+      assert.equal(first.length,8);assert.equal(first.filter(m=>m.winner!=null).length,7);
+      const human=first.find(m=>view.players[m.a].me||view.players[m.b].me);assert(human.room&&human.winner==null,'il tavolo umano va giocato, non sorteggiato');
+      assert((await TT.call('tournamentForfeit',{id:created.id,round:0,index:first.indexOf(human),side:view.players[human.a].me?'b':'a'})).ok);
+      const finished=(await TT.call('tournaments')).list.find(x=>x.id===created.id);assert.equal(finished.status,'finito');assert.equal(finished.rounds.length,4);
+    }
+    step('quattro tornei da 16: bot risolti, tavolo umano aperto e server reattivo, massimo '+maxTournamentMs+' ms');
     TT.sock.close();
     step('torneo: iscrizioni, computer, avviso della partita, resa, avanzamento fino al campione');
 

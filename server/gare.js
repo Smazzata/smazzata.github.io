@@ -4,6 +4,7 @@
  * (tavoli aperti da soli, partite tra computer simulate, avvisi a chi deve giocare).
  */
 const Games = require('./games');
+const { randomInt } = require('node:crypto');
 const Rules = require('../shared/rules');
 const createLeagues = require('./leagues');
 const createTournaments = require('./tournaments');
@@ -47,18 +48,10 @@ const Tour = createTournaments({
     for (const x of room.seats) if (x && !x.isBot) pushMyGames(x.token);
     return room.code;
   },
-  simulate: (t, A, B) => {
-    const rules = tournamentRules(t.game);
-    const G = Games.of(rules);
-    const g = G.E.createGame({ rules, players: [{ name: A.name, isBot: true }, { name: B.name, isBot: true }] });
-    let guard = 0;
-    while (!g.over && guard++ < 20000) {
-      if (g.phase === 'handEnd') { G.E.nextHand(g); continue; }
-      const s = g.turn;
-      try { G.E.apply(g, s, G.Bot.nextAction(g, s, { level: 'normale' })); } catch (e) { break; }
-    }
-    return g.over ? (g.winners.includes(0) ? 'a' : 'b') : (Math.random() < 0.5 ? 'a' : 'b');
-  },
+  // I due bot hanno pari livello: risoluzione immediata, registrata nel tabellone.
+  // Nessuna partita invisibile da migliaia di mosse sul thread dei giocatori online.
+  // I tavoli con almeno una persona sono sempre aperti e giocati dal motore normale.
+  simulate: () => randomInt(2) === 0 ? 'a' : 'b',
   notify: (token, text, code) => {
     const socks = socketsOf(token);
     if (socks.length) for (const s of socks) { s.emit('notice', { text }); if (code) s.emit('tournamentMatch', { code, text }); }
