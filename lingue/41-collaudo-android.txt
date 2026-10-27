@@ -1,0 +1,10 @@
+Allenamento ‖ Practice ‖ Práctica ‖ Treino
+Amichevole online ‖ Online friendly ‖ Amistosa en línea ‖ Amistosa online
+Musica ‖ Music ‖ Música ‖ Música
+Uscire dal tavolo? ‖ Leave the table? ‖ ¿Salir de la mesa? ‖ Sair da mesa?
+Esci ‖ Leave ‖ Salir ‖ Sair
+vincono gli avversari ‖ the opponents win ‖ ganan los rivales ‖ os adversários vencem
+tutti alla schermata iniziale ‖ everyone returns to the home screen ‖ todos vuelven a la pantalla inicial ‖ todos voltam à tela inicial
+il computer gioca al tuo posto, puoi tornare quando vuoi ‖ the computer plays for you; you can return whenever you like ‖ el ordenador juega por ti; puedes volver cuando quieras ‖ o computador joga por você; pode voltar quando quiser
+L’allenamento viene chiuso. ‖ This practice game will end. ‖ Esta partida de práctica terminará. ‖ Esta partida de treino será encerrada.
+Puoi riprendere l’allenamento dalla home. ‖ You can resume practice from the home screen. ‖ Puedes reanudar la práctica desde el inicio. ‖ Você pode retomar o treino na tela inicial.

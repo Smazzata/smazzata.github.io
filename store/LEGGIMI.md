@@ -1,5 +1,7 @@
 # Smazzata sul Play Store
 
+Aggiornamento 27 ottobre: client 2026.10.27.1, traduzioni e messaggi di uscita corretti dopo il primo test Android. Per questa revisione serve il nuovo AAB generato dal push; AAB 1.70 e relativo ZIP descrivono il client precedente. Dettagli in `CORREZIONI-ANDROID-2026-10-27.md`.
+
 Il punto attuale è [STATO-RILASCIO-2026-10-26.md](STATO-RILASCIO-2026-10-26.md); la guida Console è [PLAY-CONSOLE.md](PLAY-CONSOLE.md). La lista operativa è [PRIMA-DI-PUBBLICARE.md](PRIMA-DI-PUBBLICARE.md). Contiene anche i blocchi ancora aperti: non considerare pronta la pubblicazione soltanto perché i file esistono.
 
 ## Materiale

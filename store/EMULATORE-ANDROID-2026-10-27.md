@@ -21,7 +21,7 @@ Si tratta di un primo controllo manuale dell'app nativa in un dispositivo virtua
 
 ## Riscontro da approfondire
 
-Il sistema del dispositivo è in inglese: la traduzione si attiva, ma alcune etichette della guida e della conferma di uscita rimangono in italiano. Registrata incoerenza di localizzazione da correggere; non considerare concluso il controllo completo delle quattro lingue sulla versione Android.
+Il primo collaudo in inglese mostrava etichette italiane nella guida e nella conferma di uscita. Corrette nella revisione client 2026.10.27.1; controllo browser sulle quattro lingue e ricontrollo manuale inglese nella WebView documentati in `CORREZIONI-ANDROID-2026-10-27.md`. Non equivale a certificazione completa di ogni schermata Android.
 
 ## Controlli successivi
 

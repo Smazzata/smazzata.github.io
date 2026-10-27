@@ -1,5 +1,7 @@
 # Preparazione della Play Console
 
+Aggiornamento 27 ottobre: client 2026.10.27.1, traduzioni e messaggi di uscita corretti dopo il primo test Android. Per questa revisione serve il nuovo AAB generato dal push; AAB 1.70 e relativo ZIP descrivono il client precedente. Dettagli in `CORREZIONI-ANDROID-2026-10-27.md`.
+
 Aggiornato al 26 ottobre 2026. Guida da confrontare con le schermate effettive della Console: nessuna dichiarazione inviata, nessun contratto accettato o caricamento eseguito da questa preparazione.
 
 ## Dati dell'app

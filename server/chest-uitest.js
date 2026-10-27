@@ -27,10 +27,11 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   if(!target)throw Error('browser non avviato');cdp=await connect(target.webSocketDebuggerUrl);
   cdp.on(m=>{if(m.method==='Runtime.exceptionThrown'){const p=m.params;errors.push(p.exceptionDetails.exception?.description||p.exceptionDetails.text);}});
   await cdp.send('Runtime.enable');await cdp.send('Page.enable');
-  await cdp.send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('bur_token',${JSON.stringify(JSON.stringify(key))});localStorage.setItem('smazzata_intro_seen','true');localStorage.setItem('bur_prefs','{"anim":true,"lang":"it"}');`});
+  await cdp.send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('bur_token',${JSON.stringify(JSON.stringify(key))});localStorage.setItem('smazzata_intro_seen','true');${process.argv.includes('--languages')?"if(!localStorage.getItem('bur_prefs'))":''}localStorage.setItem('bur_prefs','{"anim":true,"lang":"it"}');`});
   await cdp.send('Emulation.setDeviceMetricsOverride',{width:process.argv.includes('--small')?320:375,height:812,deviceScaleFactor:1,mobile:true});
   await cdp.send('Page.navigate',{url:'http://localhost:3992'});await wait(1800);
   const shot=async name=>{await cdp.run('await document.fonts.ready;');const r=await cdp.send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,name+'.png'),Buffer.from(r.data,'base64'));};
+  if(process.argv.includes('--languages')){await require('./localization-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
   if(process.argv.includes('--first-use')){await require('./first-use-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
   if(process.argv.includes('--interruptions')){await require('./interruption-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}
   if(process.argv.includes('--economy')){await require('./economy-ui-flow')(cdp,shot);assert.deepEqual(errors,[]);return;}

@@ -214,9 +214,10 @@
       // in partita: una finestrella con tutte le scelte (uscire, arrendersi, terminare, chiudere)
       if (S.game && !S.game.over && S.game.you >= 0 && S.modalKind !== 'leave') {
         const slow = S.room.slow;
+        const leaveHint = S.room.offline ? 'L’allenamento viene chiuso.' : S.room.onDevice ? 'Puoi riprendere l’allenamento dalla home.' : 'il computer gioca al tuo posto, puoi tornare quando vuoi';
         openModal('leave', `<h2>Uscire dal tavolo?</h2>
           <div class="leaveopts">
-            <button class="btn primary" data-act="leaveNow">${slow ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-clock /></svg> Torna alla schermata iniziale<br><small>la partita ti aspetta</small>' : '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Esci<br><small>il computer gioca al tuo posto, puoi tornare quando vuoi</small>'}</button>
+            <button class="btn primary" data-act="leaveNow">${slow ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-clock /></svg> Torna alla schermata iniziale<br><small>la partita ti aspetta</small>' : `<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Esci<br><small>${esc(t(leaveHint))}</small>`}</button>
             <button class="btn danger" data-act="surrender"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> ${partnerIsHuman() ? 'Proponi la resa al compagno' : 'Arrenditi'}<br><small>vincono gli avversari</small></button>
             ${S.room.isHost && !S.room.daily ? '<button class="btn" data-act="endGame"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> Termina la partita<br><small>nessun vincitore, tutti in sala d’attesa</small></button>' : ''}
             ${S.room.isHost ? '<button class="btn" data-act="closeTable"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-exit /></svg> Chiudi il tavolo<br><small>tutti alla schermata iniziale</small></button>' : ''}

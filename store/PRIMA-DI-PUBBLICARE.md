@@ -1,5 +1,7 @@
 # Apertura di Smazzata su Google Play
 
+Aggiornamento 27 ottobre: le correzioni Android e di localizzazione portano il client a 2026.10.27.1. L’AAB 1.70 resta storico; verificare la nuova build del push come descritto in `CORREZIONI-ANDROID-2026-10-27.md`.
+
 Aggiornato al 26 ottobre 2026. Le caselle aperte sono verifiche reali ancora da completare: la presenza di questo documento non significa che siano state fatte. Non inviare in produzione finché i blocchi non sono chiusi. Evidenze e accessi mancanti in [STATO-OPERATIVO-2026-10-22.md](STATO-OPERATIVO-2026-10-22.md). Il titolare comunica il 25 ottobre 2026 che Google ha confermato la sua identità. Lo stato degli altri passaggi in Console e dell'eventuale test chiuso resta da verificare; la verifica dell'identità non certifica l'approvazione dell'app.
 
 La verifica storica della build 1.30 non copre le rifiniture del 23 ottobre: vedere `RIFINITURE-2026-10-23.md`. L’AAB 1.70 della revisione client 2026.10.26.2 è ora verificato sul PC: vedere `PRETEST-AAB-2026-10-26.md` e `VERIFICA-AAB-1.70.json`. Restano confronto/installazione da Play e configurazione della Console.
