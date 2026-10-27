@@ -73,7 +73,7 @@ function chestReveal(reward) {
   openModal('chestReward',collectionShell('loot',`<section class="chest-reveal ${reduce?'':'is-opening'}" data-rarity="${rarity.id}">
     <h2>${t(reward.purchase?'Acquisto completato':'Il tuo premio')}</h2><button class="chest-stage" data-act="chestSkip" data-chest-type="${reward.chestType || reward.rarity}" aria-label="${t('Tocca per scoprire il premio')}"><div class="chest-burst"></div><div class="chest-sprite"></div>${Array.from({length:8},(_,i)=>`<i class="chest-spark" style="--spark:${i}"></i>`).join('')}</button>
     <button class="btn small chest-skip" data-act="chestSkip">${t('Salta animazione')}</button>
-    <div class="chest-prize" hidden role="status"><div class="chest-prize-art">${a.html}</div><span class="avatar-rarity" data-rarity="${rarity.id}" ${reward.kind==='coins'?'hidden':''}>${t(rarity.name)}</span><h3>${reward.kind==='coins'?reward.coins+' ':''}${esc(t(a.name))}</h3><p>${reward.kind==='coins'?t('Saldo aggiornato'):reward.duplicate?t('Doppione')+' · +'+reward.coins+' '+t('Monete'):t('Nuovo oggetto nella tua collezione')}</p><div class="row"><button class="btn primary" data-act="chestEquip" ${a.kind==='coins'?'hidden':''} data-kind="${a.kind}" data-item-id="${a.id}">${a.kind==='avatar'?t('Usa avatar'):t('Usa questo stile')}</button><button class="btn" data-act="${reward.purchase?'collection':'chests'}">${t('Continua')}</button></div></div></section>`));
+    <div class="chest-prize" hidden role="status"><div class="chest-prize-art">${a.html}</div><span class="avatar-rarity" data-rarity="${rarity.id}" ${reward.kind==='coins'?'hidden':''}>${t(rarity.name)}</span><h3>${reward.kind==='coins'?reward.coins+' ':''}${esc(t(a.name))}</h3><p>${reward.kind==='coins'?t('Saldo aggiornato'):reward.duplicate?t('Doppione')+' · +'+reward.coins+' '+t('Monete'):t('Nuovo oggetto nella tua collezione')}</p><div class="row"><button class="btn chest-equip" data-act="chestEquip" ${a.kind==='coins'?'hidden':''} data-kind="${a.kind}" data-item-id="${a.id}">${a.kind==='avatar'?t('Usa avatar'):t('Usa questo stile')}</button><button class="btn primary chest-continue" data-act="${reward.purchase?'collection':'chests'}">${t('Continua')}</button></div></div></section>`));
   $('#modal .modal-box').scrollTop=0;
   if(reduce)handlers.chestSkip();else S.chestRevealTimer=setTimeout(()=>{if(S.modalKind==='chestReward')handlers.chestSkip();},1900);
 }
@@ -83,6 +83,8 @@ async function chestSubmit(request) {
   const owner=S.token;
   store.set('bur_chest_request',{...request,owner:S.token});
   for(const el of $$('#modal .modal-content button'))el.disabled=true;
+  const opening=$('#modal [data-act=chestOpen][data-id="'+CSS.escape(request.id||'')+'"]');
+  if(opening){opening.setAttribute('aria-busy','true');opening.querySelector('small').textContent=t('Apertura in corso…');}
   try {
     const payload=request.type==='open'?{id:request.id}:{itemId:request.itemId,requestId:request.requestId};
     const r=await emit(request.type==='open'?'openChest':'buyCollectionItem',payload);
@@ -116,14 +118,18 @@ Object.assign(handlers,{
     clearTimeout(S.chestRevealTimer);const root=$('#modal .chest-reveal');if(!root||root.classList.contains('is-revealed'))return;
     Sound.chest(root.dataset.rarity);root.querySelector('.chest-stage').disabled=true;root.classList.remove('is-opening');root.classList.add('is-revealed');
     root.querySelector('.chest-prize').hidden=false;root.querySelector('.chest-skip').hidden=true;
-    root.querySelector('.chest-prize button:not([hidden])')?.focus({preventScroll:true});
+    root.querySelector('.chest-continue')?.focus({preventScroll:true});
   },
   async chestEquip(el){
+    if(S.chestEquipBusy)return;
+    S.chestEquipBusy=true;el.disabled=true;el.setAttribute?.('aria-busy','true');
+    try{
     const owner=S.token,item=collectionItems().find(x=>x.id===el.dataset.itemId);
     if(el.dataset.kind!=='avatar'){if(await equipCosmetic(el.dataset.kind,el.dataset.itemId)&&owner===S.token){confirmEquipped(item);if(S.chestReward?.purchase)await collectionModal(item.kind);else await chestsModal();}return;}
     const p=await emit('profile');if(owner!==S.token||!p.ok)return;
     const r=await emit('setAvatar',{id:el.dataset.itemId,c:p.avatar?.c||p.colors[0]});
     if(owner===S.token&&r.ok){confirmEquipped(item);if(S.chestReward?.purchase)await collectionModal(item.kind);else await chestsModal();}
+    }finally{S.chestEquipBusy=false;el.removeAttribute?.('aria-busy');if(el.isConnected)el.disabled=false;}
   }
 });
 socket.on('chests',data=>{

@@ -2261,6 +2261,7 @@ I18N.load({"Per calare servono almeno 3 carte: selezionale e trascinale insieme"
 "il computer gioca al tuo posto, puoi tornare quando vuoi":"the computer plays for you; you can return whenever you like",
 "L’allenamento viene chiuso.":"This practice game will end.",
 "Puoi riprendere l’allenamento dalla home.":"You can resume practice from the home screen.",
+"Apertura in corso…":"Opening…",
 "Partita":"Game",
 "Giocatori":"Players",
 "Eliminato chi arriva a":"Out when reaching",

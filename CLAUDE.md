@@ -208,3 +208,6 @@ Prova --interruptions: conferme perse dopo salvataggio reale, socket chiuso, rel
 
 ## Correzioni del collaudo Android — 27 ottobre 2026
 Client 2026.10.27.1, cache v92. Traduzioni brevi e descrizioni uscita in lingue/41-collaudo-android.txt: un modello generico della cronaca traduceva solo “gioca” nella frase del computer. Usare frase completa e descrizione coerente con offline/onDevice/online; non cambiare le operazioni di uscita. Nuova prova chest-uitest --languages (--small per 320 px), 16 scene × 4 lingue e geometria, in Prove. L’APK QA aggiornato è solo locale, guscio 1.70 con asset correnti e ingresso offline esplicito gioca/index.html; mai caricarlo su Play. Il prossimo AAB ufficiale sostituisce la 1.70 per queste correzioni. Resoconto store/CORREZIONI-ANDROID-2026-10-27.md.
+
+## Rifiniture collezione e premi — 27 ottobre 2026
+Client 2026.10.27.2, cache v93: anteprima adattata agli schermi bassi, testo grande e chiusura 44 px, premio con Continua principale, apertura visibile e blocco equipaggiamento ripetuto. `node server/chest-uitest.js --finishing` verifica 24 viste categoria e richieste rallentate, incluso in Prove. Non cambia economia o regole. Dettagli in store/RIFINITURE-COLLEZIONE-2026-10-27.md.

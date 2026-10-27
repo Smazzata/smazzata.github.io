@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-27T07:50:37.930Z",
+  "at": "2026-10-27T10:51:31.924Z",
   "method": "Chrome da file locali; risposte social vuote simulate, motore locale reale",
   "checks": [
     "320/375/768 px",
@@ -11,7 +11,7 @@
     "bozza amico con emoji conservata",
     "allenamento senza progressi"
   ],
-  "sourceBase": "7a6800b01fca2965e7d652b219d8260570c53103 + sorgenti identificate dagli hash",
+  "sourceBase": "9ed5df4fd9ad853322368f39833aee87f2bbdb9d + sorgenti identificate dagli hash",
   "sourceHashes": {
     "public/index.html": "89c657ae0d1e110b040242157bdacf9486f917a52c14f72819b03a4f217cd373",
     "public/privacy.html": "c5e9cd6bbb1ab61861b2f78ff1c1d20aaf348596cb0a529aae56fc5e9218e61c",
@@ -22,7 +22,7 @@
     "public/art/chests/chest-rare.webp": "c99c1f8d4a7fc93b596e967b3141a96d3a8369fe7cc0dcf70d8106709d11d8dd",
     "shared/cosmetics.js": "83a214a1fc684e26383a243aecb90c798b1c2d7bfcc2c81d5fec85ea92cbd1e4",
     "public/cosmetics.css": "6c16ea7a4df8e527c7385c5227cfa382d1b7cfb01b9ee9095e17f3d1063297db",
-    "public/collection.css": "e05d790234585aa4ffb1e32959ba39a2deb5fc5200f8ef1bef67fc3e2207b0c1",
+    "public/collection.css": "9ed3136a5ccedb9368f063f2f18065ce7b1708297e4ff340d7fb3ad4dd877327",
     "public/art/cosmetics/back/trama-rubino.webp": "805e0802ba740496dfd9e9dd7fb2965584ed2e5cfb6cbd15eff60197d7afddd1",
     "public/art/cosmetics/back/picche-del-bosco.webp": "52749f41540ebe93d8c15eec0cd422b42292cfa5f4ecbfc0785d356f151834b5",
     "public/art/cosmetics/back/fiordaliso.webp": "51b4e22e12f03b07b77b3317164f7cda164883a600f93c14ebfbb10691b43bc7",
@@ -135,19 +135,19 @@
     "public/art/avatars/drago-imperatore.webp": "76db01140a5c3acf87cfa5396e8e0ac50292765c0ecc8b26473c63e7d60a0a5a",
     "public/art/avatars/volpe-nove-code.webp": "1873b7abbc4ad94d3ec3abf74330a7d35fd1fb7978b6d61e5e1ff5c9e40a4289",
     "public/style.css": "c485706d9343358d7af163df7ec95a2266f9fba6fb6da86b8d194b931da09625",
-    "public/sw.js": "9fa80671fadf67a4eca79e817e5f1cbf4d3e184b0844c52c19f84fa1e43e99d9",
-    "launcher/sw.js": "335d96abd64c25d19dbd6240b9e11bce33fd6a6faea5a7f0eb2f279d9108c6f1",
+    "public/sw.js": "35efc5fb462c4a3ef877a10fbca332a2ca43ffb4299f46a2ab4455eb39e3b4bb",
+    "launcher/sw.js": "868b8b46a3985222d352a51badb785d986251526f598abf22b179b3a5f16d69e",
     "public/js/animazioni.js": "ba8f2444d9503c5cb7ffd5f7b21699ce4343d7148fe64db270f131628ed3b970",
     "public/js/avatars.js": "5ff457259d67be24575287caf460ac2e9c1b2b457f0b71bc0cbe74100fc239c7",
     "public/js/azioni.js": "93c183fda4e0bad66171aaa04f70a7be4cd25708441dceb26ce856272b048b1f",
-    "public/js/base.js": "bcbc9a3f4bc3631bd92260a14bb77a0f6043d36785df2c804443e915c534623a",
+    "public/js/base.js": "767d41e4fa238a48c3f3bb3edeacf7eb0a124f5a8abfdc99f9b20574528c3dc8",
     "public/js/campagna.js": "3403f66055bf9e853ab662b7b8caa41e3d3786a6452b4b481dd7a89d9986a0dc",
     "public/js/campaign-adventure.js": "e8f1b31d6284359277107463b1daf6a80b4179fcc53c3092287442ff10d6d827",
     "public/js/campaign-story.js": "3896eb0b3bb24944333192efa9e4affe2223ba7958676d96b82ec624c1e55cd2",
     "public/js/carte.js": "346edaa7575c5979ce25a61fc9bf9c418ccc9bff411853cae7f6dccea1ae12ad",
-    "public/js/chests.js": "e1d3bf82d83fe721b81efb02f727b7c9e4fdf7c4ee77d3403455effd63fd05ef",
+    "public/js/chests.js": "8ed91f22d04f41c48c52a799ff83ac6c6c600af3de7a44ff7dbf561660b2df25",
     "public/js/classifica.js": "3a26a5d5b51efb3a2970735eb92a353fc7965bb5230f3b5d88b9b39e32098c28",
-    "public/js/collection.js": "e9244cc9130e9885f4dbfe50e9c80def0b40564e2417ab557a0495bffaaffb4c",
+    "public/js/collection.js": "b78552f4df64f11765327a6de920231cd58fd3f91aa618320581b09454802d8b",
     "public/js/comandi.js": "1fc7675de3e802d79af873a0f7863ef3ab8786c923885eea11d31c7240108bdb",
     "public/js/connessione.js": "bcde88954a8acec2835e1f49edd7c496f05773376603be2842f14b77ec1495da",
     "public/js/cosmetics.js": "e1441bc261a107810c842723082de43f5357dedb54ba3e0ad33ccd1232ac2254",
@@ -161,9 +161,9 @@
     "public/js/tavolo.js": "84951e6387fd94bec33980f9639d7ad72159a3a4b203e031aa71fb72f8060bff",
     "public/js/tutorial.js": "1c3387d06213ef63780261b95389b56816a8c375e7cdedee2a667126b40d184f",
     "public/js/ui.js": "2fdcd6d6b3a2e83bb75f8e299864c65e60c15e94cd7f9c920a6ce4ddd795b460",
-    "public/lingue/en.js": "3b10bfd7cb38e960f5a911ab4eda3084d868893f8e92597960e59b13284c711f",
-    "public/lingue/es.js": "3870322726cbecdc2e4b6df54299959151b5d28bec1866ac25f4f48b6758795c",
-    "public/lingue/pt.js": "3241e032ff817943cf1bc503c4bb6a8e6cbac4d62960c8dc1b8bd8cf8ee89d28"
+    "public/lingue/en.js": "c3dde3ce7a2039cbc31be2bffb7d61c20f2de1ddbb78c7b6ca8261463fb16b86",
+    "public/lingue/es.js": "ecb5b42e6cdc6d9f70030bfb83b01acba34422fb6c4269dbfa37602c9ce94090",
+    "public/lingue/pt.js": "26d672487538f73bb670145e21bbc4fca836c07920ff6e7549791a3978a8108b"
   },
   "notVerified": [
     "rete e riconnessione reali",

@@ -1,6 +1,7 @@
 # Smazzata: cosa abbiamo e cosa manca
 
-Aggiornamento 27 ottobre: client 2026.10.27.1, traduzioni e messaggi di uscita corretti dopo il primo test Android. Per questa revisione serve il nuovo AAB generato dal push; AAB 1.70 e relativo ZIP descrivono il client precedente. Dettagli in `CORREZIONI-ANDROID-2026-10-27.md`.
+Rifiniture correnti: [collezione e premi](RIFINITURE-COLLEZIONE-2026-10-27.md).
+Aggiornamento 27 ottobre: client 2026.10.27.2, traduzioni e messaggi di uscita corretti dopo il primo test Android. Per questa revisione serve il nuovo AAB generato dal push; AAB 1.70 e relativo ZIP descrivono il client precedente. Dettagli in `CORREZIONI-ANDROID-2026-10-27.md`.
 
 Stato di preparazione al 26 ottobre 2026. Questo documento distingue file pronti e operazioni effettivamente concluse. Non certifica conformità, distribuzione o approvazione Google.
 

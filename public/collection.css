@@ -72,3 +72,26 @@ body[data-text=grande] .compact-progress .progress-reward h3,body[data-text=enor
 .collection-header:has(.collection-wallet){display:grid;grid-template-columns:minmax(0,1fr) auto auto}.collection-header .collection-wallet{margin-left:0}.collection-header:has(.collection-wallet) .collection-brand strong{white-space:nowrap}.collection-header:has(.collection-wallet) .collection-brand{overflow:hidden}@media(max-width:360px){.collection-header:has(.collection-wallet) .collection-crest{display:none}.collection-header:has(.collection-wallet) .collection-brand strong{font-size:16px}}
 
 .collection-app .chest-history .coin-prize{width:42px;height:42px;flex:none}.collection-app .chest-history .coin-prize>.ui-icon{width:36px;height:36px;filter:none}
+
+/* Rifiniture di lettura: nessun comando sacrificato su schermi bassi o testo grande. */
+.modal-box:has(.collection-app)>.modal-close{width:44px;height:44px;min-width:44px;top:10px;right:10px}
+.collection-simple .collection-header{padding-right:66px}
+.collection-simple .collection-card-label b,.collection-simple .collection-inspector h3,.collection-simple .collection-categories>button span{overflow-wrap:anywhere}
+.collection-simple .collection-card.is-equipped{border-color:#f5d17d;box-shadow:0 0 0 2px #f5d17d55,0 4px 0 #061c1980}
+.collection-simple .collection-back{min-height:44px;text-align:left}
+.collection-simple .collection-content{padding-bottom:calc(26px + env(safe-area-inset-bottom,0px))}
+.collection-simple .chest-reveal h2{padding-right:0}
+.collection-simple .chest-prize .row{display:flex;flex-direction:column;align-items:stretch;max-width:320px;margin:18px auto 0}
+.collection-simple .chest-prize .chest-continue{order:-1;background:linear-gradient(#f8d574,#d9a833);color:#223e2e;border-color:#f4d790;font-weight:800}
+.collection-simple .chest-prize .btn{width:100%;min-height:48px;border-radius:12px;font-size:16px}
+.collection-simple .inventory-chest[aria-busy=true]{opacity:1;border-style:dashed!important}
+.collection-simple .inventory-chest[aria-busy=true] .chest-sprite{animation:chest-wait 1s ease-in-out infinite alternate}
+@keyframes chest-wait{to{filter:drop-shadow(0 0 12px #efce7b);opacity:.7}}
+@media(max-width:700px){.collection-simple .collection-inspector-art{height:clamp(150px,32dvh,280px)}.collection-simple .collection-inspector-copy{padding:0 16px 20px}.collection-simple .collection-card:hover{transform:none}}
+@media(max-height:650px){.collection-simple .chest-prize-art{width:120px;height:120px}.collection-simple .chest-reveal h2{font-size:24px}.collection-simple .chest-prize h3{margin:10px 0}.collection-simple .chest-prize p{margin:8px 0}.collection-simple .chest-prize .row{margin-top:12px}}
+body[data-text=grande] .collection-simple .collection-card-label b,body[data-text=enorme] .collection-simple .collection-card-label b{font-size:16px}
+body[data-text=grande] .collection-simple .collection-categories>button,body[data-text=enorme] .collection-simple .collection-categories>button{font-size:14px}
+body.contrast .collection-simple .collection-card.cx-item,body.contrast .collection-simple .collection-inspector{background:#071b14!important;border-color:#fff;color:#fff}
+body.contrast .collection-simple .collection-card-label{background:#071b14;color:#fff}body.contrast .collection-simple .collection-card-label small{color:#fff}
+body.noanim .collection-simple .inventory-chest{transition:none}body.noanim .inventory-chest[aria-busy=true] .chest-sprite{animation:none}
+@media(prefers-reduced-motion:reduce){.inventory-chest[aria-busy=true] .chest-sprite{animation:none}}
