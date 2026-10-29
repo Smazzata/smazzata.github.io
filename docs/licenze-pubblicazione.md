@@ -1,5 +1,7 @@
 # Risorse e licenze prima della pubblicazione
 
+Aggiornamento 29 ottobre 2026: rigenerati gli avvisi dopo body-parser 1.20.9 e qs 6.16.2; audit runtime attuale con 0 segnalazioni note. La tabella seguente conserva le evidenze di provenienza, non certifica diritti o marchi.
+
 Verifica del 21 ottobre 2026. Questo inventario non assegna al progetto diritti che il titolare non possiede.
 
 | Risorsa | Evidenza nel progetto | Stato |

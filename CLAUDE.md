@@ -211,3 +211,6 @@ Client 2026.10.27.1, cache v92. Traduzioni brevi e descrizioni uscita in lingue/
 
 ## Rifiniture collezione e premi — 27 ottobre 2026
 Client 2026.10.27.2, cache v93: anteprima adattata agli schermi bassi, testo grande e chiusura 44 px, premio con Continua principale, apertura visibile e blocco equipaggiamento ripetuto. `node server/chest-uitest.js --finishing` verifica 24 viste categoria e richieste rallentate, incluso in Prove. Non cambia economia o regole. Dettagli in store/RIFINITURE-COLLEZIONE-2026-10-27.md.
+
+## Controllo pre-Console — 29 ottobre 2026
+Account Play con numero verificato, modulo Crea app predisposto ma nessuna dichiarazione accettata. Esiti in store/VERIFICHE-CONFORMITA-2026-10-29.md. Audit runtime ha rilevato body-parser e qs: lock aggiornato a 1.20.9/6.16.2, audit finale zero segnalazioni note, licenze rigenerate. Client 2026.10.29.1, cache v94, serve nuova build AAB. Vecchio ramo backup ancora presente (solo metadati letti), nessuna cancellazione autorizzata. Quick Tunnel è dichiarato da Cloudflare per sviluppo/test: predisporre percorso stabile per produzione e verificare accordi fornitori, non dichiarare copertura DPA dal solo nome del servizio. Nessuna approvazione generale di conformità o ripristino/cancellazione sul server reale attestati.

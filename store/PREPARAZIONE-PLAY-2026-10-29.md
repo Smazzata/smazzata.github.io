@@ -1,5 +1,7 @@
 # Preparazione Play Console — 29 ottobre 2026
 
+Aggiornamento successivo: numero verificato e Crea app disponibile; modulo compilato, tre dichiarazioni non accettate. La verifica tecnica successiva e gli aggiornamenti di sicurezza sono in [VERIFICHE-CONFORMITA-2026-10-29.md](VERIFICHE-CONFORMITA-2026-10-29.md). Le sezioni seguenti conservano il riscontro precedente.
+
 ## Verifica effettiva della Console
 
 Accesso all’account sviluppatore riuscito. Account personale. La home richiede la verifica del numero di telefono di contatto e mantiene Crea app disabilitato. Aperta la pagina Dettagli account / Dati di contatto, con verifica tramite SMS o chiamata. Nessun codice richiesto dall’assistente, nessun numero modificato, nessun contratto accettato, nessuna app creata o file caricato. Il numero deve essere verificato dal titolare; non richiede Termux.

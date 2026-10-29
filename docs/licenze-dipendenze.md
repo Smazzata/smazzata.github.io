@@ -13,7 +13,7 @@ Generato con `node scripts/licenze.js`; avvisi completi in `public/licenze.html`
 | array-flatten | 1.1.1 | MIT |
 | asn1.js | 5.4.1 | MIT |
 | bn.js | 4.12.5 | MIT |
-| body-parser | 1.20.8 | MIT |
+| body-parser | 1.20.9 | MIT |
 | buffer-equal-constant-time | 1.0.1 | BSD-3-Clause |
 | bytes | 3.1.2 | MIT |
 | call-bind-apply-helpers | 1.0.2 | MIT |
@@ -78,7 +78,7 @@ Generato con `node scripts/licenze.js`; avvisi completi in `public/licenze.html`
 | path-to-regexp | 0.1.13 | MIT |
 | proxy-addr | 2.0.8 | MIT |
 | qrcode-generator | 1.4.4 | MIT |
-| qs | 6.16.0 | BSD-3-Clause |
+| qs | 6.16.2 | BSD-3-Clause |
 | range-parser | 1.2.1 | MIT |
 | raw-body | 2.5.3 | MIT |
 | safe-buffer | 5.2.1 | MIT |
