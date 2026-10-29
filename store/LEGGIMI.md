@@ -1,5 +1,7 @@
 # Smazzata sul Play Store
 
+Preparazione della migrazione: [proposta tunnel stabile ed email](../docs/servizi-produzione-proposta.md). Supporto predisposto e testato, servizi non attivati; dominio ancora da scegliere.
+
 Accordi con i fornitori: [verifica puntuale del 29 ottobre](../docs/fornitori-verifica-2026-10-29.md), con fonti e distinzione fra condizioni pubbliche e account effettivi.
 
 Verifica corrente: [esiti e blocchi del 29 ottobre](VERIFICHE-CONFORMITA-2026-10-29.md). Corrette due dipendenze vulnerabili, client 2026.10.29.1: attendere e verificare il nuovo AAB prima del caricamento.

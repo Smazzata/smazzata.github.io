@@ -1,5 +1,7 @@
 # Verifiche da remoto prima delle dichiarazioni Play
 
+Preparazione della migrazione: [proposta tunnel stabile ed email](../docs/servizi-produzione-proposta.md). Supporto predisposto e testato, servizi non attivati; dominio ancora da scegliere.
+
 Data: 29 ottobre 2026. Verifica tecnica e documentale, non attestazione generale di conformità. Nessuna casella contrattuale confermata, app non creata dall’assistente, nessun caricamento Play effettuato.
 
 ## Esiti realmente ottenuti

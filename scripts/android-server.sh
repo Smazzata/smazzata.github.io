@@ -21,6 +21,8 @@ GH_REPO="smazzata/smazzata.github.io"
 # frase segreta del backup cifrato (scelta da te: senza, il backup non si può ripristinare)
 PASS_FILE="$HOME/.burraco-backup-pass"
 BACKUP_EVERY=21600
+STABLE_TUNNEL_TOKEN="$HOME/.smazzata-tunnel-token"
+STABLE_TUNNEL_URL="$HOME/.smazzata-tunnel-url"
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
@@ -191,7 +193,30 @@ server_loop &
 update_loop &
 sleep 3
 
-# 5. Tunnel pubblico (ripartito se cade). L'indirizzo cambia a ogni riavvio del tunnel.
+# 5. Il tunnel nominato è facoltativo: nessuna attivazione senza entrambi i file privati.
+if [ -e "$STABLE_TUNNEL_TOKEN" ] || [ -e "$STABLE_TUNNEL_URL" ]; then
+  source "$DIR/scripts/tunnel-stabile.sh" || exit 1
+  stable_url=$(stable_tunnel_url "$STABLE_TUNNEL_TOKEN" "$STABLE_TUNNEL_URL") || exit 1
+  cloudflared tunnel run --help 2>&1 | grep -q -- '--token-file' || {
+    log "Aggiorna cloudflared: il tunnel stabile richiede --token-file (2025.4.0 o successivo)."; exit 1;
+  }
+  while true; do
+    log "Avvio il tunnel stabile…"
+    # Quattro connessioni dello stesso tunnel non devono avviare quattro push concorrenti.
+    cloudflared tunnel --no-autoupdate run --token-file "$STABLE_TUNNEL_TOKEN" 2>&1 | while IFS= read -r line; do
+      printf '%s\n' "$line"
+      if [[ "$line" == *"Registered tunnel connection"* ]] && [ "${stable_published:-0}" = 0 ]; then
+        stable_published=1
+        echo "$stable_url" > "$URL_FILE"
+        publish_url "$stable_url" &
+      fi
+    done
+    log "Tunnel stabile chiuso, riprovo tra 5 secondi"
+    sleep 5
+  done
+fi
+
+# Senza configurazione stabile conserva il tunnel temporaneo esistente per i test.
 while true; do
   log "Apro il tunnel Cloudflare…"
   cloudflared tunnel --no-autoupdate --url "http://localhost:$PORT" 2>&1 | while IFS= read -r line; do
