@@ -1,0 +1,29 @@
+{
+  "file": "test-output/play-72/Smazzata.aab",
+  "sha256": "c636a73f438303d7619b05884818f7951f00a4e7d9f33e608e7b1626bb7cae77",
+  "bytes": 23024192,
+  "firma_crittografica_valida": true,
+  "file_con_digest_verificato": 690,
+  "manifest": {
+    "package": "it.smazzata.app",
+    "versionCode": "72",
+    "versionName": "1.72",
+    "compileSdkVersion": "36",
+    "platformBuildVersionCode": "36",
+    "compileSdkVersionCodename": "16",
+    "platformBuildVersionName": "16"
+  },
+  "sdk": {
+    "minSdkVersion": "24",
+    "targetSdkVersion": "36"
+  },
+  "permissions": [
+    "android.permission.INTERNET",
+    "android.permission.VIBRATE",
+    "it.smazzata.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+  ],
+  "store_user_agent": true,
+  "privacy_data": "26 ottobre 2026",
+  "file_sorgenti_corrispondenti": 248,
+  "nota": "Verifica della firma interna, non dell'identità della chiave registrata in Play Console né del suo certificato di fiducia."
+}

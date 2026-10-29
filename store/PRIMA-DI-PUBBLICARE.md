@@ -1,5 +1,7 @@
 # Apertura di Smazzata su Google Play
 
+Aggiornamento 29 ottobre: AAB 1.72 verificato, Prove superate. Console accessibile ma creazione app bloccata dalla verifica del numero di contatto. Stato effettivo in [PREPARAZIONE-PLAY-2026-10-29.md](PREPARAZIONE-PLAY-2026-10-29.md).
+
 Rifiniture correnti: [collezione e premi](RIFINITURE-COLLEZIONE-2026-10-27.md).
 Aggiornamento 27 ottobre: le correzioni Android e di localizzazione portano il client a 2026.10.27.2. L’AAB 1.70 resta storico; verificare la nuova build del push come descritto in `CORREZIONI-ANDROID-2026-10-27.md`.
 

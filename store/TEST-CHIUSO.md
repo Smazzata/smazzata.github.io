@@ -1,6 +1,6 @@
 # Preparazione del test chiuso
 
-Il test non risulta avviato o completato: manca accesso alla Play Console e non abbiamo verificato un elenco di tester. Non confondere i test automatici del codice con il test chiuso Google Play.
+Il test non risulta avviato o completato: la Console è accessibile dal 29 ottobre, ma Crea app è bloccato dalla verifica del numero di contatto; non abbiamo verificato un elenco di tester. Non confondere i test automatici del codice con il test chiuso Google Play.
 
 Aggiornamento 26 ottobre 2026: il titolare comunica che Google ha confermato l’identità. Questo non avvia il conteggio dei 14 giorni: servono una release nel canale chiuso e adesioni reali. Tipo/data dell’account e applicabilità del requisito restano da verificare in Console.
 

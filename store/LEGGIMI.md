@@ -1,5 +1,7 @@
 # Smazzata sul Play Store
 
+Aggiornamento 29 ottobre: AAB 1.72 verificato, Prove superate. Console accessibile ma creazione app bloccata dalla verifica del numero di contatto. Stato effettivo in [PREPARAZIONE-PLAY-2026-10-29.md](PREPARAZIONE-PLAY-2026-10-29.md).
+
 Rifiniture correnti: [collezione e premi](RIFINITURE-COLLEZIONE-2026-10-27.md).
 Aggiornamento 27 ottobre: client 2026.10.27.2, traduzioni e messaggi di uscita corretti dopo il primo test Android. Per questa revisione serve il nuovo AAB generato dal push; AAB 1.70 e relativo ZIP descrivono il client precedente. Dettagli in `CORREZIONI-ANDROID-2026-10-27.md`.
 
