@@ -1,5 +1,7 @@
 # Smazzata sul Play Store
 
+Accordi con i fornitori: [verifica puntuale del 29 ottobre](../docs/fornitori-verifica-2026-10-29.md), con fonti e distinzione fra condizioni pubbliche e account effettivi.
+
 Verifica corrente: [esiti e blocchi del 29 ottobre](VERIFICHE-CONFORMITA-2026-10-29.md). Corrette due dipendenze vulnerabili, client 2026.10.29.1: attendere e verificare il nuovo AAB prima del caricamento.
 
 Aggiornamento 29 ottobre: AAB 1.72 verificato, Prove superate. Numero di contatto verificato, creazione app disponibile ma dichiarazioni non confermate. Stato effettivo in [PREPARAZIONE-PLAY-2026-10-29.md](PREPARAZIONE-PLAY-2026-10-29.md).

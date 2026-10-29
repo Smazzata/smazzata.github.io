@@ -20,6 +20,8 @@ Data: 29 ottobre 2026. Verifica tecnica e documentale, non attestazione generale
 
 Le correzioni e gli avvisi aggiornati portano il client a 2026.10.29.1 e le due cache a v94. Il push avvia le prove e una nuova build Android. Non sostituire a mano l’AAB 1.72 o lo ZIP storico già verificato.
 
+Approfondimento fornitori: [condizioni e azioni concrete](../docs/fornitori-verifica-2026-10-29.md). Cloudflare incorpora il DPA nel contratto Self-Serve: resta da verificare la configurazione effettiva; per GitHub distinguere i trattamenti da titolare da quelli svolti per conto del gestore. Non tutti i servizi richiedono un DPA separato.
+
 ## Problemi da risolvere prima del lancio pubblico
 
 1. **Backup pregressi.** Inventariare le copie e le cancellazioni richieste, verificare una copia attuale lecita e cifrata, poi bonificare con autorizzazione esplicita i riferimenti e, se necessario, richiedere assistenza GitHub. Eliminare il solo ramo non prova la rimozione di ogni oggetto storico. Procedura in docs/privacy-operazioni.md.
