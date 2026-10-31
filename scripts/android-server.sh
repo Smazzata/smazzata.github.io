@@ -94,6 +94,7 @@ need=""
 command -v node >/dev/null 2>&1 || need="$need nodejs-lts"
 command -v git >/dev/null 2>&1 || need="$need git"
 command -v cloudflared >/dev/null 2>&1 || need="$need cloudflared"
+command -v curl >/dev/null 2>&1 || need="$need curl"
 if [ -n "$need" ]; then
   log "Installo:$need"
   pkg update -y && pkg install -y $need || { echo "Installazione non riuscita"; exit 1; }
@@ -215,6 +216,26 @@ if [ -e "$STABLE_TUNNEL_TOKEN" ] || [ -e "$STABLE_TUNNEL_URL" ]; then
     sleep 5
   done
 fi
+
+# Il tunnel temporaneo può morire lasciando acceso cloudflared: se l'indirizzo pubblico non risponde
+# per 3 controlli di fila (server locale acceso), chiude cloudflared e il ciclo sotto ne apre uno nuovo.
+tunnel_watch() {
+  fails=0
+  while true; do
+    sleep 120
+    url=$(cat "$URL_FILE" 2>/dev/null)
+    [ -n "$url" ] || continue
+    if ! curl -sf -m 5 -o /dev/null "http://localhost:$PORT/health"; then fails=0; continue; fi
+    if curl -sf -m 20 -o /dev/null "$url/health"; then fails=0; continue; fi
+    fails=$((fails + 1))
+    if [ "$fails" -ge 3 ]; then
+      log "L'indirizzo pubblico non risponde: riapro il tunnel"
+      pkill -f "cloudflared tunnel --no-autoupdate --url" 2>/dev/null
+      fails=0
+    fi
+  done
+}
+tunnel_watch &
 
 # Senza configurazione stabile conserva il tunnel temporaneo esistente per i test.
 while true; do
