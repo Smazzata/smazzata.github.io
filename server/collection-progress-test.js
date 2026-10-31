@@ -61,7 +61,7 @@ test('Campagne distinte dall’invio: un omaggio per profilo, anche dopo riavvio
  for(const s of ctx.sessions.values())assert.equal(s.chests.items.length,1);
  const restored=JSON.parse(JSON.stringify({sessions:[...ctx.sessions],deliveries:ctx.deliveries}));restored.sessions=new Map(restored.sessions);
  assert.equal(D.deliver(restored,'campaign-delivery-0003',p,['a','b'],()=>{}).count,0);
- assert.throws(()=>D.deliver(ctx,'campaign-delivery-0004',{...p,gift:'epic'},['a'],()=>{}),/regalo diverso/);
+ assert.throws(()=>D.deliver(ctx,'campaign-delivery-0004',{...p,gifts:[{kind:'chest',type:'epic',qty:1}]},['a'],()=>{}),/regalo diverso/);
  const s={nick:'Nuovo'};ctx.sessions.set('c',s);assert.throws(()=>D.deliver(ctx,'campaign-delivery-0005',p,['c'],()=>{throw Error('disco pieno');}));assert(!s.campaignReceipts&&!s.chests);
 });
 test('Benvenuto automatico configurabile: soltanto nuove iscrizioni, una volta, disattivazione e salvataggio',()=>{

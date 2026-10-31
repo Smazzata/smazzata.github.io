@@ -3,6 +3,9 @@ const crypto=require('node:crypto');
 function save(ctx,input,persist,now=Date.now()){
   const fields={};for(const k of ['title','body','nicks','mode','from','before','gift','campaignKey'])fields[k]=String(input[k]||'').slice(0,k==='body'?2000:k==='nicks'?9000:250);
   fields.push=input.push==='on'?'on':'';
+  for(const type of ['common','rare','epic','legendary'])fields['chest_'+type]=String(input['chest_'+type]||'').slice(0,4);
+  fields.coins=String(input.coins||'').slice(0,7);
+  fields.items=(Array.isArray(input.items)?input.items:[input.items||'']).join(',').slice(0,4000);
   const old=ctx.deliveryDrafts||[],id=old.some(x=>x.id===input.draftId)?input.draftId:crypto.randomUUID();
   if(old.length>=30&&!old.some(x=>x.id===id))throw Error('Hai già 30 bozze: elimina una bozza prima di crearne un’altra.');
   ctx.deliveryDrafts=[...old.filter(x=>x.id!==id),{id,at:now,fields}];

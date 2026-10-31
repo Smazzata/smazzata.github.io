@@ -72,3 +72,19 @@ test('Invio a 1000 profili: un salvataggio, un regalo ciascuno e replay senza sc
  for(const s of ctx.sessions.values()){assert.equal(s.inbox.length,1);assert.equal(s.chests.items.length,1);assert.equal(s.chests.items[0].type,'rare');}
  D.deliver(ctx,'bulk-delivery-test-0001',p,targets,()=>{saves++;});assert.equal(saves,1);
 });
+test('Più premi nello stesso invio: chest, monete e oggetti in una sola transazione',()=>{
+ const ctx=context(),s=ctx.sessions.get('a'),item=Cosmetics.LIST.find(x=>x.rarity==='epic');
+ const p=D.normalize({title:'Prova',body:'Pacchetto',mode:'selected',nicks:'Anna',chest_common:'2',chest_legendary:'1',coins:'250',items:[item.id,'fante-quadri']});
+ assert.deepEqual(D.describe(p),['2 × Chest comune','Chest leggendaria','250 monete',item.name,'Fante di quadri']);
+ D.deliver(ctx,'multi-delivery-000001',p,['a'],()=>{});
+ const v=C.view(s);assert.deepEqual(v.pending.map(x=>x.type).sort(),['common','common','legendary']);
+ assert.equal(v.coins,250+C.RULES.duplicateCoins.common);assert(s.cosmeticOwned.includes(item.id));
+ assert.equal(s.inbox[0].gifts.length,5);assert.deepEqual(s.inbox[0].gift,s.inbox[0].gifts[0]);assert.equal(s.inbox[0].gifts[0].count,2);
+ const old=structuredClone(ctx);
+ assert.throws(()=>D.deliver(ctx,'multi-delivery-000002',p,['a','b'],()=>{throw Error('disco pieno');}));assert.deepEqual(ctx,old);
+ for(const bad of [{chest_rare:'101'},{chest_rare:'-1'},{chest_rare:'1.5'},{coins:'100001'},{items:'inventato'},{chest_common:'60',chest_rare:'60'}])assert.throws(()=>D.normalize({...base,gift:'',...bad}));
+ // Il vecchio storico con gift singolo identifica lo stesso regalo del nuovo formato.
+ const legacy={sessions:context().sessions,deliveries:[{id:'old',campaignKey:'vecchia-campagna',gift:'rare'}]};
+ D.checkCampaign(legacy,D.normalize({...base,gift:'',chest_rare:'1',campaignKey:'vecchia-campagna'}));
+ assert.throws(()=>D.checkCampaign(legacy,D.normalize({...base,gift:'',chest_rare:'2',campaignKey:'vecchia-campagna'})),/regalo diverso/);
+});

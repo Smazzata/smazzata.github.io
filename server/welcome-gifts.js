@@ -2,7 +2,7 @@
 const crypto=require('node:crypto'),D=require('./deliveries');
 function configure(ctx,data,persist,now=Date.now(),confirmationId=null){
   const p=D.normalize({...data,mode:'all',push:false});
-  if(!p.campaignKey||!p.gift)throw Error('Il benvenuto richiede un codice campagna e un regalo');
+  if(!p.campaignKey||!p.gifts.length)throw Error('Il benvenuto richiede un codice campagna e un regalo');
   D.checkCampaign(ctx,p);const before=ctx.welcomeCampaign;
   // Modificare il testo della stessa campagna attiva non esclude iscritti ancora da accreditare.
   ctx.welcomeCampaign={...p,enabled:true,confirmationId,activatedAt:before?.enabled&&before.campaignKey===p.campaignKey?before.activatedAt:now};

@@ -25,7 +25,7 @@ function collection(s){
   const note=r=>{const id=r?.itemId||r?.avatarId;if(id&&!r.duplicate&&Number.isFinite(r.at))acquiredAt[id]=Math.max(acquiredAt[id]||0,r.at);};
   for(const x of s.chests?.items||[])note(x.reward);
   for(const x of Object.values(s.chests?.purchases||{}))note(x);
-  for(const x of s.inbox||[])if(x.gift?.kind!=='chest')note({...x.gift,at:x.at});
+  for(const x of s.inbox||[])for(const g of x.gifts||(x.gift?[x.gift]:[]))if(g.kind!=='chest')note({...g,at:x.at});
   const owned=ownedOf(s),seen=new Set(s.collectionSeen||[]);
   return {ownedIds:C.ownedIds(s),loadout:C.equipped(s),meta:{acquiredAt,newIds:Object.keys(acquiredAt).filter(id=>owned.has(id)&&!seen.has(id)&&!A.STARTER_IDS.includes(id))}};
 }
