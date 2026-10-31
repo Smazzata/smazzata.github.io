@@ -78,11 +78,11 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await cdp.run(`await chestsModal();if(document.querySelector('.modal-content').textContent.includes('%')||document.querySelector('.chest-odds')||document.querySelector('.cx-pool-table'))throw Error('percentuali esposte nel bottino');if([...document.querySelectorAll('.loot-secondary')].some(x=>x.open))throw Error('dettagli secondari aperti inizialmente');document.querySelector('.inventory-chests').scrollIntoView({block:'center'});`);await shot('quattro-chest');
   await cdp.run(`S.prefs.theme='chiaro';S.prefs.anim=true;applyPrefs();await chestsModal();const tile=document.querySelector('.inventory-chest[data-id="1"]');tile.click();tile.click();await new Promise(r=>setTimeout(r,250));if(!document.querySelector('.is-opening'))throw Error('il tocco non apre direttamente');if((await emit('chests')).chests.pending.length!==3)throw Error('doppio tocco consuma più chest');`);
   const positions=[];
-  for(const [i,time] of [0,500,950,1450].entries()){
-   positions.push(await cdp.run(`const el=document.querySelector('.chest-stage .chest-sprite');for(const a of el.getAnimations())if(a.animationName==='chest-unlock'){a.pause();a.currentTime=${time};}return getComputedStyle(el).backgroundPosition;`));
+  for(const [i,time] of [0,900,1000,1450].entries()){
+   positions.push(await cdp.run(`const stage=document.querySelector('.chest-stage');for(const a of stage.getAnimations({subtree:true}))if(a.animationName?.startsWith('chest-')){a.pause();a.currentTime=${time};}return [...stage.querySelectorAll('.chest-frame')].filter(el=>Number(getComputedStyle(el).opacity)>.99).map(el=>el.dataset.frame).pop();`));
    await shot('apertura-'+i);
   }
-  assert.equal(new Set(positions).size,4);
+  assert.deepEqual(positions,['0','1','2','3']);
   await cdp.run(`await new Promise(r=>setTimeout(r,2000));if(document.querySelector('.chest-prize').hidden)throw Error('premio non rivelato automaticamente');handlers.chestSkip();const p=await emit('profile'),a=S.chestState.recent[0];if(!(a.kind==='avatar'?p.ownedAvatarIds:p.cosmetics.ownedIds).includes(a.itemId))throw Error('premio non posseduto');await handlers.chestEquip({dataset:{kind:a.kind,itemId:a.itemId}});const equipped=await emit('profile');if((a.kind==='avatar'?equipped.avatar.id:equipped.cosmetics.loadout[a.kind])!==a.itemId)throw Error('premio non equipaggiato');`);
   for(const id of ['2','3','4']){
    await cdp.run(`await chestsModal();if(document.querySelector('.first-chest-guide'))throw Error('guida ripetuta dopo apertura salvata');S.prefs.anim=false;applyPrefs();await handlers.chestOpen({dataset:{id:'${id}'}});if(!document.querySelector('.is-revealed')||document.querySelector('.chest-prize').hidden)throw Error('movimento ridotto');${id==='4'?"if(document.querySelector('.chest-reveal').dataset.rarity!=='legendary')throw Error('premio leggendario non garantito');":''}`);
