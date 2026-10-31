@@ -184,9 +184,12 @@ publish_url() {
 # Nessun nuovo backup viene pubblicato su GitHub.
 
 cleanup() {
+  # kill 0 colpisce anche questo script: senza togliere la trap la chiusura si ripeteva all'infinito.
+  trap - EXIT INT TERM
   log "Chiusura"
   [ -f "$PID_FILE" ] && kill "$(cat "$PID_FILE")" 2>/dev/null
   kill 0 2>/dev/null
+  exit 0
 }
 trap cleanup EXIT INT TERM
 
