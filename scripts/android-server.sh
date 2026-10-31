@@ -238,9 +238,10 @@ tunnel_watch() {
 tunnel_watch &
 
 # Senza configurazione stabile conserva il tunnel temporaneo esistente per i test.
+# HTTP/2 (TCP) invece di QUIC (UDP): passa meglio da hotspot e reti mobili.
 while true; do
   log "Apro il tunnel Cloudflare…"
-  cloudflared tunnel --no-autoupdate --url "http://localhost:$PORT" 2>&1 | while IFS= read -r line; do
+  cloudflared tunnel --no-autoupdate --url "http://localhost:$PORT" --protocol http2 2>&1 | while IFS= read -r line; do
     url=$(echo "$line" | grep -o 'https://[a-z0-9-]*\.trycloudflare\.com')
     if [ -n "$url" ]; then
       echo "$url" > "$URL_FILE"
