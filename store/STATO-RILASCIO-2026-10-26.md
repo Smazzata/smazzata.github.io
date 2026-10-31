@@ -1,5 +1,7 @@
 # Smazzata: cosa abbiamo e cosa manca
 
+Aggiornamento 31 ottobre: **AAB 1.76** (client 2026.10.31.2) verificato. È il pacchetto da caricare: [AAB-1.76-2026-10-31.md](AAB-1.76-2026-10-31.md). Gli AAB 1.70 e 1.72 restano solo come storico.
+
 Verifica corrente: [esiti e blocchi del 29 ottobre](VERIFICHE-CONFORMITA-2026-10-29.md). Corrette due dipendenze vulnerabili, client 2026.10.29.1: attendere e verificare il nuovo AAB prima del caricamento.
 
 Aggiornamento 29 ottobre: AAB 1.72 verificato, Prove superate. Numero di contatto verificato, creazione app disponibile ma dichiarazioni non confermate. Stato effettivo in [PREPARAZIONE-PLAY-2026-10-29.md](PREPARAZIONE-PLAY-2026-10-29.md).

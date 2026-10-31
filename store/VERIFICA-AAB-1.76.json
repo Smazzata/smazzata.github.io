@@ -1,0 +1,41 @@
+{
+  "file": "Smazzata.aab (release apk-76)",
+  "sha256": "c2d7ac089db15fd86860e28f5243032d5c10184b5b57a62b77a9c210fce20bbd",
+  "bytes": 23024764,
+  "firma_crittografica_valida": true,
+  "file_con_digest_verificato": 690,
+  "manifest": {
+    "package": "it.smazzata.app",
+    "versionCode": "76",
+    "versionName": "1.76",
+    "compileSdkVersion": "36",
+    "platformBuildVersionCode": "36",
+    "compileSdkVersionCodename": "16",
+    "platformBuildVersionName": "16"
+  },
+  "sdk": {
+    "minSdkVersion": "24",
+    "targetSdkVersion": "36"
+  },
+  "permissions": [
+    "android.permission.INTERNET",
+    "android.permission.VIBRATE",
+    "it.smazzata.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+  ],
+  "store_user_agent": true,
+  "privacy_data": "26 ottobre 2026",
+  "file_sorgenti_corrispondenti": 248,
+  "nota": "Verifica della firma interna, non dell'identità della chiave registrata in Play Console né del suo certificato di fiducia.",
+  "commit": "ce847a1107e9130f1206221f822530f69a638839",
+  "client": "2026.10.31.2",
+  "cache": "v98",
+  "scene_browser_sui_file_del_pacchetto": 34,
+  "certificato": {
+    "aab": "Smazzata.aab",
+    "upload_certificate_sha256": "7866C935A935DED7000E4E2BFB327F860C27278671DB25DB0C9C726F98D7F6FE",
+    "public_apk_certificate_sha256": "DC0AAC21BA47A4F9D007309F6F07FEC475DA35F95005D6547084B2A37FF125EC",
+    "upload_public_key_distinct_from_public_apk": true,
+    "play_console_match": "NON VERIFICATO: confrontare con certificato chiave di caricamento, non con chiave firma app di Google",
+    "scope": "Verifica aggiuntiva identità firmatario; non sostituisce la verifica completa dei digest AAB già eseguita."
+  }
+}
