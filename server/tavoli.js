@@ -65,7 +65,7 @@ function roomInfo(room) {
       style: s.isBot ? {} : require('../shared/cosmetics').publicLook(sessions.get(s.token)),
     } : null)),
     started: !!room.game, ready: [...room.ready], botSpeed: room.botSpeed || 'normale',
-    progressEligible: room.progressEligible,
+    progressEligible: room.progressEligible, practice: !!room.practice,
     gameSeq: room.gameSeq,
     hints: !!room.hints && humanCount(room) <= 1, humans: humanCount(room),
     aids: room.aids !== false,
@@ -348,7 +348,7 @@ function startGame(room) {
   clearTimeout(room.botTimer);
   room.botTimer = null;
   room.rankedGame = Elo.isRanked({ ...room, game: null }); // classificata o amichevole: si decide ora, per tutta la partita
-  room.progressEligible = !room.tutorial && room.seats.every((s) => s && !s.isBot);
+  room.progressEligible = !room.practice && !room.tutorial && room.seats.every((s) => s && !s.isBot);
   room.game = GE(room).createGame({
     rules: room.rules,
     players: room.seats.map((s) => ({ name: s.name, isBot: !!s.isBot })),

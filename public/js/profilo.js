@@ -216,7 +216,7 @@
   }
 
   function tournamentDetail(t) {
-    const pn = (i) => (i == null ? '?' : `${t.players[i].bot ? '🤖 ' : ''}${esc(t.players[i].name)}${t.players[i].me ? ' (tu)' : ''}`);
+    const pn = (i) => (i == null ? '?' : `${t.players[i].bot ? '<span class=badge>CPU</span> ' : ''}${esc(t.players[i].name)}${t.players[i].me ? ' (tu)' : ''}`);
     const me = t.players.findIndex((p) => p.me);
     const bracket = t.rounds.map((round, ri) => `<div class="tround"><h4>${roundName(ri, Math.log2(t.size))}</h4>${round.map((m, mi) => {
       const mine = me >= 0 && (m.a === me || m.b === me) && m.winner == null;

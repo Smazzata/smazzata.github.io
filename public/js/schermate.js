@@ -292,7 +292,7 @@
       const team = r.n === 4 && !RX.isS40(r.rules) && r.rules.game !== 'rubamazzetto' ? `<span class="teamtag">Coppia ${i % 2 === 0 ? 'A' : 'B'}</span>` : '';
       return `<div class="seat ${!s?'is-empty':s.connected||s.isBot?'is-connected':'is-away'} ${me?'is-me':''}">
         <div class="who">${s ? avatarHTML(s.name, i, s.isBot, s.avatar) : '<span class="avatar empty">?</span>'}
-        <div>${s ? `<b>${esc(s.name)}</b> ${lvlHTML(s.level)}${me ? ' <span class="badge">tu</span>' : ''}${s.connected ? '' : ' <span class="muted">(offline)</span>'}` : '<span class="muted">'+t('Posto libero')+'</span>'}<br><span class="seat-status">${uiIcon(!s?'clock':s.isBot?'bot':s.connected?'check':'clock')}${t(!s?'In attesa':s.isBot?'Computer':s.connected?'Collegato':'Scollegato')}</span>${team}</div>
+        <div>${s ? `<b>${esc(s.name)}</b> ${s.isBot ? '<span class=badge>CPU</span>' : lvlHTML(s.level)}${me ? ' <span class="badge">tu</span>' : ''}${s.connected ? '' : ' <span class="muted">(offline)</span>'}` : '<span class="muted">'+t('Posto libero')+'</span>'}<br><span class="seat-status">${uiIcon(!s?'clock':s.isBot?'bot':s.connected?'check':'clock')}${t(!s?'In attesa':s.isBot?'Computer':s.connected?'Collegato':'Scollegato')}</span>${team}</div>
         </div>${right}</div>`;
     }).join('');
     const filled = r.seats.filter(Boolean).length;

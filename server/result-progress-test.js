@@ -26,7 +26,7 @@ test('Il riepilogo usa XP e trofei realmente registrati, senza duplicarli',()=>{
  assert.equal(events.filter(e=>e.event==='progress').length,2);assert.equal(Levels.xpOf(ctx.leaderboard.get('a')),xp);
 });
 test('Allenamento, tutorial e tavoli con bot non assegnano progressi',()=>{
- for(const extra of [{tutorial:true},{progressEligible:false},{seats:[{name:'Ada',token:'a'},{name:'CPU',isBot:true}]}]){
+ for(const extra of [{practice:true},{tutorial:true},{progressEligible:false},{seats:[{name:'Ada',token:'a'},{name:'CPU',isBot:true}]}]){
   ctx.leaderboard.clear();events.length=0;ctx.recordLeaderboard(room(extra));
   assert.equal(ctx.leaderboard.size,0);assert.equal(events.length,0);
  }

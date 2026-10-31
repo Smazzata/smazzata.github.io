@@ -135,7 +135,7 @@ module.exports.register = function register(socket, handler) {
     if (!room) {
       const r = publicRules;
       room = {
-        code: newCode(), rules: r, n, hostToken: socket.data.token, quick: n, queueMode: mode,
+        code: newCode(), rules: r, n, hostToken: socket.data.token, quick: n, queueMode: mode, quickWaitAt: Date.now(),
         seats: Array(n).fill(null), game: null, ready: new Set(), botTimer: null, botMemo: {},
       };
       rooms.set(room.code, room);

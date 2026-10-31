@@ -291,7 +291,7 @@
       ${S.room?.campaign && p.isBot ? campaignPortrait(campaignPath().levels[S.campaignLevel].opponent, true) : avatarHTML(p.name, seat, p.isBot, rs && rs.avatar)}
       <div class="sinfo"><b ${rs && !rs.isBot && !p.isBot ? `data-act="playerMenu" data-nick="${esc(p.name)}"` : ''}>${esc(p.name)} ${lvlHTML(rs && rs.level)}</b>
         ${rs && rs.avatar && rs.avatar.t ? `<span class="stitle">${esc(rs.avatar.t)}</span>` : ''}
-        <span class="smeta">${p.out ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> eliminato · ' : ''}${off ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-privacy /></svg> ' : ''}${partner ? '<span title="compagno"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg></span> ' : ''}${p.handCount} carte</span></div>
+        <span class="smeta">${p.isBot ? 'CPU · ' : ''}${p.out ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-report /></svg> eliminato · ' : ''}${off ? '<svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-privacy /></svg> ' : ''}${partner ? '<span title="compagno"><svg class=ui-icon viewBox=0,0,40,40 fill=none stroke=#294c3d stroke-width=1.6 aria-hidden=true><use href=#ui-friends /></svg></span> ' : ''}${p.handCount} carte</span></div>
       <div class="minifan">${fan}</div>
       ${turn ? (S.turnEnd ? '<span class="thinking cdchip" data-cd></span>' : '<span class="thinking"><i></i><i></i><i></i></span>') : ''}
     </div>`;

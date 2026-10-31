@@ -125,6 +125,54 @@ function createRanked(ctx, options = {}) {
       tokens.forEach(cancel);
     } catch (e) { ctx.rooms.delete(code); throw e; }
   }
+  // Completamento delle code senza creare account o risultati Ranked per i computer.
+  function launchWithBots(entries) {
+    const f = entries[0], tokens = entries.flatMap(e => e.tokens), code = ctx.newCode();
+    const seats = Array(f.n).fill(null);
+    // In Duo i compagni conservano i posti 0/2 contro 1/3.
+    tokens.forEach((token, i) => {
+      const seat = f.queue === 'duo' ? [0, 2, 1, 3][i] : i;
+      const session = ctx.sessions.get(token);
+      seats[seat] = { token, name: session.nick, avatar: session.avatar || null };
+    });
+    const room = { code, rules: f.rules, n: f.n, hostToken: tokens[0],
+      seats, game: null, ready: new Set(), botTimer: null, botMemo: {},
+      practice: true, queueMode: 'casual', turnTime: c.turnSeconds };
+    ctx.rooms.set(code, room);
+    try {
+      ctx.fillBots(room);
+      tokens.forEach(token => {
+        const socket = ctx.socketsOf(token)[0];
+        if (socket.data.room) ctx.leaveRoom(socket);
+        socket.join(code); socket.data.room = code; ctx.sessions.get(token).room = code;
+      });
+      ctx.startGame(room);
+      persist();
+      party.matched(tokens);
+      tokens.forEach(cancel);
+    } catch (e) { ctx.rooms.delete(code); throw e; }
+  }
+  function fillWaitingQueues() {
+    // Le amichevoli hanno già un tavolo: conserva tutte le persone presenti.
+    for (const room of ctx.rooms.values()) {
+      if (!room.quick || room.queueMode !== 'casual' || room.game || !Games.enabled(room)) continue;
+      const humans = room.seats.filter(s => s && !s.isBot);
+      if (!humans.length || humans.some(s => !ctx.isConnected(s.token))) continue;
+      room.quickWaitAt ??= clock();
+      if (clock() - room.quickWaitAt < 30000) continue;
+      ctx.fillBots(room); ctx.startGame(room);
+    }
+    for (const entry of [...queue.values()]) {
+      if (![...queue.values()].includes(entry) || clock() - entry.at < 30000) continue;
+      const entries = [entry];
+      let count = entry.tokens.length;
+      for (const other of queue.values()) {
+        if (other === entry || other.key !== entry.key || other.n !== entry.n || count + other.tokens.length >= entry.n) continue;
+        entries.push(other); count += other.tokens.length;
+      }
+      launchWithBots(entries);
+    }
+  }
   function tick() {
     party.tick();
     for (const room of ctx.rooms.values()) {
@@ -170,12 +218,13 @@ function createRanked(ctx, options = {}) {
       search([entry], 0);
       if (selection) launch(selection, seats);
     }
+    fillWaitingQueues();
   }
   function record(room) {
     if (!Games.enabled(room)) return;
     const m = room.rankedMatch, g = room.game;
     if (!m || !g?.over || !room.rankedGame || ctx.ranked.matches[m.id]) return null;
-    if (room.localGame || room.daily || room.tournament || room.tutorial || new Set(m.tokens).size !== room.n || m.tokens.some((t) => !ctx.sessions.has(t))) return null;
+    if (room.practice || room.localGame || room.daily || room.tournament || room.tutorial || new Set(m.tokens).size !== room.n || m.tokens.some((t) => !ctx.sessions.has(t))) return null;
     if (!g.teams?.length || !g.winners?.length) return null;
     m.key = Migration.ratingKey(m.key);
     const updates = transaction(() => {

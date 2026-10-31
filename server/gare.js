@@ -42,6 +42,7 @@ const Tour = createTournaments({
     const room = {
       code: newCode(), rules: tournamentRules(t.game), n: 2, hostToken: (m.a.bot ? m.b : m.a).token,
       seats: [seat(m.a), seat(m.b)], game: null, ready: new Set(), botTimer: null, botMemo: {}, botLevel: 'normale',
+      practice: t.players.some((p) => p.bot),
       tournament: { id: t.id, name: t.name, round: m.round, index: m.index },
     };
     rooms.set(room.code, room);
