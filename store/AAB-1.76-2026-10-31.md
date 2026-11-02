@@ -1,6 +1,6 @@
 # Pacchetto Play 1.76 - 31 ottobre 2026
 
-Questo è il pacchetto da caricare su Play Console. Sostituisce gli AAB 1.70 e 1.72, che descrivono client precedenti. La verifica è stata fatta sul PC. Il pacchetto non è stato installato da Play e non è stato caricato in Console.
+Sostituito dalla [1.77](AAB-1.77-2026-11-02.md), che corregge i due limiti indicati sotto. Sostituisce gli AAB 1.70 e 1.72, che descrivono client precedenti. La verifica è stata fatta sul PC. Il pacchetto non è stato installato da Play e non è stato caricato in Console.
 
 - Origine: release `apk-76`, workflow «App Android (APK)» sul commit `ce847a1` (Prove, Pages e build superati).
 - File: [Smazzata.aab](https://github.com/Smazzata/smazzata.github.io/releases/download/apk-76/Smazzata.aab), 23.024.764 byte.
