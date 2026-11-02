@@ -1011,8 +1011,8 @@ body.contrast .card.red { color: #b00000; }
 body.contrast #hand .card.sel { box-shadow: 0 0 0 4px #ffeb3b, 0 0 0 6px #000 !important; }
 body.contrast .game .muted { color: #fff !important; }
 body.contrast .btn.primary { background: #ffeb3b !important; color: #000 !important; }
-/* niente animazioni */
-body.noanim *, body.noanim *::before, body.noanim *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+/* niente animazioni: transizioni a 0 s, non .01ms, perché fitTable misura subito le nuove dimensioni */
+body.noanim *, body.noanim *::before, body.noanim *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: 0s !important; }
 
 /* Briscola in 5: asta e chiamata */
 .presa.b5 { text-align: center; }
@@ -1451,3 +1451,6 @@ body.contrast .lobby-status,body.contrast .collection-complete{background:#fff;c
 .hand .card.draw-highlight{outline:3px solid #e7bd52;outline-offset:-3px;box-shadow:inset 0 0 0 3px #ffe8a6,0 0 9px #edcd6c88}body.contrast .hand .card.draw-highlight{outline:3px solid #000;outline-offset:-3px;box-shadow:inset 0 0 0 6px #ffeb3b}
 
 .style-shortcuts{display:flex;gap:8px;margin:10px 0}.style-shortcuts>.btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px}.game .topbar .labelled-control{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:44px;min-height:44px;padding:3px}.labelled-control small{font:700 10px/1.1 Nunito;display:block}.game .topbar .labelled-control .ui-icon{width:21px;height:21px}.game .topbar .labelled-control.menuico{font-size:18px}
+/* Icona del computer sull'angolo del ritratto: non toglie spazio al nome e al numero di carte. */
+.seatchip .cpu-tag { position: absolute; left: 1px; bottom: 1px; width: 17px; height: 17px; border-radius: 50%; background: #fff1cd; box-shadow: 0 0 0 1.5px #294c3d; display: grid; place-items: center; pointer-events: none; }
+.seatchip .cpu-tag .ui-icon { width: 14px; height: 14px; }

@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-31T10:44:09.804Z",
+  "at": "2026-11-02T04:50:06.365Z",
   "method": "Chrome da file locali; risposte social vuote simulate, motore locale reale",
   "checks": [
     "320/375/768 px",
@@ -11,7 +11,7 @@
     "bozza amico con emoji conservata",
     "allenamento senza progressi"
   ],
-  "sourceBase": "ce847a1107e9130f1206221f822530f69a638839 + sorgenti identificate dagli hash",
+  "sourceBase": "56b3fb17155dc127610f5cb89abd47887f24041a + sorgenti identificate dagli hash",
   "sourceHashes": {
     "public/index.html": "89c657ae0d1e110b040242157bdacf9486f917a52c14f72819b03a4f217cd373",
     "public/privacy.html": "c5e9cd6bbb1ab61861b2f78ff1c1d20aaf348596cb0a529aae56fc5e9218e61c",
@@ -134,13 +134,13 @@
     "public/art/avatars/fenice.webp": "061a9636c484081f27b602227b9d2259100b99eaf26ad65aabf3f9078080874e",
     "public/art/avatars/drago-imperatore.webp": "76db01140a5c3acf87cfa5396e8e0ac50292765c0ecc8b26473c63e7d60a0a5a",
     "public/art/avatars/volpe-nove-code.webp": "1873b7abbc4ad94d3ec3abf74330a7d35fd1fb7978b6d61e5e1ff5c9e40a4289",
-    "public/style.css": "0def75c398f5945b0762c39c333285ba90181537dd9a64f79d954cef850f402f",
-    "public/sw.js": "36ae63c81731ec1cb9c91c48a6cb4b7879d61af3036ec56027262987c175637c",
-    "launcher/sw.js": "61c9c159019c1e908e0c3764d96c39209aad5884048cb16aa42d7fa1c5502df9",
+    "public/style.css": "7bc146b766f9805e5833464d1f8a91ffe17209025cbe4f7289a14b233ea76fed",
+    "public/sw.js": "a72c924cefdacc2f468053317d39f05d0b98a9dad2425f534aae271e7250909f",
+    "launcher/sw.js": "b6cfb811ff2dd1aeb2093b8e0fd9611f7cb6f98b1b7747f6aa30a9a27c103a28",
     "public/js/animazioni.js": "ba8f2444d9503c5cb7ffd5f7b21699ce4343d7148fe64db270f131628ed3b970",
     "public/js/avatars.js": "5ff457259d67be24575287caf460ac2e9c1b2b457f0b71bc0cbe74100fc239c7",
     "public/js/azioni.js": "93c183fda4e0bad66171aaa04f70a7be4cd25708441dceb26ce856272b048b1f",
-    "public/js/base.js": "8afdcbb69b2764a4ca1fe0f428a90d27503a202db5f723970eaf2da1abd4bb0a",
+    "public/js/base.js": "ebe7e1b87d58b74993018a009402448e084b9cc9911f05cd271e975d24653563",
     "public/js/campagna.js": "3403f66055bf9e853ab662b7b8caa41e3d3786a6452b4b481dd7a89d9986a0dc",
     "public/js/campaign-adventure.js": "e8f1b31d6284359277107463b1daf6a80b4179fcc53c3092287442ff10d6d827",
     "public/js/campaign-story.js": "3896eb0b3bb24944333192efa9e4affe2223ba7958676d96b82ec624c1e55cd2",
@@ -158,7 +158,7 @@
     "public/js/profilo.js": "f6dd0b303534b99276fae68406e480f2adaabed6c1af6837b031a929e4343e15",
     "public/js/ranked.js": "12c66283acf7eb3c7e466aba02f3a4bd06bad96c9ccf6d14ff78cfec1424d4fc",
     "public/js/schermate.js": "e2cf112cbc0a97f4c42f8ef3112736351ceea97daa1ffaed4cf741a6744dc457",
-    "public/js/tavolo.js": "c18d37371043c864f2fac6ff5ac4b4b483616cd700d7ace53a2dd03efd6c7ec1",
+    "public/js/tavolo.js": "42f1b4bc1bf7f44b16b2891d2f05d268797e2b02daf2cb94e9d2ee919bc92b57",
     "public/js/tutorial.js": "1c3387d06213ef63780261b95389b56816a8c375e7cdedee2a667126b40d184f",
     "public/js/ui.js": "2fdcd6d6b3a2e83bb75f8e299864c65e60c15e94cd7f9c920a6ce4ddd795b460",
     "public/lingue/en.js": "c3dde3ce7a2039cbc31be2bffb7d61c20f2de1ddbb78c7b6ca8261463fb16b86",
